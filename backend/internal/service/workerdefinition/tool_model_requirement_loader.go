@@ -17,6 +17,7 @@ type toolModelRequirementDocument struct {
 	ProtocolAdapters []string                     `json:"protocol_adapters"`
 	Modality         string                       `json:"modality"`
 	Capability       string                       `json:"capability"`
+	Required         *bool                        `json:"required"`
 	Environment      toolModelEnvironmentDocument `json:"environment"`
 }
 
@@ -39,12 +40,17 @@ func decodeToolModelRequirements(rawItems []json.RawMessage) ([]ToolModelRequire
 			return nil, err
 		}
 		roles[document.ID] = struct{}{}
+		required := true
+		if document.Required != nil {
+			required = *document.Required
+		}
 		requirements = append(requirements, ToolModelRequirement{
 			ID:               document.ID,
 			ProviderKeys:     append([]string{}, document.ProviderKeys...),
 			ProtocolAdapters: append([]string{}, document.ProtocolAdapters...),
 			Modality:         document.Modality,
 			Capability:       document.Capability,
+			Required:         required,
 			Environment: ToolModelEnvironment{
 				APIKey: document.Environment.APIKey, BaseURL: document.Environment.BaseURL,
 				ModelID: document.Environment.ModelID,

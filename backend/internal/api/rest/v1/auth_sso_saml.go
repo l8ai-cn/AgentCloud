@@ -76,14 +76,14 @@ func (h *SSOAuthHandler) SAMLACS(c *gin.Context) {
 		"SAMLResponse": samlResponse,
 		"RelayState":   relayState,
 	}
-	userInfo, configID, err := h.ssoService.HandleCallback(c.Request.Context(), domain, sso.ProtocolSAML, params)
+	userInfo, cfg, err := h.ssoService.HandleCallback(c.Request.Context(), domain, sso.ProtocolSAML, params)
 	if err != nil {
 		slog.ErrorContext(c.Request.Context(), "SAML callback handling failed", "domain", domain, "error", err)
 		h.redirectWithError(c, redirectTo, "authentication_failed")
 		return
 	}
 
-	_, tokens, err := h.authenticateSSO(c, sso.ProtocolSAML, configID, userInfo)
+	_, tokens, err := h.authenticateSSO(c, cfg, userInfo)
 	if err != nil {
 		slog.ErrorContext(c.Request.Context(), "SAML user authentication failed", "domain", domain, "error", err)
 		errorCode := "authentication_failed"

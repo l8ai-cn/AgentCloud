@@ -150,6 +150,6 @@ type Repository interface {
 		update MarketReleaseUpdate,
 	) error
 	SlugExists(ctx context.Context, orgID int64, slug string, excludeID int64) (bool, error)
-	List(ctx context.Context, orgID int64, limit, offset int) ([]Expert, int64, error)
+	List(ctx context.Context, orgID int64, limit, offset int, snapshotMaxID *int64) ([]Expert, int64, error)
 	RecordRun(ctx context.Context, orgID, id int64, at time.Time) error
 }

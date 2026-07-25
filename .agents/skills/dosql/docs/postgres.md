@@ -12,8 +12,10 @@ Read-only commands include:
 ## Oilan Production Read-Only Adapter
 
 Agent Cloud production PostgreSQL is fixed to the registered asset
-`db_agentcloud_prod_postgres`. Use the dedicated entrypoint, not a local
-connection URI, local `psql`, or a locally invoked Kubernetes database command:
+`db_agentcloud_prod_postgres`. The asset id is the post-rebrand logical name; the
+live Kubernetes identity is still pre-rebrand, so namespace, secret and database
+are all `agentsmesh`. Use the dedicated entrypoint, not a local connection URI,
+local `psql`, or a locally invoked Kubernetes database command:
 
 ```bash
 node .agents/skills/dosql/scripts/oilan-postgres-doops-readonly.mjs probe \
@@ -33,8 +35,8 @@ The request only accepts a unique DoOps `session` and an `operationId`.
 ```
 
 The adapter invokes only `doops -session <session> exec --target
-gw-oilan-node`, checks the fixed `agentcloud/postgres` service and
-`agentcloud-secrets#DB_PASSWORD` binding remotely, and emits a redacted,
+gw-oilan-node`, checks the fixed `agentsmesh/postgres` service and
+`agentsmesh-secrets#DB_PASSWORD` binding remotely, and emits a redacted,
 hash-verifiable evidence document. It fixes the canonical DoOps binary and
 config paths, validates the gateway/cluster/instance targeting line, and forces
 `default_transaction_read_only=on` plus a 15-second statement timeout. It never
@@ -50,9 +52,18 @@ session audit logs:
 node .agents/skills/dosql/scripts/oilan-postgres-registration-verify.mjs
 ```
 
-The July 21, 2026 registration observed PostgreSQL 16.14. A post-change
-read-only check observed migration state `231`, `dirty=false`. Corroboration
-fails closed unless the Gateway returns one
+The July 25, 2026 re-registration observed PostgreSQL 16.14 on database
+`agentsmesh`, migration state `231`, `dirty=false`.
+
+`oilan-postgres-registration-verify.mjs` currently fails closed on its second
+half: the `gw-oilan-node` doops-agent no longer writes `.doops-audit-log` into
+session workspaces, so no target-managed digest exists to hash. The Gateway
+half — unique `exec` event, session, status, timestamps, tail and the fixed
+`command_summary` — still verifies. Do not add a fallback that skips the missing
+digest; that half already reported `releaseAuthority=false` and was never
+accepted by the release gate, so its absence changes no release decision.
+
+Corroboration fails closed unless the Gateway returns one
 unique matching `exec` event with the exact fixed command summary and result.
 It also verifies the SHA-256 of each target-managed `.doops-audit-log` against
 the complete fixed command and exit record, covering the command prefix that

@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ArrowLeft, BadgeCheck, Check, ExternalLink, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   fetchMarketplaceListingDetail,
   type MarketplaceListingDetail,
@@ -14,6 +15,7 @@ import {
   formatMarketplaceCredits,
   marketplaceTypeLabels,
 } from "@/lib/marketplace/presentation";
+import { MarketplaceInstallAction } from "./MarketplaceInstallAction";
 
 export function MarketplaceDetailPage({
   orgSlug,
@@ -22,6 +24,7 @@ export function MarketplaceDetailPage({
   orgSlug: string;
   listingSlug: string;
 }) {
+  const router = useRouter();
   const [listing, setListing] = useState<MarketplaceListingDetail | null>(null);
   const [error, setError] = useState("");
 
@@ -35,7 +38,6 @@ export function MarketplaceDetailPage({
   if (!listing) return <State message="正在加载应用详情" />;
 
   const credits = formatMarketplaceCredits(listing.quota);
-  const canEnable = listing.resource_type === "application";
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 p-5 lg:p-8">
       <Link href={`/${orgSlug}/marketplace`} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
@@ -59,20 +61,27 @@ export function MarketplaceDetailPage({
           <aside className="rounded-xl border border-border bg-surface-muted/60 p-5">
             <p className="text-xs font-medium text-muted-foreground">当前版本</p>
             <p className="mt-1 text-xl font-semibold text-foreground">v{listing.version}</p>
+            <p className="mt-5 text-xs font-medium text-muted-foreground">运行类型</p>
+            <p className="mt-1 text-sm font-medium text-foreground">{listing.agent_slug}</p>
+            <p className="mt-5 text-xs font-medium text-muted-foreground">内置 Skills</p>
+            <p className="mt-1 text-sm text-foreground">{listing.skill_slugs.length} 项</p>
             <p className="mt-5 text-xs font-medium text-muted-foreground">预计额度</p>
             <p className="mt-1 text-sm text-foreground">{credits ?? "将在启用确认时核对"}</p>
-            {canEnable ? (
-              <Button asChild className="mt-6 w-full">
-                <Link href={`/${orgSlug}/marketplace/acquire?market=agent-cloud-market&listing=${listing.slug}&version=${listing.listing_version_id}`}>
-                  检查启用条件
-                </Link>
-              </Button>
-            ) : (
-              <div className="mt-6">
-                <Button className="w-full" disabled>暂不支持启用</Button>
-                <p className="mt-2 text-xs leading-5 text-muted-foreground">对应运行时接入完成后开放此资源类型。</p>
-              </div>
-            )}
+            <div className="mt-6">
+              <MarketplaceInstallAction
+                applicationSlug={listing.slug}
+                agentSlug={listing.agent_slug}
+                orgSlug={orgSlug}
+                onInstalled={(targetOrgSlug, expertSlug, alreadyInstalled) => {
+                  toast.success(alreadyInstalled ? "伙伴已在组织中" : "伙伴已启用");
+                  router.push(`/${targetOrgSlug}/experts/${expertSlug}`);
+                }}
+                onNeedsOrganization={() => router.push("/onboarding/create-org")}
+                onConfigureResources={(targetOrgSlug) =>
+                  router.push(`/${targetOrgSlug}/settings?tab=ai-resources`)
+                }
+              />
+            </div>
           </aside>
         </div>
       </section>

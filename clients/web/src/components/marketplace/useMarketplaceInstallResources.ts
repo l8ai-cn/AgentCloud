@@ -6,6 +6,7 @@ import { discoverFirstOrgSlug } from "@/lib/light-auth";
 import { updateLightSessionOrgSlug } from "@/lib/light-session";
 import {
   listMarketplaceModelResources,
+  marketplaceWorkerRequiresModelResource,
   type MarketplaceModelResource,
 } from "@/lib/marketplace-model-resources";
 import {
@@ -27,6 +28,9 @@ export function useMarketplaceInstallResources(
 ) {
   const [reloadKey, setReloadKey] = useState(0);
   const requestKey = `${orgSlug ?? ""}\u0000${agentSlug}\u0000${reloadKey}`;
+  const modelRequirement = marketplaceWorkerRequiresModelResource(agentSlug);
+  const catalogMissing = modelRequirement === null;
+  const modelRequired = modelRequirement === true;
   const [state, setState] = useState<InstallResourceState>({
     requestKey: "",
     orgSlug,
@@ -45,6 +49,7 @@ export function useMarketplaceInstallResources(
 
   useEffect(() => {
     let cancelled = false;
+    if (catalogMissing) return;
     void (async () => {
       let resolvedOrgSlug = orgSlug;
       try {
@@ -99,7 +104,7 @@ export function useMarketplaceInstallResources(
     return () => {
       cancelled = true;
     };
-  }, [agentSlug, orgSlug, requestKey]);
+  }, [agentSlug, catalogMissing, orgSlug, requestKey]);
 
   const current = state.requestKey === requestKey;
   const modelID =
@@ -108,13 +113,15 @@ export function useMarketplaceInstallResources(
     toolSelection.requestKey === requestKey ? toolSelection.ids : {};
   const tools = current ? state.tools : [];
   const selectionComplete =
-    Boolean(modelID) && tools.every((group) => Boolean(toolIDs[group.role]));
+    !catalogMissing &&
+    (!modelRequired || Boolean(modelID)) &&
+    tools.every((group) => Boolean(toolIDs[group.role]));
   return {
     orgSlug: current ? state.orgSlug : orgSlug,
     models: current ? state.models : [],
     tools,
-    loading: !current,
-    error: current && state.error,
+    loading: !catalogMissing && !current,
+    error: catalogMissing || (current && state.error),
     modelID,
     setModelID: (id: string) => setModelSelection({ requestKey, id }),
     toolIDs,
@@ -128,9 +135,10 @@ export function useMarketplaceInstallResources(
       })),
     selectionComplete,
     missingCompatibleResource:
-      current &&
-      (state.models.length === 0 ||
-        tools.some((group) => group.resources.length === 0)),
+      catalogMissing ||
+      (current &&
+        ((modelRequired && state.models.length === 0) ||
+          tools.some((group) => group.resources.length === 0))),
     reload: () => setReloadKey((value) => value + 1),
   };
 }

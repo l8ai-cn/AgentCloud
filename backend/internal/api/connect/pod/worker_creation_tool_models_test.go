@@ -41,6 +41,7 @@ func TestWorkerCreateOptionsExposeToolModelRequirements(t *testing.T) {
 						},
 						Modality:   resourcedomain.ModalityVideo,
 						Capability: resourcedomain.CapabilityVideoGeneration,
+						Required:   true,
 					},
 				},
 			},
@@ -55,6 +56,7 @@ func TestWorkerCreateOptionsExposeToolModelRequirements(t *testing.T) {
 	assert.Equal(t, "seedance-video", response.WorkerTypes[0].ToolModelRequirements[0].Role)
 	assert.Equal(t, []string{"doubao", "sub2api-seedance"}, response.WorkerTypes[0].ToolModelRequirements[0].ProviderKeys)
 	assert.Equal(t, []string{"openai-compatible", "ark-seedance"}, response.WorkerTypes[0].ToolModelRequirements[0].ProtocolAdapters)
+	assert.True(t, response.WorkerTypes[0].ToolModelRequirements[0].Required)
 }
 
 func TestWorkerCreateOptionsExposeDefinitionRequirements(t *testing.T) {

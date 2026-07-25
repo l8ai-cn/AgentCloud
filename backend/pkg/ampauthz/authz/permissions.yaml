@@ -1,0 +1,17 @@
+permissions:
+  - code: agentscloud:org:settings:write
+    name: Manage organization settings
+  - code: agentscloud:member:invite
+    name: Invite and manage members
+  - code: agentscloud:runner:manage
+    name: Manage runners and clusters
+  - code: agentscloud:billing:manage
+    name: Manage billing and licenses
+  - code: agentscloud:repo:manage
+    name: Manage repositories
+  - code: agentscloud:ai_resource:manage
+    name: Manage org AI resources
+  - code: agentscloud:pod:use
+    name: Create and use pods
+  - code: agentscloud:ticket:use
+    name: Use tickets and channels

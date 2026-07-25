@@ -7,7 +7,7 @@
       "mesh": "Mesh",
       "loops": "Loops",
       "workflows": "Workflows",
-      "experts": "Experts",
+      "experts": "AI Partners",
       "automation": "Automation",
       "apiAccess": "API Access",
       "knowledge": "Knowledge Base",
@@ -91,6 +91,7 @@
       "modelResourceHint": "Credentials are resolved from the selected AI resource at launch time.",
       "manageModelResources": "Configure models and API keys",
       "noModelResourcesAvailableHint": "This Agent needs a compatible model and API key. Go to Settings → AI Resources to select an existing configuration or add a new one.",
+      "optionalToolModelNone": "None (optional)",
       "selectRuntimeBundles": "Runtime Env Bundles",
       "noRuntimeBundlesAvailableHint": "This image has no runtime env bundles yet. Add one in Settings → Images.",
       "noRuntimeBundleSelectedHint": "No runtime bundle selected; the Worker runs without any extra runtime preferences.",
@@ -227,7 +228,7 @@
       "knowledgeBases": "Select knowledge bases",
       "manageKnowledgeBases": "Create knowledge base",
       "loadingKnowledgeBases": "Loading knowledge bases…",
-      "knowledgeBasesLoadFailed": "Knowledge bases could not be loaded. Try again.",
+      "knowledgeBasesLoadFailed": "Knowledge bases are unavailable; you can create the Worker without selecting one.",
       "noKnowledgeBasesHint": "No knowledge bases yet. Create one, then mount it when starting a Worker.",
       "knowledgeBasesHint": "Knowledge bases are cloned into the Worker sandbox under kb/; writable mounts allow the agent to commit and push changes.",
       "knowledgeModeToggle": "Toggle read-only / read-write",
@@ -343,7 +344,7 @@
     "stepContent": {
       "1": {
         "title": "Choose how it runs",
-        "description": "Choose the Agent, model, runtime environment, and resource size."
+        "description": "Choose the model, image, and resource size."
       },
       "2": {
         "title": "Configure Agent variables",
@@ -360,8 +361,7 @@
     },
     "runtime": {
       "model": "Model and API",
-      "workerType": "Agent type",
-      "runtimeImage": "Runtime environment",
+      "runtimeImage": "Image",
       "computeTarget": "Where to run",
       "computeTargetHint": "Local development uses an online Runner in your organization.",
       "deploymentMode": "Resource usage",
@@ -375,7 +375,7 @@
         "minimax": "MiniMax CLI",
         "openclaw": "OpenClaw",
         "doAgent": "DoAgent",
-        "seedance": "Seedance expert",
+        "seedance": "Seedance AI Partner",
         "patternDesigner": "Pattern Designer",
         "aider": "Aider",
         "openCode": "OpenCode",
@@ -401,11 +401,11 @@
         "storage": "Storage"
       }
     },
-    "typeChange": {
-      "title": "Change Worker type?",
-      "description": "Type-specific primary and tool models, image, configuration, Skill, and environment selections will be cleared.",
-      "cancel": "Keep current type",
-      "confirm": "Change type"
+    "imageChange": {
+      "title": "Change image?",
+      "description": "The current Agent is incompatible with this image. Its models, configuration, and Skills will be cleared.",
+      "cancel": "Keep current image",
+      "confirm": "Change image"
     },
     "typeConfig": {
       "title": "Agent configuration variables",

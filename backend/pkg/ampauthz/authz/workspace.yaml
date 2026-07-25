@@ -1,0 +1,8 @@
+workspace:
+  mountPath: /workspace
+  noPermissionPath: /no-permission
+  styleScopeMode: strict
+  modules:
+    - app-roles
+    - app-role-assignments
+    - explain

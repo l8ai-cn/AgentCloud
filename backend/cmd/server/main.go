@@ -17,6 +17,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra/websocket"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/agentpod"
 	channelService "github.com/l8ai-cn/agentcloud/backend/internal/service/channel"
+	imbridgesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/imbridge"
 	notifService "github.com/l8ai-cn/agentcloud/backend/internal/service/notification"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/relay"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
@@ -148,6 +149,10 @@ func main() {
 	services.mesh.SetPodCreator(podOrchestrator)
 
 	services.channel.AddPostSendHook(channelService.NewPodPromptHook(podRouter, channelRepo, runner.NewChannelPromptQueuer(services.pod, pendingQueueWiring.queue)))
+	if services.imBridge != nil {
+		services.imBridge.SetPodCatalog(imbridgesvc.NewPodCatalogAdapter(services.pod))
+		services.imBridge.SetPromptRouter(podRouter)
+	}
 	slog.Info("PodPromptHook registered with PodRouter")
 
 	configurePodRuntimeEvents(

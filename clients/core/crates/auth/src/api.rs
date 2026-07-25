@@ -120,6 +120,10 @@ impl AuthManager {
         )
         .await;
 
+        // Serialize with refresh_token(): that path holds this lock for the
+        // whole /RefreshToken round-trip. Taking it here ensures an in-flight
+        // refresh cannot apply_tokens after we drop the session.
+        let _guard = self.refresh_lock.lock().await;
         self.reset_local();
 
         match server_result {
@@ -168,7 +172,7 @@ impl AuthManager {
         }
 
         let req = auth_proto::RefreshTokenRequest {
-            refresh_token: pre_lock_refresh,
+            refresh_token: pre_lock_refresh.clone(),
         };
         let resp: auth_proto::RefreshTokenResponse = connect_call(
             self,
@@ -177,6 +181,20 @@ impl AuthManager {
             None,
         )
         .await?;
+
+        // clear()/logout may have wiped the session while we awaited the
+        // network (clear_session does not take refresh_lock). Never resurrect
+        // a logged-out tab from a late refresh response.
+        let current_refresh = self.read_state().refresh_token().map(String::from);
+        if current_refresh.as_deref() != Some(pre_lock_refresh.as_str()) {
+            let state = self.read_state();
+            let s = state.session.as_ref().ok_or(AuthError::NotAuthenticated)?;
+            return Ok(AuthTokens {
+                token: s.access_token.clone(),
+                refresh_token: s.refresh_token.clone(),
+                expires_in: Some(s.expires_at - now_unix_secs()),
+            });
+        }
 
         let tokens = AuthTokens {
             token: resp.token,

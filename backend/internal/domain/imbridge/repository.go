@@ -14,4 +14,16 @@ type Repository interface {
 	GetThreadMapping(ctx context.Context, connectionID int64, externalThreadID string) (*ThreadMapping, error)
 	GetThreadMappingByChannel(ctx context.Context, connectionID, channelID int64) (*ThreadMapping, error)
 	UpsertThreadMapping(ctx context.Context, mapping *ThreadMapping) error
+
+	ClaimInboundMessage(ctx context.Context, connectionID int64, externalMessageID string) (bool, error)
+
+	GetIdentityBinding(ctx context.Context, connectionID int64, externalUserID string) (*IdentityBinding, error)
+	GetIdentityBindingByCode(ctx context.Context, pairingCode string) (*IdentityBinding, error)
+	ListIdentityBindings(ctx context.Context, connectionID int64) ([]*IdentityBinding, error)
+	UpsertIdentityBinding(ctx context.Context, binding *IdentityBinding) error
+	UpdateIdentityBinding(ctx context.Context, binding *IdentityBinding) error
+
+	ListRouteBindings(ctx context.Context, connectionID int64) ([]*RouteBinding, error)
+	CreateRouteBinding(ctx context.Context, binding *RouteBinding) error
+	DeleteRouteBinding(ctx context.Context, connectionID, routeID int64) error
 }

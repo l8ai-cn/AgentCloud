@@ -91,7 +91,7 @@ func (service *Service) ListOptions(
 	return CreateOptions{
 		Revision:         service.revision,
 		WorkerTypes:      workerTypes,
-		RuntimeImages:    runtimeImageOptions(service.catalog, filter.WorkerTypeSlug),
+		RuntimeImages:    runtimeImageOptions(service.catalog, workerTypes),
 		ComputeTargets:   computeTargetOptions(service.catalog),
 		DeploymentModes:  deploymentModeOptions(service.catalog, filter.ComputeTargetID),
 		ResourceProfiles: resourceProfileOptions(service.catalog),
@@ -109,17 +109,26 @@ func hasEnabledRuntimeImage(catalog runtimedomain.Catalog, workerType string) bo
 
 func runtimeImageOptions(
 	catalog runtimedomain.Catalog,
-	workerType string,
+	workerTypes []WorkerTypeOption,
 ) []RuntimeImageOption {
-	images := catalog.Images()
-	if workerType != "" {
-		images = catalog.ImagesFor(workerType)
+	workerTypesBySlug := make(map[string]WorkerTypeOption, len(workerTypes))
+	for _, workerType := range workerTypes {
+		workerTypesBySlug[workerType.Slug] = workerType
 	}
-	options := make([]RuntimeImageOption, 0, len(images))
-	for _, image := range images {
-		option := RuntimeImageOption{Image: image, Selectable: image.Enabled}
+	options := make([]RuntimeImageOption, 0, len(workerTypes))
+	for _, image := range catalog.Images() {
+		if len(image.WorkerTypeSlugs) != 1 {
+			continue
+		}
+		workerType, exists := workerTypesBySlug[image.WorkerTypeSlugs[0]]
+		if !exists {
+			continue
+		}
+		option := RuntimeImageOption{Image: image, Selectable: image.Enabled && workerType.Selectable}
 		if !image.Enabled {
 			option.BlockingReason = "Runtime image is disabled"
+		} else if !workerType.Selectable {
+			option.BlockingReason = workerType.BlockingReason
 		}
 		options = append(options, option)
 	}

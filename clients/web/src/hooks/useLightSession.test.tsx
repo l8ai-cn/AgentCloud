@@ -93,11 +93,30 @@ describe("useLightSession", () => {
     expect(result.current.session).not.toBeNull();
 
     act(() => {
-      clearLightSession(ORIGIN);
+      // Bypass clearLightSession's same-tab notify to isolate the storage path
+      window.localStorage.removeItem(sessionStorageKey(ORIGIN));
       window.dispatchEvent(new StorageEvent("storage", {
         key: sessionStorageKey(ORIGIN),
         newValue: null,
       }));
+    });
+
+    expect(result.current.session).toBeNull();
+  });
+
+  it("detects same-tab logout via LIGHT_SESSION_CHANGED_EVENT", () => {
+    writeLightSession({
+      accessToken: "tok",
+      refreshToken: "ref",
+      expiresAt: Math.floor(Date.now() / 1000) + 3600,
+      currentOrgSlug: "alpha",
+      baseUrl: ORIGIN,
+    });
+    const { result } = renderHook(() => useLightSession());
+    expect(result.current.session).not.toBeNull();
+
+    act(() => {
+      clearLightSession(ORIGIN);
     });
 
     expect(result.current.session).toBeNull();

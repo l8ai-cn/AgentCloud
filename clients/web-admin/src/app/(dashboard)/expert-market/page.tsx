@@ -25,9 +25,9 @@ export default function ExpertMarketPage() {
     <div className="space-y-6">
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold">专家市场审核</h1>
+          <h1 className="text-2xl font-bold">伙伴市场审核</h1>
           <p className="text-sm text-muted-foreground">
-            审核专家发布快照与运行依赖
+            审核伙伴发布快照与运行依赖
           </p>
         </div>
         <Button

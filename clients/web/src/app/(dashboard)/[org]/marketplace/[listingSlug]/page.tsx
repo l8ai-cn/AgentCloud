@@ -1,10 +1,10 @@
-import { redirect } from "next/navigation";
+import { MarketplaceDetailPage } from "@/components/marketplace/MarketplaceDetailPage";
 
 export default async function MarketplaceDetailRoute({
   params,
 }: {
   params: Promise<{ org: string; listingSlug: string }>;
 }) {
-  const { listingSlug } = await params;
-  redirect(`https://market.l8ai.cn/apps/${encodeURIComponent(listingSlug)}`);
+  const { org, listingSlug } = await params;
+  return <MarketplaceDetailPage orgSlug={org} listingSlug={listingSlug} />;
 }

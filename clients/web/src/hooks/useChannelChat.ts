@@ -35,8 +35,8 @@ interface UseChannelChatReturn {
 export function useChannelChat({ channelId }: UseChannelChatOptions): UseChannelChatReturn {
   const currentUserId = useCurrentUser()?.id;
 
-  // WASM `useCurrentChannel` reflects fetchChannel writes; JS `currentChannel`
-  // only updates via setCurrentChannel and stays null on select→fetch.
+  // Rust ChannelService owns the current channel; the hook re-reads it on
+  // every store tick.
   const currentChannel = useCurrentChannel();
   const channelLoading = useChannelStore((s) => s.channelLoading);
   const fetchChannel = useChannelStore((s) => s.fetchChannel);

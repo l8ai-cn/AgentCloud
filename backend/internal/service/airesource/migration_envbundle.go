@@ -24,6 +24,7 @@ var bundleProviderSpecs = []bundleProviderSpec{
 	{"openai", "OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_BASE_URL", []string{"aider", "codex", "codex-cli", "cursor-cli", "do-agent", "opencode"}},
 	{"gemini", "GEMINI_API_KEY", "GEMINI_MODEL", "GEMINI_BASE_URL", []string{"do-agent", "gemini", "gemini-cli"}},
 	{"minimax", "MINIMAX_API_KEY", "MINIMAX_MODEL", "MINIMAX_BASE_URL", []string{"do-agent"}},
+	{"moonshot", "KIMI_API_KEY", "KIMI_MODEL_NAME", "KIMI_BASE_URL", []string{"kimi-code"}},
 }
 
 func (m *LegacyMigrator) migrateCredentialBundles(ctx context.Context, tx *gorm.DB, report *MigrationReport) error {

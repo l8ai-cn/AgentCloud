@@ -7,14 +7,9 @@ import {
 import type { EffectiveResource } from "@/lib/api/facade/aiResource";
 import { readCurrentOrg } from "@/stores/auth";
 import {
-  agentRequiresModelResource,
   compatibleModelResources,
   type WorkerModelResourceRequirement,
 } from "../CreatePodForm/workerModelResources";
-
-export function requiresModelResource(agentSlug: string | null | undefined): boolean {
-  return agentRequiresModelResource(agentSlug ?? null);
-}
 
 export function useWorkerModelResources(
   agentSlug: string | null | undefined,
@@ -29,8 +24,7 @@ export function useWorkerModelResources(
   const [loadedAgentSlug, setLoadedAgentSlug] = useState("");
   const [selectedModelResourceId, setSelectedModelResourceId] = useState<number | null>(null);
   const requestAgentSlug = agentSlug ?? "";
-  const usesDefinitionRequirement = requirement !== undefined;
-  const modelRequired = requirement?.required ?? requiresModelResource(agentSlug);
+  const modelRequired = requirement?.required ?? false;
   const protocolAdapterKey = requirement?.protocolAdapters.join(",") ?? "";
 
   useEffect(() => {
@@ -63,20 +57,17 @@ export function useWorkerModelResources(
         ]);
         if (cancelled) return;
         const deduped = dedupeResources(effective);
-        const definitionRequirement = usesDefinitionRequirement
-          ? {
-            required: modelRequired,
-            protocolAdapters: protocolAdapterKey
-              ? protocolAdapterKey.split(",")
-              : [],
-          }
-          : undefined;
+        const requiredProtocolAdapters = protocolAdapterKey
+          ? protocolAdapterKey.split(",")
+          : [];
         setResources(
           compatibleModelResources(
-            agentSlug ?? null,
             deduped,
             catalog,
-            definitionRequirement,
+            {
+              required: true,
+              protocolAdapters: requiredProtocolAdapters,
+            },
           ),
         );
         setToolResources(includeToolModels ? deduped : []);
@@ -104,7 +95,6 @@ export function useWorkerModelResources(
     modelRequired,
     protocolAdapterKey,
     requestAgentSlug,
-    usesDefinitionRequirement,
   ]);
 
   const current = loadedAgentSlug === requestAgentSlug;

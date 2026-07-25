@@ -85,6 +85,13 @@ impl AuthManager {
         self.reset_local();
     }
 
+    /// Updates in-memory profile fields without touching tokens / persistence.
+    /// Profile edits (UpdateMe) do not rotate the session; callers must not
+    /// go through `apply_session` or expires_at would be rewritten.
+    pub fn set_current_user(&self, user: User) {
+        self.write_state().set_user(user);
+    }
+
     pub(crate) fn reset_local(&self) {
         self.write_state().clear();
         self.storage.remove(&self.session_key());

@@ -13,7 +13,6 @@ import (
 	specdom "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workercreation"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
-	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
 	"gorm.io/gorm"
 )
 
@@ -44,18 +43,26 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 		expectedSkillIDs = append(expectedSkillIDs, row.ID)
 	}
 	slices.Sort(expectedSkillIDs)
+	workerType, runtimeImageID, err := definitionRuntime(definition, request)
+	if err != nil {
+		return err
+	}
+	secretRefs, err := definitionSecretRefs(definition, request)
+	if err != nil {
+		return err
+	}
 	spec := snapshot.Spec
 	if snapshot.ID != *expert.WorkerSpecSnapshotID ||
 		snapshot.OrganizationID != request.OrganizationID ||
 		!specdom.HasResolvedProtocolAdapters(spec) ||
 		spec.Runtime.ModelBinding.ResourceID != request.ModelResourceID ||
-		spec.Runtime.Image.ID != request.RuntimeImageID ||
-		spec.Runtime.WorkerType.Slug.String() != "video-studio" ||
+		spec.Runtime.Image.ID != runtimeImageID ||
+		spec.Runtime.WorkerType.Slug != workerType ||
 		spec.Workspace.Instructions != definition.Prompt ||
 		!slices.Equal(spec.Workspace.SkillIDs, expectedSkillIDs) {
 		return ErrCatalogConflict
 	}
-	if !workerConfigMatchesCatalog(spec.TypeConfig) {
+	if !workerConfigMatchesCatalog(spec.TypeConfig, secretRefs) {
 		return bootstrapper.rebuildExpertSnapshotForDefinition(
 			ctx,
 			request,
@@ -87,10 +94,14 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 	)
 }
 
-func workerConfigMatchesCatalog(config specdom.TypeConfig) bool {
+func workerConfigMatchesCatalog(
+	config specdom.TypeConfig,
+	secretRefs map[string]specdom.SecretReference,
+) bool {
 	return config.InteractionMode == specdom.InteractionModePTY &&
 		config.AutomationLevel == specdom.AutomationLevelAutoEdit &&
-		reflect.DeepEqual(config.Values, videoExpertConfigOverrides())
+		reflect.DeepEqual(config.SecretRefs, secretRefs) &&
+		reflect.DeepEqual(config.Values, partnerConfigOverrides())
 }
 
 func (bootstrapper *Bootstrapper) rebuildExpertSnapshotForDefinition(
@@ -142,7 +153,11 @@ func (bootstrapper *Bootstrapper) prepareExpertSnapshot(
 	definition ExpertDefinition,
 	expectedSkillIDs []int64,
 ) (workercreation.Prepared, error) {
-	workerType, err := slugkit.NewFromTrusted("video-studio")
+	workerType, runtimeImageID, err := definitionRuntime(definition, request)
+	if err != nil {
+		return workercreation.Prepared{}, err
+	}
+	secretRefs, err := definitionSecretRefs(definition, request)
 	if err != nil {
 		return workercreation.Prepared{}, err
 	}
@@ -159,6 +174,8 @@ func (bootstrapper *Bootstrapper) prepareExpertSnapshot(
 			definition,
 			expectedSkillIDs,
 			workerType,
+			runtimeImageID,
+			secretRefs,
 		),
 	)
 }

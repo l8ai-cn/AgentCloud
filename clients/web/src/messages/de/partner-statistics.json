@@ -1,0 +1,25 @@
+{
+  "partnerStatistics": {
+    "title": "Partner statistics",
+    "description": "Review partner adoption, activity, capability coverage, and profile quality across the organization.",
+    "refresh": "Refresh",
+    "refreshList": "Refresh partners",
+    "loadFailed": "Partner statistics could not be loaded",
+    "totalPartners": "Total partners",
+    "totalRuns": "Erfasste Starts",
+    "activatedPartners": "Partners in use",
+    "recentPartners": "Active in 7 days",
+    "perpetualPartners": "Long-running partners",
+    "profileCompleteness": "Profile completeness",
+    "activityTitle": "Adoption and activity",
+    "capabilityTitle": "Capability coverage",
+    "automationTitle": "Automation levels",
+    "categoryTitle": "Partner types",
+    "leaderboardTitle": "Partner activity ranking",
+    "scope": "Basierend auf Partnerprofilen, erfassten Starts und der letzten Ausführung.",
+    "partner": "Partner",
+    "capabilities": "Capabilities",
+    "runs": "Starts",
+    "lastActive": "Last active"
+  }
+}

@@ -5,6 +5,7 @@ import { MeshTopologySchema } from "@proto/mesh/v1/mesh_pb";
 import { reconnectRegistry } from "@/lib/realtime";
 import { getErrorMessage } from "@/lib/utils";
 import { getMeshService, getMeshState } from "@/lib/wasm-core";
+import { isPodActive } from "@/lib/pod-status";
 import { topologyToCache } from "./meshTopologyToCache";
 import { useIDEStore } from "./ide";
 import { useChannelStore } from "./channel";
@@ -160,7 +161,7 @@ export const useMeshStore = create<MeshState>((set, get) => ({
   getChannelsForNode: (podKey) =>
     readTopology()?.channels.filter((c) => c.pod_keys.includes(podKey)) ?? [],
   getActiveNodes: () =>
-    readTopology()?.nodes.filter((n) => n.status === "running" || n.status === "creating") ?? [],
+    readTopology()?.nodes.filter((n) => isPodActive(n.status)) ?? [],
   getNodesByRunner: (runnerId) =>
     readTopology()?.nodes.filter((n) => n.runner_id === runnerId) ?? [],
   getRunnerInfo: (runnerId) => readTopology()?.runners.find((r) => r.id === runnerId),

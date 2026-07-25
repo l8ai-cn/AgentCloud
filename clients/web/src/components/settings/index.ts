@@ -5,3 +5,4 @@ export { PersonalSettingsSidebar } from "./PersonalSettingsSidebar";
 export { GitSettingsContent } from "./GitSettingsContent";
 export { AgentConfigPage } from "./AgentConfigPage";
 export { AIResourcesSettings } from "./AIResourcesSettings";
+export { PersonalGeneralSettings } from "./personal";

@@ -36,6 +36,9 @@ func initializeWorkspaceServices(services *serviceContainer, cfg *config.Config,
 
 	services.billing = billing.NewServiceWithConfig(infra.NewBillingRepository(db), cfg)
 	services.org = organization.NewServiceWithBilling(infra.NewOrganizationRepository(db), services.billing)
+	if services.auth != nil {
+		services.auth.SetOrganizationBinder(services.org)
+	}
 	services.aiResource = initializeAIResourceService(db, services.org, encryptor)
 	services.runnerRepo = infra.NewRunnerRepository(db)
 	services.runner = runner.NewService(services.runnerRepo, services.billing)
@@ -52,7 +55,7 @@ func initializeWorkspaceServices(services *serviceContainer, cfg *config.Config,
 	services.autopilotRepo = infra.NewAutopilotRepository(db)
 	services.autopilot = agentpod.NewAutopilotControllerService(services.autopilotRepo)
 	services.channel = channel.NewService(infra.NewChannelRepository(db))
-	imBridgeSvc := imbridgesvc.NewService(infra.NewIMBridgeRepository(db), imbridgesvc.NewRegistry(nil), cfg.BaseURL())
+	imBridgeSvc := imbridgesvc.NewService(infra.NewIMBridgeRepository(db), imbridgesvc.NewRegistry(nil), cfg.BaseURL(), encryptor)
 	services.imBridge = imbridgesvc.NewBridge(imBridgeSvc, services.channel)
 	services.ticket = ticket.NewService(infra.NewTicketRepository(db))
 	services.mrSync = ticket.NewMRSyncService(infra.NewMRSyncRepository(db), nil)

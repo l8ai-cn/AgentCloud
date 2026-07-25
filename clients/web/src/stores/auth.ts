@@ -9,6 +9,7 @@ import {
   encodeSetCurrentOrg,
   encodeSetOrganizations,
 } from "./authProtoEncode";
+import { notifyLightSessionChanged } from "@/lib/light-session";
 
 interface User {
   id: number;
@@ -53,6 +54,8 @@ interface AuthState {
   setAuth: (token: string, user: User, refreshToken?: string) => Promise<void>;
   setOrganizations: (orgs: Organization[]) => Promise<void>;
   setCurrentOrg: (org: Organization) => Promise<void>;
+  /** Patch in-memory profile only — does not rewrite session tokens. */
+  syncCurrentUser: (user: User) => void;
   logout: () => Promise<void>;
   isAuthenticated: () => boolean;
   setHasHydrated: (state: boolean) => void;
@@ -218,14 +221,33 @@ export const useAuthStore = create<AuthState>((set) => ({
     bump();
   },
 
+  syncCurrentUser: (user) => {
+    try {
+      mgr().set_current_user_json(JSON.stringify({
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        name: user.name ?? null,
+        avatar_url: user.avatar_url ?? null,
+      }));
+    } catch { /* WASM not ready */ }
+    bump();
+  },
+
   logout: async () => {
-    // Sync local cleanup first — guarantees post-call state is logged-out
-    // even if the network POST below fails or hangs.
-    try { await mgr().clear_session(); } catch { /* noop */ }
-    // Best-effort API logout (informs server, doesn't block UI).
-    try { mgr().logout().catch(() => {}); } catch { /* noop */ }
+    // Await Rust logout: it captures the bearer, best-effort revokes on the
+    // server, then clears local under the refresh lock so an in-flight
+    // refresh_token cannot persist a new session after sign-out.
+    // clear_session-first was wrong — it dropped the bearer before the
+    // server call and raced with useSessionKeepAlive refresh.
+    try {
+      await mgr().logout();
+    } catch {
+      try { mgr().clear_session(); } catch { /* noop */ }
+    }
     set({ error: null });
     bump();
+    notifyLightSessionChanged();
   },
 
   isAuthenticated: () => {

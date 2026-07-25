@@ -15,6 +15,7 @@ import {
   deleteRunner as deleteRunnerConnect,
   querySandboxes as querySandboxesConnect,
 } from "@/lib/api/facade/runnerConnect";
+import { isPodActive } from "@/lib/pod-status";
 import { createPod as createPodConnect } from "@/lib/api/facade/podConnect";
 import { getLocalizedErrorMessage } from "@/lib/api/errors";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -92,7 +93,7 @@ export function useRunnerDetail(t: (key: string) => string, runnerIdArg?: number
 
   const handleRefreshSandboxStatus = async () => {
     if (!runner || runner.status !== "online") return;
-    const inactivePodKeys = pods.filter(p => p.status !== "running" && p.status !== "initializing").map(p => p.pod_key);
+    const inactivePodKeys = pods.filter((p) => !isPodActive(p.status)).map((p) => p.pod_key);
     if (inactivePodKeys.length === 0) return;
     setLoadingSandbox(true);
     try {

@@ -18,10 +18,18 @@ type Config struct {
 	IsEnabled  bool     `gorm:"not null;default:false" json:"is_enabled"`
 	EnforceSSO bool     `gorm:"not null;default:false" json:"enforce_sso"`
 
+	// DefaultOrganizationID lands JIT-provisioned users in a concrete
+	// organization; without it an SSO user has zero memberships and the
+	// frontend sends them to onboarding.
+	DefaultOrganizationID *int64 `gorm:"column:default_organization_id" json:"default_organization_id,omitempty"`
+
 	OIDCIssuerURL             *string `gorm:"column:oidc_issuer_url;type:text" json:"oidc_issuer_url,omitempty"`
 	OIDCClientID              *string `gorm:"column:oidc_client_id;size:255" json:"oidc_client_id,omitempty"`
 	OIDCClientSecretEncrypted *string `gorm:"column:oidc_client_secret_encrypted;type:text" json:"-"`
 	OIDCScopes                *string `gorm:"column:oidc_scopes;type:text" json:"oidc_scopes,omitempty"`
+	// OIDCAuthorizeExtraParams is a JSON object of IdP-specific authorize
+	// parameters outside OIDC core, e.g. AMP's required `tenantId`.
+	OIDCAuthorizeExtraParams *string `gorm:"column:oidc_authorize_extra_params;type:jsonb" json:"oidc_authorize_extra_params,omitempty"`
 
 	SAMLIDPMetadataURL   *string `gorm:"column:saml_idp_metadata_url;type:text" json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPMetadataXML   *string `gorm:"column:saml_idp_metadata_xml;type:text" json:"-"`

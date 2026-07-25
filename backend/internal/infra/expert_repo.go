@@ -101,8 +101,16 @@ func (r *ExpertRepository) SlugExists(ctx context.Context, orgID int64, slug str
 	return count > 0, nil
 }
 
-func (r *ExpertRepository) List(ctx context.Context, orgID int64, limit, offset int) ([]expertdom.Expert, int64, error) {
+func (r *ExpertRepository) List(
+	ctx context.Context,
+	orgID int64,
+	limit, offset int,
+	snapshotMaxID *int64,
+) ([]expertdom.Expert, int64, error) {
 	q := r.db.WithContext(ctx).Model(&expertdom.Expert{}).Where("organization_id = ?", orgID)
+	if snapshotMaxID != nil {
+		q = q.Where("id <= ?", *snapshotMaxID)
+	}
 	var total int64
 	if err := q.Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -111,7 +119,7 @@ func (r *ExpertRepository) List(ctx context.Context, orgID int64, limit, offset 
 		limit = 50
 	}
 	var rows []expertdom.Expert
-	err := q.Order("updated_at DESC").Limit(limit).Offset(offset).Find(&rows).Error
+	err := q.Order("id DESC").Limit(limit).Offset(offset).Find(&rows).Error
 	return rows, total, err
 }
 

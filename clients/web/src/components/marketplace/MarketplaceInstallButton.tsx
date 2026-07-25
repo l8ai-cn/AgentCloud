@@ -45,7 +45,7 @@ export function MarketplaceInstallButton({
       agentSlug={agentSlug}
       orgSlug={session.currentOrgSlug}
       onInstalled={(orgSlug, expertSlug, alreadyInstalled) => {
-        toast.success(alreadyInstalled ? "专家应用已在组织中" : "专家应用已启用");
+        toast.success(alreadyInstalled ? "伙伴应用已在组织中" : "伙伴应用已启用");
         router.push(`/${orgSlug}/experts/${expertSlug}`);
       }}
       onNeedsOrganization={() => router.push("/onboarding/create-org")}

@@ -3,6 +3,7 @@ package expert
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 
@@ -265,6 +266,33 @@ func TestRunDispatchesSnapshotWithOnlyAliasAndPromptOverrides(t *testing.T) {
 	assert.Equal(t, "user", payload.Role)
 	require.Len(t, payload.Content, 1)
 	assert.Equal(t, prompt, payload.Content[0].Text)
+}
+
+func TestRunSurfacesStatisticsWriteFailure(t *testing.T) {
+	snapshotID := int64(42)
+	store := newFakeStore()
+	require.NoError(t, store.Create(context.Background(), &expertdom.Expert{
+		OrganizationID:       7,
+		Slug:                 "review",
+		Name:                 "Review",
+		WorkerSpecSnapshotID: &snapshotID,
+	}))
+	store.recordRunErr = errors.New("database unavailable")
+	service := NewService(Deps{
+		Store:       store,
+		Dispatch:    &fakeDispatcher{},
+		WorkerSpecs: &expertSnapshotLoader{snapshot: expertWorkerSpecSnapshot(snapshotID, 7)},
+	})
+
+	result, err := service.Run(context.Background(), &RunExpertRequest{
+		OrganizationID: 7,
+		UserID:         5,
+		ExpertSlug:     "review",
+	})
+
+	require.NoError(t, err)
+	require.NotNil(t, result.Pod)
+	assert.Contains(t, result.Warning, "run statistics could not be recorded")
 }
 
 func TestRunPersistsSnapshotInitialTaskWithoutPromptOverride(t *testing.T) {

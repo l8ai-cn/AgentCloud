@@ -71,7 +71,7 @@ describe("KnowledgeBaseMountSelect", () => {
     expect(onChange).toHaveBeenCalledWith([]);
   });
 
-  it("uses selection language and a localized loading error", async () => {
+  it("keeps knowledge base load failures non-blocking", async () => {
     mockListKnowledgeBases.mockRejectedValueOnce(new Error("backend detail"));
     render(
       <KnowledgeBaseMountSelect
@@ -80,9 +80,10 @@ describe("KnowledgeBaseMountSelect", () => {
       />,
     );
 
-    expect(await screen.findByRole("alert")).toHaveTextContent(
+    expect(await screen.findByText(
       "ide.createPod.knowledgeBasesLoadFailed",
-    );
+    )).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.getByText("ide.createPod.manageKnowledgeBases")).toBeInTheDocument();
     expect(screen.getByText("ide.createPod.knowledgeModeReadOnly")).toBeInTheDocument();
   });

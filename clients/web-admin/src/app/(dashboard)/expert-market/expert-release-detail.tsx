@@ -58,7 +58,7 @@ export function ExpertReleaseDetail(props: ExpertReleaseDetailProps) {
         <Meta label="发布 ID" value={`#${release.id}`} />
         <Meta label="申请 ID" value={`#${release.application_id}`} />
         <Meta label="应用 Slug" value={release.application_slug} />
-        <Meta label="来源专家 ID" value={`#${release.source_expert_id}`} />
+        <Meta label="来源伙伴 ID" value={`#${release.source_expert_id}`} />
         <Meta label="发布组织 ID" value={`#${release.publisher_organization_id}`} />
         <Meta label="发布用户 ID" value={`#${release.publisher_user_id}`} />
         <Meta label="版本" value={`v${release.version}`} />
@@ -101,7 +101,7 @@ export function ExpertReleaseDetail(props: ExpertReleaseDetailProps) {
       </section>
 
       <SkillDependencies value={release.skill_dependencies_json} />
-      <ReleaseJsonSnapshot title="专家快照" value={release.expert_snapshot_json} />
+      <ReleaseJsonSnapshot title="伙伴快照" value={release.expert_snapshot_json} />
       <ReleaseJsonSnapshot
         title="Worker Spec 快照"
         value={release.worker_spec_snapshot_json}

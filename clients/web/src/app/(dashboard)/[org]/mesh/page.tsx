@@ -5,6 +5,7 @@ import { CenteredSpinner } from "@/components/ui/spinner";
 import { MeshTopology } from "@/components/mesh";
 import { useMeshStore, useTopology, type MeshNode } from "@/stores/mesh";
 import { useCurrentOrg } from "@/stores/auth";
+import { isPodActive } from "@/lib/pod-status";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { RefreshCw } from "lucide-react";
@@ -24,7 +25,7 @@ export default function MeshPage() {
 
   const activePodCount = useMemo(
     () =>
-      topology?.nodes.filter((n: MeshNode) => n.status === "running" || n.status === "initializing").length || 0,
+      topology?.nodes.filter((n: MeshNode) => isPodActive(n.status)).length || 0,
     [topology?.nodes],
   );
 

@@ -11,6 +11,7 @@ import { useWorkspaceStore } from "@/stores/workspace";
 import { useCurrentOrg, useAuthStore } from "@/stores/auth";
 import { CreatePodModal } from "@/components/ide/CreatePodModal";
 import { getPodDisplayName } from "@/lib/pod-display-name";
+import { isPodActive, isPodRelayConnectable } from "@/lib/pod-status";
 import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
 import { Play, Terminal, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -45,8 +46,8 @@ export function SidebarPodSection({
     window.open(`/${currentOrg?.slug}/workspace?pod=${podKey}`, "_blank");
   };
 
-  const activePods = pods.filter((p) => p.status === "running" || p.status === "initializing");
-  const inactivePods = pods.filter((p) => p.status !== "running" && p.status !== "initializing");
+  const activePods = pods.filter((p) => isPodActive(p.status));
+  const inactivePods = pods.filter((p) => !isPodActive(p.status));
 
   const ticketContext = useMemo(
     () => buildTicketContext(ticket, ticketSlug),
@@ -113,7 +114,8 @@ function SidebarPodItem({ pod, onConnect, onOpenInNewTab }: {
   pod: TicketPodSummary; onConnect: () => void; onOpenInNewTab: () => void;
 }) {
   const t = useTranslations();
-  const isActive = pod.status === "running" || pod.status === "initializing";
+  const isActive = isPodActive(pod.status);
+  const canConnect = isPodRelayConnectable(pod.status);
   return (
     <div className={cn("mx-1.5 px-2 py-1.5 flex items-center gap-2 group transition-colors rounded-md",
       isActive ? "hover:bg-success-bg/60" : "hover:bg-muted/40")}>
@@ -121,12 +123,12 @@ function SidebarPodItem({ pod, onConnect, onOpenInNewTab }: {
         pod.status === "running" && "bg-success shadow-[0_0_6px_rgba(34,197,94,0.4)] animate-pulse",
         pod.status === "initializing" && "bg-warning shadow-[0_0_6px_rgba(234,179,8,0.4)] animate-pulse",
         pod.status === "failed" && "bg-danger",
-        pod.status !== "running" && pod.status !== "initializing" && pod.status !== "failed" && "bg-muted-foreground/30")} />
+        !isPodActive(pod.status) && pod.status !== "failed" && "bg-muted-foreground/30")} />
       <code className="text-[11px] font-mono text-muted-foreground/80 flex-1 truncate">
         {getPodDisplayName(pod)}
       </code>
       <AgentStatusBadge agentStatus={pod.agent_status} podStatus={pod.status} variant="dot" />
-      {isActive && (
+      {canConnect && (
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button type="button" onClick={onConnect}
             className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"

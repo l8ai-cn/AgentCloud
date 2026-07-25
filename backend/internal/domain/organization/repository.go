@@ -19,6 +19,7 @@ type CreateOrgParams struct {
 type Repository interface {
 	GetByID(ctx context.Context, id int64) (*Organization, error)
 	GetBySlug(ctx context.Context, slug string) (*Organization, error)
+	GetByAmpTenantID(ctx context.Context, ampTenantID string) (*Organization, error)
 	SlugExists(ctx context.Context, slug string) (bool, error)
 	Update(ctx context.Context, id int64, updates map[string]interface{}) error
 	ListByUser(ctx context.Context, userID int64) ([]*Organization, error)

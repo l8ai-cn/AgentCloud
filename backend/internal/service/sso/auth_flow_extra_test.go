@@ -206,13 +206,13 @@ func TestGetSAMLMetadata_BuildProviderError(t *testing.T) {
 // --- storeSAMLRequestID / retrieveSAMLRequestID ---
 
 func TestStoreSAMLRequestID_NilRedis(t *testing.T) {
-	svc := newTestService(newMockRepository())
+	svc := newTestServiceWithoutRedis(newMockRepository())
 	err := svc.storeSAMLRequestID(context.Background(), "state-1", "req-id-1")
 	assert.NoError(t, err, "should gracefully degrade when Redis is nil")
 }
 
 func TestRetrieveSAMLRequestID_NilRedis(t *testing.T) {
-	svc := newTestService(newMockRepository())
+	svc := newTestServiceWithoutRedis(newMockRepository())
 	result, err := svc.retrieveSAMLRequestID(context.Background(), "state-1")
 	assert.NoError(t, err, "should gracefully degrade when Redis is nil")
 	assert.Equal(t, "", result)

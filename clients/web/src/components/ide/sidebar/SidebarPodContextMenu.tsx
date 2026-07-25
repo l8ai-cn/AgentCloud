@@ -9,6 +9,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { isPodActive } from "@/lib/pod-status";
 import type { Pod } from "@/stores/pod";
 
 interface SidebarPodContextMenuProps {
@@ -38,7 +39,7 @@ export function SidebarPodContextMenu({
 }: SidebarPodContextMenuProps) {
   const t = useTranslations("workspace");
   const tExpert = useTranslations("experts.publish");
-  const isActive = pod.status === "running" || pod.status === "initializing";
+  const isActive = isPodActive(pod.status);
   const isWakeable = pod.status === "terminated" || pod.status === "completed";
 
   return (

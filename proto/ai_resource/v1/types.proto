@@ -70,6 +70,21 @@ message EffectiveResource {
   string blocking_reason = 4;
 }
 
+message DiscoveredModel {
+  string model_id = 1;
+  string display_name = 2;
+  string identifier = 3;
+  repeated string modalities = 4;
+  repeated string capabilities = 5;
+  bool importable = 6;
+  string skip_reason = 7;
+}
+
+message SkippedModel {
+  string model_id = 1;
+  string reason = 2;
+}
+
 message ConnectionUpdate {
   string name = 1;
   string base_url = 2;

@@ -66,12 +66,18 @@ func (s *Service) buildOIDCProvider(ctx context.Context, cfg *sso.Config) (ssopr
 		clientID = *cfg.OIDCClientID
 	}
 
+	extraParams, err := decodeAuthorizeExtraParams(cfg.OIDCAuthorizeExtraParams)
+	if err != nil {
+		return nil, err
+	}
+
 	return ssoprovider.NewOIDCProvider(ctx, &ssoprovider.OIDCConfig{
-		IssuerURL:    issuerURL,
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		RedirectURL:  redirectURL,
-		Scopes:       scopes,
+		IssuerURL:            issuerURL,
+		ClientID:             clientID,
+		ClientSecret:         clientSecret,
+		RedirectURL:          redirectURL,
+		Scopes:               scopes,
+		AuthorizeExtraParams: extraParams,
 	})
 }
 

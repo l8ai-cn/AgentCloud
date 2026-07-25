@@ -197,6 +197,18 @@ services:
       - runner_minimax_workspace:/workspace
       - runner_minimax_agentcloud_config:/home/runner/.agentcloud
 
+  runner-kimi-code:
+    <<: *runner-common
+    build: { <<: *runner-build-base, args: { <<: *runner-build-args, AGENT_RUNTIME: kimi-code } }
+    environment: { <<: *runner-env, RUNNER_NODE_ID: dev-runner-kimi, AGENT_RUNTIME: kimi-code, DEFAULT_AGENT: kimi-code }
+    volumes:
+      - ./ssl:/app/ssl:ro
+      - ./runner-entrypoint.sh:/usr/local/bin/runner-entrypoint.sh:ro
+      - ./runner-ssh:/run/runner-ssh-source:ro
+      - runner_kimi_workspace:/workspace
+      - runner_kimi_agentcloud_config:/home/runner/.agentcloud
+      - runner_kimi_config:/home/runner/.kimi-code
+
   runner-openclaw:
     <<: *runner-common
     build: { <<: *runner-build-base, args: { <<: *runner-build-args, AGENT_RUNTIME: openclaw } }
@@ -311,6 +323,9 @@ volumes:
   runner_grok_config:
   runner_minimax_workspace:
   runner_minimax_agentcloud_config:
+  runner_kimi_workspace:
+  runner_kimi_agentcloud_config:
+  runner_kimi_config:
   runner_openclaw_workspace:
   runner_openclaw_agentcloud_config:
   runner_openclaw_config:

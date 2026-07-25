@@ -74,6 +74,7 @@ export interface WorkerToolModelRequirement {
   protocol_adapters: string[];
   modality: string;
   capability: string;
+  required?: boolean;
 }
 
 export interface WorkerTypeOption {

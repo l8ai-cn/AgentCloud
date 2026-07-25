@@ -33,6 +33,51 @@ func TestDecodeToolModelRequirementsAcceptsSeedanceVideoRole(t *testing.T) {
 	assert.Equal(t, "video", requirements[0].Modality)
 	assert.Equal(t, "video-generation", requirements[0].Capability)
 	assert.Equal(t, "SEEDANCE_API_KEY", requirements[0].Environment.APIKey)
+	assert.True(t, requirements[0].Required)
+}
+
+func TestDecodeToolModelRequirementsDefaultsRequiredTrue(t *testing.T) {
+	requirements, err := decodeToolModelRequirements([]json.RawMessage{
+		json.RawMessage(`{
+			"id":"seedance-video",
+			"provider_keys":["doubao"],
+			"protocol_adapters":["openai-compatible"],
+			"modality":"video",
+			"capability":"video-generation",
+			"environment":{
+				"api_key":"SEEDANCE_API_KEY",
+				"base_url":"SEEDANCE_BASE_URL",
+				"model_id":"SEEDANCE_MODEL"
+			}
+		}`),
+	})
+
+	require.NoError(t, err)
+	require.Len(t, requirements, 1)
+	assert.True(t, requirements[0].Required)
+}
+
+func TestDecodeToolModelRequirementsAcceptsRequiredFalse(t *testing.T) {
+	requirements, err := decodeToolModelRequirements([]json.RawMessage{
+		json.RawMessage(`{
+			"id":"minimax-video",
+			"required":false,
+			"provider_keys":["custom-openai-compatible","minimax"],
+			"protocol_adapters":["openai-compatible","minimax"],
+			"modality":"video",
+			"capability":"video-generation",
+			"environment":{
+				"api_key":"MINIMAX_VIDEO_API_KEY",
+				"base_url":"MINIMAX_VIDEO_BASE_URL",
+				"model_id":"MINIMAX_VIDEO_MODEL"
+			}
+		}`),
+	})
+
+	require.NoError(t, err)
+	require.Len(t, requirements, 1)
+	assert.Equal(t, "minimax-video", requirements[0].ID)
+	assert.False(t, requirements[0].Required)
 }
 
 func TestValidateCredentialBindingSchemaAcceptsToolModelEnvironment(t *testing.T) {

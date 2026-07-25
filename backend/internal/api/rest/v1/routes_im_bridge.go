@@ -10,6 +10,7 @@ func registerIMBridgeRoutes(rg *gin.RouterGroup, svc *Services) {
 	group := rg.Group("/im-channels")
 	{
 		group.GET("/providers", h.ListProviders)
+		group.POST("/pair", h.PairIdentity)
 		group.POST("/weixin/qr/start", h.StartWeixinQRLogin)
 		group.GET("/weixin/qr/:sessionId/status", h.GetWeixinQRLoginStatus)
 		group.GET("/weixin/qr/:sessionId/image", h.GetWeixinQRImage)
@@ -18,5 +19,9 @@ func registerIMBridgeRoutes(rg *gin.RouterGroup, svc *Services) {
 		group.GET("/:connectionId", h.GetConnection)
 		group.PATCH("/:connectionId", h.UpdateConnection)
 		group.DELETE("/:connectionId", h.DeleteConnection)
+		group.GET("/:connectionId/bindings", h.ListIdentityBindings)
+		group.GET("/:connectionId/routes", h.ListRouteBindings)
+		group.POST("/:connectionId/routes", h.CreateRouteBinding)
+		group.DELETE("/:connectionId/routes/:routeId", h.DeleteRouteBinding)
 	}
 }

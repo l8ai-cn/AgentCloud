@@ -47,6 +47,7 @@ func coreTableDDLs() []string {
 		`CREATE TABLE IF NOT EXISTS organizations (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			name TEXT NOT NULL, slug TEXT NOT NULL UNIQUE, logo_url TEXT,
+			amp_tenant_id TEXT,
 			subscription_plan TEXT NOT NULL DEFAULT 'free',
 			subscription_status TEXT NOT NULL DEFAULT 'active',
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

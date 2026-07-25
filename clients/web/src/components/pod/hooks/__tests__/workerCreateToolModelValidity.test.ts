@@ -20,6 +20,21 @@ describe("workerCreateValidity tool models", () => {
     expect(workerCreateValidity(draft, { status: "ready", data: options }, true).runtime).toBe(true);
   });
 
+  it("allows optional tool model roles to remain unset", () => {
+    const draft = completeDraft();
+    const options = createOptions();
+    options.worker_types[0].tool_model_requirements = [{
+      role: "minimax-video",
+      provider_keys: ["custom-openai-compatible", "minimax"],
+      protocol_adapters: ["openai-compatible", "minimax"],
+      modality: "video",
+      capability: "video-generation",
+      required: false,
+    }];
+
+    expect(workerCreateValidity(draft, { status: "ready", data: options }, true).runtime).toBe(true);
+  });
+
   it("only requires config documents marked as required", () => {
     const draft = completeDraft();
     const options = createOptions();

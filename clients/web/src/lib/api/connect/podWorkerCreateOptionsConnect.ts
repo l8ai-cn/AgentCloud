@@ -48,6 +48,7 @@ export async function listWorkerCreateOptions(
         protocol_adapters: requirement.protocolAdapters,
         modality: requirement.modality,
         capability: requirement.capability,
+        required: requirement.required,
       })),
       credential_requirements: option.credentialRequirements.map((requirement) => ({
         id: requirement.id,

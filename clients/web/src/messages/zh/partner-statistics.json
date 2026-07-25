@@ -1,0 +1,25 @@
+{
+  "partnerStatistics": {
+    "title": "伙伴统计",
+    "description": "查看组织内伙伴的使用情况、活跃度、能力覆盖与档案质量。",
+    "refresh": "刷新统计",
+    "refreshList": "刷新伙伴",
+    "loadFailed": "无法加载伙伴统计",
+    "totalPartners": "伙伴总数",
+    "totalRuns": "已记录启动",
+    "activatedPartners": "已投入使用",
+    "recentPartners": "近 7 日活跃",
+    "perpetualPartners": "长期运行伙伴",
+    "profileCompleteness": "档案完整度",
+    "activityTitle": "使用与活跃度",
+    "capabilityTitle": "能力覆盖",
+    "automationTitle": "自动化级别",
+    "categoryTitle": "伙伴类型",
+    "leaderboardTitle": "伙伴运行排行",
+    "scope": "统计基于伙伴档案、已成功记录的启动次数和最近运行时间。",
+    "partner": "伙伴",
+    "capabilities": "能力数",
+    "runs": "启动记录",
+    "lastActive": "最近活跃"
+  }
+}

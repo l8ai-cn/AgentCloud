@@ -141,6 +141,7 @@ func toolModelRequirementsFromDefinition(
 			ProtocolAdapters: adapters,
 			Modality:         resourcedomain.Modality(item.Modality),
 			Capability:       resourcedomain.Capability(item.Capability),
+			Required:         item.Required,
 			Environment: specdomain.ToolModelEnvironment{
 				APIKey: item.Environment.APIKey, BaseURL: item.Environment.BaseURL,
 				ModelID: item.Environment.ModelID,

@@ -102,6 +102,26 @@ describe('useAuthStore', () => {
     })
   })
 
+  describe('syncCurrentUser', () => {
+    it('should patch profile fields without clearing session', async () => {
+      const user = { id: 1, email: 'test@example.com', username: 'testuser', name: 'Old' }
+      await useAuthStore.getState().setAuth('token', user)
+      useAuthStore.getState().syncCurrentUser({
+        ...user,
+        name: 'New Name',
+        avatar_url: 'https://example.com/a.png',
+      })
+      expect(readCurrentUser()).toEqual({
+        id: 1,
+        email: 'test@example.com',
+        username: 'testuser',
+        name: 'New Name',
+        avatar_url: 'https://example.com/a.png',
+      })
+      expect(useAuthStore.getState().isAuthenticated()).toBe(true)
+    })
+  })
+
   describe('isAuthenticated', () => {
     it('should return false when no user', () => {
       expect(useAuthStore.getState().isAuthenticated()).toBe(false)

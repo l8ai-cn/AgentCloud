@@ -9,8 +9,8 @@ import (
 
 var formalWorkerSlugs = []string{
 	"aider", "claude-code", "codex-cli", "cursor-cli", "do-agent",
-	"e2e-echo", "gemini-cli", "grok-build", "hermes", "loopal",
-	"minimax-cli", "openclaw", "opencode", "pattern-designer",
+	"e2e-echo", "gemini-cli", "grok-build", "hermes", "kimi-code",
+	"loopal", "minimax-cli", "openclaw", "opencode", "pattern-designer",
 	"seedance-expert", "video-studio",
 }
 
@@ -48,6 +48,7 @@ type ToolModelRequirement struct {
 	ProtocolAdapters []string
 	Modality         string
 	Capability       string
+	Required         bool
 	Environment      ToolModelEnvironment
 }
 

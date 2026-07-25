@@ -2,11 +2,12 @@ import { useCallback, useState } from "react";
 import type { CustomEnvEntry } from "@/components/settings/envBundleCredentialForms/types";
 import { hasInvalidCustomEnvKey } from "@/components/settings/CustomEnvSection";
 import type { EffectiveResource } from "@/lib/api/facade/aiResource";
-import { requiresModelResource } from "./useWorkerModelResources";
+import type { WorkerModelResourceRequirement } from "../CreatePodForm/workerModelResources";
 import type { FormValidationErrors } from "./useCreatePodFormTypes";
 
 export function useCreatePodValidation(params: {
   selectedAgent: string | null;
+  modelResourceRequirement?: WorkerModelResourceRequirement;
   selectedRepository: number | null;
   selectedBranch: string;
   customEnv: CustomEnvEntry[];
@@ -32,7 +33,8 @@ export function useCreatePodValidation(params: {
       errors.env = "One or more environment variable names are invalid";
     }
     if (params.bundleLoadError) errors.runtimeBundles = params.bundleLoadError;
-    if (requiresModelResource(params.selectedAgentSlug)) {
+    // No backend requirement means there is no authoritative rule; do not gate.
+    if (params.modelResourceRequirement?.required) {
       if (params.modelResourceError) {
         errors.modelResource = params.modelResourceError;
       } else if (params.loadingModelResources) {

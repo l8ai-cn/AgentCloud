@@ -5,6 +5,10 @@
 
 ## 资源原生编排
 
+- [AI 伙伴档案与统计设计](ai-partner-profile-and-statistics.md)：定义
+  Partner/Expert 术语边界、伙伴档案信息架构、统计口径与验收场景。
+- [内置伙伴目录与市场发布设计](operator-partner-catalog.md)：定义平台
+  预置伙伴、技能组合、发布快照可移植性和安装侧凭据绑定规则。
 - [资源原生编排指南](resource-native-orchestration.md)：理解
   WorkerTemplate、Worker、Expert、Workflow、GoalLoop 及其引用关系。
 - [资源 YAML 用户手册](resource-yaml-manual.md)：编写、校验、计划和应用

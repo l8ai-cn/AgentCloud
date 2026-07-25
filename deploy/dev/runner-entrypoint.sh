@@ -30,7 +30,7 @@ source /usr/local/lib/runner-ssh-bootstrap.sh
 run_privileged_bootstrap_then_drop "$@"
 
 case "${AGENT_RUNTIME}" in
-    claude-code|codex-cli|video-studio|cursor-cli|gemini-cli|minimax-cli|e2e-echo|loopal|do-agent|aider|opencode|grok-build|openclaw|hermes) ;;
+    claude-code|codex-cli|video-studio|cursor-cli|gemini-cli|kimi-code|minimax-cli|e2e-echo|loopal|do-agent|aider|opencode|grok-build|openclaw|hermes) ;;
     *)
         echo "✗ Unsupported AGENT_RUNTIME=${AGENT_RUNTIME}" >&2
         exit 1

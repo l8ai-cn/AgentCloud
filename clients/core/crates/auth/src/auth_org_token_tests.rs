@@ -8,6 +8,7 @@ mod auth_org_token_tests {
     use wiremock::{Mock, MockServer, ResponseTemplate};
 
     use crate::manager::AuthManager;
+    use crate::storage::PersistentStorage;
     use crate::test_support::InMemoryStorage;
 
     fn login_resp_proto() -> Vec<u8> {
@@ -111,6 +112,46 @@ mod auth_org_token_tests {
         let manager = AuthManager::new("http://localhost".into(), storage);
         let err = manager.refresh_token().await.unwrap_err();
         assert!(matches!(err, crate::AuthError::NotAuthenticated));
+    }
+
+    #[tokio::test]
+    async fn refresh_token_does_not_resurrect_after_clear() {
+        use std::sync::Arc;
+        use std::time::Duration;
+
+        use crate::state::session_storage_key;
+
+        let server = MockServer::start().await;
+        mount_login(&server).await;
+        Mock::given(method("POST"))
+            .and(path("/proto.auth.v1.AuthService/RefreshToken"))
+            .respond_with(
+                proto_response(
+                    auth_proto::RefreshTokenResponse {
+                        token: "resurrected-access".into(),
+                        refresh_token: "resurrected-refresh".into(),
+                        expires_in: 7200,
+                    }
+                    .encode_to_vec(),
+                )
+                .set_delay(Duration::from_millis(300)),
+            )
+            .mount(&server)
+            .await;
+
+        let storage = InMemoryStorage::new();
+        let manager = Arc::new(AuthManager::new(server.uri(), storage.clone()));
+        manager.login("dev@test.com", "pass").await.unwrap();
+
+        let refresh_mgr = Arc::clone(&manager);
+        let refresh = tokio::spawn(async move { refresh_mgr.refresh_token().await });
+        tokio::time::sleep(Duration::from_millis(50)).await;
+        manager.clear();
+
+        let result = refresh.await.unwrap();
+        assert!(matches!(result, Err(crate::AuthError::NotAuthenticated)));
+        assert!(!manager.is_authenticated());
+        assert!(storage.get(&session_storage_key(&server.uri())).is_none());
     }
 
     #[tokio::test]

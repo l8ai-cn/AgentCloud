@@ -1,0 +1,7 @@
+features:
+  - code: AGENTSCLOUD_ORG_ADMIN
+    name: Organization administration surfaces
+  - code: AGENTSCLOUD_BILLING
+    name: Billing and license surfaces
+  - code: AGENTSCLOUD_MEMBER
+    name: Member workspace surfaces

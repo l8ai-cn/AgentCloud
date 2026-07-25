@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import {
   listMarketplaceModelResources,
+  marketplaceWorkerRequiresModelResource,
   type MarketplaceModelResource,
 } from "@/lib/marketplace-model-resources";
 import {
@@ -39,10 +40,15 @@ export function useMarketplaceRuntimeModels(
   const canLoad = Boolean(organizationSlug && agentSlug);
   const currentResult = loadResult.requestKey === requestKey;
   const incompatibleListing = Boolean(organizationSlug && agentSlug === "");
+  const modelRequirement = agentSlug
+    ? marketplaceWorkerRequiresModelResource(agentSlug)
+    : false;
+  const catalogMissing = Boolean(agentSlug) && modelRequirement === null;
+  const modelRequired = modelRequirement === true;
 
   useEffect(() => {
     let cancelled = false;
-    if (!organizationSlug || !agentSlug) return;
+    if (!organizationSlug || !agentSlug || catalogMissing) return;
     Promise.all([
       listMarketplaceModelResources(organizationSlug, agentSlug),
       listMarketplaceToolModelResources(organizationSlug, agentSlug),
@@ -65,7 +71,7 @@ export function useMarketplaceRuntimeModels(
     return () => {
       cancelled = true;
     };
-  }, [agentSlug, organizationSlug, requestKey]);
+  }, [agentSlug, catalogMissing, organizationSlug, requestKey]);
 
   const toolIDs =
     toolSelection.contextKey === contextKey ? toolSelection.ids : {};
@@ -88,11 +94,12 @@ export function useMarketplaceRuntimeModels(
       (group) => Boolean(toolIDs[group.role]),
     ),
     missingCompatibleResource:
-      currentResult &&
-      (loadResult.resources.length === 0 ||
-        toolGroups.some((group) => group.resources.length === 0)),
-    loadingModels: canLoad && !currentResult,
-    modelError: currentResult && loadResult.error,
+      catalogMissing ||
+      (currentResult &&
+        ((modelRequired && loadResult.resources.length === 0) ||
+          toolGroups.some((group) => group.resources.length === 0))),
+    loadingModels: canLoad && !catalogMissing && !currentResult,
+    modelError: catalogMissing || (currentResult && loadResult.error),
     incompatibleListing,
     reloadModels: () => setReloadKey((value) => value + 1),
   };

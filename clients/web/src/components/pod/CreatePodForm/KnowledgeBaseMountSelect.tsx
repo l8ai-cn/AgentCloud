@@ -147,8 +147,8 @@ export function KnowledgeBaseMountSelect({
           {t("ide.createPod.loadingKnowledgeBases")}
         </div>
       ) : error ? (
-        <div role="alert" className="flex items-center justify-between gap-3 py-2">
-          <p className="text-sm text-destructive">{error}</p>
+        <div className="flex items-center justify-between gap-3 py-2">
+          <p className="text-xs text-muted-foreground">{error}</p>
           <Button type="button" variant="outline" size="sm" onClick={() => setReloadToken((value) => value + 1)}>
             {t("tickets.detail.retry")}
           </Button>

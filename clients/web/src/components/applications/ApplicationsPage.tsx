@@ -66,7 +66,7 @@ export function ApplicationsPage({
         <>
           {expertError ? (
             <p role="status" className="rounded-lg border border-warning/30 bg-warning-bg px-4 py-3 text-sm text-foreground">
-              已显示启用状态，但暂时无法确认专家任务入口：{expertError}
+              已显示启用状态，但暂时无法确认伙伴任务入口：{expertError}
             </p>
           ) : null}
           <section aria-label="已启用应用列表" className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

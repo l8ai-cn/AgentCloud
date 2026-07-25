@@ -1,3 +1,5 @@
+import { OILAN_POSTGRES } from "./oilan-postgres-doops-registration.mjs";
+
 const OILAN_TARGETING_LINE = [
   "[TARGETING] Server: gw-oilan-node",
   "(https://doops.l8ai.cn -> doops-oilan/oilan-node),",
@@ -36,7 +38,7 @@ export function parseOilanPostgresQueryResult(queryName, line) {
   if (queryName === "asset-probe") {
     requireFieldCount(fields, 3, queryName);
     const [databaseName, serverVersionNum, schemaMigrationsPresent] = fields;
-    if (databaseName !== "agentcloud") {
+    if (databaseName !== OILAN_POSTGRES.databaseName) {
       throw new Error("Oilan PostgreSQL probe returned the wrong database");
     }
     if (!/^[1-9][0-9]{4,5}$/.test(serverVersionNum)) {

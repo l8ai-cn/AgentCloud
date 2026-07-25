@@ -52,7 +52,7 @@ func (h *SSOAuthHandler) OIDCCallback(c *gin.Context) {
 		return
 	}
 	code := c.Query("code")
-	state := c.Query("state")
+	state := auth.NormalizeOAuthState(c.Query("state"))
 
 	if code == "" {
 		errorMsg := c.Query("error")
@@ -88,20 +88,26 @@ func (h *SSOAuthHandler) OIDCCallback(c *gin.Context) {
 		return
 	}
 
-	params := map[string]string{"code": code}
-	userInfo, configID, err := h.ssoService.HandleCallback(c.Request.Context(), domain, sso.ProtocolOIDC, params)
+	params := map[string]string{"code": code, "state": state}
+	userInfo, cfg, err := h.ssoService.HandleCallback(c.Request.Context(), domain, sso.ProtocolOIDC, params)
 	if err != nil {
 		slog.ErrorContext(c.Request.Context(), "OIDC callback handling failed", "domain", domain, "error", err)
 		h.redirectWithError(c, redirectTo, "authentication_failed")
 		return
 	}
+	slog.InfoContext(c.Request.Context(), "OIDC assertion accepted",
+		"domain", domain, "external_id", userInfo.ExternalID,
+		"idp_tenant_id", userInfo.TenantID, "idp_roles", userInfo.Roles,
+		"has_email", userInfo.Email != "")
 
-	_, tokens, err := h.authenticateSSO(c, sso.ProtocolOIDC, configID, userInfo)
+	_, tokens, err := h.authenticateSSO(c, cfg, userInfo)
 	if err != nil {
 		slog.ErrorContext(c.Request.Context(), "OIDC user authentication failed", "domain", domain, "error", err)
 		errorCode := "authentication_failed"
 		if errors.Is(err, auth.ErrUserDisabled) {
 			errorCode = "account_disabled"
+		} else if errors.Is(err, auth.ErrSSOTenantUnbound) || errors.Is(err, auth.ErrSSOTenantMismatch) {
+			errorCode = "tenant_unbound"
 		}
 		h.redirectWithError(c, redirectTo, errorCode)
 		return

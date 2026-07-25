@@ -3,8 +3,8 @@ package middleware
 import (
 	"context"
 
-	"github.com/l8ai-cn/agentcloud/backend/pkg/apierr"
 	"github.com/gin-gonic/gin"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/apierr"
 )
 
 type OrganizationGetter interface {
@@ -24,7 +24,7 @@ type TenantContext struct {
 	OrganizationSlug string
 	UserID           int64
 	UserRole         string // 'owner', 'admin', 'member'
-	PodID *int64
+	PodID            *int64
 }
 
 type tenantContextKey struct{}
@@ -138,4 +138,10 @@ func RequireOwner() gin.HandlerFunc {
 
 func RequireAdmin() gin.HandlerFunc {
 	return RequireRole("owner", "admin")
+}
+
+// RequirePermission gates on the local authz catalog derived from org role
+// (synced from AMP on federated login). See backend/pkg/ampauthz.
+func RequirePermission(permission string) gin.HandlerFunc {
+	return requirePermission(permission)
 }

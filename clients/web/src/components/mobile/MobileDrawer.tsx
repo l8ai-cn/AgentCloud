@@ -98,8 +98,8 @@ export function MobileDrawer({ className }: MobileDrawerProps) {
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setMobileDrawerOpen(false);
     router.push("/login");
   };

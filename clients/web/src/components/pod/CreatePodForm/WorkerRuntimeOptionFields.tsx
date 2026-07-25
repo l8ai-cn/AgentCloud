@@ -16,7 +16,7 @@ interface WorkerRuntimeOptionFieldsProps {
   draft: WorkerSpecDraft;
   data: WorkerCreateOptions;
   onPatch: (patch: Partial<WorkerSpecDraft>) => void;
-  onWorkerTypeChange: (slug: string) => void;
+  onRuntimeImageChange: (runtimeImageId: number) => void;
   t: (key: string) => string;
 }
 
@@ -24,7 +24,7 @@ export function WorkerRuntimeOptionFields({
   draft,
   data,
   onPatch,
-  onWorkerTypeChange,
+  onRuntimeImageChange,
   t,
 }: WorkerRuntimeOptionFieldsProps) {
   const selectedProfile = data.resource_profiles.find(
@@ -35,20 +35,6 @@ export function WorkerRuntimeOptionFields({
 
   return (
     <>
-      <WorkerRuntimeSelectField
-        field="worker-type"
-        label={t("workerCreate.runtime.workerType")}
-        value={draft.worker_type_slug}
-        options={data.worker_types.map((option) => selectOption(
-          "workerType",
-          option.slug,
-          option.name,
-          option.selectable,
-          option.blocking_reason,
-          t,
-        ))}
-        onChange={onWorkerTypeChange}
-      />
       <WorkerRuntimeSelectField
         field="runtime-image"
         label={t("workerCreate.runtime.runtimeImage")}
@@ -61,7 +47,7 @@ export function WorkerRuntimeOptionFields({
           option.blocking_reason,
           t,
         ))}
-        onChange={(value) => onPatch({ runtime_image_id: Number(value) })}
+        onChange={(value) => onRuntimeImageChange(Number(value))}
       />
       <WorkerRuntimeSelectField
         field="compute-target"

@@ -865,7 +865,7 @@ export type GetTicketPodsRequest = Message<"proto.mesh.v1.GetTicketPodsRequest">
   ticketSlug: string;
 
   /**
-   * When true, only active pods (status running / creating) are returned.
+   * When true, only active pods (queued / initializing / running / paused / disconnected) are returned.
    * Mirrors the REST `?active=true` query param.
    *
    * @generated from field: optional bool active_only = 3;

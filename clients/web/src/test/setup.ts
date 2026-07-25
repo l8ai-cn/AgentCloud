@@ -128,7 +128,9 @@ vi.mock('@/lib/wasm-core', () => {
   }
   const mockAuth = {
     login: fn().mockResolvedValue('{"token":"t","refresh_token":"r","user":{"id":1,"email":"test@test.com","username":"test"}}'),
-    logout: fn().mockResolvedValue(undefined),
+    logout: fn(async () => {
+      authBox.user = null; authBox.current_org = null; authBox.organizations = [];
+    }),
     refresh_token: fn().mockResolvedValue('{"token":"t2","refresh_token":"r2"}'),
     fetch_organizations: fn().mockResolvedValue('[]'),
     switch_org: fn(),
@@ -168,6 +170,18 @@ vi.mock('@/lib/wasm-core', () => {
     }),
     clear_session: fn(() => {
       authBox.user = null; authBox.current_org = null; authBox.organizations = [];
+    }),
+    set_current_user_json: fn((json: string) => {
+      try {
+        const u = JSON.parse(json) as Record<string, unknown>;
+        authBox.user = {
+          id: Number(u.id),
+          email: String(u.email ?? ""),
+          username: String(u.username ?? ""),
+          ...(u.name != null ? { name: String(u.name) } : {}),
+          ...(u.avatar_url != null ? { avatar_url: String(u.avatar_url) } : {}),
+        };
+      } catch { /* noop */ }
     }),
     _reset: () => { authBox.user = null; authBox.current_org = null; authBox.organizations = []; },
   }

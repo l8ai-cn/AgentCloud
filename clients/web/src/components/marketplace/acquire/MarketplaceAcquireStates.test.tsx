@@ -107,7 +107,7 @@ describe("MarketplaceAcquireStates", () => {
     );
 
     expect(screen.getByText(
-      "当前专家版本缺少兼容 Agent，请联系发布者修正后重新上架。",
+      "当前伙伴版本缺少兼容 Agent，请联系发布者修正后重新上架。",
     )).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "配置兼容模型" }))
       .not.toBeInTheDocument();

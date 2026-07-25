@@ -26,6 +26,7 @@ type marketplaceBootstrapOptions struct {
 	reviewerEmail    string
 	modelResourceID  int64
 	runtimeImageID   int64
+	lovartBundleID   int64
 }
 
 func runBootstrapMarketplace(arguments []string) error {
@@ -86,12 +87,13 @@ func runBootstrapMarketplace(arguments []string) error {
 		services.workerSpecs,
 		infra.NewWorkerSpecDependencyArtifactRepository(db),
 	).Run(context.Background(), operatorcatalog.BootstrapRequest{
-		OrganizationID:   identity.organizationID,
-		OrganizationSlug: organizationSlug,
-		PublisherUserID:  identity.publisherID,
-		ReviewerUserID:   identity.reviewerID,
-		ModelResourceID:  options.modelResourceID,
-		RuntimeImageID:   options.runtimeImageID,
+		OrganizationID:      identity.organizationID,
+		OrganizationSlug:    organizationSlug,
+		PublisherUserID:     identity.publisherID,
+		ReviewerUserID:      identity.reviewerID,
+		ModelResourceID:     options.modelResourceID,
+		RuntimeImageID:      options.runtimeImageID,
+		CredentialBundleIDs: marketplaceCredentialBundleIDs(options),
 	})
 	if err != nil {
 		return err
@@ -109,6 +111,7 @@ func parseMarketplaceBootstrapOptions(
 	flags.StringVar(&options.reviewerEmail, "reviewer", "", "system administrator email")
 	flags.Int64Var(&options.modelResourceID, "model-resource-id", 0, "publisher model resource ID")
 	flags.Int64Var(&options.runtimeImageID, "runtime-image-id", 4, "video-studio runtime image ID")
+	flags.Int64Var(&options.lovartBundleID, "lovart-env-bundle-id", 0, "Lovart credential env bundle ID")
 	if err := flags.Parse(arguments); err != nil {
 		return options, err
 	}

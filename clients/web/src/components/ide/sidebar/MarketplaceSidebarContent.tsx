@@ -22,7 +22,7 @@ export function MarketplaceSidebarContent({ className }: { className?: string })
       <div className="border-b border-border p-3">
         <h2 className="text-sm font-semibold">市场</h2>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          为当前组织启用开箱即用的专家应用与能力组件。
+          为当前组织启用开箱即用的伙伴应用与能力组件。
         </p>
       </div>
       <div className="flex-1 space-y-0.5 p-2">

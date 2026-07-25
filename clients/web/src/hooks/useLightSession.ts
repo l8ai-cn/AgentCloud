@@ -1,14 +1,22 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { readLightSession, type LightSession } from "@/lib/light-session";
+import {
+  LIGHT_SESSION_CHANGED_EVENT,
+  readLightSession,
+  type LightSession,
+} from "@/lib/light-session";
 
 const subscribe = (cb: () => void) => {
-  const handler = (e: StorageEvent) => {
+  const onStorage = (e: StorageEvent) => {
     if (e.key && (e.key.startsWith("agent-cloud-auth/") || e.key.startsWith("agentcloud-auth/"))) cb();
   };
-  window.addEventListener("storage", handler);
-  return () => window.removeEventListener("storage", handler);
+  window.addEventListener("storage", onStorage);
+  window.addEventListener(LIGHT_SESSION_CHANGED_EVENT, cb);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener(LIGHT_SESSION_CHANGED_EVENT, cb);
+  };
 };
 
 let cachedSession: LightSession | null = null;

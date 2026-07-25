@@ -342,7 +342,7 @@ message GetMeshTopologyRequest {
 message GetTicketPodsRequest {
   string org_slug = 1;
   string ticket_slug = 2;
-  // When true, only active pods (status running / creating) are returned.
+  // When true, only active pods (queued / initializing / running / paused / disconnected) are returned.
   // Mirrors the REST `?active=true` query param.
   optional bool active_only = 3;
 }

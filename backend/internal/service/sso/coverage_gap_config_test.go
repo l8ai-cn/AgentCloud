@@ -112,7 +112,8 @@ func TestHandleCallback_BuildProviderError(t *testing.T) {
 	}
 	seedOIDCConfig(repo)
 
-	_, _, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, map[string]string{"code": "abc"})
+	params := oidcCallbackParams(t, svc, "build-error-state", "abc")
+	_, _, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, params)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to build SSO provider")
 }

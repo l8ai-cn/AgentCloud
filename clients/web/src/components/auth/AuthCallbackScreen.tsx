@@ -88,6 +88,7 @@ export function resolveOAuthCallbackError(
     authentication_failed: t("auth.sso.callbackGenericError"),
     missing_state: t("auth.sso.callbackGenericError"),
     invalid_state: t("auth.sso.callbackGenericError"),
+    tenant_unbound: t("auth.sso.callbackTenantUnbound"),
   };
   return messages[reason] ?? t("auth.sso.callbackGenericError");
 }

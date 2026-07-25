@@ -15,7 +15,11 @@ func newTestService(repo *mockRepository) *Service {
 	cfg := &config.Config{
 		PrimaryDomain: "localhost",
 	}
-	return NewService(repo, testEncryptionKey, cfg)
+	return NewServiceWithRedis(repo, testEncryptionKey, cfg, testRedis)
+}
+
+func newTestServiceWithoutRedis(repo *mockRepository) *Service {
+	return NewService(repo, testEncryptionKey, &config.Config{PrimaryDomain: "localhost"})
 }
 
 func TestCreateConfig_OIDC_Success(t *testing.T) {

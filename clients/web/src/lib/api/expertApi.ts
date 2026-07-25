@@ -7,26 +7,16 @@ export interface ExpertKnowledgeMount {
   mode?: string;
 }
 
-/**
- * Base64 avatar upload payload. Matches the backend `avatar` JSON field
- * (`avatarInput{ filename, content_base64 }` in
- * `backend/internal/api/rest/v1/expert_handler_types.go`). `content_base64`
- * is the raw base64 (no `data:` URL prefix); the backend sniffs the MIME type
- * and derives the stored path `assets/avatar.<ext>` — the filename is advisory.
- */
 export interface ExpertAvatarUpload {
   filename: string;
   content_base64: string;
 }
 
-/**
- * Derived cache of `expert.json` extras persisted in the expert repo's
- * `metadata` jsonb. `avatar` is a repo-relative path (e.g. `assets/avatar.png`)
- * and `expertType` (类型) is a free-form category string.
- */
 export interface ExpertMetadata {
   avatar?: string;
   expertType?: string;
+  category?: string;
+  releaseNotes?: string;
   [key: string]: unknown;
 }
 
@@ -54,8 +44,11 @@ export interface Expert {
   orchestration_resource_revision?: number | null;
   source_market_application_id?: number | null;
   source_market_release_id?: number | null;
+  organization_id?: number | null;
+  created_by_id?: number | null;
   run_count: number;
   last_run_at?: string | null;
+  revision?: number;
   created_at: string;
   updated_at: string;
   git_repo_path?: string | null;

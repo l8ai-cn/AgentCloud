@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-const Revision = "video-experts-2026-07-18-seedance"
+const Revision = "operator-partners-2026-07-25"
 
 //go:embed assets/skills/*.md
 var skillAssets embed.FS
@@ -27,16 +27,19 @@ type SkillDefinition struct {
 }
 
 type ExpertDefinition struct {
-	Slug        string
-	Name        string
-	Summary     string
-	Description string
-	Category    string
-	Icon        string
-	Tags        []string
-	Outcomes    []string
-	SkillSlugs  []string
-	Prompt      string
+	Slug           string
+	Name           string
+	Summary        string
+	Description    string
+	Category       string
+	Icon           string
+	Tags           []string
+	Outcomes       []string
+	SkillSlugs     []string
+	Prompt         string
+	WorkerTypeSlug string
+	RuntimeImageID int64
+	SecretRefs     map[string]string
 }
 
 func Skills() ([]SkillDefinition, error) {

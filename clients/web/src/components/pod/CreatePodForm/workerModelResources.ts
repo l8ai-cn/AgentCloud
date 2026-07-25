@@ -1,44 +1,21 @@
 import type { EffectiveResource, ProviderDefinition } from "@/lib/api/facade/aiResource";
 import type { WorkerToolModelRequirement } from "@/lib/api/facade/podConnect";
 
-const AGENT_PROTOCOLS: Record<string, string[]> = {
-  "do-agent": ["openai-compatible", "anthropic", "minimax"],
-  "seedance-expert": ["openai-compatible", "anthropic"],
-  "codex-cli": ["openai-compatible"],
-  "pattern-designer": ["openai-compatible"],
-  "video-studio": ["openai-compatible"],
-  "claude-code": ["anthropic"],
-  "gemini-cli": ["gemini"],
-  "minimax-cli": ["minimax"],
-  openclaw: ["openai-compatible"],
-  hermes: ["openai-compatible"],
-};
-
-const MODEL_RESOURCE_AGENTS = new Set(Object.keys(AGENT_PROTOCOLS));
-
 export interface WorkerModelResourceRequirement {
   required: boolean;
   protocolAdapters: string[];
 }
 
-export function agentRequiresModelResource(agentSlug: string | null): boolean {
-  return Boolean(agentSlug && MODEL_RESOURCE_AGENTS.has(agentSlug));
-}
-
-export function agentSupportsProtocol(agentSlug: string, protocol: string): boolean {
-  return AGENT_PROTOCOLS[agentSlug]?.includes(protocol) ?? false;
-}
-
+// The backend worker definition (WorkerTypeOption.requires_model_resource /
+// model_protocol_adapters) is authoritative; `requirement` must come from the
+// create-options response or the generated worker catalog, never from a
+// frontend-side agent table.
 export function compatibleModelResources(
-  agentSlug: string | null,
   resources: EffectiveResource[],
   providers: ProviderDefinition[],
-  requirement?: WorkerModelResourceRequirement,
+  requirement: WorkerModelResourceRequirement,
 ): EffectiveResource[] {
-  const allowed = requirement
-    ? (requirement.required ? requirement.protocolAdapters : [])
-    : (agentSlug ? AGENT_PROTOCOLS[agentSlug] : undefined);
-  if (!allowed?.length) return [];
+  if (!requirement.required) return [];
   const protocolByProvider = new Map(providers.map((p) => [p.key, p.protocolAdapter]));
   return resources.filter((item) => {
     const providerKey = item.connection?.providerKey;
@@ -50,7 +27,7 @@ export function compatibleModelResources(
         item.resource.modalities.includes("chat") &&
         item.resource.capabilities.includes("text-generation") &&
         protocol &&
-        allowed.includes(protocol),
+        requirement.protocolAdapters.includes(protocol),
     );
   });
 }

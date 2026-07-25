@@ -76,18 +76,18 @@ export function Footer() {
 
   return (
     <footer className="border-t border-white/8 bg-[var(--expert-bg)] py-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 sm:gap-12 mb-12 sm:mb-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mb-12 grid grid-cols-2 items-start gap-8 sm:mb-16 sm:gap-12 md:grid-cols-5">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-5">
-              <div className="w-7 h-7 rounded-lg overflow-hidden">
+            <Link href="/" className="mb-5 flex items-center gap-2">
+              <div className="h-7 w-7 overflow-hidden rounded-lg">
                 <Logo />
               </div>
               <span className="font-headline text-base font-black uppercase tracking-tighter text-[var(--azure-cyan)]">
                 Agent Cloud
               </span>
             </Link>
-            <p className="text-xs uppercase tracking-wider text-[var(--azure-text-muted)]/60 leading-relaxed mb-6">
+            <p className="mb-6 text-xs uppercase leading-relaxed tracking-wider text-[var(--azure-text-muted)]/60">
               {t("landing.footer.tagline")}
             </p>
             <div className="flex gap-4">
@@ -97,7 +97,7 @@ export function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[var(--azure-text-muted)]/60 hover:text-[var(--azure-cyan)] transition-colors"
+                  className="text-[var(--azure-text-muted)]/60 transition-colors hover:text-[var(--azure-cyan)]"
                   aria-label={social.label}
                 >
                   {social.icon}
@@ -107,8 +107,8 @@ export function Footer() {
           </div>
 
           {Object.values(footerLinks).map((section) => (
-            <div key={section.title}>
-              <h4 className="font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/40 mb-5">
+            <div key={section.title} className="min-w-0">
+              <h4 className="mb-5 font-headline text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/40">
                 {section.title}
               </h4>
               <ul className="space-y-3">

@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file ai_resource/v1/types.proto.
  */
 export const file_ai_resource_v1_types: GenFile = /*@__PURE__*/
-  fileDesc("ChphaV9yZXNvdXJjZS92MS90eXBlcy5wcm90bxIUcHJvdG8uYWlfcmVzb3VyY2UudjEiTwoPQ3JlZGVudGlhbEZpZWxkEgsKA2tleRgBIAEoCRINCgVsYWJlbBgCIAEoCRIOCgZzZWNyZXQYAyABKAgSEAoIcmVxdWlyZWQYBCABKAgihQIKElByb3ZpZGVyRGVmaW5pdGlvbhILCgNrZXkYASABKAkSFAoMZGlzcGxheV9uYW1lGAIgASgJEhIKCm1vZGFsaXRpZXMYAyADKAkSQAoRY3JlZGVudGlhbF9maWVsZHMYBCADKAsyJS5wcm90by5haV9yZXNvdXJjZS52MS5DcmVkZW50aWFsRmllbGQSGAoQZGVmYXVsdF9iYXNlX3VybBgFIAEoCRIYChBwcm90b2NvbF9hZGFwdGVyGAYgASgJEiAKGHN1cHBvcnRzX2N1c3RvbV9lbmRwb2ludBgHIAEoCBIgChhzdXBwb3J0c19tb2RlbF9kaXNjb3ZlcnkYCCABKAgi7gEKDFVzYWdlU3VtbWFyeRIYCgtxdW90YV90b3RhbBgBIAEoAUgAiAEBEhgKC3VzYWdlX3RvdGFsGAIgASgBSAGIAQESFgoJcmVtYWluaW5nGAMgASgBSAKIAQESEQoEdW5pdBgEIAEoCUgDiAEBEhMKBnBlcmlvZBgFIAEoCUgEiAEBEhgKC21lYXN1cmVkX2F0GAYgASgJSAWIAQFCDgoMX3F1b3RhX3RvdGFsQg4KDF91c2FnZV90b3RhbEIMCgpfcmVtYWluaW5nQgcKBV91bml0QgkKB19wZXJpb2RCDgoMX21lYXN1cmVkX2F0IoMDCg1Nb2RlbFJlc291cmNlEgoKAmlkGAEgASgDEh4KFnByb3ZpZGVyX2Nvbm5lY3Rpb25faWQYAiABKAMSEgoKaWRlbnRpZmllchgDIAEoCRIQCghtb2RlbF9pZBgEIAEoCRIUCgxkaXNwbGF5X25hbWUYBSABKAkSEgoKbW9kYWxpdGllcxgGIAMoCRIUCgxjYXBhYmlsaXRpZXMYByADKAkSGgoSZGVmYXVsdF9tb2RhbGl0aWVzGAggAygJEg4KBnN0YXR1cxgJIAEoCRISCgppc19lbmFibGVkGAogASgIEh4KEWxhc3RfdmFsaWRhdGVkX2F0GAsgASgJSACIAQESGAoQdmFsaWRhdGlvbl9lcnJvchgMIAEoCRI+Cg11c2FnZV9zdW1tYXJ5GA0gASgLMiIucHJvdG8uYWlfcmVzb3VyY2UudjEuVXNhZ2VTdW1tYXJ5SAGIAQFCFAoSX2xhc3RfdmFsaWRhdGVkX2F0QhAKDl91c2FnZV9zdW1tYXJ5ItoCChJQcm92aWRlckNvbm5lY3Rpb24SCgoCaWQYASABKAMSEwoLb3duZXJfc2NvcGUYAiABKAkSEgoKaWRlbnRpZmllchgDIAEoCRIUCgxwcm92aWRlcl9rZXkYBCABKAkSDAoEbmFtZRgFIAEoCRIQCghiYXNlX3VybBgGIAEoCRIZChFjb25maWd1cmVkX2ZpZWxkcxgHIAMoCRIOCgZzdGF0dXMYCCABKAkSEgoKaXNfZW5hYmxlZBgJIAEoCBIeChFsYXN0X3ZhbGlkYXRlZF9hdBgKIAEoCUgAiAEBEhgKEHZhbGlkYXRpb25fZXJyb3IYCyABKAkSEgoKY2FuX21hbmFnZRgMIAEoCBI2CglyZXNvdXJjZXMYDSADKAsyIy5wcm90by5haV9yZXNvdXJjZS52MS5Nb2RlbFJlc291cmNlQhQKEl9sYXN0X3ZhbGlkYXRlZF9hdCK1AQoRRWZmZWN0aXZlUmVzb3VyY2USPAoKY29ubmVjdGlvbhgBIAEoCzIoLnByb3RvLmFpX3Jlc291cmNlLnYxLlByb3ZpZGVyQ29ubmVjdGlvbhI1CghyZXNvdXJjZRgCIAEoCzIjLnByb3RvLmFpX3Jlc291cmNlLnYxLk1vZGVsUmVzb3VyY2USEgoKc2VsZWN0YWJsZRgDIAEoCBIXCg9ibG9ja2luZ19yZWFzb24YBCABKAkizQEKEENvbm5lY3Rpb25VcGRhdGUSDAoEbmFtZRgBIAEoCRIQCghiYXNlX3VybBgCIAEoCRIXCg9oYXNfY3JlZGVudGlhbHMYAyABKAgSTAoLY3JlZGVudGlhbHMYBCADKAsyNy5wcm90by5haV9yZXNvdXJjZS52MS5Db25uZWN0aW9uVXBkYXRlLkNyZWRlbnRpYWxzRW50cnkaMgoQQ3JlZGVudGlhbHNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBInQKDFJlc291cmNlU3BlYxISCgppZGVudGlmaWVyGAEgASgJEhAKCG1vZGVsX2lkGAIgASgJEhQKDGRpc3BsYXlfbmFtZRgDIAEoCRISCgptb2RhbGl0aWVzGAQgAygJEhQKDGNhcGFiaWxpdGllcxgFIAMoCSJiCg5SZXNvdXJjZVVwZGF0ZRIQCghtb2RlbF9pZBgBIAEoCRIUCgxkaXNwbGF5X25hbWUYAiABKAkSEgoKbW9kYWxpdGllcxgDIAMoCRIUCgxjYXBhYmlsaXRpZXMYBCADKAlCSFpGZ2l0aHViLmNvbS9sOGFpLWNuL2FnZW50Y2xvdWQvcHJvdG8vZ2VuL2dvL2FpX3Jlc291cmNlL3YxO2FpcmVzb3VyY2V2MWIGcHJvdG8z");
+  fileDesc("ChphaV9yZXNvdXJjZS92MS90eXBlcy5wcm90bxIUcHJvdG8uYWlfcmVzb3VyY2UudjEiTwoPQ3JlZGVudGlhbEZpZWxkEgsKA2tleRgBIAEoCRINCgVsYWJlbBgCIAEoCRIOCgZzZWNyZXQYAyABKAgSEAoIcmVxdWlyZWQYBCABKAgihQIKElByb3ZpZGVyRGVmaW5pdGlvbhILCgNrZXkYASABKAkSFAoMZGlzcGxheV9uYW1lGAIgASgJEhIKCm1vZGFsaXRpZXMYAyADKAkSQAoRY3JlZGVudGlhbF9maWVsZHMYBCADKAsyJS5wcm90by5haV9yZXNvdXJjZS52MS5DcmVkZW50aWFsRmllbGQSGAoQZGVmYXVsdF9iYXNlX3VybBgFIAEoCRIYChBwcm90b2NvbF9hZGFwdGVyGAYgASgJEiAKGHN1cHBvcnRzX2N1c3RvbV9lbmRwb2ludBgHIAEoCBIgChhzdXBwb3J0c19tb2RlbF9kaXNjb3ZlcnkYCCABKAgi7gEKDFVzYWdlU3VtbWFyeRIYCgtxdW90YV90b3RhbBgBIAEoAUgAiAEBEhgKC3VzYWdlX3RvdGFsGAIgASgBSAGIAQESFgoJcmVtYWluaW5nGAMgASgBSAKIAQESEQoEdW5pdBgEIAEoCUgDiAEBEhMKBnBlcmlvZBgFIAEoCUgEiAEBEhgKC21lYXN1cmVkX2F0GAYgASgJSAWIAQFCDgoMX3F1b3RhX3RvdGFsQg4KDF91c2FnZV90b3RhbEIMCgpfcmVtYWluaW5nQgcKBV91bml0QgkKB19wZXJpb2RCDgoMX21lYXN1cmVkX2F0IoMDCg1Nb2RlbFJlc291cmNlEgoKAmlkGAEgASgDEh4KFnByb3ZpZGVyX2Nvbm5lY3Rpb25faWQYAiABKAMSEgoKaWRlbnRpZmllchgDIAEoCRIQCghtb2RlbF9pZBgEIAEoCRIUCgxkaXNwbGF5X25hbWUYBSABKAkSEgoKbW9kYWxpdGllcxgGIAMoCRIUCgxjYXBhYmlsaXRpZXMYByADKAkSGgoSZGVmYXVsdF9tb2RhbGl0aWVzGAggAygJEg4KBnN0YXR1cxgJIAEoCRISCgppc19lbmFibGVkGAogASgIEh4KEWxhc3RfdmFsaWRhdGVkX2F0GAsgASgJSACIAQESGAoQdmFsaWRhdGlvbl9lcnJvchgMIAEoCRI+Cg11c2FnZV9zdW1tYXJ5GA0gASgLMiIucHJvdG8uYWlfcmVzb3VyY2UudjEuVXNhZ2VTdW1tYXJ5SAGIAQFCFAoSX2xhc3RfdmFsaWRhdGVkX2F0QhAKDl91c2FnZV9zdW1tYXJ5ItoCChJQcm92aWRlckNvbm5lY3Rpb24SCgoCaWQYASABKAMSEwoLb3duZXJfc2NvcGUYAiABKAkSEgoKaWRlbnRpZmllchgDIAEoCRIUCgxwcm92aWRlcl9rZXkYBCABKAkSDAoEbmFtZRgFIAEoCRIQCghiYXNlX3VybBgGIAEoCRIZChFjb25maWd1cmVkX2ZpZWxkcxgHIAMoCRIOCgZzdGF0dXMYCCABKAkSEgoKaXNfZW5hYmxlZBgJIAEoCBIeChFsYXN0X3ZhbGlkYXRlZF9hdBgKIAEoCUgAiAEBEhgKEHZhbGlkYXRpb25fZXJyb3IYCyABKAkSEgoKY2FuX21hbmFnZRgMIAEoCBI2CglyZXNvdXJjZXMYDSADKAsyIy5wcm90by5haV9yZXNvdXJjZS52MS5Nb2RlbFJlc291cmNlQhQKEl9sYXN0X3ZhbGlkYXRlZF9hdCK1AQoRRWZmZWN0aXZlUmVzb3VyY2USPAoKY29ubmVjdGlvbhgBIAEoCzIoLnByb3RvLmFpX3Jlc291cmNlLnYxLlByb3ZpZGVyQ29ubmVjdGlvbhI1CghyZXNvdXJjZRgCIAEoCzIjLnByb3RvLmFpX3Jlc291cmNlLnYxLk1vZGVsUmVzb3VyY2USEgoKc2VsZWN0YWJsZRgDIAEoCBIXCg9ibG9ja2luZ19yZWFzb24YBCABKAkioAEKD0Rpc2NvdmVyZWRNb2RlbBIQCghtb2RlbF9pZBgBIAEoCRIUCgxkaXNwbGF5X25hbWUYAiABKAkSEgoKaWRlbnRpZmllchgDIAEoCRISCgptb2RhbGl0aWVzGAQgAygJEhQKDGNhcGFiaWxpdGllcxgFIAMoCRISCgppbXBvcnRhYmxlGAYgASgIEhMKC3NraXBfcmVhc29uGAcgASgJIjAKDFNraXBwZWRNb2RlbBIQCghtb2RlbF9pZBgBIAEoCRIOCgZyZWFzb24YAiABKAkizQEKEENvbm5lY3Rpb25VcGRhdGUSDAoEbmFtZRgBIAEoCRIQCghiYXNlX3VybBgCIAEoCRIXCg9oYXNfY3JlZGVudGlhbHMYAyABKAgSTAoLY3JlZGVudGlhbHMYBCADKAsyNy5wcm90by5haV9yZXNvdXJjZS52MS5Db25uZWN0aW9uVXBkYXRlLkNyZWRlbnRpYWxzRW50cnkaMgoQQ3JlZGVudGlhbHNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBInQKDFJlc291cmNlU3BlYxISCgppZGVudGlmaWVyGAEgASgJEhAKCG1vZGVsX2lkGAIgASgJEhQKDGRpc3BsYXlfbmFtZRgDIAEoCRISCgptb2RhbGl0aWVzGAQgAygJEhQKDGNhcGFiaWxpdGllcxgFIAMoCSJiCg5SZXNvdXJjZVVwZGF0ZRIQCghtb2RlbF9pZBgBIAEoCRIUCgxkaXNwbGF5X25hbWUYAiABKAkSEgoKbW9kYWxpdGllcxgDIAMoCRIUCgxjYXBhYmlsaXRpZXMYBCADKAlCSFpGZ2l0aHViLmNvbS9sOGFpLWNuL2FnZW50Y2xvdWQvcHJvdG8vZ2VuL2dvL2FpX3Jlc291cmNlL3YxO2FpcmVzb3VyY2V2MWIGcHJvdG8z");
 
 /**
  * @generated from message proto.ai_resource.v1.CredentialField
@@ -325,6 +325,75 @@ export const EffectiveResourceSchema: GenMessage<EffectiveResource> = /*@__PURE_
   messageDesc(file_ai_resource_v1_types, 5);
 
 /**
+ * @generated from message proto.ai_resource.v1.DiscoveredModel
+ */
+export type DiscoveredModel = Message<"proto.ai_resource.v1.DiscoveredModel"> & {
+  /**
+   * @generated from field: string model_id = 1;
+   */
+  modelId: string;
+
+  /**
+   * @generated from field: string display_name = 2;
+   */
+  displayName: string;
+
+  /**
+   * @generated from field: string identifier = 3;
+   */
+  identifier: string;
+
+  /**
+   * @generated from field: repeated string modalities = 4;
+   */
+  modalities: string[];
+
+  /**
+   * @generated from field: repeated string capabilities = 5;
+   */
+  capabilities: string[];
+
+  /**
+   * @generated from field: bool importable = 6;
+   */
+  importable: boolean;
+
+  /**
+   * @generated from field: string skip_reason = 7;
+   */
+  skipReason: string;
+};
+
+/**
+ * Describes the message proto.ai_resource.v1.DiscoveredModel.
+ * Use `create(DiscoveredModelSchema)` to create a new message.
+ */
+export const DiscoveredModelSchema: GenMessage<DiscoveredModel> = /*@__PURE__*/
+  messageDesc(file_ai_resource_v1_types, 6);
+
+/**
+ * @generated from message proto.ai_resource.v1.SkippedModel
+ */
+export type SkippedModel = Message<"proto.ai_resource.v1.SkippedModel"> & {
+  /**
+   * @generated from field: string model_id = 1;
+   */
+  modelId: string;
+
+  /**
+   * @generated from field: string reason = 2;
+   */
+  reason: string;
+};
+
+/**
+ * Describes the message proto.ai_resource.v1.SkippedModel.
+ * Use `create(SkippedModelSchema)` to create a new message.
+ */
+export const SkippedModelSchema: GenMessage<SkippedModel> = /*@__PURE__*/
+  messageDesc(file_ai_resource_v1_types, 7);
+
+/**
  * @generated from message proto.ai_resource.v1.ConnectionUpdate
  */
 export type ConnectionUpdate = Message<"proto.ai_resource.v1.ConnectionUpdate"> & {
@@ -354,7 +423,7 @@ export type ConnectionUpdate = Message<"proto.ai_resource.v1.ConnectionUpdate"> 
  * Use `create(ConnectionUpdateSchema)` to create a new message.
  */
 export const ConnectionUpdateSchema: GenMessage<ConnectionUpdate> = /*@__PURE__*/
-  messageDesc(file_ai_resource_v1_types, 6);
+  messageDesc(file_ai_resource_v1_types, 8);
 
 /**
  * @generated from message proto.ai_resource.v1.ResourceSpec
@@ -391,7 +460,7 @@ export type ResourceSpec = Message<"proto.ai_resource.v1.ResourceSpec"> & {
  * Use `create(ResourceSpecSchema)` to create a new message.
  */
 export const ResourceSpecSchema: GenMessage<ResourceSpec> = /*@__PURE__*/
-  messageDesc(file_ai_resource_v1_types, 7);
+  messageDesc(file_ai_resource_v1_types, 9);
 
 /**
  * @generated from message proto.ai_resource.v1.ResourceUpdate
@@ -423,5 +492,5 @@ export type ResourceUpdate = Message<"proto.ai_resource.v1.ResourceUpdate"> & {
  * Use `create(ResourceUpdateSchema)` to create a new message.
  */
 export const ResourceUpdateSchema: GenMessage<ResourceUpdate> = /*@__PURE__*/
-  messageDesc(file_ai_resource_v1_types, 8);
+  messageDesc(file_ai_resource_v1_types, 10);
 

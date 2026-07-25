@@ -88,13 +88,13 @@ describe("public marketing contract", () => {
     expect(structuredData).not.toHaveProperty("offers");
   });
 
-  it("keeps the Agent Market metadata aligned with its external destination", () => {
+  it("keeps the Agent Market metadata aligned with the in-product directory", () => {
     expect(marketplaceMetadata).toMatchObject({
-      title: "Agent Market",
-      alternates: { canonical: "https://market.l8ai.cn" },
+      title: "Agent Market | AI Partners",
+      alternates: { canonical: "https://agentcloud.ai/marketplace" },
       openGraph: {
-        title: "Agent Market | Agent Cloud",
-        url: "https://market.l8ai.cn",
+        title: "Agent Market | AI Partners | Agent Cloud",
+        url: "https://agentcloud.ai/marketplace",
       },
     });
     expect(marketplaceMetadata.description).not.toMatch(/Worker|Expert|专家/i);

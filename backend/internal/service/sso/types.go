@@ -22,11 +22,14 @@ type CreateConfigRequest struct {
 	Protocol   string `json:"protocol" binding:"required"`
 	IsEnabled  bool   `json:"is_enabled"`
 	EnforceSSO bool   `json:"enforce_sso"`
+	// DefaultOrganizationID places federated users into this org on login.
+	DefaultOrganizationID *int64 `json:"default_organization_id,omitempty"`
 
-	OIDCIssuerURL    string `json:"oidc_issuer_url,omitempty"`
-	OIDCClientID     string `json:"oidc_client_id,omitempty"`
-	OIDCClientSecret string `json:"oidc_client_secret,omitempty"`
-	OIDCScopes       string `json:"oidc_scopes,omitempty"`
+	OIDCIssuerURL            string `json:"oidc_issuer_url,omitempty"`
+	OIDCClientID             string `json:"oidc_client_id,omitempty"`
+	OIDCClientSecret         string `json:"oidc_client_secret,omitempty"`
+	OIDCScopes               string `json:"oidc_scopes,omitempty"`
+	OIDCAuthorizeExtraParams string `json:"oidc_authorize_extra_params,omitempty"`
 
 	SAMLIDPMetadataURL string `json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPMetadataXML string `json:"saml_idp_metadata_xml,omitempty"`
@@ -48,14 +51,16 @@ type CreateConfigRequest struct {
 }
 
 type UpdateConfigRequest struct {
-	Name       *string `json:"name,omitempty"`
-	IsEnabled  *bool   `json:"is_enabled,omitempty"`
-	EnforceSSO *bool   `json:"enforce_sso,omitempty"`
+	Name                  *string `json:"name,omitempty"`
+	IsEnabled             *bool   `json:"is_enabled,omitempty"`
+	EnforceSSO            *bool   `json:"enforce_sso,omitempty"`
+	DefaultOrganizationID *int64  `json:"default_organization_id,omitempty"`
 
-	OIDCIssuerURL    *string `json:"oidc_issuer_url,omitempty"`
-	OIDCClientID     *string `json:"oidc_client_id,omitempty"`
-	OIDCClientSecret *string `json:"oidc_client_secret,omitempty"`
-	OIDCScopes       *string `json:"oidc_scopes,omitempty"`
+	OIDCIssuerURL            *string `json:"oidc_issuer_url,omitempty"`
+	OIDCClientID             *string `json:"oidc_client_id,omitempty"`
+	OIDCClientSecret         *string `json:"oidc_client_secret,omitempty"`
+	OIDCScopes               *string `json:"oidc_scopes,omitempty"`
+	OIDCAuthorizeExtraParams *string `json:"oidc_authorize_extra_params,omitempty"`
 
 	SAMLIDPMetadataURL *string `json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPMetadataXML *string `json:"saml_idp_metadata_xml,omitempty"`
@@ -84,16 +89,18 @@ type DiscoverResponse struct {
 }
 
 type ConfigResponse struct {
-	ID         int64  `json:"id"`
-	Domain     string `json:"domain"`
-	Name       string `json:"name"`
-	Protocol   string `json:"protocol"`
-	IsEnabled  bool   `json:"is_enabled"`
-	EnforceSSO bool   `json:"enforce_sso"`
+	ID                    int64  `json:"id"`
+	Domain                string `json:"domain"`
+	Name                  string `json:"name"`
+	Protocol              string `json:"protocol"`
+	IsEnabled             bool   `json:"is_enabled"`
+	EnforceSSO            bool   `json:"enforce_sso"`
+	DefaultOrganizationID *int64 `json:"default_organization_id,omitempty"`
 
-	OIDCIssuerURL string `json:"oidc_issuer_url,omitempty"`
-	OIDCClientID  string `json:"oidc_client_id,omitempty"`
-	OIDCScopes    string `json:"oidc_scopes,omitempty"`
+	OIDCIssuerURL            string `json:"oidc_issuer_url,omitempty"`
+	OIDCClientID             string `json:"oidc_client_id,omitempty"`
+	OIDCScopes               string `json:"oidc_scopes,omitempty"`
+	OIDCAuthorizeExtraParams string `json:"oidc_authorize_extra_params,omitempty"`
 
 	SAMLIDPMetadataURL string `json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPSSOURL      string `json:"saml_idp_sso_url,omitempty"`

@@ -46,6 +46,10 @@ func (s *Service) GetAuthURL(ctx context.Context, domain string, protocol sso.Pr
 		return authURL, nil
 	}
 
+	if protocol == sso.ProtocolOIDC {
+		return s.oidcAuthURL(ctx, cfg, state)
+	}
+
 	provider, err := s.buildProvider(ctx, cfg)
 	if err != nil {
 		return "", fmt.Errorf("failed to build SSO provider: %w", err)
@@ -54,40 +58,45 @@ func (s *Service) GetAuthURL(ctx context.Context, domain string, protocol sso.Pr
 	return provider.GetAuthURL(ctx, state)
 }
 
-func (s *Service) HandleCallback(ctx context.Context, domain string, protocol sso.Protocol, params map[string]string) (*ssoprovider.UserInfo, int64, error) {
+func (s *Service) HandleCallback(ctx context.Context, domain string, protocol sso.Protocol, params map[string]string) (*ssoprovider.UserInfo, *sso.Config, error) {
 	cfg, err := s.repo.GetByDomainAndProtocol(ctx, strings.ToLower(domain), protocol)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, 0, ErrConfigNotFound
+			return nil, nil, ErrConfigNotFound
 		}
-		return nil, 0, fmt.Errorf("failed to query SSO config: %w", err)
+		return nil, nil, fmt.Errorf("failed to query SSO config: %w", err)
 	}
 	if !cfg.IsEnabled {
-		return nil, 0, fmt.Errorf("SSO config is disabled for domain %s", domain)
+		return nil, nil, fmt.Errorf("SSO config is disabled for domain %s", domain)
 	}
 
-	if protocol == sso.ProtocolSAML {
+	switch protocol {
+	case sso.ProtocolSAML:
 		if relayState := params["RelayState"]; relayState != "" {
 			if requestID, err := s.retrieveSAMLRequestID(ctx, relayState); err == nil && requestID != "" {
 				params["possibleRequestIDs"] = requestID
 			}
 		}
+	case sso.ProtocolOIDC:
+		if err := s.injectOIDCCallbackParams(ctx, params); err != nil {
+			return nil, nil, err
+		}
 	}
 
 	provider, err := s.buildProvider(ctx, cfg)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to build SSO provider: %w", err)
+		return nil, nil, fmt.Errorf("failed to build SSO provider: %w", err)
 	}
 
 	userInfo, err := provider.HandleCallback(ctx, params)
 	if err != nil {
-		return nil, 0, fmt.Errorf("SSO callback failed: %w", err)
+		return nil, nil, fmt.Errorf("SSO callback failed: %w", err)
 	}
 	if userInfo == nil {
-		return nil, 0, fmt.Errorf("SSO callback returned no user info")
+		return nil, nil, fmt.Errorf("SSO callback returned no user info")
 	}
 
-	return userInfo, cfg.ID, nil
+	return userInfo, cfg, nil
 }
 
 func (s *Service) AuthenticateLDAP(ctx context.Context, domain, username, password string) (*ssoprovider.UserInfo, int64, error) {

@@ -15,7 +15,7 @@ test("verifies registration against authoritative DoOps Gateway audit events", a
     queryAudit: ({ session }) => events.filter((event) => event.session === session),
     queryWorkspaceAudit: (expected) => expected,
   });
-  assert.equal(result.assetProbe.eventId, 423834);
+  assert.equal(result.assetProbe.eventId, registration.registration.gatewayAudit.eventId);
   assert.deepEqual(result.migrationState.result, {
     version: registration.migrationState.version,
     dirty: registration.migrationState.dirty,
@@ -54,7 +54,7 @@ function auditEvents(registration) {
     event({
       reference: registration.registration,
       queryName: "asset-probe",
-      tail: "agentcloud|160014|t\n",
+      tail: `${registration.databaseName}|${registration.serverVersionNum}|t\n`,
     }),
     event({
       reference: registration.migrationState,

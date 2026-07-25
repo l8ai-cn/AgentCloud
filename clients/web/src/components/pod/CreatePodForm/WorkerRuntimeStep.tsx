@@ -43,7 +43,7 @@ export function WorkerRuntimeStep(props: WorkerRuntimeStepProps) {
     onWorkerTypeChange,
     t,
   } = props;
-  const [pendingType, setPendingType] = useState<string | null>(null);
+  const [pendingRuntimeImageId, setPendingRuntimeImageId] = useState<number | null>(null);
 
   if (options.status === "idle" || options.status === "loading") {
     return <Spinner className="my-8" />;
@@ -52,18 +52,32 @@ export function WorkerRuntimeStep(props: WorkerRuntimeStepProps) {
     return <AlertMessage type="error" message={options.error} />;
   }
   const data = options.data;
-  const selectedPending = data.worker_types.find((option) => option.slug === pendingType);
   const selectedWorkerType = data.worker_types.find(
     (option) => option.slug === draft.worker_type_slug,
   );
-  const changeWorkerType = (slug: string) => {
-    if (slug === draft.worker_type_slug) return;
-    if (hasTypeSpecificValues(draft)) {
-      setPendingType(slug);
+  const changeRuntimeImage = (runtimeImageId: number) => {
+    if (runtimeImageId === draft.runtime_image_id) return;
+    const image = data.runtime_images.find((option) => option.id === runtimeImageId);
+    if (!image) return;
+    if (image.worker_type_slugs[0] === draft.worker_type_slug) {
+      onPatch({ runtime_image_id: runtimeImageId });
       return;
     }
-    const selected = data.worker_types.find((option) => option.slug === slug);
-    if (selected) onWorkerTypeChange(selected.slug, selected.schema_version);
+    if (hasTypeSpecificValues(draft)) {
+      setPendingRuntimeImageId(runtimeImageId);
+      return;
+    }
+    applyRuntimeImage(runtimeImageId);
+  };
+  const applyRuntimeImage = (runtimeImageId: number) => {
+    const image = data.runtime_images.find((option) => option.id === runtimeImageId);
+    if (!image) return;
+    const workerType = data.worker_types.find(
+      (option) => option.selectable && option.slug === image.worker_type_slugs[0],
+    );
+    if (!workerType) return;
+    onWorkerTypeChange(workerType.slug, workerType.schema_version);
+    onPatch({ runtime_image_id: runtimeImageId });
   };
 
   return (
@@ -90,29 +104,30 @@ export function WorkerRuntimeStep(props: WorkerRuntimeStepProps) {
         draft={draft}
         data={data}
         onPatch={onPatch}
-        onWorkerTypeChange={changeWorkerType}
+        onRuntimeImageChange={changeRuntimeImage}
         t={t}
       />
 
-      <AlertDialog open={pendingType !== null} onOpenChange={(open) => !open && setPendingType(null)}>
+      <AlertDialog
+        open={pendingRuntimeImageId !== null}
+        onOpenChange={(open) => !open && setPendingRuntimeImageId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{t("workerCreate.typeChange.title")}</AlertDialogTitle>
+            <AlertDialogTitle>{t("workerCreate.imageChange.title")}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t("workerCreate.typeChange.description")}
+              {t("workerCreate.imageChange.description")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t("workerCreate.typeChange.cancel")}</AlertDialogCancel>
+            <AlertDialogCancel>{t("workerCreate.imageChange.cancel")}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
-                if (selectedPending) {
-                  onWorkerTypeChange(selectedPending.slug, selectedPending.schema_version);
-                }
-                setPendingType(null);
+                if (pendingRuntimeImageId) applyRuntimeImage(pendingRuntimeImageId);
+                setPendingRuntimeImageId(null);
               }}
             >
-              {t("workerCreate.typeChange.confirm")}
+              {t("workerCreate.imageChange.confirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

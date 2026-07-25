@@ -43,7 +43,9 @@ function runtimeSelectionsValid(
     workerType?.selectable &&
       (!workerType.requires_model_resource || draft.model_resource_id > 0) &&
       workerType.tool_model_requirements.every(
-        (requirement) => (draft.tool_model_resource_ids[requirement.role] ?? 0) > 0,
+        (requirement) =>
+          requirement.required === false ||
+          (draft.tool_model_resource_ids[requirement.role] ?? 0) > 0,
       ) &&
       selectable(options.runtime_images, draft.runtime_image_id, (item) => item.id) &&
       selectable(options.compute_targets, draft.compute_target_id, (item) => item.id) &&

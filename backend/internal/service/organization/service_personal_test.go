@@ -44,6 +44,9 @@ func (r *personalStubRepo) GetByID(context.Context, int64) (*orgDomain.Organizat
 func (r *personalStubRepo) GetBySlug(context.Context, string) (*orgDomain.Organization, error) {
 	panic("not implemented")
 }
+func (r *personalStubRepo) GetByAmpTenantID(context.Context, string) (*orgDomain.Organization, error) {
+	panic("not implemented")
+}
 func (r *personalStubRepo) Update(context.Context, int64, map[string]interface{}) error {
 	panic("not implemented")
 }

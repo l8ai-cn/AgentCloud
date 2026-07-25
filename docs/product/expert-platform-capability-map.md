@@ -1,20 +1,20 @@
-# Agent Cloud Expert 平台能力地图
+# Agent Cloud AI 伙伴平台能力地图
 
 - 状态：持续维护
 - 基线日期：2026-07-13
-- 适用范围：首页、产品规划、专家市场与业务解决方案
+- 适用范围：首页、产品规划、伙伴市场与业务解决方案
 - 事实原则：能力必须标记为已落地、可组合或规划中
 
 ## 产品定位
 
-Agent Cloud 是以 Expert 为业务入口的 AI 工作平台。用户描述一个目标，Expert 在
-后台选择并协调 Worker、模型、Skills、知识、工具与 Workflow，经过人工确认后
+Agent Cloud 是以 AI 伙伴为业务入口的 AI 工作平台。用户描述一个目标，伙伴在
+后台通过 Expert 资源选择并协调 Worker、模型、Skills、知识、工具与 Workflow，经过人工确认后
 交付可查验结果。底层可以由一个或多个 Worker 执行，但用户不需要管理一组割裂
 的聊天角色。
 
 ```mermaid
 flowchart LR
-  G["业务目标"] --> E["Expert"]
+  G["业务目标"] --> E["AI 伙伴（Expert 资源）"]
   E --> W["Worker"]
   E --> M["Model"]
   E --> S["Skills"]
@@ -28,7 +28,8 @@ flowchart LR
 产品公式：
 
 ```text
-Expert = Worker + Model + Skills + Knowledge + Tools + Workflow
+AI Partner = Expert resource + ongoing goal + organizational context
+Expert resource = Worker + Model + Skills + Knowledge + Tools + Workflow
 ```
 
 资源原生实现中，Expert 不复制这些配置。Expert revision 固定一个
@@ -41,25 +42,26 @@ revision 与 digest，Apply 后生成 Expert 领域投影和 WorkerSpec 快照�
 
 | 对象 | 用户理解 | 产品职责 |
 | --- | --- | --- |
-| Expert | 对结果负责的业务专家 | 固化执行引擎、能力、知识、工具、权限与流程 |
-| Worker | Expert 的执行实例 | 在隔离环境中运行具体 Agent 类型 |
+| AI 伙伴 | 对结果负责的业务协作对象 | 持续承接目标、同步进展并交付证据 |
+| Expert | AI 伙伴的技术资源 | 固化执行引擎、能力、知识、工具、权限与流程 |
+| Worker | AI 伙伴的执行实例 | 在隔离环境中运行具体 Agent 类型 |
 | Skill | 可复用的专业方法 | 定义操作步骤、工具约束和交付标准 |
 | Knowledge | 组织上下文 | 挂载文件、标准和参考资料 |
 | Tool / MCP | 外部动作能力 | 连接浏览器、数据库、媒体工具和业务系统 |
 | Workflow | 可重复执行链路 | 定义触发、顺序、并发、检查点、预算和证据 |
-| Market | 能力分发入口 | 发现、安装和复用经过验证的专家应用 |
+| Market | 能力分发入口 | 发现、安装和复用经过验证的伙伴应用 |
 
 ## 能力成熟度
 
 ### 已落地
 
 - 12 种正式 Worker 类型的统一目录与运行配置。
-- Expert 创建、运行、发布、复用及 Skill、知识和环境装配。
+- 伙伴创建、运行、发布、复用及 Skill、知识和环境装配。
 - 自托管 Runner、隔离工作区、模型绑定、凭证引用和运行状态。
 - Workflow 手动、API、Cron 触发及并发、超时、沙箱和会话策略。
 - 人工暂停、恢复、接管、审批等待、预算与停止条件。
 - Ticket、Channel、Mesh、Block Store、文件与媒体结果承载。
-- 软件交付、多 Worker 协作、双仓同步三个市场专家应用。
+- 软件交付、多 Worker 协作、双仓同步三个市场伙伴应用。
 
 ### 可组合
 
@@ -75,9 +77,9 @@ revision 与 digest，Apply 后生成 Expert 领域投影和 WorkerSpec 快照�
 
 ### 规划中
 
-- 更完整的多租户行业专家市场。
+- 更完整的多租户行业伙伴市场。
 - 面向业务系统的 Connector 与资源 Listing。
-- 跨境电商、AI 教育、AI 伙伴的可安装专家应用包。
+- 跨境电商、AI 教育、AI 伙伴的可安装伙伴应用包。
 - Space 专区、Entitlement、Quota Ledger 与两阶段安装。
 
 ## Worker 目录
@@ -109,7 +111,7 @@ Worker 是执行运行时，不直接等同于“教师”“编剧”“运营�
 
 ### AI 伙伴
 
-AI 伙伴是围绕持续业务目标与团队协作的 Expert。它共享组织上下文、组合多种
+AI 伙伴由围绕持续业务目标与团队协作的 Expert 资源支撑。它共享组织上下文、组合多种
 专业能力，并在关键节点主动同步、请求确认和交付证据；不以模拟单一岗位或替代
 人力为产品承诺。
 
@@ -133,14 +135,14 @@ AI 伙伴是围绕持续业务目标与团队协作的 Expert。它共享组织�
 
 首页必须按以下顺序建立理解：
 
-1. 一个 Expert 入口，而不是多个角色头像。
+1. 一个 AI 伙伴入口，而不是多个角色头像。
 2. 可操作的运行控制面，展示目标、装配、步骤、人工确认和交付物。
 3. 跨境电商、AI 教育、AI 伙伴、市场四个菜单。
 4. 能力谱系，并明确已落地、可组合、规划中。
-5. Expert 装配公式与可复用运行方式。
+5. AI 伙伴与 Expert 资源的装配关系及可复用运行方式。
 6. 当前真实市场应用与后续业务应用方向。
 7. 自托管、隔离、限定凭证、证据留痕和 12 种 Worker。
-8. 创建专家与查看文档，不在首页展示定价。
+8. 创建伙伴与查看文档，不在首页展示定价。
 
 当前实现：
 

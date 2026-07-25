@@ -21,6 +21,8 @@ const (
 	SetConnectionEnabledProcedure               = "/" + serviceName + "/SetConnectionEnabled"
 	ValidateConnectionProcedure                 = "/" + serviceName + "/ValidateConnection"
 	DeleteConnectionProcedure                   = "/" + serviceName + "/DeleteConnection"
+	DiscoverConnectionModelsProcedure           = "/" + serviceName + "/DiscoverConnectionModels"
+	ImportConnectionModelsProcedure             = "/" + serviceName + "/ImportConnectionModels"
 	CreateResourceProcedure                     = "/" + serviceName + "/CreateResource"
 	UpdateResourceProcedure                     = "/" + serviceName + "/UpdateResource"
 	SetResourceEnabledProcedure                 = "/" + serviceName + "/SetResourceEnabled"
@@ -41,6 +43,8 @@ func Mount(mux *http.ServeMux, server *Server, options ...connect.HandlerOption)
 	mux.Handle(SetConnectionEnabledProcedure, connect.NewUnaryHandler(SetConnectionEnabledProcedure, server.SetConnectionEnabled, options...))
 	mux.Handle(ValidateConnectionProcedure, connect.NewUnaryHandler(ValidateConnectionProcedure, server.ValidateConnection, options...))
 	mux.Handle(DeleteConnectionProcedure, connect.NewUnaryHandler(DeleteConnectionProcedure, server.DeleteConnection, options...))
+	mux.Handle(DiscoverConnectionModelsProcedure, connect.NewUnaryHandler(DiscoverConnectionModelsProcedure, server.DiscoverConnectionModels, options...))
+	mux.Handle(ImportConnectionModelsProcedure, connect.NewUnaryHandler(ImportConnectionModelsProcedure, server.ImportConnectionModels, options...))
 	mux.Handle(CreateResourceProcedure, connect.NewUnaryHandler(CreateResourceProcedure, server.CreateResource, options...))
 	mux.Handle(UpdateResourceProcedure, connect.NewUnaryHandler(UpdateResourceProcedure, server.UpdateResource, options...))
 	mux.Handle(SetResourceEnabledProcedure, connect.NewUnaryHandler(SetResourceEnabledProcedure, server.SetResourceEnabled, options...))

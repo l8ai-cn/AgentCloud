@@ -2,7 +2,7 @@
   "resourceOrchestration": {
     "navTitle": "资源原生编排",
     "title": "资源原生编排",
-    "description": "将 Worker、专家、Workflow、Prompt、模型、工具、知识和计算声明为可版本化资源。控制面校验引用、展示语义计划，并 Apply 为不可变 revision 或执行快照。",
+    "description": "将 Worker、伙伴、Workflow、Prompt、模型、工具、知识和计算声明为可版本化资源。控制面校验引用、展示语义计划，并 Apply 为不可变 revision 或执行快照。",
     "openGuide": "打开资源编排指南",
     "lifecycleTitle": "校验 → 计划 → 应用",
     "lifecycleDescription": "该流程把编写、审查和执行分开。Plan 是预期变更的证据，不代表资源已经创建。",
@@ -48,7 +48,7 @@
         "purpose": "从固定资源启动一次 Worker；同一 Worker 资源不能更新。"
       },
       "expertWorkflow": {
-        "name": "Expert / Workflow",
+        "name": "伙伴 / Workflow",
         "apply": "支持",
         "purpose": "创建固定 WorkerTemplate、Prompt 和 WorkerSpec 快照的可复用领域定义。"
       },

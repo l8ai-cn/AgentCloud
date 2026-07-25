@@ -59,6 +59,13 @@ func (s *Service) buildUpdateMap(req *UpdateConfigRequest) (map[string]interface
 	if req.EnforceSSO != nil {
 		updates["enforce_sso"] = *req.EnforceSSO
 	}
+	if req.DefaultOrganizationID != nil {
+		if *req.DefaultOrganizationID <= 0 {
+			updates["default_organization_id"] = nil
+		} else {
+			updates["default_organization_id"] = *req.DefaultOrganizationID
+		}
+	}
 
 	if req.OIDCIssuerURL != nil {
 		updates["oidc_issuer_url"] = *req.OIDCIssuerURL
@@ -80,6 +87,16 @@ func (s *Service) buildUpdateMap(req *UpdateConfigRequest) (map[string]interface
 	}
 	if req.OIDCScopes != nil {
 		updates["oidc_scopes"] = *req.OIDCScopes
+	}
+	if req.OIDCAuthorizeExtraParams != nil {
+		if *req.OIDCAuthorizeExtraParams == "" {
+			updates["oidc_authorize_extra_params"] = nil
+		} else {
+			if _, err := decodeAuthorizeExtraParams(req.OIDCAuthorizeExtraParams); err != nil {
+				return nil, err
+			}
+			updates["oidc_authorize_extra_params"] = *req.OIDCAuthorizeExtraParams
+		}
 	}
 
 	if req.SAMLIDPMetadataURL != nil {

@@ -10,6 +10,7 @@ local_worker_runner_services() {
             codex-cli|pattern-designer) service="runner-codex-cli" ;;
             video-studio) service="runner-video-studio" ;;
             gemini-cli) service="runner-gemini-cli" ;;
+            kimi-code) service="runner-kimi-code" ;;
             minimax-cli) service="runner-minimax-cli" ;;
             openclaw) service="runner-openclaw" ;;
             do-agent|seedance-expert) service="runner-do-agent" ;;
@@ -40,6 +41,7 @@ prepare_local_worker_runtime_catalog() {
         --runtime "codex-cli=${COMPOSE_PROJECT_NAME}-runner-codex-cli:latest" \
         --runtime "video-studio=${COMPOSE_PROJECT_NAME}-runner-video-studio:latest" \
         --runtime "gemini-cli=${COMPOSE_PROJECT_NAME}-runner-gemini-cli:latest" \
+        --runtime "kimi-code=${COMPOSE_PROJECT_NAME}-runner-kimi-code:latest" \
         --runtime "minimax-cli=${COMPOSE_PROJECT_NAME}-runner-minimax-cli:latest" \
         --runtime "openclaw=${COMPOSE_PROJECT_NAME}-runner-openclaw:latest" \
         --runtime "do-agent=${COMPOSE_PROJECT_NAME}-runner-do-agent:latest" \

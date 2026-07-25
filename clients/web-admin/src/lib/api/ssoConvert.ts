@@ -29,9 +29,12 @@ export function fromProto(c: ProtoAdminSSOConfig): SSOConfig {
     protocol: c.protocol as SSOProtocol,
     is_enabled: c.isEnabled,
     enforce_sso: c.enforceSso,
+    default_organization_id:
+      c.defaultOrganizationId === undefined ? undefined : Number(c.defaultOrganizationId),
     oidc_issuer_url: c.oidcIssuerUrl,
     oidc_client_id: c.oidcClientId,
     oidc_scopes: c.oidcScopes,
+    oidc_authorize_extra_params: c.oidcAuthorizeExtraParams,
     saml_idp_metadata_url: c.samlIdpMetadataUrl,
     saml_idp_sso_url: c.samlIdpSsoUrl,
     saml_sp_entity_id: c.samlSpEntityId,
@@ -59,10 +62,15 @@ export function buildCreateInit(
     protocol: data.protocol,
     isEnabled: data.is_enabled ?? false,
     enforceSso: data.enforce_sso ?? false,
+    defaultOrganizationId:
+      data.default_organization_id === undefined
+        ? undefined
+        : BigInt(data.default_organization_id),
     oidcIssuerUrl: data.oidc_issuer_url,
     oidcClientId: data.oidc_client_id,
     oidcClientSecret: data.oidc_client_secret,
     oidcScopes: data.oidc_scopes,
+    oidcAuthorizeExtraParams: data.oidc_authorize_extra_params,
     samlIdpMetadataUrl: data.saml_idp_metadata_url,
     samlIdpMetadataXml: data.saml_idp_metadata_xml,
     samlIdpSsoUrl: data.saml_idp_sso_url,
@@ -91,10 +99,15 @@ export function buildUpdateInit(
     name: data.name,
     isEnabled: data.is_enabled,
     enforceSso: data.enforce_sso,
+    defaultOrganizationId:
+      data.default_organization_id === undefined
+        ? undefined
+        : BigInt(data.default_organization_id),
     oidcIssuerUrl: data.oidc_issuer_url,
     oidcClientId: data.oidc_client_id,
     oidcClientSecret: data.oidc_client_secret,
     oidcScopes: data.oidc_scopes,
+    oidcAuthorizeExtraParams: data.oidc_authorize_extra_params,
     samlIdpMetadataUrl: data.saml_idp_metadata_url,
     samlIdpMetadataXml: data.saml_idp_metadata_xml,
     samlIdpSsoUrl: data.saml_idp_sso_url,

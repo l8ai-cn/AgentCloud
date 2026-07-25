@@ -78,6 +78,7 @@
       "loadingModelResources": "Loading model resources…",
       "modelResourceHint": "Credentials are resolved from the selected AI resource at launch time.",
       "noModelResourcesAvailableHint": "No compatible model resources are available. Add one in Settings → AI Resources.",
+      "optionalToolModelNone": "None (optional)",
       "selectRuntimeBundles": "Runtime Env Bundles",
       "noRuntimeBundlesAvailableHint": "This agent has no runtime env bundles yet. Add one in Settings → Agent config.",
       "noRuntimeBundleSelectedHint": "No runtime bundle selected; the Pod runs without any extra runtime preferences.",

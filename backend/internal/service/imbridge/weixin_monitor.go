@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
+	"sync"
 	"time"
 
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
@@ -15,37 +16,113 @@ func (b *Bridge) StartMonitor(ctx context.Context) {
 }
 
 func (b *Bridge) runWeixinMonitor(ctx context.Context) {
-	ticker := time.NewTicker(2 * time.Second)
+	var (
+		mu      sync.Mutex
+		workers = map[int64]context.CancelFunc{}
+	)
+	reconcile := func() {
+		conns, err := b.listActiveWeixinConnections(ctx)
+		if err != nil {
+			slog.WarnContext(ctx, "weixin monitor list failed", "error", err)
+			return
+		}
+		active := make(map[int64]*domain.Connection, len(conns))
+		for _, conn := range conns {
+			active[conn.ID] = conn
+		}
+		mu.Lock()
+		defer mu.Unlock()
+		for id, cancel := range workers {
+			if _, ok := active[id]; !ok {
+				cancel()
+				delete(workers, id)
+			}
+		}
+		for id, conn := range active {
+			if _, ok := workers[id]; ok {
+				continue
+			}
+			workerCtx, cancel := context.WithCancel(ctx)
+			workers[id] = cancel
+			go b.pollWeixinConnectionLoop(workerCtx, conn.ID)
+		}
+	}
+	reconcile()
+	ticker := time.NewTicker(10 * time.Second)
 	defer ticker.Stop()
 	for {
 		select {
 		case <-ctx.Done():
+			mu.Lock()
+			for id, cancel := range workers {
+				cancel()
+				delete(workers, id)
+			}
+			mu.Unlock()
 			return
 		case <-ticker.C:
-			b.pollActiveWeixinConnections(ctx)
+			reconcile()
 		}
 	}
 }
 
-func (b *Bridge) pollActiveWeixinConnections(ctx context.Context) {
+func (b *Bridge) listActiveWeixinConnections(ctx context.Context) ([]*domain.Connection, error) {
 	conns, err := b.repo.ListActiveByProvider(ctx, domain.ProviderWeixin)
 	if err != nil {
-		slog.WarnContext(ctx, "weixin monitor list failed", "error", err)
-		return
+		return nil, err
 	}
 	wechatConns, err := b.repo.ListActiveByProvider(ctx, domain.ProviderWeChat)
 	if err == nil {
 		conns = append(conns, wechatConns...)
 	}
-	for _, conn := range conns {
-		if err := b.pollWeixinConnection(ctx, conn); err != nil {
-			slog.WarnContext(ctx, "weixin poll failed", "connection_id", conn.ID, "error", err)
+	return conns, nil
+}
+
+func (b *Bridge) pollWeixinConnectionLoop(ctx context.Context, connectionID int64) {
+	backoff := time.Second
+	for {
+		if ctx.Err() != nil {
+			return
 		}
+		conn, err := b.reloadWeixinConnection(ctx, connectionID)
+		if err != nil || conn == nil || conn.Status != domain.StatusActive {
+			return
+		}
+		if err := b.pollWeixinConnection(ctx, conn); err != nil {
+			slog.WarnContext(ctx, "weixin poll failed", "connection_id", connectionID, "error", err)
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(backoff):
+			}
+			if backoff < 30*time.Second {
+				backoff *= 2
+			}
+			continue
+		}
+		backoff = time.Second
 	}
 }
 
+func (b *Bridge) reloadWeixinConnection(ctx context.Context, connectionID int64) (*domain.Connection, error) {
+	conns, err := b.listActiveWeixinConnections(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, conn := range conns {
+		if conn.ID == connectionID {
+			return conn, nil
+		}
+	}
+	return nil, nil
+}
+
 func (b *Bridge) pollWeixinConnection(ctx context.Context, conn *domain.Connection) error {
-	cfg, err := parseWeixinConfig(conn.Config)
+	raw, err := b.providerConfig(conn)
+	if err != nil {
+		return err
+	}
+	cfg, err := parseWeixinConfig(raw)
 	if err != nil {
 		return err
 	}
@@ -67,15 +144,10 @@ func (b *Bridge) pollWeixinConnection(ctx context.Context, conn *domain.Connecti
 	}
 	if updates.ErrCode == -14 {
 		b.markError(ctx, conn, "weixin session expired, please re-login")
-		return nil
+		return fmt.Errorf("weixin session expired")
 	}
 	if updates.GetUpdatesBuf != "" && updates.GetUpdatesBuf != cfg.GetUpdatesBuf {
-		merged, err := mergeWeixinConfig(conn.Config, weixinBridgeConfig{GetUpdatesBuf: updates.GetUpdatesBuf})
-		if err != nil {
-			return err
-		}
-		conn.Config = merged
-		if err := b.repo.UpdateConnection(ctx, conn); err != nil {
+		if err := b.persistWeixinConfig(ctx, conn, weixinBridgeConfig{GetUpdatesBuf: updates.GetUpdatesBuf}); err != nil {
 			return err
 		}
 	}

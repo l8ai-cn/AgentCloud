@@ -116,7 +116,7 @@ export function useExpertMarketReview() {
       const approved = await approveExpertMarketRelease(releaseId);
       if (activeReleaseId.current !== releaseId) return;
       setSelected(approved);
-      toast.success("专家发布已批准");
+      toast.success("伙伴发布已批准");
       await loadReleases();
     } catch (actionError) {
       if (activeReleaseId.current === releaseId) {
@@ -141,7 +141,7 @@ export function useExpertMarketReview() {
       if (activeReleaseId.current !== releaseId) return;
       setSelected(rejected);
       resetReviewForm();
-      toast.success("专家发布已驳回");
+      toast.success("伙伴发布已驳回");
       await loadReleases();
     } catch (actionError) {
       if (activeReleaseId.current === releaseId) {

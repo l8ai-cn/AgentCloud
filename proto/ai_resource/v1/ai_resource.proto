@@ -19,6 +19,8 @@ service AIResourceService {
   rpc SetConnectionEnabled(SetConnectionEnabledRequest) returns (MutationResponse);
   rpc ValidateConnection(ValidateConnectionRequest) returns (MutationResponse);
   rpc DeleteConnection(DeleteConnectionRequest) returns (MutationResponse);
+  rpc DiscoverConnectionModels(DiscoverConnectionModelsRequest) returns (DiscoverConnectionModelsResponse);
+  rpc ImportConnectionModels(ImportConnectionModelsRequest) returns (ImportConnectionModelsResponse);
   rpc CreateResource(CreateResourceRequest) returns (ModelResource);
   rpc UpdateResource(UpdateResourceRequest) returns (ModelResource);
   rpc SetResourceEnabled(SetResourceEnabledRequest) returns (MutationResponse);
@@ -55,6 +57,23 @@ message RotateConnectionCredentialsRequest { int64 connection_id = 1; map<string
 message SetConnectionEnabledRequest { int64 connection_id = 1; bool enabled = 2; }
 message ValidateConnectionRequest { int64 connection_id = 1; }
 message DeleteConnectionRequest { int64 connection_id = 1; }
+
+message DiscoverConnectionModelsRequest { int64 connection_id = 1; }
+message DiscoverConnectionModelsResponse {
+  int64 connection_id = 1;
+  string provider_key = 2;
+  repeated DiscoveredModel candidates = 3;
+}
+message ImportConnectionModelsRequest {
+  int64 connection_id = 1;
+  // Empty imports every importable candidate.
+  repeated string model_ids = 2;
+}
+message ImportConnectionModelsResponse {
+  int64 connection_id = 1;
+  repeated ModelResource imported = 2;
+  repeated SkippedModel skipped = 3;
+}
 
 message CreateResourceRequest { int64 connection_id = 1; ResourceSpec resource = 2; }
 message UpdateResourceRequest { int64 resource_id = 1; ResourceUpdate resource = 2; }

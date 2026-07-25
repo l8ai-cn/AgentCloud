@@ -33,6 +33,14 @@ func (service *Service) PrepareMarketSnapshot(
 	if err := rejectPrivateMarketSnapshotReferences(normalized); err != nil {
 		return workerspec.ResolvedSnapshot{}, err
 	}
+	secretRefs, err := service.marketSnapshotSecretRefs(
+		ctx,
+		scope,
+		normalized.Runtime.WorkerType.Slug,
+	)
+	if err != nil {
+		return workerspec.ResolvedSnapshot{}, err
+	}
 	skillIDs := append([]int64{}, normalized.Workspace.SkillIDs...)
 	if len(normalized.Workspace.SkillPackages) == 0 {
 		skillIDs, err = service.platformSkillIDs(ctx, skillIDs)
@@ -59,7 +67,10 @@ func (service *Service) PrepareMarketSnapshot(
 			ToolModelResourceIDs: cloneToolModelResourceIDs(toolModelResourceIDs),
 			WorkerTypeSlug:       normalized.Runtime.WorkerType.Slug,
 			Runtime:              runtimeSelection,
-			TypeConfig:           normalized.TypeConfig,
+			TypeConfig: marketTypeConfigWithSecretRefs(
+				normalized.TypeConfig,
+				secretRefs,
+			),
 			Workspace: workerspecdomain.Workspace{
 				SkillIDs: skillIDs,
 				SkillPackages: append(

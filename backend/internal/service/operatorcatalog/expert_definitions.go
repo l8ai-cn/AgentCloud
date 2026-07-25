@@ -3,7 +3,7 @@ package operatorcatalog
 func Experts() []ExpertDefinition {
 	return []ExpertDefinition{
 		{
-			Slug: "video-production-expert", Name: "视频制作专家",
+			Slug: "video-production-expert", Name: "视频制作伙伴",
 			Summary:     "从创意到可交付成片的一体化视频制作。",
 			Description: "负责短视频方案、素材、Remotion 合成、动效和交付质检。",
 			Category:    "video", Icon: "clapperboard",
@@ -17,7 +17,7 @@ func Experts() []ExpertDefinition {
 			Prompt: "Own the video from brief to verified master. Confirm creative direction before rendering, preserve asset rights evidence, and do not deliver an unverified file.",
 		},
 		{
-			Slug: "video-editing-expert", Name: "视频剪辑专家",
+			Slug: "video-editing-expert", Name: "视频剪辑伙伴",
 			Summary:     "以叙事、节奏、声音和字幕为核心完成专业剪辑。",
 			Description: "分析素材，确认剪辑策略，生成 EDL，完成动效、字幕、声音和交付检查。",
 			Category:    "video", Icon: "scissors",
@@ -30,7 +30,7 @@ func Experts() []ExpertDefinition {
 			Prompt: "Edit from an explicit strategy and reversible EDL. Preserve source media, keep subtitles on the output timeline, and verify every cut before delivery.",
 		},
 		{
-			Slug: "short-video-director", Name: "短视频编导专家",
+			Slug: "short-video-director", Name: "短视频编导伙伴",
 			Summary:     "把传播目标转成可拍、可剪、可验证的短视频执行方案。",
 			Description: "完成选题提炼、结构、脚本、分镜、镜头表、素材计划和剪辑简报。",
 			Category:    "video", Icon: "film",
@@ -41,6 +41,39 @@ func Experts() []ExpertDefinition {
 				"video-delivery-qa",
 			},
 			Prompt: "Turn the objective into a feasible short-video plan. Ground claims in supplied facts, identify every visual source, and hand production an executable script and shot list.",
+		},
+		{
+			Slug: "pattern-design-partner", Name: "花型设计伙伴",
+			Summary:     "把参考图、元素和风格要求转成可评审、可接版的花型方案。",
+			Description: "完成花型分析、元素重绘、画布铺排、无缝接版检查和交付建议。",
+			Category:    "design", Icon: "palette",
+			Tags:     []string{"pattern", "textile", "design", "seamless"},
+			Outcomes: []string{"花型分析", "元素生成", "重复画布", "接版证据", "生产风险"},
+			SkillSlugs: []string{
+				"pattern-generate", "canvas-compose",
+				"pattern-seam-review", "lovart-api",
+			},
+			Prompt:         "Turn visual references into production-aware textile patterns. Keep every source traceable, separate motifs from repeats, prove seam quality, and call out manufacturing risks before delivery.",
+			WorkerTypeSlug: "pattern-designer", RuntimeImageID: 6,
+			SecretRefs: map[string]string{
+				"LOVART_ACCESS_KEY": "lovart",
+				"LOVART_SECRET_KEY": "lovart",
+			},
+		},
+		{
+			Slug: "course-development-partner", Name: "课程研发伙伴",
+			Summary:     "从教学目标到课程资产的一体化研发伙伴。",
+			Description: "完成课程研究、大纲、章节任务、课件正文、实验、练习评价和交付审核。",
+			Category:    "education", Icon: "graduation-cap",
+			Tags:     []string{"course", "education", "curriculum", "assessment"},
+			Outcomes: []string{"课程蓝图", "章节任务", "课件正文", "实验手册", "练习评价", "交付清单"},
+			SkillSlugs: []string{
+				"course-researcher", "course-architect",
+				"course-builder", "course-lab-builder",
+				"course-practice-builder", "course-ppt",
+			},
+			Prompt:         "Develop complete course assets from explicit learning outcomes. Use backward design, keep references mapped to lessons, require human review gates, and verify every deliverable against observable student work.",
+			WorkerTypeSlug: "codex-cli", RuntimeImageID: 1,
 		},
 	}
 }

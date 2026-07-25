@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { EffectiveResource, ProviderDefinition } from "@/lib/api/facade/aiResource";
 import {
-  agentRequiresModelResource,
   compatibleModelResources,
   compatibleToolModelResources,
 } from "../workerModelResources";
@@ -58,8 +57,11 @@ const minimaxProvider: ProviderDefinition = {
 
 describe("workerModelResources", () => {
   it("allows selectable Gemini resources when exact model injection is supported", () => {
-    expect(agentRequiresModelResource("gemini-cli")).toBe(true);
-    expect(compatibleModelResources("gemini-cli", [geminiResource], [geminiProvider])).toEqual([
+    expect(compatibleModelResources(
+      [geminiResource],
+      [geminiProvider],
+      { required: true, protocolAdapters: ["gemini"] },
+    )).toEqual([
       geminiResource,
     ]);
   });
@@ -78,9 +80,12 @@ describe("workerModelResources", () => {
       },
     };
 
-    expect(agentRequiresModelResource("video-studio")).toBe(true);
     expect(
-      compatibleModelResources("video-studio", [openAIResource], [openAIProvider]),
+      compatibleModelResources(
+        [openAIResource],
+        [openAIProvider],
+        { required: true, protocolAdapters: ["openai-compatible"] },
+      ),
     ).toEqual([openAIResource]);
   });
 
@@ -104,7 +109,6 @@ describe("workerModelResources", () => {
     }));
     expect(
       compatibleModelResources(
-        "new-definition-worker",
         resources,
         providers,
         { required: true, protocolAdapters: ["anthropic"] },
@@ -112,7 +116,7 @@ describe("workerModelResources", () => {
     ).toEqual([resources[1]]);
   });
 
-  it.each(["openclaw", "hermes"])("%s only accepts its declared OpenAI-compatible resource", (agentSlug) => {
+  it("only accepts the declared OpenAI-compatible resource", () => {
     const providers: ProviderDefinition[] = [
       { ...geminiProvider, key: "openai", protocolAdapter: "openai-compatible" },
       { ...geminiProvider, key: "anthropic", protocolAdapter: "anthropic" },
@@ -132,13 +136,15 @@ describe("workerModelResources", () => {
       },
     }));
 
-    expect(agentRequiresModelResource(agentSlug)).toBe(true);
-    expect(compatibleModelResources(agentSlug, resources, providers)).toEqual([resources[0]]);
+    expect(compatibleModelResources(
+      resources,
+      providers,
+      { required: true, protocolAdapters: ["openai-compatible"] },
+    )).toEqual([resources[0]]);
   });
 
-  it.each(["do-agent", "seedance-expert"])(
-    "%s excludes MiniMax when its Definition only allows OpenAI-compatible and Anthropic models",
-    (agentSlug) => {
+  it("excludes MiniMax when the Definition only allows OpenAI-compatible and Anthropic models",
+    () => {
       const providers: ProviderDefinition[] = [
         { ...geminiProvider, key: "openai", protocolAdapter: "openai-compatible" },
         { ...geminiProvider, key: "anthropic", protocolAdapter: "anthropic" },
@@ -159,7 +165,6 @@ describe("workerModelResources", () => {
       }));
 
       expect(compatibleModelResources(
-        agentSlug,
         resources,
         providers,
         {
@@ -179,13 +184,16 @@ describe("workerModelResources", () => {
       },
     };
 
-    expect(agentRequiresModelResource("minimax-cli")).toBe(true);
-    expect(compatibleModelResources("minimax-cli", [minimaxResource], [minimaxProvider])).toEqual([
+    expect(compatibleModelResources(
+      [minimaxResource],
+      [minimaxProvider],
+      { required: true, protocolAdapters: ["minimax"] },
+    )).toEqual([
       minimaxResource,
     ]);
   });
 
-  it("does not offer MiniMax chat resources to Seedance", () => {
+  it("does not offer MiniMax chat resources to a worker that excludes the minimax adapter", () => {
     const minimaxResource: EffectiveResource = {
       ...geminiResource,
       connection: {
@@ -195,7 +203,21 @@ describe("workerModelResources", () => {
     };
 
     expect(
-      compatibleModelResources("seedance-expert", [minimaxResource], [minimaxProvider]),
+      compatibleModelResources(
+        [minimaxResource],
+        [minimaxProvider],
+        { required: true, protocolAdapters: ["openai-compatible", "anthropic"] },
+      ),
+    ).toEqual([]);
+  });
+
+  it("returns nothing when the worker does not require a model resource", () => {
+    expect(
+      compatibleModelResources(
+        [geminiResource],
+        [geminiProvider],
+        { required: false, protocolAdapters: ["gemini"] },
+      ),
     ).toEqual([]);
   });
 

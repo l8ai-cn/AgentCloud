@@ -22,6 +22,10 @@ type ConnectionProber interface {
 	Probe(ctx context.Context, input ProbeInput) error
 }
 
+type ModelLister interface {
+	List(ctx context.Context, input ListModelsInput) ([]domain.DiscoveredModel, error)
+}
+
 type AuditRecorder interface {
 	Record(ctx context.Context, log *audit.Log) error
 }
@@ -39,6 +43,7 @@ type Dependencies struct {
 	Cipher     Cipher
 	Members    OrganizationMemberReader
 	Prober     ConnectionProber
+	Lister     ModelLister
 	Mutations  MutationRunner
 	Endpoints  EndpointValidator
 }
@@ -48,6 +53,7 @@ type Service struct {
 	cipher     Cipher
 	members    OrganizationMemberReader
 	prober     ConnectionProber
+	lister     ModelLister
 	mutations  MutationRunner
 	endpoints  EndpointValidator
 }
@@ -65,13 +71,19 @@ func NewService(deps Dependencies) (*Service, error) {
 	if deps.Prober == nil {
 		return nil, fmt.Errorf("AI resource connection prober is required")
 	}
+	if deps.Lister == nil {
+		return nil, fmt.Errorf("AI resource model lister is required")
+	}
 	if deps.Mutations == nil {
 		return nil, fmt.Errorf("AI resource mutation runner is required")
 	}
 	if deps.Endpoints == nil {
 		return nil, fmt.Errorf("AI resource endpoint validator is required")
 	}
-	return &Service{repository: deps.Repository, cipher: deps.Cipher, members: deps.Members, prober: deps.Prober, mutations: deps.Mutations, endpoints: deps.Endpoints}, nil
+	return &Service{
+		repository: deps.Repository, cipher: deps.Cipher, members: deps.Members, prober: deps.Prober,
+		lister: deps.Lister, mutations: deps.Mutations, endpoints: deps.Endpoints,
+	}, nil
 }
 
 func (s *Service) Catalog() []domain.ProviderDefinition { return domain.Providers() }
