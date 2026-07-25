@@ -18,6 +18,7 @@ export interface AgentWorkspaceText {
   plan: string;
   agentPlan: string;
   loadEarlierActivity: string;
+  jumpToLatest: string;
   readyForTask: string;
   startSession: string;
   you: string;

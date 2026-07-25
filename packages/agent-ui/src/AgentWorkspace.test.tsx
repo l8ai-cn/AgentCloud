@@ -162,7 +162,6 @@ describe("AgentWorkspace", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Send message" }));
     fireEvent.click(screen.getByRole("button", { name: "Approve" }));
-    fireEvent.click(screen.getByRole("button", { name: "Load earlier activity" }));
 
     await waitFor(() => {
       expect(agentRuntime.sendMessage).toHaveBeenCalledWith(

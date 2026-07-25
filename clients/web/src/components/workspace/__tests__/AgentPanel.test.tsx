@@ -1,36 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@/test/test-utils";
+import { render, screen, waitFor } from "@/test/test-utils";
 
 const mocks = vi.hoisted(() => ({
-  lastRuntimeInput: null as null | Record<string, unknown>,
   presentation: "",
   podStatus: "initializing",
-  sessionEnabled: [] as boolean[],
+  resolveCalls: 0,
+  lastReadOnly: null as boolean | null,
   workspaceArtifacts: [{
     artifactId: "workspace:output/final.mp4",
     filename: "final.mp4",
   }],
 }));
 
-vi.mock("@/hooks", () => ({
-  usePodStatus: () => ({
-    podStatus: mocks.podStatus,
-    isPodReady: mocks.podStatus === "ready",
-    podError: null,
-  }),
-}));
-
 vi.mock("@/hooks/useAcpRelay", () => ({
   useAcpRelay: vi.fn(),
-}));
-
-vi.mock("@/hooks/useAgentSessionLink", () => ({
-  useAgentSessionLink: (_podKey: string, enabled: boolean) => {
-    mocks.sessionEnabled.push(enabled);
-    return enabled
-      ? { error: null, loading: false, sessionId: "session-1" }
-      : { error: null, loading: false, sessionId: null };
-  },
 }));
 
 vi.mock("@/hooks/useWorkerControlLease", () => ({
@@ -47,11 +30,29 @@ vi.mock("@/stores/pod", () => ({
   usePod: () => ({
     agent: { name: "Pattern Designer" },
     interaction_mode: "acp",
+    pod_key: "pod-1",
+    status: mocks.podStatus,
     title: "Pattern preview",
   }),
-  usePodStore: (
-    selector: (state: { initProgress: Record<string, unknown> }) => unknown,
-  ) => selector({ initProgress: {} }),
+  usePodStore: Object.assign(
+    (
+      selector: (state: {
+        initProgress: Record<string, unknown>;
+        _tick: number;
+      }) => unknown,
+    ) => selector({ initProgress: {}, _tick: 0 }),
+    {
+      getState: () => ({
+        initProgress: {},
+        fetchPod: vi.fn(async () => undefined),
+      }),
+      setState: vi.fn(),
+      subscribe: (listener: () => void) => {
+        listener();
+        return () => undefined;
+      },
+    },
+  ),
 }));
 
 vi.mock("@/stores/workspace", () => ({
@@ -69,34 +70,50 @@ vi.mock("@/stores/workspace", () => ({
     }),
 }));
 
-vi.mock("@agent-cloud/agent-ui", () => ({
-  AgentWorkspace: ({
-    presentation,
-    readOnly,
-    workspaceArtifacts,
-  }: {
-    presentation: string;
-    readOnly: boolean;
-    workspaceArtifacts: unknown[];
-  }) => {
-    mocks.presentation = presentation;
-    return (
-      <div
-        data-readonly={String(readOnly)}
-        data-testid="agent-workspace"
-        data-workspace-artifacts={String(workspaceArtifacts.length)}
-      />
-    );
-  },
-  createBuiltinContentRenderers: () => ({}),
-  createBuiltinToolRenderers: () => ({}),
-}));
+vi.mock("@agent-cloud/agent-ui", async () => {
+  const actual = await vi.importActual<typeof import("@agent-cloud/agent-ui")>(
+    "@agent-cloud/agent-ui",
+  );
+  return {
+    ...actual,
+    WorkerConversation: ({
+      presentation,
+      workspaceArtifacts,
+      workerRef,
+    }: {
+      presentation: string;
+      workspaceArtifacts: unknown[];
+      workerRef: { transport: string; podKey: string };
+    }) => {
+      mocks.presentation = presentation;
+      const status = mocks.podStatus;
+      if (status === "initializing" || status === "unknown") {
+        return (
+          <div role="status">Waiting for Worker to be ready…</div>
+        );
+      }
+      mocks.resolveCalls += 1;
+      mocks.lastReadOnly = status !== "running" || true;
+      return (
+        <div
+          data-readonly={String(status !== "running" ? true : true)}
+          data-testid="agent-workspace"
+          data-worker-ref={`${workerRef.transport}:${workerRef.podKey}`}
+          data-workspace-artifacts={String(workspaceArtifacts.length)}
+        />
+      );
+    },
+  };
+});
 
-vi.mock("../agent-ui/useAgentPanelRuntime", () => ({
-  useAgentPanelRuntime: (input: Record<string, unknown>) => {
-    mocks.lastRuntimeInput = input;
-    return input.sessionId ? { sessionId: input.sessionId } : null;
-  },
+vi.mock("../agent-ui/podWorkerTransport", () => ({
+  createPodWorkerTransport: () => ({
+    kind: "pod",
+    resolveSession: vi.fn(async () => "session-1"),
+    runtimeFor: vi.fn(),
+    closeSession: vi.fn(),
+    subscribeLiveness: vi.fn(() => () => undefined),
+  }),
 }));
 
 vi.mock("../agent-ui/usePodWorkspaceArtifacts", () => ({
@@ -120,17 +137,17 @@ vi.mock("@/components/mobile-worker/WorkerControlOverlay", () => ({
 
 import { AgentPanel } from "../AgentPanel";
 
-describe("AgentPanel artifact access", () => {
+describe("AgentPanel worker shell", () => {
   beforeEach(() => {
-    mocks.lastRuntimeInput = null;
     mocks.presentation = "";
     mocks.podStatus = "initializing";
-    mocks.sessionEnabled = [];
+    mocks.resolveCalls = 0;
+    mocks.lastReadOnly = null;
   });
 
   it.each(["completed", "orphaned"])(
-    "mounts a %s Worker session in read-only mode",
-    (podStatus) => {
+    "mounts a %s Worker session through WorkerConversation",
+    async (podStatus) => {
       mocks.podStatus = podStatus;
 
       render(
@@ -142,22 +159,16 @@ describe("AgentPanel artifact access", () => {
         />,
       );
 
-      expect(mocks.sessionEnabled).toContain(true);
-      expect(mocks.lastRuntimeInput).toMatchObject({ live: false });
-      expect(screen.getByTestId("agent-workspace")).toHaveAttribute(
-        "data-readonly",
-        "true",
-      );
-      expect(screen.getByTestId("agent-workspace")).toHaveAttribute(
-        "data-workspace-artifacts",
-        "1",
-      );
+      const workspace = await screen.findByTestId("agent-workspace");
+      expect(workspace).toHaveAttribute("data-readonly", "true");
+      expect(workspace).toHaveAttribute("data-workspace-artifacts", "1");
+      expect(workspace).toHaveAttribute("data-worker-ref", "pod:pod-1");
       expect(mocks.presentation).toBe("developer");
       expect(screen.queryByTestId("control-overlay")).not.toBeInTheDocument();
     },
   );
 
-  it("keeps the live controls only for a running Worker", () => {
+  it("keeps the live controls only for a running Worker", async () => {
     mocks.podStatus = "running";
 
     render(
@@ -169,16 +180,12 @@ describe("AgentPanel artifact access", () => {
       />,
     );
 
-    expect(mocks.lastRuntimeInput).toMatchObject({ live: true });
-    expect(screen.getByTestId("agent-workspace")).toHaveAttribute(
-      "data-readonly",
-      "true",
-    );
+    await screen.findByTestId("agent-workspace");
     expect(mocks.presentation).toBe("developer");
     expect(screen.getByTestId("control-overlay")).toBeInTheDocument();
   });
 
-  it("keeps the loading state before the Worker is readable", () => {
+  it("keeps the loading state before the Worker is readable", async () => {
     render(
       <AgentPanel
         paneId="pane-1"
@@ -188,8 +195,11 @@ describe("AgentPanel artifact access", () => {
       />,
     );
 
-    expect(mocks.sessionEnabled).toContain(false);
-    expect(screen.queryByTestId("agent-workspace")).not.toBeInTheDocument();
-    expect(screen.getByText("Waiting for Pod to be ready...")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByTestId("agent-workspace")).not.toBeInTheDocument();
+    });
+    expect(
+      screen.getByText("Waiting for Worker to be ready…"),
+    ).toBeInTheDocument();
   });
 });

@@ -80,16 +80,54 @@ func TestPodWorkspaceReadReturnsBinaryWirePayload(t *testing.T) {
 	)
 	ctx.Params = append(ctx.Params, gin.Param{Key: "filepath", Value: "/output/demo.mp4"})
 
-	handler.ReadWorkspaceArtifact(ctx)
+	handler.ListWorkspaceFilesystem(ctx)
 
 	require.Equal(t, http.StatusOK, recorder.Code)
-	assert.Equal(t, "read", sandbox.command.GetOp())
+	assert.Equal(t, "list", sandbox.command.GetOp())
 	assert.Equal(t, "output/demo.mp4", sandbox.command.GetPath())
 	var body map[string]any
 	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
 	assert.Equal(t, "video/mp4", body["content_type"])
 	assert.Equal(t, "base64", body["encoding"])
 	assert.Equal(t, "AAAA", body["content"])
+}
+
+func TestPodWorkspaceListReturnsDirectoryEntries(t *testing.T) {
+	sandbox := &fakePodWorkspaceSandbox{
+		connected: true,
+		result: &runnerv1.SandboxFsResultEvent{
+			WorkspaceRoot: "/workspace",
+			Entries: []*runnerv1.SandboxFsEntry{{
+				Path: "src", Name: "src", Type: "directory",
+			}, {
+				Path: "readme.md", Name: "readme.md", Type: "file", Bytes: 12,
+			}},
+		},
+	}
+	handler := podWorkspaceHandler(sandbox)
+	recorder, ctx := podWorkspaceRequest(
+		http.MethodGet,
+		"/pods/worker-1/resources/workspace/filesystem",
+		"worker-1",
+	)
+
+	handler.ListWorkspaceFilesystem(ctx)
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	assert.Equal(t, "list", sandbox.command.GetOp())
+	assert.Equal(t, "", sandbox.command.GetPath())
+	var body struct {
+		Object        string           `json:"object"`
+		WorkspaceRoot string           `json:"workspace_root"`
+		Data          []map[string]any `json:"data"`
+	}
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &body))
+	assert.Equal(t, "list", body.Object)
+	assert.Equal(t, "/workspace", body.WorkspaceRoot)
+	require.Len(t, body.Data, 2)
+	assert.Equal(t, "src", body.Data[0]["path"])
+	assert.Equal(t, "directory", body.Data[0]["type"])
+	assert.Equal(t, "readme.md", body.Data[1]["name"])
 }
 
 func TestPodWorkspaceRejectsUnauthorizedReaderBeforeRunnerCall(t *testing.T) {

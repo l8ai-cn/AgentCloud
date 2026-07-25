@@ -4,8 +4,10 @@ import {
 } from "@agent-cloud/agent-ui";
 
 import { getApiBaseUrl } from "@/lib/env";
-import { getAuthManager } from "@/lib/wasm-core";
-import { readCurrentOrg } from "@/stores/auth";
+import {
+  authenticatedOrganizationFetch,
+  requireCurrentOrganizationSlug,
+} from "./authenticatedRequest";
 
 export async function listPodWorkspaceArtifacts(
   podKey: string,
@@ -16,6 +18,32 @@ export async function listPodWorkspaceArtifacts(
   );
   const body = (await response.json()) as { data?: unknown };
   return workspaceFileArtifacts("workspace-discovery", body.data);
+}
+
+export async function listPodWorkspaceFilesystem(
+  podKey: string,
+  dir = "",
+): Promise<Array<{ name: string; path: string; type: "file" | "directory" }>> {
+  const suffix =
+    dir === ""
+      ? "/resources/workspace/filesystem"
+      : `/resources/workspace/filesystem/${dir
+          .split("/")
+          .filter(Boolean)
+          .map(encodeURIComponent)
+          .join("/")}`;
+  const response = await podWorkspaceFetch(podKey, suffix);
+  const body = (await response.json()) as { data?: unknown };
+  if (!Array.isArray(body.data)) return [];
+  return body.data.flatMap((row) => {
+    if (!row || typeof row !== "object") return [];
+    const name = (row as { name?: unknown }).name;
+    const path = (row as { path?: unknown }).path;
+    const type = (row as { type?: unknown }).type;
+    if (typeof name !== "string" || typeof path !== "string") return [];
+    if (type !== "file" && type !== "directory") return [];
+    return [{ name, path, type }];
+  });
 }
 
 export async function loadPodWorkspaceArtifact(
@@ -56,22 +84,13 @@ async function podWorkspaceFetch(
   podKey: string,
   suffix: string,
 ): Promise<Response> {
-  const token = getAuthManager().get_token();
-  const org = readCurrentOrg()?.slug;
-  if (!token || !org) {
-    throw new Error("Not authenticated");
-  }
+  const org = requireCurrentOrganizationSlug();
   const base = getApiBaseUrl().replace(/\/$/, "");
   const apiRoot = base.endsWith("/api") ? base : `${base}/api`;
-  const response = await fetch(
+  return authenticatedOrganizationFetch(
     `${apiRoot}/v1/orgs/${encodeURIComponent(org)}/pods/${encodeURIComponent(podKey)}${suffix}`,
     {
       cache: "no-store",
-      headers: { Authorization: `Bearer ${token}` },
     },
   );
-  if (!response.ok) {
-    throw new Error(`Workspace artifact request failed (${response.status})`);
-  }
-  return response;
 }

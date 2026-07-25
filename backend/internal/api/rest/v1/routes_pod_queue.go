@@ -1,8 +1,8 @@
 package v1
 
 import (
-	runnersvc "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	"github.com/gin-gonic/gin"
+	runnersvc "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 )
 
 func registerPodQueueRoutes(rg *gin.RouterGroup, svc *Services, previewPublicOrigin string) {
@@ -31,12 +31,6 @@ func registerPodQueueRoutes(rg *gin.RouterGroup, svc *Services, previewPublicOri
 	if svc.SandboxFsService != nil {
 		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))
 	}
-	if svc.SandboxFsService != nil {
-		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))
-	}
-	if svc.SandboxFsService != nil {
-		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))
-	}
 	podHandler := NewPodHandler(svc.Pod, svc.Runner, svc.PodOrchestrator, podOpts...)
 
 	rg.POST("/quick-tasks", podHandler.CreateQuickTask)
@@ -45,7 +39,8 @@ func registerPodQueueRoutes(rg *gin.RouterGroup, svc *Services, previewPublicOri
 	rg.DELETE("/pods/:key/queue", podHandler.CancelQueuedPod)
 	rg.GET("/pods/:key/preview", podHandler.GetPodPreview)
 	rg.GET("/pods/:key/resources/workspace/changes", podHandler.ListWorkspaceArtifacts)
-	rg.GET("/pods/:key/resources/workspace/filesystem/*filepath", podHandler.ReadWorkspaceArtifact)
+	rg.GET("/pods/:key/resources/workspace/filesystem", podHandler.ListWorkspaceFilesystem)
+	rg.GET("/pods/:key/resources/workspace/filesystem/*filepath", podHandler.ListWorkspaceFilesystem)
 }
 
 var _ pendingQueueReader = (*runnersvc.PendingCommandQueue)(nil)

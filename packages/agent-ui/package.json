@@ -8,7 +8,9 @@
   "exports": {
     ".": "./src/index.ts",
     "./protocol": "./src/protocol/index.ts",
-    "./runtime": "./src/runtime/index.ts"
+    "./runtime": "./src/runtime/index.ts",
+    "./omnigent": "./src/omnigent/index.ts",
+    "./worker": "./src/worker/index.ts"
   },
   "scripts": {
     "test": "vitest run --config vitest.config.ts --reporter=default --no-color"
