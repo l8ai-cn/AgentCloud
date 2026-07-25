@@ -5,13 +5,12 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gin-gonic/gin"
 	"github.com/l8ai-cn/agentcloud/backend/internal/config"
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra/pki"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
-	"github.com/l8ai-cn/agentcloud/backend/pkg/ampauthz"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/apierr"
-	"github.com/gin-gonic/gin"
 )
 
 // GRPCRunnerHandler handles gRPC/mTLS Runner registration and management.
@@ -30,16 +29,8 @@ func NewGRPCRunnerHandler(runnerService *runner.Service, pkiService *pki.Service
 	}
 }
 
-// PKIService exposes the PKI dep for the Connect runner_api server. The
-// REST handler keeps it private; the Connect runner_api package needs the
-// same dep injected via WithPKIService.
 func (h *GRPCRunnerHandler) PKIService() *pki.Service { return h.pkiService }
 
-// ==================== Certificate Renewal ====================
-
-// RenewCertificate renews a runner's certificate.
-// POST /api/v1/runners/grpc/renew-certificate
-// Authenticated via mTLS - Nginx verifies client certificate and passes CN.
 func (h *GRPCRunnerHandler) RenewCertificate(c *gin.Context) {
 	if h.pkiService == nil {
 		apierr.ServiceUnavailable(c, apierr.SERVICE_UNAVAILABLE, "PKI service not configured")
@@ -75,11 +66,6 @@ func (h *GRPCRunnerHandler) RenewCertificate(c *gin.Context) {
 	})
 }
 
-// ==================== Reactivation (Expired Certificate Recovery) ====================
-
-// GenerateReactivationToken generates a one-time token for reactivating a runner.
-// POST /api/v1/organizations/:slug/runners/:id/reactivate
-// Requires JWT authentication (admin).
 func (h *GRPCRunnerHandler) GenerateReactivationToken(c *gin.Context) {
 	runnerID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -118,9 +104,6 @@ func (h *GRPCRunnerHandler) GenerateReactivationToken(c *gin.Context) {
 	})
 }
 
-// Reactivate reactivates a runner using a one-time token.
-// POST /api/v1/runners/grpc/reactivate
-// No authentication required - token serves as authentication.
 func (h *GRPCRunnerHandler) Reactivate(c *gin.Context) {
 	if h.pkiService == nil {
 		apierr.ServiceUnavailable(c, apierr.SERVICE_UNAVAILABLE, "PKI service not configured")
@@ -156,11 +139,6 @@ func (h *GRPCRunnerHandler) Reactivate(c *gin.Context) {
 	})
 }
 
-// ==================== Route Registration ====================
-
-// GetDiscovery returns the current gRPC endpoint for runner auto-discovery.
-// GET /api/v1/runners/grpc/discovery
-// Authenticated via mTLS - requires X-Client-Cert-CN header (same as RenewCertificate).
 func (h *GRPCRunnerHandler) GetDiscovery(c *gin.Context) {
 	nodeID := c.GetHeader("X-Client-Cert-CN")
 	if nodeID == "" {
@@ -171,47 +149,4 @@ func (h *GRPCRunnerHandler) GetDiscovery(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"grpc_endpoint": h.config.GRPC.Endpoint,
 	})
-}
-
-// RegisterGRPCRunnerRoutes registers gRPC runner routes.
-func RegisterGRPCRunnerRoutes(r *gin.RouterGroup, handler *GRPCRunnerHandler) {
-	// Public endpoints (no auth required)
-	// These are used by Runner CLI for registration. `auth-status` was the
-	// browser-side polling endpoint — that moved to
-	// proto.runner_api.v1.RunnerPublicService.GetRunnerAuthStatus (Connect).
-	grpcPublic := r.Group("/runners/grpc")
-	{
-		// Tailscale-style interactive registration
-		grpcPublic.POST("/auth-url", handler.RequestAuthURL)
-
-		// Pre-generated token registration
-		grpcPublic.POST("/register", handler.RegisterWithToken)
-
-		// Reactivation (for expired certificates)
-		grpcPublic.POST("/reactivate", handler.Reactivate)
-
-		// Certificate renewal (authenticated via mTLS, X-Client-Cert-* headers)
-		grpcPublic.POST("/renew-certificate", handler.RenewCertificate)
-
-		// Discovery - returns current gRPC endpoint (authenticated via mTLS, X-Client-Cert-* headers)
-		grpcPublic.GET("/discovery", handler.GetDiscovery)
-	}
-}
-
-// RegisterOrgGRPCRunnerRoutes registers organization-scoped gRPC runner routes.
-// These require JWT authentication. AuthorizeRunner moved to Connect (see
-// proto.runner_api.v1.RunnerService.AuthorizeRunner).
-func RegisterOrgGRPCRunnerRoutes(rg *gin.RouterGroup, handler *GRPCRunnerHandler) {
-	// Organization-scoped endpoints (require JWT auth + tenant context)
-	grpc := rg.Group("/grpc")
-	{
-		manage := middleware.RequirePermission(ampauthz.PermRunnerManage)
-		grpc.GET("/tokens", manage, handler.ListGRPCTokens)
-		grpc.POST("/tokens", manage, handler.GenerateGRPCToken)
-		grpc.DELETE("/tokens/:id", manage, handler.DeleteGRPCToken)
-	}
-
-	// Reactivation token generation (per-runner). Kept on REST until the
-	// admin-side reactivation UI lands.
-	rg.POST("/:id/reactivate", middleware.RequirePermission(ampauthz.PermRunnerManage), handler.GenerateReactivationToken)
 }

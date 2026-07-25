@@ -70,3 +70,21 @@ func TestResolveFederatedOrgID(t *testing.T) {
 		assert.Equal(t, int64(2), orgID)
 	})
 }
+
+func TestBindFederatedOrganization_SyncsMappedRole(t *testing.T) {
+	binder := &stubOrgBinder{byTenant: map[string]int64{"6": 2}}
+	svc := &Service{orgBinder: binder}
+	defaultOrg := int64(2)
+
+	err := svc.bindFederatedOrganization(context.Background(), 42, &SSOLoginRequest{
+		ProviderName:          "oidc:1",
+		IdPTenantID:           "6",
+		IdPRoles:              []string{"VIEWER", "APP_ADMIN"},
+		DefaultOrganizationID: &defaultOrg,
+	})
+	require.NoError(t, err)
+	require.Len(t, binder.synced, 1)
+	assert.Equal(t, int64(2), binder.synced[0].orgID)
+	assert.Equal(t, int64(42), binder.synced[0].userID)
+	assert.Equal(t, organization.RoleOwner, binder.synced[0].role)
+}

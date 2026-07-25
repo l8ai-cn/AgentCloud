@@ -22,7 +22,7 @@ func (h *IMBridgeHandler) PairIdentity(c *gin.Context) {
 		apierr.ValidationError(c, err.Error())
 		return
 	}
-	binding, err := h.bridge.PairWithCode(c.Request.Context(), tenant.UserID, req.Code)
+	binding, err := h.bridge.PairWithCode(c.Request.Context(), tenant.OrganizationID, tenant.UserID, req.Code)
 	if err != nil {
 		h.notFoundOrInternal(c, err)
 		return

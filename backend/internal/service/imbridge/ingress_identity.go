@@ -86,7 +86,7 @@ func (b *Bridge) ensurePairing(ctx context.Context, conn *domain.Connection, ext
 	return code, binding, nil
 }
 
-func (b *Bridge) PairWithCode(ctx context.Context, userID int64, code string) (*domain.IdentityBinding, error) {
+func (b *Bridge) PairWithCode(ctx context.Context, orgID, userID int64, code string) (*domain.IdentityBinding, error) {
 	code = strings.ToUpper(strings.TrimSpace(code))
 	if code == "" {
 		return nil, ErrInvalidConfig
@@ -96,6 +96,9 @@ func (b *Bridge) PairWithCode(ctx context.Context, userID int64, code string) (*
 		return nil, err
 	}
 	if binding == nil || binding.PairingExpiresAt == nil || binding.PairingExpiresAt.Before(time.Now().UTC()) {
+		return nil, ErrNotFound
+	}
+	if _, err := b.GetConnection(ctx, orgID, binding.ConnectionID); err != nil {
 		return nil, ErrNotFound
 	}
 	binding.UserID = &userID

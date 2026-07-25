@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"strings"
-
-	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
 )
 
 func (b *Bridge) refreshWeixinQR(ctx context.Context, orgID int64, sessionID string, snapshot *weixinQRSession, wp *WeixinProvider) (map[string]any, error) {

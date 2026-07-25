@@ -338,15 +338,22 @@ type Capabilities struct {
 
 ### 进度（2026-07-26）
 
-**P0 进行中 / 本轮已落地：**
+**P0–P2 + 设置页 UX 已落地（P3 流式卡片 / P4 长连接仍后置）：**
 - [x] 拆分 `providers.go` → `provider_{feishu,dingtalk,wecom,slack}.go` + crypto 辅助
 - [x] 飞书：`header.token` 校验 + `encrypt` AES-CBC 解密 + webhook SHA256 签名
 - [x] 钉钉：签名改为 Base64（对齐 OpenClaw fixture）
 - [x] 企微：XML Encrypt + msg_signature + EncodingAESKey 解密；GET URL 验证
 - [x] 微信：`ilink/bot/` 路径、`base_info.bot_agent`、单飞 long-poll、thread=`from_user_id`
-- [x] inbound 幂等（进程内 TTL dedupe）+ `@slug` → 结构化 pod mention（可触发 PodPromptHook）
-- [ ] 凭据 AES 加密落库（下一轮）
-- [ ] 出站精确定位 / 多副本 Redis dedupe（下一轮）
+- [x] inbound 幂等（内存 + `im_inbound_dedupe`）+ `@slug` → 结构化 pod mention
+- [x] 凭据 AES 加密落库（`config_encrypted` 双读；API 返回 redact）
+- [x] 出站精确定位 + 文本分片（`chunk.go` / `bridge_outbound.go`）
+- [x] 身份绑定：配对码 / dmPolicy / groupPolicy / allowFrom + `POST .../im-channels/pair`
+- [x] Worker 路由：`/use` > `@mention` > route bindings；`/workers` `/help` `/status` `/new` `/stop`
+- [x] migration `000235_im_worker_connect`
+- [x] 设置页：策略 / 路由绑定；个人设置「IM 配对」输码
+- [ ] P3：飞书 CardKit / 钉钉 AI Card 进度回显
+- [ ] P4：飞书 WS / 钉钉 Stream + Redis 多副本锁
+- [ ] Redis 跨副本 inbound dedupe（当前 DB claim 已可跨副本）
 
 ### P0 — 修复与加固（阻断项，1 周）
 
