@@ -352,9 +352,12 @@ type Capabilities struct {
 - [x] migration `000235_im_worker_connect`
 - [x] 设置页：策略 / 路由绑定；个人设置「IM 配对」输码
 - [x] P3 骨架：出站重试 + progress draft（飞书 SendTracked/Update；最终回复原地改草稿）
+- [x] **Oilan 生产热修**：`agentsmesh` ns 已滚到 `*:im-worker-connect`，DB **235**  
+  运维说明 → [`docs/integrations/im-worker-connect.md`](../../docs/integrations/im-worker-connect.md)
 - [ ] P3 完整：钉钉 AI Card / 飞书 CardKit 富卡片；订阅 `pod:agent_status_changed`
 - [ ] P4：飞书 WS / 钉钉 Stream + Redis 多副本锁
 - [ ] Redis 跨副本 inbound dedupe（当前 DB claim 已可跨副本）
+- [ ] 正式 `deploy.sh` 对齐 `agentsmesh`（或完成 ns → `agentcloud` 迁移后再走 release gate）
 
 ### P0 — 修复与加固（阻断项，1 周）
 
