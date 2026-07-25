@@ -87,7 +87,7 @@ function EnableDetails({
         {!application.runtime_ref ? (
           <p className="flex items-center gap-1.5">
             <CircleCheck className="h-3.5 w-3.5" />
-            此资源暂不提供可启动的专家任务入口。
+            此资源暂不提供可启动的伙伴任务入口。
           </p>
         ) : null}
       </div>

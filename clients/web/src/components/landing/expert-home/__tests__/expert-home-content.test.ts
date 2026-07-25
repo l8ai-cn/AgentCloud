@@ -148,12 +148,12 @@ describe("expert homepage content contract", () => {
   it("adds product and solutions navigation without removing existing entries", () => {
     expect(enLanding.landing.nav).toMatchObject({
       product: "Product",
-      solutions: "Solutions",
+      solutions: "AI Partners",
       marketplace: "Agent Market",
     });
     expect(zhLanding.landing.nav).toMatchObject({
       product: "产品",
-      solutions: "解决方案",
+      solutions: "AI 伙伴",
       marketplace: "Agent 市场",
     });
   });

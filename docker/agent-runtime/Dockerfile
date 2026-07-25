@@ -61,6 +61,7 @@ ARG AGENT_RUNTIME=e2e-echo
 ARG DO_AGENT_SOURCE_COMMIT=""
 ARG DO_AGENT_BINARY_SHA256=""
 ARG HERMES_AGENT_VERSION=0.18.2
+ARG KIMI_CODE_VERSION=0.29.0
 ARG MINIMAX_CLI_VERSION=1.0.16
 ARG OPENCLAW_VERSION=2026.6.11
 ARG REMOTION_VERSION=4.0.377
@@ -122,6 +123,7 @@ RUN install_apt() { \
         && ln -sf "${cursor_agent}" /usr/local/bin/agent \
         && rm -rf /root/.local /tmp/cursor-install.sh ;; \
       gemini-cli) npm install -g @google/gemini-cli ;; \
+      kimi-code) npm install -g "@moonshot-ai/kimi-code@${KIMI_CODE_VERSION}" ;; \
       minimax-cli) npm install -g mmx-cli ;; \
       opencode) npm install -g opencode-ai ;; \
       grok-build) npm install -g @xai-official/grok ;; \
@@ -161,6 +163,7 @@ RUN groupmod -n runner node \
          codex-cli|video-studio) mkdir -p /home/runner/.codex ;; \
          cursor-cli) mkdir -p /home/runner/.cursor ;; \
          gemini-cli) mkdir -p /home/runner/.gemini ;; \
+         kimi-code) mkdir -p /home/runner/.kimi-code ;; \
          minimax-cli) mkdir -p /home/runner/.minimax ;; \
          loopal) mkdir -p /home/runner/.loopal ;; \
          do-agent) mkdir -p /home/runner/.agent ;; \

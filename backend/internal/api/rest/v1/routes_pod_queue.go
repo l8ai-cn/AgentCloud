@@ -39,7 +39,8 @@ func registerPodQueueRoutes(rg *gin.RouterGroup, svc *Services, previewPublicOri
 	rg.DELETE("/pods/:key/queue", podHandler.CancelQueuedPod)
 	rg.GET("/pods/:key/preview", podHandler.GetPodPreview)
 	rg.GET("/pods/:key/resources/workspace/changes", podHandler.ListWorkspaceArtifacts)
-	rg.GET("/pods/:key/resources/workspace/filesystem/*filepath", podHandler.ReadWorkspaceArtifact)
+	rg.GET("/pods/:key/resources/workspace/filesystem", podHandler.ListWorkspaceFilesystem)
+	rg.GET("/pods/:key/resources/workspace/filesystem/*filepath", podHandler.ListWorkspaceFilesystem)
 }
 
 var _ pendingQueueReader = (*runnersvc.PendingCommandQueue)(nil)

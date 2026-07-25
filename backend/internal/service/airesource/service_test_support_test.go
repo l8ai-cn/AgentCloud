@@ -317,6 +317,20 @@ func (p *recordingProber) Probe(_ context.Context, input ProbeInput) error {
 	return p.err
 }
 
+type recordingLister struct {
+	calls  []ListModelsInput
+	models []domain.DiscoveredModel
+	err    error
+}
+
+func (l *recordingLister) List(_ context.Context, input ListModelsInput) ([]domain.DiscoveredModel, error) {
+	l.calls = append(l.calls, input)
+	if l.err != nil {
+		return nil, l.err
+	}
+	return append([]domain.DiscoveredModel(nil), l.models...), nil
+}
+
 type recordingAudit struct {
 	logs       []*audit.Log
 	err        error
@@ -365,6 +379,7 @@ type fixture struct {
 	service   *Service
 	repo      *memoryRepository
 	prober    *recordingProber
+	lister    *recordingLister
 	audit     *recordingAudit
 	mutations *memoryMutationRunner
 	members   *memberReader
@@ -374,15 +389,16 @@ type fixture struct {
 func newFixture() fixture {
 	repo := newMemoryRepository()
 	prober := &recordingProber{}
+	lister := &recordingLister{}
 	recorder := &recordingAudit{}
 	mutations := &memoryMutationRunner{repo: repo, audit: recorder}
 	members := &memberReader{members: map[[2]int64]string{{10, 1}: organization.RoleOwner, {10, 2}: organization.RoleAdmin, {10, 3}: organization.RoleMember}}
 	cipher := crypto.NewEncryptor("ai-resource-service-test-key")
-	service, err := NewService(Dependencies{Repository: repo, Cipher: cipher, Members: members, Prober: prober, Mutations: mutations, Endpoints: allowingEndpoints{}})
+	service, err := NewService(Dependencies{Repository: repo, Cipher: cipher, Members: members, Prober: prober, Lister: lister, Mutations: mutations, Endpoints: allowingEndpoints{}})
 	if err != nil {
 		panic(err)
 	}
-	return fixture{service: service, repo: repo, prober: prober, audit: recorder, mutations: mutations, members: members, cipher: cipher}
+	return fixture{service: service, repo: repo, prober: prober, lister: lister, audit: recorder, mutations: mutations, members: members, cipher: cipher}
 }
 
 func actor(userID int64) Actor { return Actor{UserID: userID, CorrelationID: "request-123"} }

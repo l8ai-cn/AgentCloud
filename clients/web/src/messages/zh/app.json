@@ -412,8 +412,8 @@
       "subtitle": "版本化管理 Prompt 内容和变量，并在应用前审查准确版本。"
     },
     "expert": {
-      "title": "专家",
-      "subtitle": "通过固定版本的 WorkerTemplate 与 Prompt 资源声明专家。"
+      "title": "伙伴",
+      "subtitle": "通过固定版本的 WorkerTemplate 与 Prompt 声明可治理的伙伴资源。"
     },
     "workflow": {
       "title": "Workflow",

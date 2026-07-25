@@ -53,8 +53,9 @@ func (s *Service) List(
 	ctx context.Context,
 	orgID int64,
 	limit, offset int,
+	snapshotMaxID *int64,
 ) ([]expertdom.Expert, int64, error) {
-	return s.store.List(ctx, orgID, limit, offset)
+	return s.store.List(ctx, orgID, limit, offset, snapshotMaxID)
 }
 
 func (s *Service) resolveSlug(

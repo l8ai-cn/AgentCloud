@@ -218,6 +218,7 @@ func (ports *workerSpecResolutionPorts) ResolveWorkerType(
 			},
 			Modality:    ports.spec.Runtime.ToolModelBindings[0].Modality,
 			Capability:  ports.spec.Runtime.ToolModelBindings[0].Capability,
+			Required:    true,
 			Environment: ports.spec.Runtime.ToolModelBindings[0].Environment,
 		}},
 	}, nil

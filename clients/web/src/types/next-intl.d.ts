@@ -16,6 +16,8 @@ import blockstore from "@/messages/en/blockstore.json";
 import infra from "@/messages/en/infra.json";
 import automation from "@/messages/en/automation.json";
 import experts from "@/messages/en/experts.json";
+import partnerProfile from "@/messages/en/partner-profile.json";
+import partnerStatistics from "@/messages/en/partner-statistics.json";
 import resourceOrchestration from "@/messages/en/resource-orchestration.json";
 import changelogEntries from "@/messages/en/changelog-entries.json";
 import videoWorker from "@/messages/en/video-worker.json";
@@ -38,6 +40,8 @@ type Messages = typeof common &
   typeof infra &
   typeof automation &
   typeof experts &
+  typeof partnerProfile &
+  typeof partnerStatistics &
   typeof resourceOrchestration &
   typeof changelogEntries &
   typeof videoWorker;

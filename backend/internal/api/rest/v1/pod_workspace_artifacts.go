@@ -56,7 +56,7 @@ func (h *PodHandler) ListWorkspaceArtifacts(c *gin.Context) {
 	c.JSON(http.StatusOK, podWorkspaceChangesWire(result.GetChanges()))
 }
 
-func (h *PodHandler) ReadWorkspaceArtifact(c *gin.Context) {
+func (h *PodHandler) ListWorkspaceFilesystem(c *gin.Context) {
 	pod, ok := h.authorizeReadablePod(c)
 	if !ok {
 		return
@@ -64,13 +64,17 @@ func (h *PodHandler) ReadWorkspaceArtifact(c *gin.Context) {
 	path := strings.TrimPrefix(c.Param("filepath"), "/")
 	result, ok := h.execPodWorkspace(c, pod, &runnerv1.SandboxFsCommand{
 		PodKey: pod.PodKey,
-		Op:     "read",
+		Op:     "list",
 		Path:   path,
 	})
 	if !ok {
 		return
 	}
-	c.JSON(http.StatusOK, podWorkspaceFileWire(path, result))
+	if result.GetContent() != "" {
+		c.JSON(http.StatusOK, podWorkspaceFileWire(path, result))
+		return
+	}
+	c.JSON(http.StatusOK, podWorkspaceListWire(result.GetEntries(), result.GetWorkspaceRoot()))
 }
 
 func (h *PodHandler) authorizeReadablePod(c *gin.Context) (*podDomain.Pod, bool) {
@@ -150,41 +154,4 @@ func (h *PodHandler) execPodWorkspaceContext(
 	}
 	c.JSON(status, gin.H{"error": gin.H{"message": message}})
 	return nil, false
-}
-
-func podWorkspaceChangesWire(changes []*runnerv1.SandboxFsChange) gin.H {
-	data := make([]gin.H, 0, len(changes))
-	for _, change := range changes {
-		data = append(data, gin.H{
-			"path":        change.GetPath(),
-			"name":        change.GetName(),
-			"status":      change.GetStatus(),
-			"bytes":       nullablePodWorkspaceInt(change.GetBytes()),
-			"modified_at": nullablePodWorkspaceInt(change.GetModifiedAt()),
-		})
-	}
-	return gin.H{"object": "list", "data": data, "has_more": false}
-}
-
-func podWorkspaceFileWire(path string, result *runnerv1.SandboxFsResultEvent) gin.H {
-	encoding := result.GetEncoding()
-	if encoding == "" {
-		encoding = "utf-8"
-	}
-	return gin.H{
-		"object":       "pod.workspace.file_content",
-		"path":         path,
-		"content_type": result.GetContentType(),
-		"encoding":     encoding,
-		"content":      result.GetContent(),
-		"bytes":        result.GetFileBytes(),
-		"truncated":    result.GetTruncated(),
-	}
-}
-
-func nullablePodWorkspaceInt(value int64) any {
-	if value == 0 {
-		return nil
-	}
-	return value
 }

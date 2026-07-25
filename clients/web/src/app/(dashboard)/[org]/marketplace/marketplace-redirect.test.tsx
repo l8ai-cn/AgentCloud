@@ -3,32 +3,33 @@ import { describe, expect, it, vi } from "vitest";
 import MarketplaceDetailRoute from "./[listingSlug]/page";
 import MarketplaceRoute from "./page";
 
-const { redirect } = vi.hoisted(() => ({ redirect: vi.fn() }));
-
-vi.mock("next/navigation", () => ({ redirect }));
-
 vi.mock("@/components/marketplace/MarketplaceCatalogPage", () => ({
-  MarketplaceCatalogPage: () => null,
+  MarketplaceCatalogPage: ({ orgSlug }: { orgSlug: string }) => ({ type: "catalog", orgSlug }),
 }));
 
 vi.mock("@/components/marketplace/MarketplaceDetailPage", () => ({
-  MarketplaceDetailPage: () => null,
+  MarketplaceDetailPage: ({ orgSlug, listingSlug }: { orgSlug: string; listingSlug: string }) => ({
+    type: "detail",
+    orgSlug,
+    listingSlug,
+  }),
 }));
 
-describe("organization marketplace canonical redirects", () => {
-  it("sends the legacy organization market route to the public marketplace", async () => {
-    await MarketplaceRoute({ params: Promise.resolve({ org: "dev-org" }) });
+describe("organization marketplace in-product routes", () => {
+  it("renders the catalog inside the organization frontend", async () => {
+    const result = await MarketplaceRoute({ params: Promise.resolve({ org: "dev-org" }) });
 
-    expect(redirect).toHaveBeenCalledWith("https://market.l8ai.cn");
+    expect(result.props).toMatchObject({ orgSlug: "dev-org" });
   });
 
-  it("sends a legacy organization listing route to the public app detail", async () => {
-    await MarketplaceDetailRoute({
+  it("renders listing details inside the organization frontend", async () => {
+    const result = await MarketplaceDetailRoute({
       params: Promise.resolve({ org: "dev-org", listingSlug: "software-delivery-expert" }),
     });
 
-    expect(redirect).toHaveBeenCalledWith(
-      "https://market.l8ai.cn/apps/software-delivery-expert",
-    );
+    expect(result.props).toMatchObject({
+      orgSlug: "dev-org",
+      listingSlug: "software-delivery-expert",
+    });
   });
 });

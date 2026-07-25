@@ -90,14 +90,14 @@ describe("AgentStatusBadge", () => {
       expect(screen.getByText("Idle")).toBeInTheDocument();
     });
 
-    it("falls back to idle for unknown status", () => {
+    it("renders unknown status explicitly", () => {
       render(
         <AgentStatusBadge
           podStatus="running"
           agentStatus="unknown_value"
         />
       );
-      expect(screen.getByText("Idle")).toBeInTheDocument();
+      expect(screen.getByText("Unknown")).toBeInTheDocument();
     });
   });
 

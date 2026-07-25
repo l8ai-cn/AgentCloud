@@ -1,30 +1,27 @@
 import { MessageSquare, Terminal } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 
-import { AgentConversationSurface } from "./AgentConversationSurface";
+import { AgentWorkspaceConversationPanel } from "./AgentWorkspaceConversationPanel";
 import { AgentWorkspaceLocaleProvider } from "./AgentWorkspaceLocaleContext";
-import { PlanStrip } from "./PlanStrip";
 import { TerminalSurface } from "./TerminalSurface";
 import type { AgentArtifactItem, AgentSessionRuntime, TerminalRuntime } from "./contracts";
 import type { AgentToolRendererRegistration } from "./react/rendererTypes";
 import type { AgentContentRendererRegistration } from "./react/contentRendererTypes";
 import type { ContentRendererRegistry } from "./registry/ContentRendererRegistry";
 import type { ToolRendererRegistry } from "./registry/ToolRendererRegistry";
-import { ResultWorkbench } from "./react/ResultWorkbench";
 import { useWorkbenchContainerMode } from "./react/useWorkbenchContainerMode";
 import { useAgentSessionSnapshot } from "./useAgentSessionSnapshot";
 import { WorkspaceHeader } from "./WorkspaceHeader";
 import { ReadOnlyAgentSessionRuntime } from "./runtime/ReadOnlyAgentSessionRuntime";
 import { agentWorkspaceText, type AgentWorkspaceLocale } from "./agentWorkspaceText";
 import { focusAdjacentTab } from "./react/tabKeyboardNavigation";
-import { UserTaskStatus } from "./UserTaskStatus";
-import { UserVideoExecutionTrace } from "./VideoExecutionTrace";
 import {
   type AgentWorkspacePresentation,
   userConversationItems,
   userVisibleArtifacts,
 } from "./userWorkspacePresentation";
 import { userVideoExecutionSteps } from "./userVideoExecutionTrace";
+import type { WorkspaceFileSource } from "./conversation/mentions/workspaceFileSource";
 import { WorkspaceViewTab } from "./WorkspaceViewTab";
 
 export interface AgentWorkspaceProps {
@@ -39,6 +36,8 @@ export interface AgentWorkspaceProps {
   readOnly?: boolean;
   toolRenderers?: ToolRendererRegistry<AgentToolRendererRegistration>;
   workspaceArtifacts?: readonly AgentArtifactItem[];
+  workspaceFiles?: WorkspaceFileSource;
+  mentionHarness?: string | null;
 }
 
 export function AgentWorkspace({
@@ -53,6 +52,8 @@ export function AgentWorkspace({
   readOnly = false,
   toolRenderers,
   workspaceArtifacts = [],
+  workspaceFiles,
+  mentionHarness = null,
 }: AgentWorkspaceProps) {
   const activeRuntime = useMemo(
     () => (readOnly ? new ReadOnlyAgentSessionRuntime(runtime) : runtime),
@@ -69,9 +70,7 @@ export function AgentWorkspace({
   const [surfaceError, setSurfaceError] = useState<string | null>(null);
   const { containerRef, mode } = useWorkbenchContainerMode();
   const terminal = snapshot.terminals[0];
-  const allArtifacts = snapshot.items.filter(
-    (item) => item.kind === "artifact",
-  );
+  const allArtifacts = snapshot.items.filter((item) => item.kind === "artifact");
   const allConversationItems = snapshot.items.filter(
     (item) => item.kind !== "artifact",
   );
@@ -92,6 +91,7 @@ export function AgentWorkspace({
     snapshot.capabilities.terminal &&
     terminalRuntime !== undefined &&
     terminal !== undefined;
+
   return (
     <AgentWorkspaceLocaleProvider locale={locale}>
       <div
@@ -99,101 +99,79 @@ export function AgentWorkspace({
         data-agent-workspace={sessionId}
         ref={containerRef}
       >
-      <WorkspaceHeader presentation={presentation} snapshot={snapshot} />
-      <nav
-        className="flex h-12 items-center gap-1 border-b border-border px-2"
-        onKeyDown={focusAdjacentTab}
-        role="tablist"
-      >
-        <WorkspaceViewTab
-          active={view === "conversation"}
-          icon={<MessageSquare className="size-3.5" />}
-          id={conversationTabId}
-          label={text.conversation}
-          onClick={() => setView("conversation")}
-          panelId={conversationPanelId}
-        />
-        {terminalEnabled && (
+        <WorkspaceHeader presentation={presentation} snapshot={snapshot} />
+        <nav
+          className="flex h-12 items-center gap-1 border-b border-border px-2"
+          onKeyDown={focusAdjacentTab}
+          role="tablist"
+        >
           <WorkspaceViewTab
-            active={view === "terminal"}
-            icon={<Terminal className="size-3.5" />}
-            id={terminalTabId}
-            label={text.terminal}
-            onClick={() => setView("terminal")}
-            panelId={terminalPanelId}
+            active={view === "conversation"}
+            icon={<MessageSquare className="size-3.5" />}
+            id={conversationTabId}
+            label={text.conversation}
+            onClick={() => setView("conversation")}
+            panelId={conversationPanelId}
           />
-        )}
-      </nav>
-      {(surfaceError ||
-        (presentation === "developer" && snapshot.error)) && (
-        <div className="border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {presentation === "user"
-            ? text.taskFailed
-            : snapshot.error || surfaceError}
-        </div>
-      )}
-      {view === "terminal" && terminalEnabled ? (
-        <section
-          aria-labelledby={terminalTabId}
-          className="flex min-h-0 flex-1"
-          id={terminalPanelId}
-          role="tabpanel"
-        >
-          <TerminalSurface
-            clientLabel={clientLabel}
-            resource={terminal}
-            runtime={terminalRuntime}
-          />
-        </section>
-      ) : (
-        <section
-          aria-labelledby={conversationTabId}
-          className="flex min-h-0 flex-1 flex-col"
-          id={conversationPanelId}
-          role="tabpanel"
-        >
-          {presentation === "developer" && <PlanStrip steps={snapshot.plan} />}
-          {presentation === "user" && (
-            <UserTaskStatus artifacts={allArtifacts} snapshot={snapshot} />
+          {terminalEnabled && (
+            <WorkspaceViewTab
+              active={view === "terminal"}
+              icon={<Terminal className="size-3.5" />}
+              id={terminalTabId}
+              label={text.terminal}
+              onClick={() => setView("terminal")}
+              panelId={terminalPanelId}
+            />
           )}
-          <ResultWorkbench
-            artifacts={artifacts}
-            contentRenderers={contentRenderers}
-            conversation={
-              <AgentConversationSurface
-                contentRenderers={contentRenderers}
-                executionTrace={
-                  videoExecutionSteps.length > 0 ? (
-                    <UserVideoExecutionTrace steps={videoExecutionSteps} />
-                  ) : undefined
-                }
-                items={conversationItems}
-                onError={(cause) =>
-                  setSurfaceError(
-                    cause instanceof Error ? cause.message : String(cause),
-                  )
-                }
-                presentation={presentation}
-                runtime={activeRuntime}
-                snapshot={snapshot}
-                toolRenderers={toolRenderers}
-              />
-            }
-            mode={mode}
-            presentation={presentation}
-            runtime={activeRuntime}
-            sessionId={sessionId}
-            toolRenderers={toolRenderers}
-            tools={
-              presentation === "developer"
-                ? conversationItems.filter((item) => item.kind === "tool")
-                : []
-            }
-            verifiedArtifactsOnly={presentation === "user"}
-            workspaceArtifacts={workspaceArtifacts}
-          />
-        </section>
-      )}
+        </nav>
+        {(surfaceError ||
+          (presentation === "developer" && snapshot.error)) && (
+          <div className="border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {presentation === "user"
+              ? text.taskFailed
+              : snapshot.error || surfaceError}
+          </div>
+        )}
+        {view === "terminal" && terminalEnabled ? (
+          <section
+            aria-labelledby={terminalTabId}
+            className="flex min-h-0 flex-1"
+            id={terminalPanelId}
+            role="tabpanel"
+          >
+            <TerminalSurface
+              clientLabel={clientLabel}
+              resource={terminal}
+              runtime={terminalRuntime}
+            />
+          </section>
+        ) : (
+          <section
+            aria-labelledby={conversationTabId}
+            className="flex min-h-0 flex-1 flex-col"
+            id={conversationPanelId}
+            role="tabpanel"
+          >
+            <AgentWorkspaceConversationPanel
+              allArtifacts={allArtifacts}
+              artifacts={artifacts}
+              contentRenderers={contentRenderers}
+              conversationItems={conversationItems}
+              mentionHarness={mentionHarness}
+              mode={mode}
+              onError={setSurfaceError}
+              plan={snapshot.plan}
+              presentation={presentation}
+              runtime={activeRuntime}
+              sessionId={sessionId}
+              snapshot={snapshot}
+              toolRenderers={toolRenderers}
+              videoExecutionSteps={videoExecutionSteps}
+              workspaceArtifacts={workspaceArtifacts}
+              workspaceFiles={workspaceFiles}
+            />
+          </section>
+        )}
       </div>
     </AgentWorkspaceLocaleProvider>
   );

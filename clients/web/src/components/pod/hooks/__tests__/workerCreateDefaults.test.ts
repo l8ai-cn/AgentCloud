@@ -47,6 +47,57 @@ describe("workerCreateDefaults", () => {
     expect(patch.tool_model_resource_ids).toEqual({ "seedance-video": 77 });
   });
 
+  it("auto-fills optional tool roles when a compatible resource exists", () => {
+    const draft = completeDraft();
+    const options = createOptions();
+    options.worker_types[0].tool_model_requirements = [{
+      role: "minimax-video",
+      provider_keys: ["custom-openai-compatible"],
+      protocol_adapters: ["openai-compatible"],
+      modality: "video",
+      capability: "video-generation",
+      required: false,
+    }];
+
+    const patch = defaultToolModelPatch(
+      draft,
+      options.worker_types[0],
+      [{
+        selectable: true,
+        blockingReason: "",
+        connection: {
+          id: 3,
+          ownerScope: "organization" as const,
+          identifier: "hailuo",
+          providerKey: "custom-openai-compatible",
+          name: "Hailuo",
+          baseUrl: "https://example.com/v1",
+          configuredFields: ["api_key"],
+          status: "valid" as const,
+          isEnabled: true,
+          validationError: "",
+          canManage: true,
+          resources: [],
+        },
+        resource: {
+          id: 88,
+          providerConnectionId: 3,
+          identifier: "hailuo-video",
+          modelId: "MiniMax-Hailuo-2.3",
+          displayName: "Hailuo 2.3",
+          modalities: ["video"],
+          capabilities: ["video-generation"],
+          defaultModalities: ["video"],
+          status: "valid" as const,
+          isEnabled: true,
+          validationError: "",
+        },
+      }],
+    );
+
+    expect(patch.tool_model_resource_ids).toEqual({ "minimax-video": 88 });
+  });
+
   it("binds required config documents without forcing optional documents", () => {
     const draft = completeDraft();
     const options = createOptions();

@@ -91,7 +91,7 @@ describe("Channel Store (Connect adapter)", () => {
     Object.values(mocks).forEach((m) => m.mockReset());
     useChannelStore.setState({
       _tick: 0, loading: false, channelLoading: false, error: null,
-      selectedChannelId: null, searchQuery: "", showArchived: false, currentChannel: null,
+      selectedChannelId: null, searchQuery: "", showArchived: false,
     });
     useChannelMessageStore.setState({ cache: {}, _unreadTick: 0 });
   });

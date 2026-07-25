@@ -7,12 +7,13 @@ import { useCurrentOrg } from "@/stores/auth";
 import { useExpertStore, useExperts } from "@/stores/expert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Plus, RefreshCw, Search, Bot } from "lucide-react";
+import { BarChart3, Loader2, Plus, RefreshCw, Search, Bot } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatTimeAgo } from "@/lib/utils/time";
 
 export function ExpertsSidebarContent({ className }: { className?: string }) {
   const t = useTranslations("experts");
+  const ts = useTranslations("partnerStatistics");
   const tRoot = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
@@ -61,26 +62,36 @@ export function ExpertsSidebarContent({ className }: { className?: string }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-1 px-2 pb-2">
+      <div className="grid grid-cols-2 gap-1 px-2 pb-2">
+        <Button
+          size="sm"
+          variant={pathname.includes("/partner-statistics") ? "secondary" : "outline"}
+          className="h-7 gap-1 text-xs"
+          onClick={() => router.push(`/${currentOrg?.slug}/partner-statistics`)}
+        >
+          <BarChart3 className="h-3 w-3" />
+          {ts("title")}
+        </Button>
         <Button
           size="sm"
           variant="outline"
-          className="flex-1 h-7 text-xs gap-1"
+          className="h-7 gap-1 text-xs"
           onClick={() => router.push(`/${currentOrg?.slug}/experts/new`)}
         >
           <Plus className="w-3 h-3" />
           {t("createExpert")}
         </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-7 w-7 p-0"
-          onClick={handleRefresh}
-          disabled={refreshing}
-        >
-          <RefreshCw className={cn("w-3.5 h-3.5", refreshing && "animate-spin")} />
-        </Button>
       </div>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="mx-2 mb-2 h-7 gap-1 text-xs"
+        onClick={handleRefresh}
+        disabled={refreshing}
+      >
+        <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} />
+        {ts("refreshList")}
+      </Button>
 
       <div className="flex-1 overflow-y-auto">
         <div className="px-3 py-1.5 text-[10px] uppercase tracking-wider text-muted-foreground font-medium">

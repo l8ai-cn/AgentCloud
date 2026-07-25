@@ -121,4 +121,46 @@ func TestValidateOAuthState(t *testing.T) {
 			t.Error("Expected error for reused state")
 		}
 	})
+
+	t.Run("double-encoded state from IdP", func(t *testing.T) {
+		// Legacy padded states (base64.URLEncoding) can still be in Redis during
+		// rollout; AMP double-encodes '=' so Gin Query leaves "%3D%3D".
+		padded := "VnbdAR0liAZVJaWy9xB9dA=="
+		if err := redisClient.Set(ctx, oauthStateKeyPrefix+padded, "https://example.com/sso", time.Minute).Err(); err != nil {
+			t.Fatalf("seed redis: %v", err)
+		}
+		redirectURL, err := svc.ValidateOAuthState(ctx, "VnbdAR0liAZVJaWy9xB9dA%3D%3D")
+		if err != nil {
+			t.Fatalf("ValidateOAuthState failed for double-encoded state: %v", err)
+		}
+		if redirectURL != "https://example.com/sso" {
+			t.Errorf("RedirectURL = %s, want https://example.com/sso", redirectURL)
+		}
+	})
+}
+
+func TestNormalizeOAuthState(t *testing.T) {
+	if got := NormalizeOAuthState("abc%253D%253D"); got != "abc==" {
+		t.Errorf("NormalizeOAuthState = %q, want abc==", got)
+	}
+	if got := NormalizeOAuthState("abc%3D%3D"); got != "abc==" {
+		t.Errorf("NormalizeOAuthState = %q, want abc==", got)
+	}
+	if got := NormalizeOAuthState("plain"); got != "plain" {
+		t.Errorf("NormalizeOAuthState = %q, want plain", got)
+	}
+}
+
+func TestGenerateStateHasNoPadding(t *testing.T) {
+	for i := 0; i < 20; i++ {
+		state, err := GenerateState()
+		if err != nil {
+			t.Fatalf("GenerateState failed: %v", err)
+		}
+		for _, c := range state {
+			if c == '=' {
+				t.Fatalf("GenerateState returned padded state %q", state)
+			}
+		}
+	}
 }

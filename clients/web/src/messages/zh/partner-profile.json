@@ -1,0 +1,29 @@
+{
+  "partnerProfile": {
+    "profileSectionIdentity": "身份与工作方式",
+    "partnerType": "伙伴类型",
+    "typeNotSet": "未设置",
+    "noDescription": "尚未填写职责描述。",
+    "automationLevel": "自动化级别",
+    "automationInteractive": "交互式",
+    "automationAutoEdit": "自动编辑",
+    "automationAutonomous": "自主运行",
+    "automationUnknown": "未知",
+    "workInstructions": "工作说明",
+    "noWorkInstructions": "尚未配置工作说明。",
+    "profileSectionGovernance": "治理与来源",
+    "managementMode": "管理方式",
+    "resourceManaged": "资源版本管理",
+    "directManaged": "直接配置",
+    "origin": "来源",
+    "marketOrigin": "市场安装",
+    "resourceOrigin": "资源原生",
+    "organizationOrigin": "组织创建",
+    "workerSnapshot": "Worker 快照",
+    "resourceRevision": "资源修订",
+    "marketRelease": "市场版本",
+    "createdAt": "创建时间",
+    "updatedAt": "数据更新时间",
+    "avatarLoadFailed": "伙伴头像加载失败"
+  }
+}

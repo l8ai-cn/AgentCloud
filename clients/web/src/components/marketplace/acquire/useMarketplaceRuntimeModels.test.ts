@@ -1,18 +1,25 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { listMarketplaceModelResources } from "@/lib/marketplace-model-resources";
+import {
+  listMarketplaceModelResources,
+  marketplaceWorkerRequiresModelResource,
+} from "@/lib/marketplace-model-resources";
 import { useMarketplaceRuntimeModels } from "./useMarketplaceRuntimeModels";
 
 vi.mock("@/lib/marketplace-model-resources", () => ({
   listMarketplaceModelResources: vi.fn(),
+  marketplaceWorkerRequiresModelResource: vi.fn(() => true),
 }));
 
 const listModels = vi.mocked(listMarketplaceModelResources);
+const requiresModel = vi.mocked(marketplaceWorkerRequiresModelResource);
 
 describe("useMarketplaceRuntimeModels", () => {
   beforeEach(() => {
     listModels.mockReset();
+    requiresModel.mockReset();
+    requiresModel.mockReturnValue(true);
   });
 
   it("clears resources and selection when the organization changes", async () => {
@@ -60,5 +67,16 @@ describe("useMarketplaceRuntimeModels", () => {
       await Promise.resolve();
     });
     expect(result.current.modelResources).toEqual([{ id: 2, label: "Model B" }]);
+  });
+
+  it("surfaces a catalog miss without throwing or loading models", () => {
+    requiresModel.mockReturnValue(null);
+    const { result } = renderHook(() =>
+      useMarketplaceRuntimeModels("acme", "ghost-worker"),
+    );
+    expect(result.current.loadingModels).toBe(false);
+    expect(result.current.modelError).toBe(true);
+    expect(result.current.missingCompatibleResource).toBe(true);
+    expect(listModels).not.toHaveBeenCalled();
   });
 });

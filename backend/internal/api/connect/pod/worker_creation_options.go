@@ -113,7 +113,7 @@ func workerToolModelRequirementsToProto(
 		items = append(items, &podv1.WorkerToolModelRequirement{
 			Role: requirement.Role.String(), ProviderKeys: providers,
 			ProtocolAdapters: adapters, Modality: string(requirement.Modality),
-			Capability: string(requirement.Capability),
+			Capability: string(requirement.Capability), Required: requirement.Required,
 		})
 	}
 	return items

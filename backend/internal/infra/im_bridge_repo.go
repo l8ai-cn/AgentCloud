@@ -92,7 +92,9 @@ func (r *imBridgeRepository) GetThreadMappingByChannel(ctx context.Context, conn
 
 func (r *imBridgeRepository) UpsertThreadMapping(ctx context.Context, mapping *domain.ThreadMapping) error {
 	return r.db.WithContext(ctx).Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "connection_id"}, {Name: "external_thread_id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"channel_id", "context_token"}),
+		Columns: []clause.Column{{Name: "connection_id"}, {Name: "external_thread_id"}},
+		DoUpdates: clause.AssignmentColumns([]string{
+			"channel_id", "context_token", "peer_kind", "active_target_ref", "draft_message_id",
+		}),
 	}).Create(mapping).Error
 }

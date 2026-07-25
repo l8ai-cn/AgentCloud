@@ -1,8 +1,9 @@
 package sessionapi
 
 import (
-	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/ampauthz"
 )
 
 func RegisterRoutes(r *gin.Engine, d Deps) {
@@ -26,9 +27,9 @@ func RegisterRoutes(r *gin.Engine, d Deps) {
 		orgScoped.GET("/runners", d.handleListRunners)
 		orgScoped.GET("/policy-registry", d.handlePolicyRegistry)
 		orgScoped.GET("/policies", d.handleListPolicies)
-		orgScoped.POST("/policies", middleware.RequireAdmin(), d.handleCreatePolicy)
-		orgScoped.PATCH("/policies/:id", middleware.RequireAdmin(), d.handlePatchPolicy)
-		orgScoped.DELETE("/policies/:id", middleware.RequireAdmin(), d.handleDeletePolicy)
+		orgScoped.POST("/policies", middleware.RequirePermission(ampauthz.PermOrgSettingsWrite), d.handleCreatePolicy)
+		orgScoped.PATCH("/policies/:id", middleware.RequirePermission(ampauthz.PermOrgSettingsWrite), d.handlePatchPolicy)
+		orgScoped.DELETE("/policies/:id", middleware.RequirePermission(ampauthz.PermOrgSettingsWrite), d.handleDeletePolicy)
 		orgScoped.GET("/sessions/projects", d.handleListProjects)
 		orgScoped.GET("/sessions", d.handleListSessions)
 		orgScoped.GET("/sessions/updates", d.handleSessionUpdates)

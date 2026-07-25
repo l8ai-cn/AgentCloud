@@ -77,7 +77,11 @@ func (bootstrapper *Bootstrapper) createExpert(
 		}
 		skillIDs = append(skillIDs, row.ID)
 	}
-	workerType, err := slugkit.NewFromTrusted("video-studio")
+	workerType, runtimeImageID, err := definitionRuntime(definition, request)
+	if err != nil {
+		return nil, err
+	}
+	secretRefs, err := definitionSecretRefs(definition, request)
 	if err != nil {
 		return nil, err
 	}
@@ -94,6 +98,8 @@ func (bootstrapper *Bootstrapper) createExpert(
 			definition,
 			skillIDs,
 			workerType,
+			runtimeImageID,
+			secretRefs,
 		),
 	)
 	if err != nil {
@@ -119,14 +125,14 @@ func (bootstrapper *Bootstrapper) createExpert(
 		Name:                 definition.Name,
 		Slug:                 definition.Slug,
 		Description:          &description,
-		AgentSlug:            "video-studio",
+		AgentSlug:            workerType.String(),
 		Prompt:               &prompt,
 		InteractionMode:      expertdom.InteractionModePTY,
 		AutomationLevel:      expertdom.AutomationLevelAutoEdit,
 		SkillSlugs:           definition.SkillSlugs,
-		ConfigOverrides:      videoExpertConfigOverrides(),
+		ConfigOverrides:      partnerConfigOverrides(),
 		WorkerSpecSnapshotID: &snapshot.ID,
-		ExpertType:           stringPointer("video"),
+		ExpertType:           stringPointer(definition.Category),
 	})
 	if err == nil {
 		return expert, nil
@@ -150,6 +156,8 @@ func workerDraft(
 	definition ExpertDefinition,
 	skillIDs []int64,
 	workerType slugkit.Slug,
+	runtimeImageID int64,
+	secretRefs map[string]specdomain.SecretReference,
 ) workercreation.Draft {
 	return workercreation.Draft{
 		OptionsRevision:  revision,
@@ -158,7 +166,7 @@ func workerDraft(
 			ModelResourceID: request.ModelResourceID,
 			WorkerTypeSlug:  workerType,
 			Runtime: specservice.RuntimeSelection{
-				RuntimeImageID:    request.RuntimeImageID,
+				RuntimeImageID:    runtimeImageID,
 				PlacementPolicy:   specdomain.PlacementPolicyExplicit,
 				ComputeTargetID:   1,
 				DeploymentMode:    specdomain.DeploymentModePooled,
@@ -166,8 +174,8 @@ func workerDraft(
 			},
 			TypeConfig: specdomain.TypeConfig{
 				SchemaVersion:   1,
-				Values:          videoExpertConfigOverrides(),
-				SecretRefs:      map[string]specdomain.SecretReference{},
+				Values:          partnerConfigOverrides(),
+				SecretRefs:      secretRefs,
 				InteractionMode: specdomain.InteractionModePTY,
 				AutomationLevel: specdomain.AutomationLevelAutoEdit,
 			},
@@ -182,9 +190,3 @@ func workerDraft(
 		},
 	}
 }
-
-func videoExpertConfigOverrides() map[string]any {
-	return map[string]any{"approval_mode": "never"}
-}
-
-func stringPointer(value string) *string { return &value }

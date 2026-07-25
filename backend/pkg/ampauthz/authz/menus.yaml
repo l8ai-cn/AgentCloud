@@ -1,0 +1,58 @@
+menus:
+  - id: agentscloud.mesh
+    title: Mesh
+    path: /mesh
+    pageKey: agentscloud.mesh
+    order: 10
+    permissionCodes:
+      - agentscloud:pod:use
+    featureCodes:
+      - AGENTSCLOUD_MEMBER
+  - id: agentscloud.tickets
+    title: Tickets
+    path: /tickets
+    pageKey: agentscloud.tickets
+    order: 20
+    permissionCodes:
+      - agentscloud:ticket:use
+    featureCodes:
+      - AGENTSCLOUD_MEMBER
+  - id: agentscloud.runners
+    title: Runners
+    path: /runners
+    pageKey: agentscloud.runners
+    order: 30
+    permissionCodes:
+      - agentscloud:runner:manage
+    featureCodes:
+      - AGENTSCLOUD_ORG_ADMIN
+  - id: agentscloud.settings
+    title: Organization settings
+    path: /settings
+    pageKey: agentscloud.settings
+    order: 40
+    permissionCodes:
+      - agentscloud:org:settings:write
+    featureCodes:
+      - AGENTSCLOUD_ORG_ADMIN
+  - id: agentscloud.billing
+    title: Billing
+    path: /billing
+    pageKey: agentscloud.billing
+    order: 50
+    permissionCodes:
+      - agentscloud:billing:manage
+    featureCodes:
+      - AGENTSCLOUD_BILLING
+  - id: authz.workspace
+    title: Account & roles
+    path: /workspace
+    pageKey: authz.workspace
+    order: 90
+    permissionMode: ALL
+    permissionCodes:
+      - authz:application:view
+      - authz:model:view
+      - authz:app_role:view
+    featureCodes:
+      - AGENTSCLOUD_ORG_ADMIN

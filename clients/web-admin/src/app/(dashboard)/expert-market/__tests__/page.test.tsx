@@ -162,7 +162,7 @@ describe("ExpertMarketPage", () => {
     await screen.findByText("Video Expert");
     fireEvent.click(screen.getByRole("button", { name: "查看详情" }));
 
-    await screen.findByText("专家快照");
+    await screen.findByText("伙伴快照");
     expect(mockGet).toHaveBeenCalledWith(12);
     expect(screen.getByText(/"model": "codex"/)).toBeInTheDocument();
     expect(screen.getByText(/"runtime": "runner"/)).toBeInTheDocument();
@@ -217,7 +217,7 @@ describe("ExpertMarketPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "批准发布" }));
 
     await waitFor(() => expect(mockApprove).toHaveBeenCalledWith(12));
-    expect(mockToastSuccess).toHaveBeenCalledWith("专家发布已批准");
+    expect(mockToastSuccess).toHaveBeenCalledWith("伙伴发布已批准");
     expect(mockList).toHaveBeenCalledTimes(2);
   });
 

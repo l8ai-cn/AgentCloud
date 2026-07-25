@@ -104,6 +104,31 @@ func TestSeedanceExpertRequiresExactVideoModelContract(t *testing.T) {
 	assert.Equal(t, "video", requirement.Modality)
 	assert.Equal(t, "video-generation", requirement.Capability)
 	assert.Equal(t, "SEEDANCE_API_KEY", requirement.Environment.APIKey)
+	assert.True(t, requirement.Required)
+}
+
+func TestDoAgentDeclaresOptionalVideoToolModels(t *testing.T) {
+	catalog, err := Load(filepath.Join(repositoryRoot(t), "config", "worker-types"))
+
+	require.NoError(t, err)
+	doAgent, ok := catalog.Get("do-agent")
+	require.True(t, ok)
+	require.Len(t, doAgent.ToolModelRequirements, 2)
+	assert.Equal(t, "2", doAgent.Version)
+	byID := map[string]ToolModelRequirement{}
+	for _, requirement := range doAgent.ToolModelRequirements {
+		byID[requirement.ID] = requirement
+	}
+	seedance := byID["seedance-video"]
+	assert.False(t, seedance.Required)
+	assert.Equal(t, []string{"doubao", "sub2api-seedance"}, seedance.ProviderKeys)
+	assert.Equal(t, "SEEDANCE_MODEL", seedance.Environment.ModelID)
+	minimax := byID["minimax-video"]
+	assert.False(t, minimax.Required)
+	assert.Equal(t, []string{"custom-openai-compatible", "minimax"}, minimax.ProviderKeys)
+	assert.Equal(t, "MINIMAX_VIDEO_API_KEY", minimax.Environment.APIKey)
+	assert.Contains(t, doAgent.AgentFile, "ENV MINIMAX_VIDEO_API_KEY SECRET OPTIONAL")
+	assert.Contains(t, doAgent.AgentFile, "ENV SEEDANCE_API_KEY SECRET OPTIONAL")
 }
 
 func TestCatalogSeparatesCredentialBundleFieldsFromModelResourceFields(t *testing.T) {

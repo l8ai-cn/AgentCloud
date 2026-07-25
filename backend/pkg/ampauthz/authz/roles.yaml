@@ -1,0 +1,70 @@
+roles:
+  - code: ORG_OWNER
+    name: Organization owner
+    roleType: APP_ADMIN
+    description: Full control of the AgentCloud organization (maps to owner).
+    permissions:
+      - agentscloud:org:settings:write
+      - agentscloud:member:invite
+      - agentscloud:runner:manage
+      - agentscloud:billing:manage
+      - agentscloud:repo:manage
+      - agentscloud:ai_resource:manage
+      - agentscloud:pod:use
+      - agentscloud:ticket:use
+    features:
+      - AGENTSCLOUD_ORG_ADMIN
+      - AGENTSCLOUD_BILLING
+  - code: ORG_ADMIN
+    name: Organization admin
+    roleType: OPERATOR
+    description: Operate runners, members, and resources (maps to admin).
+    permissions:
+      - agentscloud:org:settings:write
+      - agentscloud:member:invite
+      - agentscloud:runner:manage
+      - agentscloud:repo:manage
+      - agentscloud:ai_resource:manage
+      - agentscloud:pod:use
+      - agentscloud:ticket:use
+    features:
+      - AGENTSCLOUD_ORG_ADMIN
+  - code: ORG_MEMBER
+    name: Organization member
+    roleType: VIEWER
+    description: Day-to-day pod and collaboration use (maps to member).
+    permissions:
+      - agentscloud:pod:use
+      - agentscloud:ticket:use
+    features:
+      - AGENTSCLOUD_MEMBER
+  # AMP partner-template aliases accepted at login sync
+  - code: APP_ADMIN
+    name: App admin (AMP template)
+    roleType: APP_ADMIN
+    permissions:
+      - agentscloud:org:settings:write
+      - agentscloud:member:invite
+      - agentscloud:runner:manage
+      - agentscloud:billing:manage
+      - agentscloud:repo:manage
+      - agentscloud:ai_resource:manage
+      - agentscloud:pod:use
+      - agentscloud:ticket:use
+  - code: OPERATOR
+    name: Operator (AMP template)
+    roleType: OPERATOR
+    permissions:
+      - agentscloud:org:settings:write
+      - agentscloud:member:invite
+      - agentscloud:runner:manage
+      - agentscloud:repo:manage
+      - agentscloud:ai_resource:manage
+      - agentscloud:pod:use
+      - agentscloud:ticket:use
+  - code: VIEWER
+    name: Viewer (AMP template)
+    roleType: VIEWER
+    permissions:
+      - agentscloud:pod:use
+      - agentscloud:ticket:use

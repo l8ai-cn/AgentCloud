@@ -2,7 +2,7 @@
   "resourceOrchestration": {
     "navTitle": "Resource orchestration",
     "title": "Resource-native orchestration",
-    "description": "Declare Workers, Experts, Workflows, prompts, models, tools, knowledge, and compute as versioned resources. The control plane validates references, shows a semantic plan, and applies an immutable revision or execution snapshot.",
+    "description": "Declare Workers, AI Partners, Workflows, prompts, models, tools, knowledge, and compute as versioned resources. The control plane validates references, shows a semantic plan, and applies an immutable revision or execution snapshot.",
     "openGuide": "Open the resource orchestration guide",
     "lifecycleTitle": "Validate → Plan → Apply",
     "lifecycleDescription": "The workflow separates authoring from review and execution. A Plan is evidence of the intended change, not proof that the resource already exists.",
@@ -48,7 +48,7 @@
         "purpose": "Launch one Worker from pinned resources. The same Worker resource cannot be updated."
       },
       "expertWorkflow": {
-        "name": "Expert / Workflow",
+        "name": "AI Partner / Workflow",
         "apply": "Yes",
         "purpose": "Create reusable domain definitions with pinned WorkerTemplate, Prompt, and WorkerSpec snapshots."
       },

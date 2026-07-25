@@ -91,6 +91,7 @@ func workerDisplayName(slug string) string {
 		"do-agent":    "Do Agent",
 		"gemini-cli":  "Gemini CLI",
 		"grok-build":  "Grok Build",
+		"kimi-code":   "Kimi Code",
 		"minimax-cli": "MiniMax CLI",
 		"openclaw":    "OpenClaw",
 		"opencode":    "OpenCode",

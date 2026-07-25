@@ -98,6 +98,7 @@ func seedanceToolRequirement() specdomain.ToolModelRequirement {
 		},
 		Modality:   resourcedomain.ModalityVideo,
 		Capability: resourcedomain.CapabilityVideoGeneration,
+		Required:   true,
 		Environment: specdomain.ToolModelEnvironment{
 			APIKey: "SEEDANCE_API_KEY", BaseURL: "SEEDANCE_BASE_URL",
 			ModelID: "SEEDANCE_MODEL",

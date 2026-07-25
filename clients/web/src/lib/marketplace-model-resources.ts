@@ -1,7 +1,27 @@
-import { agentSupportsProtocol } from "@/components/pod/CreatePodForm/workerModelResources";
+import workerRuntimeCatalog from "@/generated/worker-runtime-catalog.json";
 import { lightConnect } from "@/lib/light-auth/api-fetch";
 
 const AI_RESOURCE_SERVICE = "proto.ai_resource.v1.AIResourceService";
+
+interface WorkerModelRequirement {
+  required: boolean;
+  protocol_adapters: string[];
+}
+
+export function workerModelRequirement(agentSlug: string): WorkerModelRequirement | null {
+  const worker = workerRuntimeCatalog.workers.find((item) => item.slug === agentSlug);
+  return (worker as { modelRequirement?: WorkerModelRequirement } | undefined)
+    ?.modelRequirement ?? null;
+}
+
+/** `null` when the generated catalog has no entry — safe for render paths. */
+export function marketplaceWorkerRequiresModelResource(
+  agentSlug: string,
+): boolean | null {
+  const requirement = workerModelRequirement(agentSlug);
+  if (!requirement) return null;
+  return requirement.required;
+}
 
 interface CatalogResponse {
   providers?: Array<{ key?: string; protocolAdapter?: string }>;
@@ -58,6 +78,9 @@ async function loadMarketplaceModelResources(
   orgSlug: string,
   agentSlug: string,
 ): Promise<MarketplaceModelResource[]> {
+  const requirement = workerModelRequirement(agentSlug);
+  if (!requirement) throw new Error(`worker model requirement not found: ${agentSlug}`);
+  if (!requirement.required) return [];
   const [catalog, effective] = await Promise.all([
     lightConnect<Record<string, never>, CatalogResponse>(
       AI_RESOURCE_SERVICE,
@@ -91,7 +114,7 @@ async function loadMarketplaceModelResources(
       !resource?.isEnabled ||
       !resource.modalities?.includes("chat") ||
       !resource.capabilities?.includes("text-generation") ||
-      !agentSupportsProtocol(agentSlug, protocol)
+      !requirement.protocol_adapters.includes(protocol)
     ) {
       return [];
     }

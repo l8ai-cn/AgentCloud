@@ -104,11 +104,19 @@ type SSOEnforcementChecker interface {
 	IsPasswordLoginAllowed(ctx context.Context, email string, isSystemAdmin bool) (bool, error)
 }
 
+// OrganizationBinder lands federated users in the org bound to their IdP
+// tenant (or SSO default org). Injected so auth does not import organization.
+type OrganizationBinder interface {
+	SyncFederatedMember(ctx context.Context, orgID, userID int64, role string) error
+	ResolveAmpTenant(ctx context.Context, ampTenantID string) (int64, error)
+}
+
 type Service struct {
 	config      *Config
 	userService *userService.Service
 	redis       *redis.Client
 	ssoChecker  SSOEnforcementChecker
+	orgBinder   OrganizationBinder
 }
 
 func NewService(cfg *Config, userSvc *userService.Service) *Service {
@@ -128,6 +136,10 @@ func NewServiceWithRedis(cfg *Config, userSvc *userService.Service, redisClient 
 
 func (s *Service) SetSSOChecker(checker SSOEnforcementChecker) {
 	s.ssoChecker = checker
+}
+
+func (s *Service) SetOrganizationBinder(binder OrganizationBinder) {
+	s.orgBinder = binder
 }
 
 func (s *Service) AccessTokenManager() *authpkg.AccessTokenManager {

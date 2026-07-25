@@ -188,7 +188,7 @@ describe("InfoTabContent", () => {
       ["running", "Running"],
       ["paused", "Paused"],
       ["terminated", "Terminated"],
-      ["failed", "Failed"],
+      ["error", "Error"],
     ] as const)(
       "should display correct status badge for %s",
       (status, expectedLabel) => {

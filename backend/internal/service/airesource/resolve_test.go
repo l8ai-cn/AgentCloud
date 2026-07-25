@@ -35,7 +35,7 @@ func TestResolveMetadataDoesNotDecryptCredentials(t *testing.T) {
 		Cipher: failingCipher{
 			decryptErr: errors.New("metadata resolution must not decrypt credentials"),
 		},
-		Members: f.members, Prober: f.prober, Mutations: f.mutations,
+		Members: f.members, Prober: f.prober, Lister: f.lister, Mutations: f.mutations,
 		Endpoints: allowingEndpoints{},
 	})
 	require.NoError(t, err)

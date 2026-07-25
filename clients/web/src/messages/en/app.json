@@ -387,8 +387,8 @@
       "subtitle": "Version prompt content and variables, then review the exact revision before applying it."
     },
     "expert": {
-      "title": "Expert",
-      "subtitle": "Declare an Expert from pinned WorkerTemplate and Prompt resources."
+      "title": "AI Partner",
+      "subtitle": "Declare an AI Partner from pinned WorkerTemplate and Prompt resources."
     },
     "workflow": {
       "title": "Workflow",

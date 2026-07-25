@@ -43,5 +43,55 @@ func skillDefinitions() []SkillDefinition {
 			Description: "检索可用素材并保存来源、许可、署名与使用边界。",
 			License:     "Apache-2.0", Tags: []string{"video", "research", "rights"},
 		},
+		{
+			Slug: "pattern-generate", Name: "花型元素生成",
+			Description: "根据参考图、元素和风格约束生成可追溯的花型设计素材。",
+			License:     "Proprietary", Tags: []string{"pattern", "generation", "textile"},
+		},
+		{
+			Slug: "canvas-compose", Name: "花型画布铺排",
+			Description: "将花型元素按重复方式铺排成可接版的大画布。",
+			License:     "Proprietary", Tags: []string{"pattern", "layout", "canvas"},
+		},
+		{
+			Slug: "pattern-seam-review", Name: "花型接版评审",
+			Description: "用偏移、平铺和边缘证据检查重复单元是否无缝。",
+			License:     "Proprietary", Tags: []string{"pattern", "qa", "seamless"},
+		},
+		{
+			Slug: "lovart-api", Name: "Lovart 图像生成",
+			Description: "调用 Lovart 图像能力生成或重绘花型相关视觉资产。",
+			License:     "Proprietary", Tags: []string{"pattern", "image", "lovart"},
+		},
+		{
+			Slug: "course-researcher", Name: "课程研究",
+			Description: "围绕课程目标梳理参考资料、知识点、受众和教学风险。",
+			License:     "Proprietary", Tags: []string{"course", "research", "education"},
+		},
+		{
+			Slug: "course-architect", Name: "课程架构",
+			Description: "设计课程主线、章节结构、任务路径和验收标准。",
+			License:     "Proprietary", Tags: []string{"course", "architecture", "education"},
+		},
+		{
+			Slug: "course-builder", Name: "课程内容构建",
+			Description: "把课程结构转成课件正文、学习材料和教学任务。",
+			License:     "Proprietary", Tags: []string{"course", "content", "materials"},
+		},
+		{
+			Slug: "course-lab-builder", Name: "课程实验构建",
+			Description: "设计可执行实验、实操步骤、检查点和提交物。",
+			License:     "Proprietary", Tags: []string{"course", "lab", "practice"},
+		},
+		{
+			Slug: "course-practice-builder", Name: "课程练习评价",
+			Description: "生成随堂练习、题库、评分规则和学习反馈。",
+			License:     "Proprietary", Tags: []string{"course", "assessment", "practice"},
+		},
+		{
+			Slug: "course-ppt", Name: "课程课件设计",
+			Description: "把课程内容转成结构清晰、可讲授的演示课件方案。",
+			License:     "Proprietary", Tags: []string{"course", "slides", "presentation"},
+		},
 	}
 }

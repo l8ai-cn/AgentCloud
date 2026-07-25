@@ -27,9 +27,14 @@ func toProtoAdminSSOConfig(r *ssoservice.ConfigResponse) *ssov1.AdminSSOConfig {
 		CreatedAt:  r.CreatedAt,
 		UpdatedAt:  r.UpdatedAt,
 	}
+	if r.DefaultOrganizationID != nil {
+		v := *r.DefaultOrganizationID
+		out.DefaultOrganizationId = &v
+	}
 	setStringPtr(&out.OidcIssuerUrl, r.OIDCIssuerURL)
 	setStringPtr(&out.OidcClientId, r.OIDCClientID)
 	setStringPtr(&out.OidcScopes, r.OIDCScopes)
+	setStringPtr(&out.OidcAuthorizeExtraParams, r.OIDCAuthorizeExtraParams)
 
 	setStringPtr(&out.SamlIdpMetadataUrl, r.SAMLIDPMetadataURL)
 	setStringPtr(&out.SamlIdpSsoUrl, r.SAMLIDPSSOURL)
@@ -75,33 +80,39 @@ func setStringPtr(dst **string, v string) {
 // strings (not pointers), so we dereference when set and leave empty
 // otherwise. The service validates required fields per protocol.
 func fromCreateRequest(req *ssov1.CreateSSOConfigRequest) *ssoservice.CreateConfigRequest {
-	return &ssoservice.CreateConfigRequest{
-		Domain:             req.GetDomain(),
-		Name:               req.GetName(),
-		Protocol:           req.GetProtocol(),
-		IsEnabled:          req.GetIsEnabled(),
-		EnforceSSO:         req.GetEnforceSso(),
-		OIDCIssuerURL:      req.GetOidcIssuerUrl(),
-		OIDCClientID:       req.GetOidcClientId(),
-		OIDCClientSecret:   req.GetOidcClientSecret(),
-		OIDCScopes:         req.GetOidcScopes(),
-		SAMLIDPMetadataURL: req.GetSamlIdpMetadataUrl(),
-		SAMLIDPMetadataXML: req.GetSamlIdpMetadataXml(),
-		SAMLIDPSSOURL:      req.GetSamlIdpSsoUrl(),
-		SAMLIDPCert:        req.GetSamlIdpCert(),
-		SAMLSPEntityID:     req.GetSamlSpEntityId(),
-		SAMLNameIDFormat:   req.GetSamlNameIdFormat(),
-		LDAPHost:           req.GetLdapHost(),
-		LDAPPort:           int(req.GetLdapPort()),
-		LDAPUseTLS:         req.GetLdapUseTls(),
-		LDAPBindDN:         req.GetLdapBindDn(),
-		LDAPBindPassword:   req.GetLdapBindPassword(),
-		LDAPBaseDN:         req.GetLdapBaseDn(),
-		LDAPUserFilter:     req.GetLdapUserFilter(),
-		LDAPEmailAttr:      req.GetLdapEmailAttr(),
-		LDAPNameAttr:       req.GetLdapNameAttr(),
-		LDAPUsernameAttr:   req.GetLdapUsernameAttr(),
+	out := &ssoservice.CreateConfigRequest{
+		Domain:                   req.GetDomain(),
+		Name:                     req.GetName(),
+		Protocol:                 req.GetProtocol(),
+		IsEnabled:                req.GetIsEnabled(),
+		EnforceSSO:               req.GetEnforceSso(),
+		OIDCIssuerURL:            req.GetOidcIssuerUrl(),
+		OIDCClientID:             req.GetOidcClientId(),
+		OIDCClientSecret:         req.GetOidcClientSecret(),
+		OIDCScopes:               req.GetOidcScopes(),
+		OIDCAuthorizeExtraParams: req.GetOidcAuthorizeExtraParams(),
+		SAMLIDPMetadataURL:       req.GetSamlIdpMetadataUrl(),
+		SAMLIDPMetadataXML:       req.GetSamlIdpMetadataXml(),
+		SAMLIDPSSOURL:            req.GetSamlIdpSsoUrl(),
+		SAMLIDPCert:              req.GetSamlIdpCert(),
+		SAMLSPEntityID:           req.GetSamlSpEntityId(),
+		SAMLNameIDFormat:         req.GetSamlNameIdFormat(),
+		LDAPHost:                 req.GetLdapHost(),
+		LDAPPort:                 int(req.GetLdapPort()),
+		LDAPUseTLS:               req.GetLdapUseTls(),
+		LDAPBindDN:               req.GetLdapBindDn(),
+		LDAPBindPassword:         req.GetLdapBindPassword(),
+		LDAPBaseDN:               req.GetLdapBaseDn(),
+		LDAPUserFilter:           req.GetLdapUserFilter(),
+		LDAPEmailAttr:            req.GetLdapEmailAttr(),
+		LDAPNameAttr:             req.GetLdapNameAttr(),
+		LDAPUsernameAttr:         req.GetLdapUsernameAttr(),
 	}
+	if req.DefaultOrganizationId != nil {
+		v := *req.DefaultOrganizationId
+		out.DefaultOrganizationID = &v
+	}
+	return out
 }
 
 // fromUpdateRequest maps every proto-optional field onto a *T on the
@@ -110,28 +121,30 @@ func fromCreateRequest(req *ssov1.CreateSSOConfigRequest) *ssoservice.CreateConf
 // "only-set-fields-update" semantics; we preserve that.
 func fromUpdateRequest(req *ssov1.UpdateSSOConfigRequest) *ssoservice.UpdateConfigRequest {
 	out := &ssoservice.UpdateConfigRequest{
-		Name:               req.Name,
-		IsEnabled:          req.IsEnabled,
-		EnforceSSO:         req.EnforceSso,
-		OIDCIssuerURL:      req.OidcIssuerUrl,
-		OIDCClientID:       req.OidcClientId,
-		OIDCClientSecret:   req.OidcClientSecret,
-		OIDCScopes:         req.OidcScopes,
-		SAMLIDPMetadataURL: req.SamlIdpMetadataUrl,
-		SAMLIDPMetadataXML: req.SamlIdpMetadataXml,
-		SAMLIDPSSOURL:      req.SamlIdpSsoUrl,
-		SAMLIDPCert:        req.SamlIdpCert,
-		SAMLSPEntityID:     req.SamlSpEntityId,
-		SAMLNameIDFormat:   req.SamlNameIdFormat,
-		LDAPHost:           req.LdapHost,
-		LDAPUseTLS:         req.LdapUseTls,
-		LDAPBindDN:         req.LdapBindDn,
-		LDAPBindPassword:   req.LdapBindPassword,
-		LDAPBaseDN:         req.LdapBaseDn,
-		LDAPUserFilter:     req.LdapUserFilter,
-		LDAPEmailAttr:      req.LdapEmailAttr,
-		LDAPNameAttr:       req.LdapNameAttr,
-		LDAPUsernameAttr:   req.LdapUsernameAttr,
+		Name:                     req.Name,
+		IsEnabled:                req.IsEnabled,
+		EnforceSSO:               req.EnforceSso,
+		DefaultOrganizationID:    req.DefaultOrganizationId,
+		OIDCIssuerURL:            req.OidcIssuerUrl,
+		OIDCClientID:             req.OidcClientId,
+		OIDCClientSecret:         req.OidcClientSecret,
+		OIDCScopes:               req.OidcScopes,
+		OIDCAuthorizeExtraParams: req.OidcAuthorizeExtraParams,
+		SAMLIDPMetadataURL:       req.SamlIdpMetadataUrl,
+		SAMLIDPMetadataXML:       req.SamlIdpMetadataXml,
+		SAMLIDPSSOURL:            req.SamlIdpSsoUrl,
+		SAMLIDPCert:              req.SamlIdpCert,
+		SAMLSPEntityID:           req.SamlSpEntityId,
+		SAMLNameIDFormat:         req.SamlNameIdFormat,
+		LDAPHost:                 req.LdapHost,
+		LDAPUseTLS:               req.LdapUseTls,
+		LDAPBindDN:               req.LdapBindDn,
+		LDAPBindPassword:         req.LdapBindPassword,
+		LDAPBaseDN:               req.LdapBaseDn,
+		LDAPUserFilter:           req.LdapUserFilter,
+		LDAPEmailAttr:            req.LdapEmailAttr,
+		LDAPNameAttr:             req.LdapNameAttr,
+		LDAPUsernameAttr:         req.LdapUsernameAttr,
 	}
 	if req.LdapPort != nil {
 		v := int(*req.LdapPort)

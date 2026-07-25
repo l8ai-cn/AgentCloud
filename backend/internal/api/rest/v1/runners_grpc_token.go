@@ -11,6 +11,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Runner token routes are gated by middleware.RequirePermission(PermRunnerManage).
+
+
 func respondRegisterWithTokenError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, runner.ErrInvalidToken),
@@ -39,11 +42,6 @@ func (h *GRPCRunnerHandler) GenerateGRPCToken(c *gin.Context) {
 	tenant := middleware.GetTenant(c)
 	if tenant == nil {
 		apierr.Unauthorized(c, apierr.AUTH_REQUIRED, "Unauthorized")
-		return
-	}
-
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		apierr.ForbiddenAdmin(c)
 		return
 	}
 
@@ -88,11 +86,6 @@ func (h *GRPCRunnerHandler) ListGRPCTokens(c *gin.Context) {
 		return
 	}
 
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		apierr.ForbiddenAdmin(c)
-		return
-	}
-
 	tokens, err := h.runnerService.ListGRPCRegistrationTokens(c.Request.Context(), tenant.OrganizationID)
 	if err != nil {
 		apierr.InternalError(c, "Failed to list tokens")
@@ -112,11 +105,6 @@ func (h *GRPCRunnerHandler) DeleteGRPCToken(c *gin.Context) {
 	tenant := middleware.GetTenant(c)
 	if tenant == nil {
 		apierr.Unauthorized(c, apierr.AUTH_REQUIRED, "Unauthorized")
-		return
-	}
-
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		apierr.ForbiddenAdmin(c)
 		return
 	}
 

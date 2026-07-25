@@ -24,6 +24,7 @@ pub struct Expert {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prompt: Option<String>,
     pub interaction_mode: String,
+    pub automation_level: String,
     pub perpetual: bool,
     pub used_env_bundles: Vec<String>,
     pub skill_slugs: Vec<String>,
@@ -36,6 +37,10 @@ pub struct Expert {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub worker_spec_snapshot_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub orchestration_resource_id: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub orchestration_resource_revision: Option<i64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub source_market_application_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_market_release_id: Option<i64>,
@@ -43,9 +48,16 @@ pub struct Expert {
     pub organization_id: Option<i64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub created_by_id: Option<i64>,
+    pub revision: i64,
     pub run_count: i64,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub last_run_at: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub git_repo_path: Option<String>,
+    pub default_branch: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub http_clone_url: Option<String>,
+    pub metadata: serde_json::Value,
     pub created_at: String,
     pub updated_at: String,
 }

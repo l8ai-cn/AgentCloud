@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "runtime-catalog-2026-07-20-077eb4511113",
+  "revision": "runtime-catalog-2026-07-23-single-worker-images",
   "images": [
     {
       "id": 1,
@@ -9,8 +9,7 @@
       "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "digest": "sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "worker_type_slugs": [
-        "codex-cli",
-        "pattern-designer"
+        "codex-cli"
       ],
       "enabled": true
     },
@@ -54,19 +53,29 @@
       "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
       "digest": "sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
       "worker_type_slugs": [
-        "do-agent",
-        "seedance-expert"
+        "do-agent"
       ],
       "enabled": true
     },
     {
-      "id": 9,
-      "slug": "e2e-echo-stable",
-      "name": "E2E Echo",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa",
-      "digest": "sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa",
+      "id": 6,
+      "slug": "pattern-designer-stable",
+      "name": "Pattern Designer",
+      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+      "digest": "sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "worker_type_slugs": [
-        "e2e-echo"
+        "pattern-designer"
+      ],
+      "enabled": true
+    },
+    {
+      "id": 7,
+      "slug": "seedance-expert-stable",
+      "name": "Seedance Expert",
+      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
+      "digest": "sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
+      "worker_type_slugs": [
+        "seedance-expert"
       ],
       "enabled": true
     }

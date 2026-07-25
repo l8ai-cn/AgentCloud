@@ -91,7 +91,7 @@ func TestGetAuthURL_BuildProviderError(t *testing.T) {
 
 	_, err := svc.GetAuthURL(context.Background(), "company.com", sso.ProtocolOIDC, "state")
 	require.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to build SSO provider")
+	assert.Contains(t, err.Error(), "failed to build OIDC provider")
 }
 
 // --- buildProvider: SAML dispatch ---

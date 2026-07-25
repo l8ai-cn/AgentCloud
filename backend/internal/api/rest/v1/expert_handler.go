@@ -25,12 +25,43 @@ func (h *ExpertHandler) ListExperts(c *gin.Context) {
 	tenant := middleware.GetTenant(c)
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "50"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
-	items, total, err := h.service.List(c.Request.Context(), tenant.OrganizationID, limit, offset)
+	snapshotMaxID, err := optionalPositiveInt64(c.Query("snapshot_max_id"))
+	if err != nil {
+		apierr.ValidationError(c, "snapshot_max_id must be a positive integer")
+		return
+	}
+	items, total, err := h.service.List(
+		c.Request.Context(),
+		tenant.OrganizationID,
+		limit,
+		offset,
+		snapshotMaxID,
+	)
 	if err != nil {
 		apierr.InternalError(c, "Failed to list experts")
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"experts": items, "total": total, "limit": limit, "offset": offset})
+	responseSnapshotMaxID := int64(0)
+	if snapshotMaxID != nil {
+		responseSnapshotMaxID = *snapshotMaxID
+	} else if len(items) > 0 {
+		responseSnapshotMaxID = items[0].ID
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"experts": items, "total": total, "limit": limit, "offset": offset,
+		"snapshot_max_id": responseSnapshotMaxID,
+	})
+}
+
+func optionalPositiveInt64(raw string) (*int64, error) {
+	if raw == "" {
+		return nil, nil
+	}
+	value, err := strconv.ParseInt(raw, 10, 64)
+	if err != nil || value <= 0 {
+		return nil, errors.New("invalid positive integer")
+	}
+	return &value, nil
 }
 
 func (h *ExpertHandler) GetExpert(c *gin.Context) {

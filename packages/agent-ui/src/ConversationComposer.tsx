@@ -1,5 +1,6 @@
 import { ArrowUp, LoaderCircle, Square } from "lucide-react";
 import {
+  useRef,
   useState,
   type FormEvent,
   type KeyboardEvent,
@@ -7,12 +8,12 @@ import {
 
 import { ComposerCapabilityBar } from "./ComposerCapabilityBar";
 import { ComposerAttachments } from "./ComposerAttachments";
+import { ComposerMentionField } from "./conversation/mentions/ComposerMentionField";
+import { submitComposerMessage } from "./conversation/mentions/composerSubmit";
+import { useComposerMentions } from "./conversation/mentions/useComposerMentions";
+import type { WorkspaceFileSource } from "./conversation/mentions/workspaceFileSource";
 import { useAgentWorkspaceText } from "./AgentWorkspaceLocaleContext";
-import {
-  commandQuery,
-  ComposerCommandMenu,
-  parseAgentCommand,
-} from "./ComposerCommandMenu";
+import { commandQuery, ComposerCommandMenu } from "./ComposerCommandMenu";
 import type {
   AgentAttachmentReference,
   AgentSessionRuntime,
@@ -25,16 +26,29 @@ export function ConversationComposer({
   presentation,
   runtime,
   snapshot,
+  workspaceFiles,
+  mentionHarness = null,
 }: {
   onError: (error: unknown) => void;
   presentation: AgentWorkspacePresentation;
   runtime: AgentSessionRuntime;
   snapshot: AgentSessionSnapshot;
+  workspaceFiles?: WorkspaceFileSource;
+  mentionHarness?: string | null;
 }) {
   const [value, setValue] = useState("");
   const [attachments, setAttachments] = useState<AgentAttachmentReference[]>([]);
   const [sending, setSending] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const text = useAgentWorkspaceText();
+  const mentions = useComposerMentions({
+    value,
+    setValue,
+    textareaRef,
+    sessionId: snapshot.sessionId,
+    harness: mentionHarness,
+    workspaceFiles,
+  });
   const hasActiveTool = snapshot.items.some(
     (item) =>
       item.kind === "tool" &&
@@ -44,42 +58,34 @@ export function ConversationComposer({
     snapshot.status === "running" ||
     snapshot.status === "waiting" ||
     hasActiveTool;
-  const hasDraft = value.trim().length > 0 || attachments.length > 0;
+  const hasDraft =
+    value.trim().length > 0 ||
+    attachments.length > 0 ||
+    mentions.browser.mentionedItems.length > 0;
   const showInterrupt = isRunning && snapshot.capabilities.interrupt;
+  const canCompose = snapshot.capabilities.sendMessage && !sending;
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    const message = value.trim();
-    if ((!message && attachments.length === 0) || sending || isRunning ||
-      !snapshot.capabilities.sendMessage) return;
-    const parsedCommand = parseAgentCommand(message, snapshot.commands ?? []);
-    if (parsedCommand?.command.requiresArgument && !parsedCommand.arguments) {
-      onError(new Error(text.requiresArgument(parsedCommand.command.label)));
-      return;
-    }
-    if (parsedCommand && attachments.length > 0) {
-      onError(new Error(text.slashCommandAttachmentsUnsupported));
-      return;
-    }
+    if (sending || isRunning) return;
     setSending(true);
     try {
-      if (parsedCommand && runtime.sendSlashCommand) {
-        await runtime.sendSlashCommand(
-          snapshot.sessionId,
-          crypto.randomUUID(),
-          {
-            name: parsedCommand.command.name,
-            arguments: parsedCommand.arguments,
-          },
-        );
-      } else {
-        await runtime.sendMessage(snapshot.sessionId, crypto.randomUUID(), {
-          text: message,
-          ...(attachments.length > 0 ? { attachments } : {}),
-        });
+      const result = await submitComposerMessage({
+        message: value.trim(),
+        attachments,
+        mentioned: mentions.browser.mentionedItems,
+        outboundText: mentions.composeOutboundText(value.trim()),
+        runtime,
+        snapshot,
+        requiresArgument: text.requiresArgument,
+        slashAttachmentsUnsupported: text.slashCommandAttachmentsUnsupported,
+      });
+      if (result === "sent") {
+        setValue("");
+        setAttachments([]);
+        mentions.clearMentions();
+        mentions.refreshMention("", 0);
       }
-      setValue("");
-      setAttachments([]);
     } catch (cause) {
       onError(cause);
     } finally {
@@ -88,6 +94,7 @@ export function ConversationComposer({
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (mentions.browser.handleKeyDown(event)) return;
     if (
       event.key !== "Enter" ||
       event.shiftKey ||
@@ -111,25 +118,28 @@ export function ConversationComposer({
             query={commandQuery(value)}
           />
         )}
-        <textarea
-          aria-label={text.messageAgent}
-          className="min-h-24 max-h-56 w-full resize-none bg-transparent px-4 pb-2 pt-3 text-sm leading-6 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60"
-          disabled={!snapshot.capabilities.sendMessage || sending}
-          onChange={(event) => setValue(event.target.value)}
+        <ComposerMentionField
+          ariaLabel={text.messageAgent}
+          disabled={!canCompose}
+          mentions={mentions}
+          onChange={(next, caret) => {
+            setValue(next);
+            mentions.refreshMention(next, caret);
+          }}
           onKeyDown={handleKeyDown}
           placeholder={
-            snapshot.capabilities.sendMessage
+            canCompose
               ? text.composerPlaceholder(snapshot.agentLabel)
               : text.readOnly
           }
-          rows={3}
+          textareaRef={textareaRef}
           value={value}
         />
         <div className="flex min-h-11 items-end justify-between gap-2 px-2 pb-2">
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <ComposerAttachments
               attachments={attachments}
-              disabled={sending || isRunning || !snapshot.capabilities.sendMessage}
+              disabled={!canCompose || isRunning}
               onChange={setAttachments}
               runtime={runtime}
               sessionId={snapshot.sessionId}
@@ -160,12 +170,7 @@ export function ConversationComposer({
             <button
               aria-label={text.sendMessage}
               className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground outline-none hover:opacity-90 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-30"
-              disabled={
-                !hasDraft ||
-                sending ||
-                isRunning ||
-                !snapshot.capabilities.sendMessage
-              }
+              disabled={!hasDraft || !canCompose || isRunning}
               title={text.sendMessage}
               type="submit"
             >

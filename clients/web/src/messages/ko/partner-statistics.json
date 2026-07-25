@@ -1,0 +1,25 @@
+{
+  "partnerStatistics": {
+    "title": "Partner statistics",
+    "description": "Review partner adoption, activity, capability coverage, and profile quality across the organization.",
+    "refresh": "Refresh",
+    "refreshList": "Refresh partners",
+    "loadFailed": "Partner statistics could not be loaded",
+    "totalPartners": "Total partners",
+    "totalRuns": "기록된 시작",
+    "activatedPartners": "Partners in use",
+    "recentPartners": "Active in 7 days",
+    "perpetualPartners": "Long-running partners",
+    "profileCompleteness": "Profile completeness",
+    "activityTitle": "Adoption and activity",
+    "capabilityTitle": "Capability coverage",
+    "automationTitle": "Automation levels",
+    "categoryTitle": "Partner types",
+    "leaderboardTitle": "Partner activity ranking",
+    "scope": "파트너 프로필, 기록된 시작 횟수, 최근 실행 시간을 기준으로 합니다.",
+    "partner": "Partner",
+    "capabilities": "Capabilities",
+    "runs": "Starts",
+    "lastActive": "Last active"
+  }
+}

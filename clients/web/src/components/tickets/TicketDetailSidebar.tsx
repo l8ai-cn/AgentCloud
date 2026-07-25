@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { useTicketPods } from "@/hooks/useTicketPods";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { getShortPodKey } from "@/lib/pod-display-name";
+import { isPodActive } from "@/lib/pod-status";
 import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
 import { SpawnPodButton } from "./SpawnPodButton";
 
@@ -44,7 +45,7 @@ export function TicketDetailSidebar({
   const addPane = useWorkspaceStore((s) => s.addPane);
   const { pods, loading: podsLoading } = useTicketPods(ticketSlug);
 
-  const activePods = pods.filter((p) => p.status === "running" || p.status === "initializing");
+  const activePods = pods.filter((p) => isPodActive(p.status));
 
   const handleOpenPod = (podKey: string) => {
     addPane(podKey);

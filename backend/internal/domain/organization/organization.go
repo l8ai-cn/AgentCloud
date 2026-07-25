@@ -20,6 +20,9 @@ type Organization struct {
 
 	LogoURL *string `gorm:"type:text" json:"logo_url,omitempty"`
 
+	// AmpTenantID binds this org 1:1 to an AMP iam_tenant.code (authzTenantId).
+	AmpTenantID *string `gorm:"column:amp_tenant_id;size:100" json:"amp_tenant_id,omitempty"`
+
 	SubscriptionPlan   string `gorm:"size:50;not null;default:'based'" json:"subscription_plan"`
 	SubscriptionStatus string `gorm:"size:20;not null;default:'trialing'" json:"subscription_status"`
 

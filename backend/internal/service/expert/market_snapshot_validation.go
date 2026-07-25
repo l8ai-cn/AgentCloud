@@ -89,7 +89,7 @@ func validateMarketExpertSnapshot(snapshot marketExpertSnapshot) error {
 func validMarketIcon(icon string) bool {
 	switch strings.TrimSpace(icon) {
 	case "rocket", "network", "git-compare",
-		"clapperboard", "scissors", "film":
+		"clapperboard", "scissors", "film", "palette", "graduation-cap":
 		return true
 	default:
 		return false

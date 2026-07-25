@@ -208,6 +208,13 @@ impl WasmAuthManager {
         self.manager.clear();
     }
 
+    pub fn set_current_user_json(&self, json: &str) -> Result<(), String> {
+        let user: agentcloud_state::auth_types::User =
+            serde_json::from_str(json).map_err(|e| format!("decode user: {e}"))?;
+        self.manager.set_current_user(user);
+        Ok(())
+    }
+
     pub fn get_token(&self) -> Option<String> {
         self.manager.get_token()
     }

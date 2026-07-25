@@ -7,3 +7,10 @@ class TestResizeObserver implements ResizeObserver {
 }
 
 globalThis.ResizeObserver = TestResizeObserver;
+
+Element.prototype.scrollIntoView = () => {};
+Element.prototype.scrollTo = function scrollTo(options?: ScrollToOptions | number) {
+  if (typeof options === "object" && typeof options.top === "number") {
+    this.scrollTop = options.top;
+  }
+};

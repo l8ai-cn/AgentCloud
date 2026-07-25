@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Agent Market",
+  title: "Agent Market | AI Partners",
   description:
-    "Discover approved, versioned Agents with visible capabilities, permissions, and delivery expectations.",
+    "Discover AI partners built for real work. Inspect capabilities, evidence, and permissions before enabling one.",
   alternates: {
-    canonical: "https://market.l8ai.cn",
+    canonical: "https://agentcloud.ai/marketplace",
   },
   openGraph: {
-    title: "Agent Market | Agent Cloud",
+    title: "Agent Market | AI Partners | Agent Cloud",
     description:
-      "Discover approved Agents and inspect their capabilities, permissions, and versions before installation.",
-    url: "https://market.l8ai.cn",
+      "Discover AI partners built for real work and inspect their capabilities before enabling one.",
+    url: "https://agentcloud.ai/marketplace",
   },
 };
 

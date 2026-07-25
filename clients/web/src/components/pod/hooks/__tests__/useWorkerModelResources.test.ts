@@ -34,15 +34,25 @@ describe("useWorkerModelResources", () => {
       .mockResolvedValueOnce([resource(1, "openai")])
       .mockImplementationOnce(() => nextResources.promise);
     const { result, rerender } = renderHook(
-      ({ workerType }) => useWorkerModelResources(workerType),
-      { initialProps: { workerType: "codex-cli" } },
+      ({ workerType, protocolAdapters }) => useWorkerModelResources(
+        workerType,
+        null,
+        false,
+        { required: true, protocolAdapters },
+      ),
+      {
+        initialProps: {
+          workerType: "codex-cli",
+          protocolAdapters: ["openai-compatible"],
+        },
+      },
     );
     await waitFor(() =>
       expect(result.current.modelResources.map((item) => item.resource?.id))
         .toEqual([1]),
     );
 
-    rerender({ workerType: "claude-code" });
+    rerender({ workerType: "claude-code", protocolAdapters: ["anthropic"] });
 
     expect(result.current.loadingModelResources).toBe(true);
     expect(result.current.modelResources).toEqual([]);

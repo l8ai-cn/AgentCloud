@@ -39,6 +39,17 @@ func (r *organizationRepo) GetBySlug(ctx context.Context, slug string) (*organiz
 	return &org, nil
 }
 
+func (r *organizationRepo) GetByAmpTenantID(ctx context.Context, ampTenantID string) (*organization.Organization, error) {
+	var org organization.Organization
+	if err := r.db.WithContext(ctx).Where("amp_tenant_id = ?", ampTenantID).First(&org).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, organization.ErrNotFound
+		}
+		return nil, err
+	}
+	return &org, nil
+}
+
 func (r *organizationRepo) SlugExists(ctx context.Context, slug string) (bool, error) {
 	var count int64
 	err := r.db.WithContext(ctx).Model(&organization.Organization{}).Where("slug = ?", slug).Count(&count).Error

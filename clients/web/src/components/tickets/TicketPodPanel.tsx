@@ -12,6 +12,7 @@ import { useCurrentOrg, useAuthStore } from "@/stores/auth";
 import { Terminal, ExternalLink, Plus } from "lucide-react";
 import { CreatePodModal } from "@/components/ide/CreatePodModal";
 import { getPodDisplayName } from "@/lib/pod-display-name";
+import { isPodActive, isPodRelayConnectable } from "@/lib/pod-status";
 import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
 import { buildTicketContext } from "./buildTicketContext";
 
@@ -55,10 +56,10 @@ export default function TicketPodPanel({
   };
 
   const activePods = useMemo(() => pods.filter(
-    (s) => s.status === "running" || s.status === "initializing"
+    (s) => isPodActive(s.status)
   ), [pods]);
   const inactivePods = useMemo(() => pods.filter(
-    (s) => s.status !== "running" && s.status !== "initializing"
+    (s) => !isPodActive(s.status)
   ), [pods]);
 
   if (!ready) {
@@ -151,7 +152,8 @@ function PodItem({ pod }: PodItemProps) {
   const router = useRouter();
   const currentOrg = useCurrentOrg();
   const addPane = useWorkspaceStore((s) => s.addPane);
-  const isActive = pod.status === "running" || pod.status === "initializing";
+  const isActive = isPodActive(pod.status);
+  const canConnect = isPodRelayConnectable(pod.status);
 
   const handleConnect = () => {
     addPane(pod.pod_key);
@@ -190,7 +192,7 @@ function PodItem({ pod }: PodItemProps) {
       />
 
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        {isActive && (
+        {canConnect && (
           <>
             <Button
               size="sm"

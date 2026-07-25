@@ -25,6 +25,7 @@ vi.mock("@/lib/light-auth", () => ({
 }));
 vi.mock("@/lib/marketplace-model-resources", () => ({
   listMarketplaceModelResources: vi.fn(),
+  marketplaceWorkerRequiresModelResource: vi.fn(() => true),
 }));
 vi.mock("@/lib/marketplace-tool-model-resources", () => ({
   listMarketplaceToolModelResources: vi.fn(),

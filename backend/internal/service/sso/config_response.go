@@ -4,15 +4,16 @@ import "github.com/l8ai-cn/agentcloud/backend/internal/domain/sso"
 
 func (s *Service) ToConfigResponse(cfg *sso.Config) *ConfigResponse {
 	resp := &ConfigResponse{
-		ID:         cfg.ID,
-		Domain:     cfg.Domain,
-		Name:       cfg.Name,
-		Protocol:   string(cfg.Protocol),
-		IsEnabled:  cfg.IsEnabled,
-		EnforceSSO: cfg.EnforceSSO,
-		CreatedBy:  cfg.CreatedBy,
-		CreatedAt:  cfg.CreatedAt.Format("2006-01-02T15:04:05Z"),
-		UpdatedAt:  cfg.UpdatedAt.Format("2006-01-02T15:04:05Z"),
+		ID:                    cfg.ID,
+		Domain:                cfg.Domain,
+		Name:                  cfg.Name,
+		Protocol:              string(cfg.Protocol),
+		IsEnabled:             cfg.IsEnabled,
+		EnforceSSO:            cfg.EnforceSSO,
+		DefaultOrganizationID: cfg.DefaultOrganizationID,
+		CreatedBy:             cfg.CreatedBy,
+		CreatedAt:             cfg.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		UpdatedAt:             cfg.UpdatedAt.Format("2006-01-02T15:04:05Z"),
 	}
 
 	switch cfg.Protocol {
@@ -25,6 +26,9 @@ func (s *Service) ToConfigResponse(cfg *sso.Config) *ConfigResponse {
 		}
 		if cfg.OIDCScopes != nil {
 			resp.OIDCScopes = *cfg.OIDCScopes
+		}
+		if cfg.OIDCAuthorizeExtraParams != nil {
+			resp.OIDCAuthorizeExtraParams = *cfg.OIDCAuthorizeExtraParams
 		}
 
 	case sso.ProtocolSAML:

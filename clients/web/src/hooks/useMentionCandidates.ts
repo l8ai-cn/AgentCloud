@@ -5,6 +5,7 @@ import { organizationApi } from "@/lib/api/facade/organization";
 import type { OrganizationMember } from "@/lib/api/facade/org";
 import { useChannelPods } from "@/hooks/useChannelPods";
 import { getPodDisplayName, getMentionSafeName, getShortPodKey } from "@/lib/pod-display-name";
+import { isPodActive } from "@/lib/pod-status";
 
 export interface MentionItem {
   id: string;
@@ -42,7 +43,7 @@ export function useMentionCandidates({
   const rawChannelPods = useMemo<ChannelPodRaw[]>(
     () =>
       sharedChannelPods
-        .filter((p) => p.status === "running" || p.status === "initializing")
+        .filter((p) => isPodActive(p.status))
         .map((p) => ({ pod_key: p.pod_key, alias: p.alias, status: p.status })),
     [sharedChannelPods],
   );

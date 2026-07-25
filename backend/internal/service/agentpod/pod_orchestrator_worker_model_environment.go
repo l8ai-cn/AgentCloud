@@ -44,6 +44,12 @@ func modelResourceEnvironment(agentSlug string, resource *resourcesvc.ResolvedRe
 			return nil, ErrMissingModelResource
 		}
 		return map[string]string{"MINIMAX_API_KEY": apiKey}, nil
+	case "kimi-code":
+		return compactEnv(map[string]string{
+			"KIMI_API_KEY":    apiKey,
+			"KIMI_BASE_URL":   baseURL,
+			"KIMI_MODEL_NAME": modelID,
+		}), nil
 	default:
 		return nil, ErrMissingModelResource
 	}

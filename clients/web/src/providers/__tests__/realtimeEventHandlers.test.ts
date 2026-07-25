@@ -1,13 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fromBinary } from "@bufbuild/protobuf";
+import { create, fromBinary, toBinary } from "@bufbuild/protobuf";
 import {
   ApplyIncomingChannelMessageRequestSchema,
   ApplyChannelMessageEditedEventRequestSchema,
+  InsertChannelRequestSchema,
 } from "@proto/channel_state/v1/mutations_pb";
 import { handleChannelEvent, handleInfraEvent } from "../realtimeEventHandlers";
 import { useChannelMessageStore } from "@/stores/channel";
 import { useAuthStore } from "@/stores/auth";
-import { getAuthManager } from "@/lib/wasm-core";
+import { getAuthManager, getChannelState } from "@/lib/wasm-core";
 import { useChannelStore } from "@/stores/channel";
 
 const mockUpdateTicketStatus = vi.fn();
@@ -25,10 +26,13 @@ vi.mock("@/lib/wasm-core", async () => {
   const actual = await vi.importActual<typeof import("@/lib/wasm-core")>("@/lib/wasm-core");
   type Bucket = Map<number, Record<string, unknown>[]>;
   const buckets = (globalThis as unknown as { __channelBuckets?: Bucket }).__channelBuckets ?? new Map();
+  const channelsBox = (globalThis as unknown as { __channelBox?: { list: Record<string, unknown>[]; current: bigint | null } }).__channelBox
+    ?? { list: [], current: null };
   const unread = (globalThis as unknown as { __channelUnread?: Record<number, number> }).__channelUnread ?? {};
   const authBox = (globalThis as unknown as { __authBox?: { user: unknown; current_org: unknown; organizations: unknown[] } }).__authBox
     ?? { user: null, current_org: null, organizations: [] };
   (globalThis as unknown as { __channelBuckets: Bucket }).__channelBuckets = buckets;
+  (globalThis as unknown as { __channelBox: typeof channelsBox }).__channelBox = channelsBox;
   (globalThis as unknown as { __channelUnread: Record<number, number> }).__channelUnread = unread;
   (globalThis as unknown as { __authBox: typeof authBox }).__authBox = authBox;
   return {
@@ -55,7 +59,7 @@ vi.mock("@/lib/wasm-core", async () => {
       },
       clear_session: () => { authBox.user = null; authBox.current_org = null; authBox.organizations = []; },
       is_authenticated: () => authBox.user !== null,
-      logout: () => Promise.resolve(),
+      logout: async () => { authBox.user = null; authBox.current_org = null; authBox.organizations = []; },
       switch_org: () => {},
     }),
     getPodService: () => ({
@@ -69,6 +73,29 @@ vi.mock("@/lib/wasm-core", async () => {
     }),
     getTicketState: () => ({
       current_ticket_json: () => null,
+    }),
+    getChannelState: () => ({
+      set_channels: (json: string) => {
+        channelsBox.list = JSON.parse(json) as Record<string, unknown>[];
+      },
+      set_current_channel: (id: bigint | null) => {
+        channelsBox.current = id;
+      },
+      current_channel_bytes: () => {
+        if (channelsBox.current === null) return new Uint8Array();
+        const channel = channelsBox.list.find((item) => Number(item.id) === Number(channelsBox.current));
+        if (!channel) return new Uint8Array();
+        return toBinary(
+          InsertChannelRequestSchema,
+          create(InsertChannelRequestSchema, {
+            channel: {
+              id: BigInt(Number(channel.id)),
+              name: String(channel.name ?? ""),
+              visibility: "public",
+            },
+          }),
+        );
+      },
     }),
     getChannelService: () => ({
       apply_incoming_channel_message: (bytes: Uint8Array) => {
@@ -149,7 +176,7 @@ vi.mock("@/stores/ticket", () => ({
 describe("handleChannelEvent", () => {
   beforeEach(() => {
     getAuthManager().apply_session(JSON.stringify({ token: "t", refresh_token: "r", user: { id: 1, email: "u@e.com", username: "u" } }));
-    useChannelStore.setState({ selectedChannelId: null, currentChannel: null } as never);
+    useChannelStore.setState({ selectedChannelId: null } as never);
     useChannelMessageStore.setState({ cache: {}, _messagesTick: 0 } as never);
   });
 
@@ -174,7 +201,7 @@ describe("handleChannelEvent", () => {
   describe("channel:member_added", () => {
     it("refetches channel list when the current user is added (new channel appears)", () => {
       const fetchChannels = vi.fn();
-      useChannelStore.setState({ fetchChannels, currentChannel: null } as never);
+      useChannelStore.setState({ fetchChannels } as never);
       handleChannelEvent({
         type: "channel:member_added",
         data: { channel_id: 5, user_id: 1, role: "member" }, // user 1 == current user
@@ -185,13 +212,35 @@ describe("handleChannelEvent", () => {
 
     it("does NOT refetch when another user is added", () => {
       const fetchChannels = vi.fn();
-      useChannelStore.setState({ fetchChannels, currentChannel: null } as never);
+      useChannelStore.setState({ fetchChannels } as never);
       handleChannelEvent({
         type: "channel:member_added",
         data: { channel_id: 5, user_id: 99, role: "member" },
         category: "entity", organization_id: 1, entity_type: "channel", entity_id: "5", timestamp: Date.now(),
       });
       expect(fetchChannels).not.toHaveBeenCalled();
+    });
+
+    it("refetches the viewed channel when another user joins it", () => {
+      vi.useFakeTimers();
+      try {
+        const fetchChannel = vi.fn();
+        getChannelState().set_channels(JSON.stringify([{ id: 5, name: "general" }]));
+        getChannelState().set_current_channel(5n);
+        useChannelStore.setState({ fetchChannel } as never);
+        const debounceRef = { current: null };
+        handleChannelEvent({
+          type: "channel:member_added",
+          data: { channel_id: 5, user_id: 99, role: "member" },
+          category: "entity", organization_id: 1, entity_type: "channel", entity_id: "5", timestamp: Date.now(),
+        }, debounceRef);
+        vi.advanceTimersByTime(300);
+        expect(fetchChannel).toHaveBeenCalledWith(5);
+      } finally {
+        vi.useRealTimers();
+        getChannelState().set_current_channel(null);
+        getChannelState().set_channels("[]");
+      }
     });
   });
 });

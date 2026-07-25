@@ -1,0 +1,17 @@
+AGENT kimi
+EXECUTABLE kimi
+
+MODE pty
+MODE acp "acp"
+
+ENV KIMI_API_KEY SECRET OPTIONAL
+ENV KIMI_BASE_URL TEXT OPTIONAL
+ENV KIMI_MODEL_NAME TEXT OPTIONAL
+ENV KIMI_CODE_HOME = sandbox.root + "/kimi-code-home"
+
+PROMPT_POSITION append
+
+CAPABILITY resume acp
+CAPABILITY permission acp
+CAPABILITY interrupt true
+CAPABILITY streaming true

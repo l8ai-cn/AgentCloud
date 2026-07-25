@@ -97,6 +97,19 @@ func TestMarketSubmissionRejectsUnsupportedIcon(t *testing.T) {
 	require.ErrorContains(t, err, `market icon "sparkles" is unsupported`)
 }
 
+func TestMarketSubmissionAcceptsPartnerDomainIcons(t *testing.T) {
+	for _, icon := range []string{"palette", "graduation-cap"} {
+		fixture := newMarketServiceFixture(t)
+		request := fixture.submissionRequest()
+		request.Icon = icon
+		request.Slug = "partner-" + icon
+
+		_, err := fixture.service.SubmitMarketApplication(context.Background(), request)
+
+		require.NoError(t, err)
+	}
+}
+
 func TestMarketSubmissionSnapshotsAndVersionsAreImmutable(t *testing.T) {
 	fixture := newMarketServiceFixture(t)
 	ctx := context.Background()
@@ -271,14 +284,6 @@ func TestMarketSubmissionRejectsOrganizationScopedWorkerSpecReferences(t *testin
 		"configuration": func(_ *expertdom.Expert, snapshots *fakeMarketSnapshots) {
 			snapshots.source.Spec.Workspace.ConfigBundleIDs = []int64{94}
 		},
-		"secret": func(_ *expertdom.Expert, snapshots *fakeMarketSnapshots) {
-			snapshots.source.Spec.TypeConfig.SecretRefs = map[string]specdomain.SecretReference{
-				"TOKEN": {
-					Kind: slugkit.MustNewForTest("env-bundle"),
-					ID:   93,
-				},
-			}
-		},
 	}
 	for name, mutate := range tests {
 		t.Run(name, func(t *testing.T) {
@@ -295,6 +300,24 @@ func TestMarketSubmissionRejectsOrganizationScopedWorkerSpecReferences(t *testin
 			}
 		})
 	}
+}
+
+func TestMarketSubmissionStripsSecretReferencesFromPortableSnapshot(t *testing.T) {
+	fixture := newMarketServiceFixture(t)
+	fixture.snapshots.source.Spec.TypeConfig.SecretRefs = map[string]specdomain.SecretReference{
+		"SIGNING_KEY": {Kind: slugkit.MustNewForTest("env-bundle"), ID: 93},
+	}
+
+	submission, err := fixture.service.SubmitMarketApplication(
+		context.Background(),
+		fixture.submissionRequest(),
+	)
+
+	require.NoError(t, err)
+	var snapshot marketWorkerSpecSnapshot
+	require.NoError(t, json.Unmarshal(submission.Release.WorkerSpecSnapshot, &snapshot))
+	require.Empty(t, snapshot.Spec.TypeConfig.SecretRefs)
+	require.NotEmpty(t, fixture.snapshots.source.Spec.TypeConfig.SecretRefs)
 }
 
 func TestMarketReviewPublishesRejectsAndWithdraws(t *testing.T) {

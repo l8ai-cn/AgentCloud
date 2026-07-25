@@ -45,9 +45,11 @@ func (s *Service) SubmitMarketApplication(
 	if specSnapshot.ID != *source.WorkerSpecSnapshotID || specSnapshot.OrganizationID != req.OrganizationID {
 		return nil, ErrMarketSnapshotInvalid
 	}
-	if err := validatePortableMarketSpec(specSnapshot.Spec); err != nil {
+	portableSpec, err := portableSubmissionSpec(specSnapshot.Spec)
+	if err != nil {
 		return nil, errors.Join(ErrMarketSnapshotInvalid, err)
 	}
+	specSnapshot.Spec = portableSpec
 	skills, err := s.loadMarketSkills(
 		ctx,
 		specSnapshot.Spec.Workspace.SkillIDs,

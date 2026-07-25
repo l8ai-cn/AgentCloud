@@ -1,0 +1,29 @@
+{
+  "partnerProfile": {
+    "profileSectionIdentity": "Identity and work style",
+    "partnerType": "Partner type",
+    "typeNotSet": "Not set",
+    "noDescription": "No responsibility description yet.",
+    "automationLevel": "Automation level",
+    "automationInteractive": "Interactive",
+    "automationAutoEdit": "Auto-edit",
+    "automationAutonomous": "Autonomous",
+    "automationUnknown": "Unbekannt",
+    "workInstructions": "Work instructions",
+    "noWorkInstructions": "Keine Arbeitsanweisungen konfiguriert.",
+    "profileSectionGovernance": "Governance and origin",
+    "managementMode": "Management mode",
+    "resourceManaged": "Versioned resource",
+    "directManaged": "Direct configuration",
+    "origin": "Origin",
+    "marketOrigin": "Installed from market",
+    "resourceOrigin": "Resource-native",
+    "organizationOrigin": "Created by organization",
+    "workerSnapshot": "Worker snapshot",
+    "resourceRevision": "Resource revision",
+    "marketRelease": "Market release",
+    "createdAt": "Created",
+    "updatedAt": "Data updated",
+    "avatarLoadFailed": "Partner avatar failed to load"
+  }
+}

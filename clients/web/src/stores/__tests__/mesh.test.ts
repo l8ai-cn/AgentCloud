@@ -335,7 +335,7 @@ describe("Mesh Store", () => {
       expect(result[0]).toMatchObject({ id: 1, name: "general" });
     });
 
-    it("getActiveNodes returns running/creating nodes only", () => {
+    it("getActiveNodes returns active nodes only", () => {
       setTopo(mockTopology);
       const result = useMeshStore.getState().getActiveNodes();
       // mockNode1/2 are running, mockNode3 is terminated.

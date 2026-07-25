@@ -60,7 +60,7 @@ export function ExpertReleaseList({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>专家</TableHead>
+            <TableHead>伙伴</TableHead>
             <TableHead>分类</TableHead>
             <TableHead>版本</TableHead>
             <TableHead>状态</TableHead>

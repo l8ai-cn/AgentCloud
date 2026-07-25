@@ -51,11 +51,15 @@ func (h *IMBridgeHandler) GetConnection(c *gin.Context) {
 }
 
 type createIMConnectionRequest struct {
-	Provider  string          `json:"provider" binding:"required"`
-	Name      string          `json:"name" binding:"required"`
-	ChannelID *int64          `json:"channel_id"`
-	Config    json.RawMessage `json:"config" binding:"required"`
-	Status    string          `json:"status"`
+	Provider    string          `json:"provider" binding:"required"`
+	Name        string          `json:"name" binding:"required"`
+	ChannelID   *int64          `json:"channel_id"`
+	Config      json.RawMessage `json:"config" binding:"required"`
+	Status      string          `json:"status"`
+	DMPolicy    string          `json:"dm_policy"`
+	GroupPolicy string          `json:"group_policy"`
+	AllowFrom   json.RawMessage `json:"allow_from"`
+	Transport   string          `json:"transport"`
 }
 
 func (h *IMBridgeHandler) CreateConnection(c *gin.Context) {
@@ -73,6 +77,10 @@ func (h *IMBridgeHandler) CreateConnection(c *gin.Context) {
 		ChannelID:       req.ChannelID,
 		Config:          req.Config,
 		Status:          req.Status,
+		DMPolicy:        req.DMPolicy,
+		GroupPolicy:     req.GroupPolicy,
+		AllowFrom:       req.AllowFrom,
+		Transport:       req.Transport,
 	})
 	if err != nil {
 		if errors.Is(err, imbridgesvc.ErrInvalidProvider) || errors.Is(err, imbridgesvc.ErrInvalidConfig) {
@@ -86,10 +94,14 @@ func (h *IMBridgeHandler) CreateConnection(c *gin.Context) {
 }
 
 type updateIMConnectionRequest struct {
-	Name      *string         `json:"name"`
-	ChannelID *int64          `json:"channel_id"`
-	Config    json.RawMessage `json:"config"`
-	Status    *string         `json:"status"`
+	Name        *string         `json:"name"`
+	ChannelID   *int64          `json:"channel_id"`
+	Config      json.RawMessage `json:"config"`
+	Status      *string         `json:"status"`
+	DMPolicy    *string         `json:"dm_policy"`
+	GroupPolicy *string         `json:"group_policy"`
+	AllowFrom   json.RawMessage `json:"allow_from"`
+	Transport   *string         `json:"transport"`
 }
 
 func (h *IMBridgeHandler) UpdateConnection(c *gin.Context) {
@@ -105,10 +117,14 @@ func (h *IMBridgeHandler) UpdateConnection(c *gin.Context) {
 		return
 	}
 	row, err := h.bridge.UpdateConnection(c.Request.Context(), tenant.OrganizationID, id, &imbridgesvc.UpdateConnectionRequest{
-		Name:      req.Name,
-		ChannelID: req.ChannelID,
-		Config:    req.Config,
-		Status:    req.Status,
+		Name:        req.Name,
+		ChannelID:   req.ChannelID,
+		Config:      req.Config,
+		Status:      req.Status,
+		DMPolicy:    req.DMPolicy,
+		GroupPolicy: req.GroupPolicy,
+		AllowFrom:   req.AllowFrom,
+		Transport:   req.Transport,
 	})
 	if err != nil {
 		if errors.Is(err, imbridgesvc.ErrInvalidConfig) {
@@ -141,56 +157,4 @@ func (h *IMBridgeHandler) notFoundOrInternal(c *gin.Context, err error) {
 		return
 	}
 	apierr.InternalError(c, "IM bridge request failed")
-}
-
-type startWeixinQRRequest struct {
-	ConnectionID int64 `json:"connection_id" binding:"required"`
-}
-
-func (h *IMBridgeHandler) StartWeixinQRLogin(c *gin.Context) {
-	tenant := middleware.GetTenant(c)
-	var req startWeixinQRRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		apierr.ValidationError(c, err.Error())
-		return
-	}
-	resp, err := h.bridge.StartWeixinQRLogin(c.Request.Context(), tenant.OrganizationID, req.ConnectionID)
-	if err != nil {
-		if errors.Is(err, imbridgesvc.ErrNotFound) {
-			apierr.ResourceNotFound(c, "IM connection not found")
-			return
-		}
-		apierr.ValidationError(c, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, resp)
-}
-
-func (h *IMBridgeHandler) GetWeixinQRLoginStatus(c *gin.Context) {
-	tenant := middleware.GetTenant(c)
-	sessionID := c.Param("sessionId")
-	resp, err := h.bridge.PollWeixinQRLogin(c.Request.Context(), tenant.OrganizationID, sessionID)
-	if err != nil {
-		if errors.Is(err, imbridgesvc.ErrNotFound) {
-			apierr.ResourceNotFound(c, "QR session not found")
-			return
-		}
-		apierr.InternalError(c, "Weixin QR login failed")
-		return
-	}
-	c.JSON(http.StatusOK, resp)
-}
-
-func (h *IMBridgeHandler) GetWeixinQRImage(c *gin.Context) {
-	sessionID := c.Param("sessionId")
-	mediaType, data, err := h.bridge.GetWeixinQRImage(sessionID)
-	if err != nil {
-		if errors.Is(err, imbridgesvc.ErrNotFound) {
-			apierr.ResourceNotFound(c, "QR session not found")
-			return
-		}
-		apierr.InternalError(c, "QR image unavailable")
-		return
-	}
-	c.Data(http.StatusOK, mediaType, data)
 }

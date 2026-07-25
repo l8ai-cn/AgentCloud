@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { PublicMarketplacePage } from "@/components/marketplace/PublicMarketplacePage";
 
 export default function MarketplacePage() {
-  redirect("https://market.l8ai.cn");
+  return <PublicMarketplacePage />;
 }

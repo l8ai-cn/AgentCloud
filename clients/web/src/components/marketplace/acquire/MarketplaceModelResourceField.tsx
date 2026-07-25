@@ -26,7 +26,7 @@ export function MarketplaceModelResourceField({
   if (incompatibleListing) {
     return (
       <div className="rounded-lg border border-danger/30 bg-danger-bg p-5 text-sm text-foreground">
-        当前专家版本缺少兼容 Agent，请联系发布者修正后重新上架。
+        当前伙伴版本缺少兼容 Agent，请联系发布者修正后重新上架。
       </div>
     );
   }

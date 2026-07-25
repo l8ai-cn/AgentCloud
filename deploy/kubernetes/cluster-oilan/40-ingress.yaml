@@ -38,13 +38,9 @@ spec:
                 name: backend
                 port:
                   number: 8080
-          - path: /auth
-            pathType: Prefix
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 8080
+          # Browser routes under /auth/* (SSO/OAuth callback pages) must stay on
+          # web. Session JSON under root /auth is unused on this cluster; auth
+          # wire is /api + Connect-RPC.
           - path: /v1
             pathType: Prefix
             backend:

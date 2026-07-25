@@ -9,6 +9,7 @@ AGENT_RUNTIMES=(
   video-studio
   cursor-cli
   gemini-cli
+  kimi-code
   minimax-cli
   aider
   opencode
@@ -37,6 +38,7 @@ Agent runtimes:
   video-studio  Codex + Remotion/Chromium/FFmpeg video runtime
   cursor-cli    Cursor CLI (agent)
   gemini-cli    Google Gemini CLI (@google/gemini-cli)
+  kimi-code     Moonshot Kimi Code CLI (@moonshot-ai/kimi-code)
   minimax-cli   MiniMax CLI (mmx-cli)
   aider         Aider (pip)
   opencode      OpenCode CLI
@@ -64,6 +66,8 @@ Agent runtimes:
                   用既有 Runner 镜像构建 OpenClaw/Hermes（本地离线初始化）
   HERMES_AGENT_VERSION
                   Hermes Agent version (默认 0.18.2)
+  KIMI_CODE_VERSION
+                  Kimi Code CLI version (默认 0.29.0)
   MINIMAX_CLI_VERSION
                   MiniMax CLI version (默认 1.0.16)
   OPENCLAW_VERSION
@@ -157,6 +161,7 @@ build_one() {
     --build-arg "http_proxy="
     --build-arg "https_proxy="
     --build-arg "HERMES_AGENT_VERSION=${HERMES_AGENT_VERSION:-0.18.2}"
+    --build-arg "KIMI_CODE_VERSION=${KIMI_CODE_VERSION:-0.29.0}"
     --build-arg "MINIMAX_CLI_VERSION=${MINIMAX_CLI_VERSION:-1.0.16}"
     --build-arg "OPENCLAW_VERSION=${OPENCLAW_VERSION:-2026.6.11}"
     --build-arg "OPENCLAW_NODE_VERSION=${OPENCLAW_NODE_VERSION:-24.18.0}"

@@ -9,6 +9,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra/pki"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/ampauthz"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/apierr"
 	"github.com/gin-gonic/gin"
 )
@@ -89,12 +90,6 @@ func (h *GRPCRunnerHandler) GenerateReactivationToken(c *gin.Context) {
 	tenant := middleware.GetTenant(c)
 	if tenant == nil {
 		apierr.Unauthorized(c, apierr.AUTH_REQUIRED, "Unauthorized")
-		return
-	}
-
-	// Check admin permission
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		apierr.ForbiddenAdmin(c)
 		return
 	}
 
@@ -210,13 +205,13 @@ func RegisterOrgGRPCRunnerRoutes(rg *gin.RouterGroup, handler *GRPCRunnerHandler
 	// Organization-scoped endpoints (require JWT auth + tenant context)
 	grpc := rg.Group("/grpc")
 	{
-		// Token management
-		grpc.GET("/tokens", handler.ListGRPCTokens)
-		grpc.POST("/tokens", handler.GenerateGRPCToken)
-		grpc.DELETE("/tokens/:id", handler.DeleteGRPCToken)
+		manage := middleware.RequirePermission(ampauthz.PermRunnerManage)
+		grpc.GET("/tokens", manage, handler.ListGRPCTokens)
+		grpc.POST("/tokens", manage, handler.GenerateGRPCToken)
+		grpc.DELETE("/tokens/:id", manage, handler.DeleteGRPCToken)
 	}
 
 	// Reactivation token generation (per-runner). Kept on REST until the
 	// admin-side reactivation UI lands.
-	rg.POST("/:id/reactivate", handler.GenerateReactivationToken)
+	rg.POST("/:id/reactivate", middleware.RequirePermission(ampauthz.PermRunnerManage), handler.GenerateReactivationToken)
 }

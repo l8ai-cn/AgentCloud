@@ -49,4 +49,5 @@ export { authApi } from "./facade/auth";
 export { runnerApi, runnerAuthApi } from "./facade/runner";
 export { ssoApi, getSSOAuthURL } from "./facade/sso";
 export { userApi } from "./facade/user";
+export type { Identity } from "./facade/user";
 export { podApi } from "./facade/podApi";

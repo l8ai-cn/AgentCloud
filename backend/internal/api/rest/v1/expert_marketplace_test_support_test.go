@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	expertdom "github.com/l8ai-cn/agentcloud/backend/internal/domain/expert"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/expertmarket"
 	skilldom "github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	expertsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/expert"
-	"github.com/gin-gonic/gin"
 )
 
 type expertMarketplaceAPIFixture struct {
@@ -161,7 +161,7 @@ func (*marketplaceExpertRepository) SlugExists(
 	return false, nil
 }
 func (*marketplaceExpertRepository) List(
-	context.Context, int64, int, int,
+	context.Context, int64, int, int, *int64,
 ) ([]expertdom.Expert, int64, error) {
 	return nil, 0, nil
 }

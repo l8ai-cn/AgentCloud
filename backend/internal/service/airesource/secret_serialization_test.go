@@ -36,7 +36,7 @@ func TestInternalCredentialMapsCannotBeSerialized(t *testing.T) {
 func TestCipherErrorsNeverExposeSensitiveMaterial(t *testing.T) {
 	f := newFixture()
 	leakedPlaintext := "plaintext-encryption-leak"
-	service, err := NewService(Dependencies{Repository: f.repo, Cipher: failingCipher{encryptErr: errors.New(leakedPlaintext)}, Members: f.members, Prober: f.prober, Mutations: f.mutations, Endpoints: allowingEndpoints{}})
+	service, err := NewService(Dependencies{Repository: f.repo, Cipher: failingCipher{encryptErr: errors.New(leakedPlaintext)}, Members: f.members, Prober: f.prober, Lister: f.lister, Mutations: f.mutations, Endpoints: allowingEndpoints{}})
 	require.NoError(t, err)
 	_, err = service.CreateConnection(context.Background(), actor(1), CreateConnectionInput{OwnerScope: domain.OwnerScopeUser, OwnerID: 1, Identifier: "openai-main", ProviderKey: "openai", Name: "OpenAI", Credentials: map[string]string{"api_key": "input-secret"}})
 	assert.ErrorIs(t, err, ErrEncrypt)
@@ -45,7 +45,7 @@ func TestCipherErrorsNeverExposeSensitiveMaterial(t *testing.T) {
 	connection := createValidConnection(t, f, domain.OwnerScopeUser, 1, "decrypt-main", "stored-secret")
 	resource := createResource(t, f, connection.ID, "model-b")
 	leakedCiphertext := "ciphertext-decryption-leak"
-	service, err = NewService(Dependencies{Repository: f.repo, Cipher: failingCipher{decryptErr: errors.New(leakedCiphertext)}, Members: f.members, Prober: f.prober, Mutations: f.mutations, Endpoints: allowingEndpoints{}})
+	service, err = NewService(Dependencies{Repository: f.repo, Cipher: failingCipher{decryptErr: errors.New(leakedCiphertext)}, Members: f.members, Prober: f.prober, Lister: f.lister, Mutations: f.mutations, Endpoints: allowingEndpoints{}})
 	require.NoError(t, err)
 	_, err = service.ResolveExact(context.Background(), actor(1), 0, resource.ID, chatRequirements())
 	assert.ErrorIs(t, err, ErrDecrypt)

@@ -81,6 +81,7 @@ message WorkerToolModelRequirement {
   repeated string protocol_adapters = 3;
   string modality = 4;
   string capability = 5;
+  bool required = 6;
 }
 
 message WorkerTypeOption {

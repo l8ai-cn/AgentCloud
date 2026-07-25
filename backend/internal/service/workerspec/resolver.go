@@ -161,6 +161,9 @@ func (resolver *Resolver) resolveToolModelBindings(
 		known[role] = struct{}{}
 		resourceID := resourceIDs[role]
 		if resourceID <= 0 {
+			if !requirement.Required {
+				continue
+			}
 			return nil, &InvalidDraftFieldError{
 				Field:  "tool_model_resource_ids." + role,
 				Reason: "is required by the selected worker type",

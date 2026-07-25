@@ -9,6 +9,7 @@ import { channelApi } from "@/lib/api/facade/channel";
 import { usePods, usePodStore } from "@/stores/pod";
 import { useChannelPods, invalidateChannelPods } from "@/hooks/useChannelPods";
 import { getPodDisplayName, getShortPodKey } from "@/lib/pod-display-name";
+import { isPodActive } from "@/lib/pod-status";
 import { useTranslations } from "next-intl";
 
 interface ChannelPodManagerProps {
@@ -40,7 +41,7 @@ export function ChannelPodManager({
   const joinedKeys = new Set(channelPods.map((p) => p.pod_key));
   const availablePods = allPods.filter(
     (p) =>
-      (p.status === "running" || p.status === "initializing") &&
+      isPodActive(p.status) &&
       !joinedKeys.has(p.pod_key)
   );
 

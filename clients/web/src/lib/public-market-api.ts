@@ -29,7 +29,9 @@ export interface PublicMarketApplication {
     | "git-compare"
     | "clapperboard"
     | "scissors"
-    | "film";
+    | "film"
+    | "palette"
+    | "graduation-cap";
   agent_slug: string;
   skill_slugs: string[];
   tags: string[];

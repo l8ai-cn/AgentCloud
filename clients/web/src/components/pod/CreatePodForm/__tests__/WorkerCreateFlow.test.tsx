@@ -63,7 +63,6 @@ describe("Worker create flow", () => {
       ),
     ).toEqual([
       "model",
-      "worker-type",
       "runtime-image",
       "compute-target",
       "deployment-mode",
@@ -121,22 +120,24 @@ describe("Worker create flow", () => {
     expect(next.draft.initial_task).toBe(state.draft.initial_task);
 
     const onWorkerTypeChange = vi.fn();
+    const onPatch = vi.fn();
     render(
       <WorkerRuntimeStep
         draft={state.draft}
         modelResources={{ status: "ready", data: [modelResource()] }}
         toolModelResources={{ status: "ready", data: [] }}
         options={{ status: "ready", data: createOptions() }}
-        onPatch={vi.fn()}
+        onPatch={onPatch}
         onWorkerTypeChange={onWorkerTypeChange}
         t={t}
       />,
     );
-    fireEvent.click(screen.getByLabelText("workerCreate.runtime.workerType"));
-    fireEvent.click(screen.getByText("workerCreate.runtime.options.claude"));
+    fireEvent.click(screen.getByLabelText("workerCreate.runtime.runtimeImage"));
+    fireEvent.click(screen.getByText("Claude stable"));
     expect(screen.getByRole("alertdialog")).toBeInTheDocument();
-    fireEvent.click(screen.getByText("workerCreate.typeChange.confirm"));
+    fireEvent.click(screen.getByText("workerCreate.imageChange.confirm"));
     expect(onWorkerTypeChange).toHaveBeenCalledWith("claude-code", 2);
+    expect(onPatch).toHaveBeenCalledWith({ runtime_image_id: 12 });
   });
 
   it("keeps lifecycle values identical in the submitted draft", () => {
@@ -242,6 +243,16 @@ function createOptions(): WorkerCreateOptions {
         reference: "registry/codex@sha256:test",
         digest: "sha256:test",
         worker_type_slugs: ["codex-cli"],
+        selectable: true,
+        blocking_reason: "",
+      },
+      {
+        id: 12,
+        slug: "claude-stable",
+        name: "Claude stable",
+        reference: "registry/claude@sha256:test",
+        digest: "sha256:test",
+        worker_type_slugs: ["claude-code"],
         selectable: true,
         blocking_reason: "",
       },

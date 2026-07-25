@@ -67,7 +67,7 @@ const navItems = [
     icon: MessageSquare,
   },
   {
-    title: "专家市场审核",
+    title: "伙伴市场审核",
     href: "/expert-market",
     icon: Store,
   },

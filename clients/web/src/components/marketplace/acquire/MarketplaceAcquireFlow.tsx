@@ -190,7 +190,7 @@ export function MarketplaceAcquireFlow({
           </Button>
         </div>
       ) : null}
-      {step === "installing" ? <LoadingState label="正在创建专家应用实例" /> : null}
+      {step === "installing" ? <LoadingState label="正在创建伙伴应用实例" /> : null}
       {step === "success" && selectedOrganization && installationID ? (
         <SuccessState organization={selectedOrganization} installationID={installationID} />
       ) : null}

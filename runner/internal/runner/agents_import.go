@@ -9,6 +9,7 @@ import (
 	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/gemini"
 	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/grok"
 	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/hermes"
+	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/kimi"
 	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/loopal"
 	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/openclaw"
 	_ "github.com/l8ai-cn/agentcloud/runner/internal/agents/opencode"

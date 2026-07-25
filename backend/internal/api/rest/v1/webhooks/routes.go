@@ -127,5 +127,6 @@ func (r *WebhookRouter) RegisterRoutes(rg *gin.RouterGroup) {
 	rg.POST("/mock/complete", r.handleMockCheckoutComplete)
 	rg.GET("/mock/session/:session_id", r.getMockSession)
 
+	rg.GET("/im/:provider/:connection_id", r.handleIMBridgeWebhookVerify)
 	rg.POST("/im/:provider/:connection_id", r.handleIMBridgeWebhook)
 }

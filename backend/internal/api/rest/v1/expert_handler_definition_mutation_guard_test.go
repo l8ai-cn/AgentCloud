@@ -133,8 +133,17 @@ func (s *expertHandlerStore) SlugExists(context.Context, int64, string, int64) (
 	return false, nil
 }
 
-func (s *expertHandlerStore) List(context.Context, int64, int, int) ([]expertdom.Expert, int64, error) {
-	return nil, 0, nil
+func (s *expertHandlerStore) List(
+	_ context.Context,
+	orgID int64,
+	_, _ int,
+	snapshotMaxID *int64,
+) ([]expertdom.Expert, int64, error) {
+	if s.row == nil || s.row.OrganizationID != orgID ||
+		(snapshotMaxID != nil && s.row.ID > *snapshotMaxID) {
+		return nil, 0, nil
+	}
+	return []expertdom.Expert{*cloneHandlerExpert(s.row)}, 1, nil
 }
 
 func (s *expertHandlerStore) RecordRun(context.Context, int64, int64, time.Time) error {

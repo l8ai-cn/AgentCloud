@@ -100,7 +100,6 @@ describe("ExpertDetailPane", () => {
   });
 
   it.each([
-    ["worker_spec_snapshot_id", 41],
     ["orchestration_resource_id", 52],
     ["orchestration_resource_revision", 3],
   ])("uses the revision editor when %s is present", (field, value) => {
@@ -125,6 +124,24 @@ describe("ExpertDetailPane", () => {
   });
 
   it("keeps legacy editing and deletion for an unmanaged expert", () => {
+    render(<ExpertDetailPane slug="release-reviewer" orgSlug="acme" />);
+    fireEvent.click(
+      screen.getByRole("button", { name: "edit.editExpert" }),
+    );
+
+    expect(screen.getByTestId("legacy-editor")).toHaveAttribute(
+      "data-open",
+      "true",
+    );
+    expect(screen.queryByTestId("revision-editor")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "deleteExpert" }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps snapshot-backed legacy partners on the direct editor", () => {
+    mocks.expert = expert({ worker_spec_snapshot_id: 41 });
+
     render(<ExpertDetailPane slug="release-reviewer" orgSlug="acme" />);
     fireEvent.click(
       screen.getByRole("button", { name: "edit.editExpert" }),

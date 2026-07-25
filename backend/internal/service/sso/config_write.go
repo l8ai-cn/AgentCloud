@@ -38,12 +38,13 @@ func (s *Service) CreateConfig(ctx context.Context, req *CreateConfigRequest, cr
 	}
 
 	cfg := &sso.Config{
-		Domain:     strings.ToLower(req.Domain),
-		Name:       req.Name,
-		Protocol:   protocol,
-		IsEnabled:  req.IsEnabled,
-		EnforceSSO: req.EnforceSSO,
-		CreatedBy:  &createdBy,
+		Domain:                strings.ToLower(req.Domain),
+		Name:                  req.Name,
+		Protocol:              protocol,
+		IsEnabled:             req.IsEnabled,
+		EnforceSSO:            req.EnforceSSO,
+		DefaultOrganizationID: req.DefaultOrganizationID,
+		CreatedBy:             &createdBy,
 	}
 
 	var fieldErr error
@@ -89,6 +90,12 @@ func (s *Service) setOIDCFields(cfg *sso.Config, req *CreateConfigRequest) error
 	}
 	if req.OIDCScopes != "" {
 		cfg.OIDCScopes = &req.OIDCScopes
+	}
+	if req.OIDCAuthorizeExtraParams != "" {
+		if _, err := decodeAuthorizeExtraParams(&req.OIDCAuthorizeExtraParams); err != nil {
+			return err
+		}
+		cfg.OIDCAuthorizeExtraParams = &req.OIDCAuthorizeExtraParams
 	}
 	return nil
 }

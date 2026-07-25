@@ -50,6 +50,8 @@ func TestMountAppliesAuthenticationOptionsToEveryRPC(t *testing.T) {
 		SetConnectionEnabledProcedure,
 		ValidateConnectionProcedure,
 		DeleteConnectionProcedure,
+		DiscoverConnectionModelsProcedure,
+		ImportConnectionModelsProcedure,
 		CreateResourceProcedure,
 		UpdateResourceProcedure,
 		SetResourceEnabledProcedure,

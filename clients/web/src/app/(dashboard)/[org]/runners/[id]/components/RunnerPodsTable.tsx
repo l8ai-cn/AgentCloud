@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { RunnerPodData, SandboxStatus } from "@/lib/api";
+import { isPodActive } from "@/lib/pod-status";
 import { cn } from "@/lib/utils";
 import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
 import { getShortPodKey } from "@/lib/pod-display-name";
@@ -67,7 +68,7 @@ export function RunnerPodsTable({ pods, sandboxStatuses, t, onResume }: RunnerPo
         <tbody className="divide-y divide-border/25">
           {pods.map((pod) => {
             const sandboxStatus = sandboxStatuses.get(pod.pod_key);
-            const isInactive = pod.status !== "running" && pod.status !== "initializing";
+            const isInactive = !isPodActive(pod.status);
             const alreadyResumed = Boolean(pod.resumed_by_pod_key);
             const canResume = isInactive && sandboxStatus?.can_resume && !alreadyResumed;
 

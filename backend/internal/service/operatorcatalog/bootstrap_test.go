@@ -23,28 +23,21 @@ func TestBootstrapVideoExpertsIsIdempotent(t *testing.T) {
 	snapshots := &bootstrapSnapshotStore{}
 	artifacts := &bootstrapDependencyArtifactStore{}
 	bootstrapper := NewBootstrapper(skills, experts, workers, snapshots, artifacts)
-	request := BootstrapRequest{
-		OrganizationID:   7,
-		OrganizationSlug: slugkit.MustNewForTest("dev-org"),
-		PublisherUserID:  11,
-		ReviewerUserID:   13,
-		ModelResourceID:  17,
-		RuntimeImageID:   19,
-	}
+	request := validBootstrapRequest()
 
 	first, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
 	require.Equal(t, BootstrapResult{
-		CreatedSkills:  7,
-		CreatedExperts: 3,
-		Published:      3,
+		CreatedSkills:  17,
+		CreatedExperts: 5,
+		Published:      5,
 	}, first)
-	require.Len(t, skills.rows, 7)
-	require.Len(t, experts.experts, 3)
-	require.Len(t, experts.published, 3)
-	require.Equal(t, 3, workers.calls)
-	require.Equal(t, 3, snapshots.createCalls)
-	require.Equal(t, 3, artifacts.createCalls)
+	require.Len(t, skills.rows, 17)
+	require.Len(t, experts.experts, 5)
+	require.Len(t, experts.published, 5)
+	require.Equal(t, 5, workers.calls)
+	require.Equal(t, 5, snapshots.createCalls)
+	require.Equal(t, 5, artifacts.createCalls)
 	expert := experts.experts["video-production-expert"]
 	require.JSONEq(
 		t,
@@ -53,16 +46,16 @@ func TestBootstrapVideoExpertsIsIdempotent(t *testing.T) {
 	)
 	require.Equal(
 		t,
-		videoExpertConfigOverrides(),
+		partnerConfigOverrides(),
 		snapshots.rows[*expert.WorkerSpecSnapshotID].Spec.TypeConfig.Values,
 	)
 
 	second, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
 	require.Equal(t, BootstrapResult{}, second)
-	require.Equal(t, 3, workers.calls)
-	require.Equal(t, 3, snapshots.createCalls)
-	require.Equal(t, 3, artifacts.createCalls)
+	require.Equal(t, 5, workers.calls)
+	require.Equal(t, 5, snapshots.createCalls)
+	require.Equal(t, 5, artifacts.createCalls)
 }
 
 func TestBootstrapVideoExpertsRebuildsLegacyPromptArtifact(t *testing.T) {
@@ -72,14 +65,7 @@ func TestBootstrapVideoExpertsRebuildsLegacyPromptArtifact(t *testing.T) {
 	snapshots := newBootstrapSnapshotStore()
 	artifacts := &bootstrapDependencyArtifactStore{}
 	bootstrapper := NewBootstrapper(skills, experts, workers, snapshots, artifacts)
-	request := BootstrapRequest{
-		OrganizationID:   7,
-		OrganizationSlug: slugkit.MustNewForTest("dev-org"),
-		PublisherUserID:  11,
-		ReviewerUserID:   13,
-		ModelResourceID:  17,
-		RuntimeImageID:   19,
-	}
+	request := validBootstrapRequest()
 	_, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
 	expert := experts.experts["video-production-expert"]
@@ -94,10 +80,10 @@ func TestBootstrapVideoExpertsRebuildsLegacyPromptArtifact(t *testing.T) {
 
 	require.Equal(t, BootstrapResult{}, result)
 	require.NotEqual(t, legacySnapshotID, *expert.WorkerSpecSnapshotID)
-	require.Equal(t, int64(4), *expert.WorkerSpecSnapshotID)
-	require.Equal(t, 4, workers.calls)
-	require.Equal(t, 4, snapshots.createCalls)
-	require.Equal(t, 4, artifacts.createCalls)
+	require.Equal(t, int64(6), *expert.WorkerSpecSnapshotID)
+	require.Equal(t, 6, workers.calls)
+	require.Equal(t, 6, snapshots.createCalls)
+	require.Equal(t, 6, artifacts.createCalls)
 	require.True(
 		t,
 		artifactMatchesInstructionContract(
@@ -113,14 +99,7 @@ func TestBootstrapVideoExpertsRebuildsLegacyApprovalSnapshot(t *testing.T) {
 	snapshots := newBootstrapSnapshotStore()
 	artifacts := &bootstrapDependencyArtifactStore{}
 	bootstrapper := NewBootstrapper(skills, experts, workers, snapshots, artifacts)
-	request := BootstrapRequest{
-		OrganizationID:   7,
-		OrganizationSlug: slugkit.MustNewForTest("dev-org"),
-		PublisherUserID:  11,
-		ReviewerUserID:   13,
-		ModelResourceID:  17,
-		RuntimeImageID:   19,
-	}
+	request := validBootstrapRequest()
 	_, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
 	expert := experts.experts["video-production-expert"]
@@ -136,7 +115,7 @@ func TestBootstrapVideoExpertsRebuildsLegacyApprovalSnapshot(t *testing.T) {
 	require.NotEqual(t, legacySnapshotID, *expert.WorkerSpecSnapshotID)
 	require.Equal(
 		t,
-		videoExpertConfigOverrides(),
+		partnerConfigOverrides(),
 		snapshots.rows[*expert.WorkerSpecSnapshotID].Spec.TypeConfig.Values,
 	)
 }
@@ -156,14 +135,7 @@ func TestBootstrapVideoExpertsRejectsExistingExpertDrift(t *testing.T) {
 		&bootstrapDependencyArtifactStore{},
 	)
 
-	_, err := bootstrapper.Run(context.Background(), BootstrapRequest{
-		OrganizationID:   7,
-		OrganizationSlug: slugkit.MustNewForTest("dev-org"),
-		PublisherUserID:  11,
-		ReviewerUserID:   13,
-		ModelResourceID:  17,
-		RuntimeImageID:   19,
-	})
+	_, err := bootstrapper.Run(context.Background(), validBootstrapRequest())
 
 	require.ErrorIs(t, err, ErrCatalogConflict)
 }
@@ -186,11 +158,7 @@ func TestBootstrapVideoExpertsRejectsChangedRuntimeBindings(t *testing.T) {
 				newBootstrapSnapshotStore(),
 				&bootstrapDependencyArtifactStore{},
 			)
-			request := BootstrapRequest{
-				OrganizationID: 7, OrganizationSlug: slugkit.MustNewForTest("dev-org"),
-				PublisherUserID: 11, ReviewerUserID: 13,
-				ModelResourceID: 17, RuntimeImageID: 19,
-			}
+			request := validBootstrapRequest()
 			_, err := bootstrapper.Run(context.Background(), request)
 			require.NoError(t, err)
 
@@ -212,14 +180,7 @@ func TestBootstrapVideoExpertsRejectsTypedNilDependency(t *testing.T) {
 	)
 
 	require.NotPanics(t, func() {
-		_, err := bootstrapper.Run(context.Background(), BootstrapRequest{
-			OrganizationID:   7,
-			OrganizationSlug: slugkit.MustNewForTest("dev-org"),
-			PublisherUserID:  11,
-			ReviewerUserID:   13,
-			ModelResourceID:  17,
-			RuntimeImageID:   19,
-		})
+		_, err := bootstrapper.Run(context.Background(), validBootstrapRequest())
 		require.EqualError(t, err, "operator catalog dependencies are incomplete")
 	})
 }

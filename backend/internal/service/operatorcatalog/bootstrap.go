@@ -82,12 +82,13 @@ type Bootstrapper struct {
 }
 
 type BootstrapRequest struct {
-	OrganizationID   int64
-	OrganizationSlug slugkit.Slug
-	PublisherUserID  int64
-	ReviewerUserID   int64
-	ModelResourceID  int64
-	RuntimeImageID   int64
+	OrganizationID      int64
+	OrganizationSlug    slugkit.Slug
+	PublisherUserID     int64
+	ReviewerUserID      int64
+	ModelResourceID     int64
+	RuntimeImageID      int64
+	CredentialBundleIDs map[string]int64
 }
 
 type BootstrapResult struct {

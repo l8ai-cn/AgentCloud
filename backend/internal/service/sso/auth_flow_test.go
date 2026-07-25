@@ -28,6 +28,13 @@ func (m *mockProvider) GetAuthURL(_ context.Context, state string) (string, erro
 	return m.getAuthURLResult + "?state=" + state, nil
 }
 
+func (m *mockProvider) GetAuthURLWithPKCE(_ context.Context, state, _, _ string) (string, error) {
+	if m.getAuthURLErr != nil {
+		return "", m.getAuthURLErr
+	}
+	return m.getAuthURLResult + "?state=" + state, nil
+}
+
 func (m *mockProvider) HandleCallback(_ context.Context, _ map[string]string) (*ssoprovider.UserInfo, error) {
 	return m.handleCallbackResult, m.handleCallbackErr
 }
@@ -117,10 +124,11 @@ func TestHandleCallback_OIDC_Success(t *testing.T) {
 	svc := newTestServiceWithMockProvider(repo, mp)
 	existing := seedOIDCConfig(repo)
 
-	userInfo, configID, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, map[string]string{"code": "auth-code"})
+	params := oidcCallbackParams(t, svc, "success-state", "auth-code")
+	userInfo, cfg, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, params)
 	require.NoError(t, err)
 	assert.Equal(t, "user@company.com", userInfo.Email)
-	assert.Equal(t, existing.ID, configID)
+	assert.Equal(t, existing.ID, cfg.ID)
 }
 
 func TestHandleCallback_NotFound(t *testing.T) {
@@ -150,7 +158,8 @@ func TestHandleCallback_ProviderError(t *testing.T) {
 	svc := newTestServiceWithMockProvider(repo, mp)
 	seedOIDCConfig(repo)
 
-	_, _, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, map[string]string{"code": "bad-code"})
+	params := oidcCallbackParams(t, svc, "provider-error-state", "bad-code")
+	_, _, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, params)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "SSO callback failed")
 }
@@ -161,7 +170,8 @@ func TestHandleCallback_NilUserInfo(t *testing.T) {
 	svc := newTestServiceWithMockProvider(repo, mp)
 	seedOIDCConfig(repo)
 
-	_, _, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, map[string]string{"code": "code"})
+	params := oidcCallbackParams(t, svc, "nil-userinfo-state", "code")
+	_, _, err := svc.HandleCallback(context.Background(), "company.com", sso.ProtocolOIDC, params)
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "no user info")
 }

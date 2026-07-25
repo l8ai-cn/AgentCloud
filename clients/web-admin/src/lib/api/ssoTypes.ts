@@ -14,10 +14,12 @@ export interface SSOConfig {
   protocol: SSOProtocol;
   is_enabled: boolean;
   enforce_sso: boolean;
+  default_organization_id?: number;
   // OIDC
   oidc_issuer_url?: string;
   oidc_client_id?: string;
   oidc_scopes?: string;
+  oidc_authorize_extra_params?: string;
   // SAML
   saml_idp_metadata_url?: string;
   saml_idp_sso_url?: string;
@@ -51,11 +53,13 @@ export interface CreateSSOConfigRequest {
   protocol: SSOProtocol;
   is_enabled?: boolean;
   enforce_sso?: boolean;
+  default_organization_id?: number;
   // OIDC
   oidc_issuer_url?: string;
   oidc_client_id?: string;
   oidc_client_secret?: string;
   oidc_scopes?: string;
+  oidc_authorize_extra_params?: string;
   // SAML
   saml_idp_metadata_url?: string;
   saml_idp_metadata_xml?: string;

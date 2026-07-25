@@ -3,17 +3,26 @@ import { readFile } from "node:fs/promises";
 const RESOURCE_URL = new URL("../../config/resources.json", import.meta.url);
 const INVENTORY_URL = new URL("../../config/assets.json", import.meta.url);
 
+// databaseAssetId/projectId are the post-rebrand logical names; namespace, secret
+// and databaseName stay `agentsmesh` because production still runs the
+// pre-rebrand Kubernetes identity.
 export const OILAN_POSTGRES = Object.freeze({
   databaseAssetId: "db_agentcloud_prod_postgres",
   projectId: "agentcloud",
   environmentId: "prod",
   engine: "postgresql",
-  namespace: "agentcloud",
+  namespace: "agentsmesh",
   serviceName: "postgres",
-  databaseName: "agentcloud",
+  databaseName: "agentsmesh",
   doopsTarget: "gw-oilan-node",
-  secretRef: "secret://agentcloud/agentcloud-secrets#DB_PASSWORD",
+  secretRef: "secret://agentsmesh/agentsmesh-secrets#DB_PASSWORD",
 });
+
+export const OILAN_POSTGRES_CONNECTION_REF = [
+  `k8s://doops-oilan/oilan-node/${OILAN_POSTGRES.namespace}`,
+  `/service/${OILAN_POSTGRES.serviceName}:5432`,
+  `#db=${OILAN_POSTGRES.databaseName}`,
+].join("");
 
 const QUERIES = Object.freeze({
   "asset-probe": [
@@ -53,7 +62,7 @@ export function validateOilanPostgresRegistration(resources, inventory) {
   requireEqual(resource?.environmentId, OILAN_POSTGRES.environmentId, "resource.environmentId");
   requireEqual(resource?.doopsTarget, OILAN_POSTGRES.doopsTarget, "resource.doopsTarget");
   requireEqual(resource?.secretRef, OILAN_POSTGRES.secretRef, "resource.secretRef");
-  requireEqual(resource?.connectionRef, "k8s://doops-oilan/oilan-node/agentcloud/service/postgres:5432#db=agentcloud", "resource.connectionRef");
+  requireEqual(resource?.connectionRef, OILAN_POSTGRES_CONNECTION_REF, "resource.connectionRef");
   requireEqual(asset?.projectId, OILAN_POSTGRES.projectId, "asset.projectId");
   requireEqual(asset?.environmentId, OILAN_POSTGRES.environmentId, "asset.environmentId");
   requireEqual(asset?.engine, OILAN_POSTGRES.engine, "asset.engine");
@@ -101,9 +110,9 @@ export function buildOilanPostgresRemoteCommand(query) {
   const encodedQuery = Buffer.from(query.sql, "utf8").toString("base64");
   return [
     "set -euo pipefail",
-    "namespace=agentcloud",
-    "service=postgres",
-    "secret=agentcloud-secrets",
+    `namespace=${OILAN_POSTGRES.namespace}`,
+    `service=${OILAN_POSTGRES.serviceName}`,
+    `secret=${secretName(OILAN_POSTGRES.secretRef)}`,
     'kubectl -n "$namespace" get service "$service" >/dev/null',
     'kubectl -n "$namespace" get secret "$secret" >/dev/null',
     `pod="$(kubectl -n "$namespace" get pods -l app=postgres -o jsonpath='{.items[0].metadata.name}')"`,
@@ -115,6 +124,12 @@ export function buildOilanPostgresRemoteCommand(query) {
     'PGOPTIONS="-c default_transaction_read_only=on -c statement_timeout=15000" PGPASSWORD="$POSTGRES_PASSWORD" psql --no-psqlrc --set ON_ERROR_STOP=1 --no-align --tuples-only --field-separator "|" --username "$POSTGRES_USER" --dbname "$POSTGRES_DB"',
     "'",
   ].join("\n");
+}
+
+function secretName(secretRef) {
+  const match = /^secret:\/\/[^/]+\/([^#]+)#/.exec(secretRef);
+  if (!match) throw new Error("secretRef must be secret://<namespace>/<name>#<key>");
+  return match[1];
 }
 
 function requireEqual(actual, expected, fieldName) {

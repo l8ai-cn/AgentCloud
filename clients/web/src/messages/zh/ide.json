@@ -7,7 +7,7 @@
       "mesh": "监控",
       "loops": "循环",
       "workflows": "工作流",
-      "experts": "专家",
+      "experts": "伙伴",
       "automation": "自动化",
       "apiAccess": "API 接入",
       "knowledge": "知识库",
@@ -91,6 +91,7 @@
       "modelResourceHint": "Worker 启动时从选中的 AI 资源解析凭据。",
       "manageModelResources": "配置模型与 API Key",
       "noModelResourcesAvailableHint": "当前 Agent 需要兼容的模型和 API Key。请前往「设置 → AI 资源」选择已有配置，或添加新的配置。",
+      "optionalToolModelNone": "不使用（可选）",
       "selectRuntimeBundles": "运行时环境变量 Bundle",
       "noRuntimeBundlesAvailableHint": "此镜像暂无运行时环境变量 Bundle。前往「设置 → 镜像」添加。",
       "noRuntimeBundleSelectedHint": "未选中任何运行时 Bundle，Worker 不会注入额外的运行时偏好。",
@@ -227,7 +228,7 @@
       "knowledgeBases": "选择知识库",
       "manageKnowledgeBases": "新建知识库",
       "loadingKnowledgeBases": "正在加载知识库…",
-      "knowledgeBasesLoadFailed": "知识库加载失败，请重试。",
+      "knowledgeBasesLoadFailed": "知识库暂不可用；不选择知识库也可以创建 Worker。",
       "noKnowledgeBasesHint": "暂无知识库。创建后可在 Worker 启动时挂载到运行环境。",
       "knowledgeBasesHint": "知识库会克隆到 Worker 沙箱的 kb/ 目录；可写挂载允许 Agent 提交并推送修改。",
       "knowledgeModeToggle": "切换只读 / 读写",
@@ -343,7 +344,7 @@
     "stepContent": {
       "1": {
         "title": "选择运行方式",
-        "description": "选择 Agent、模型、运行环境和资源大小。"
+        "description": "选择模型、镜像和资源大小。"
       },
       "2": {
         "title": "配置 Agent 变量",
@@ -360,8 +361,7 @@
     },
     "runtime": {
       "model": "模型与 API",
-      "workerType": "Agent 类型",
-      "runtimeImage": "运行环境",
+      "runtimeImage": "镜像",
       "computeTarget": "运行位置",
       "computeTargetHint": "本地开发会使用组织中在线的 Runner。",
       "deploymentMode": "资源使用方式",
@@ -375,7 +375,7 @@
         "minimax": "MiniMax CLI",
         "openclaw": "OpenClaw",
         "doAgent": "DoAgent",
-        "seedance": "Seedance 专家",
+        "seedance": "Seedance 伙伴",
         "patternDesigner": "花型设计 Worker",
         "aider": "Aider",
         "openCode": "OpenCode",
@@ -401,11 +401,11 @@
         "storage": "存储"
       }
     },
-    "typeChange": {
-      "title": "切换 Worker 类型？",
-      "description": "当前类型专属的主模型、工具模型、镜像、配置、Skill 和环境选择将被清空。",
-      "cancel": "保留当前类型",
-      "confirm": "切换类型"
+    "imageChange": {
+      "title": "切换镜像？",
+      "description": "当前 Agent 不兼容此镜像，相关模型、配置和 Skill 选择将被清空。",
+      "cancel": "保留当前镜像",
+      "confirm": "切换镜像"
     },
     "typeConfig": {
       "title": "Agent 配置变量",

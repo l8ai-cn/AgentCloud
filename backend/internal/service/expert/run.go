@@ -149,8 +149,25 @@ func (s *Service) Run(ctx context.Context, req *RunExpertRequest) (*RunExpertRes
 	if err != nil {
 		return nil, err
 	}
-	_ = s.store.RecordRun(ctx, req.OrganizationID, expert.ID, time.Now())
-	return &RunExpertResult{Pod: result.Pod, Warning: result.Warning}, nil
+	warning := result.Warning
+	if err := s.store.RecordRun(
+		ctx,
+		req.OrganizationID,
+		expert.ID,
+		time.Now(),
+	); err != nil {
+		s.logger.Error(
+			"record partner run statistics",
+			"organization_id", req.OrganizationID,
+			"expert_id", expert.ID,
+			"error", err,
+		)
+		if warning != "" {
+			warning += " "
+		}
+		warning += "Partner started, but its run statistics could not be recorded."
+	}
+	return &RunExpertResult{Pod: result.Pod, Warning: warning}, nil
 }
 
 func workerSpecSnapshotPointer(value int64) *int64 {

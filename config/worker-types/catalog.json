@@ -24,7 +24,7 @@
     {
       "slug": "do-agent",
       "definition_path": "config/worker-types/do-agent/definition.json",
-      "definition_hash": "sha256:e79be1769fe5b2d4de307d3748b9edcfa8a31eafec0a5a51a4b2dfb36b0a8337"
+      "definition_hash": "sha256:6e9a22dca3cedd5722965fba833759bde106ead79d8964020396693497562a4a"
     },
     {
       "slug": "e2e-echo",
@@ -45,6 +45,11 @@
       "slug": "hermes",
       "definition_path": "config/worker-types/hermes/definition.json",
       "definition_hash": "sha256:035450d5cbfc34fbe6671b00e5ee9cf76aaf0eee81988c4e7fc471bbedefb7ee"
+    },
+    {
+      "slug": "kimi-code",
+      "definition_path": "config/worker-types/kimi-code/definition.json",
+      "definition_hash": "sha256:2ba64e7227e74eb792d08decfba10f33200599619127cdbe4e8bc1fecbce0ec2"
     },
     {
       "slug": "loopal",

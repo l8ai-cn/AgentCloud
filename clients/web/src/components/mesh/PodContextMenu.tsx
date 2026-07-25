@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/confirm-dialog";
 import { RenameDialog } from "@/components/shared/RenameDialog";
 import { terminatePod } from "@/lib/api/facade/podConnect";
+import { isPodActive, isPodRelayConnectable } from "@/lib/pod-status";
 import type { MeshNode } from "@/stores/mesh";
 import { useMeshStore } from "@/stores/mesh";
 import { usePodStore } from "@/stores/pod";
@@ -38,7 +39,8 @@ export default function PodContextMenu({ node, children }: PodContextMenuProps) 
   const { dialogProps, confirm } = useConfirmDialog();
   const [renameOpen, setRenameOpen] = useState(false);
 
-  const isActive = node.status === "running" || node.status === "initializing";
+  const isActive = isPodActive(node.status);
+  const canOpenTerminal = isPodRelayConnectable(node.status);
 
   const handleOpenTerminal = useCallback(() => {
     router.push(`/${orgSlug}/workspace?pod=${node.pod_key}`);
@@ -83,7 +85,7 @@ export default function PodContextMenu({ node, children }: PodContextMenuProps) 
         <ContextMenuContent className="w-56">
           <ContextMenuItem
             onClick={handleOpenTerminal}
-            disabled={!isActive}
+            disabled={!canOpenTerminal}
           >
             <Terminal className="mr-2 h-4 w-4" />
             {t("contextMenu.openTerminal")}

@@ -13,12 +13,15 @@ trap 'rm -f "$catalog"' EXIT
 cat >"$catalog" <<'JSON'
 {
   "images": [
-    {"worker_type_slugs": ["codex-cli", "pattern-designer"]},
+    {"worker_type_slugs": ["codex-cli"]},
     {"worker_type_slugs": ["video-studio"]},
     {"worker_type_slugs": ["gemini-cli"]},
+    {"worker_type_slugs": ["kimi-code"]},
     {"worker_type_slugs": ["minimax-cli"]},
     {"worker_type_slugs": ["openclaw"]},
-    {"worker_type_slugs": ["do-agent", "seedance-expert"]},
+    {"worker_type_slugs": ["do-agent"]},
+    {"worker_type_slugs": ["pattern-designer"]},
+    {"worker_type_slugs": ["seedance-expert"]},
     {"worker_type_slugs": ["e2e-echo"]},
     {"worker_type_slugs": ["loopal"]},
     {"worker_type_slugs": ["aider"]},
@@ -32,7 +35,7 @@ cat >"$catalog" <<'JSON'
 JSON
 
 services="$(local_worker_runner_services "$catalog")"
-[[ "$services" == "runner-codex-cli runner-video-studio runner-gemini-cli runner-minimax-cli runner-openclaw runner-do-agent runner-e2e-echo runner-loopal runner-aider runner-claude-code runner-cursor-cli runner-grok-build runner-hermes runner-opencode" ]] || {
+[[ "$services" == "runner-codex-cli runner-video-studio runner-gemini-cli runner-kimi-code runner-minimax-cli runner-openclaw runner-do-agent runner-e2e-echo runner-loopal runner-aider runner-claude-code runner-cursor-cli runner-grok-build runner-hermes runner-opencode" ]] || {
     echo "unexpected local Worker runner services: $services" >&2
     exit 1
 }

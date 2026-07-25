@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/url"
 	"time"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/user"
@@ -110,18 +111,47 @@ func (s *Service) GenerateOAuthState(ctx context.Context, provider, redirectURL 
 	return state, nil
 }
 
-func (s *Service) ValidateOAuthState(ctx context.Context, state string) (string, error) {
-	key := oauthStateKeyPrefix + state
-
-	redirectURL, err := s.redis.GetDel(ctx, key).Result()
-	if err != nil {
-		if err.Error() == "redis: nil" {
-			return "", ErrInvalidState
+// NormalizeOAuthState undoes IdP/query double-encoding so Redis keys match.
+func NormalizeOAuthState(state string) string {
+	for i := 0; i < 3; i++ {
+		unescaped, err := url.QueryUnescape(state)
+		if err != nil || unescaped == state {
+			return state
 		}
-		return "", fmt.Errorf("failed to validate OAuth state: %w", err)
+		state = unescaped
 	}
+	return state
+}
 
-	return redirectURL, nil
+func (s *Service) ValidateOAuthState(ctx context.Context, state string) (string, error) {
+	for _, candidate := range oauthStateLookupCandidates(state) {
+		redirectURL, err := s.redis.GetDel(ctx, oauthStateKeyPrefix+candidate).Result()
+		if err == nil {
+			return redirectURL, nil
+		}
+		if err.Error() != "redis: nil" {
+			return "", fmt.Errorf("failed to validate OAuth state: %w", err)
+		}
+	}
+	return "", ErrInvalidState
+}
+
+func oauthStateLookupCandidates(state string) []string {
+	seen := make(map[string]struct{}, 4)
+	out := make([]string, 0, 4)
+	add := func(v string) {
+		if v == "" {
+			return
+		}
+		if _, ok := seen[v]; ok {
+			return
+		}
+		seen[v] = struct{}{}
+		out = append(out, v)
+	}
+	add(state)
+	add(NormalizeOAuthState(state))
+	return out
 }
 
 func (s *Service) OAuthLogin(ctx context.Context, req *OAuthLoginRequest) (*LoginResult, error) {

@@ -84,7 +84,10 @@ func GenerateState() (string, error) {
 	if _, err := rand.Read(b); err != nil {
 		return "", err
 	}
-	return base64.URLEncoding.EncodeToString(b), nil
+	// RawURLEncoding avoids '=' padding. Some IdPs (e.g. AMP) echo state
+	// through URLEncoder twice, which turns "==" into "%253D%253D" and breaks
+	// Redis lookup after a single Query unescape.
+	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
 func (s *Service) GenerateTokens(ctx context.Context, u *user.User) (*LoginResult, error) {

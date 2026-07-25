@@ -10,13 +10,18 @@ import (
 
 func initializeAIResourceService(db *gorm.DB, orgs *organizationservice.Service, cipher *crypto.Encryptor) *airesourceservice.Service {
 	policy := airesourceservice.NewEndpointPolicy(false, nil)
-	prober, err := airesourceservice.NewHTTPConnectionProber(airesourceservice.NewSafeHTTPClient(policy, nil))
+	client := airesourceservice.NewSafeHTTPClient(policy, nil)
+	prober, err := airesourceservice.NewHTTPConnectionProber(client)
+	if err != nil {
+		panic(err)
+	}
+	lister, err := airesourceservice.NewHTTPModelLister(client)
 	if err != nil {
 		panic(err)
 	}
 	service, err := airesourceservice.NewService(airesourceservice.Dependencies{
 		Repository: infra.NewAIResourceRepository(db), Cipher: cipher, Members: orgs, Prober: prober,
-		Mutations: infra.NewAIResourceMutationRunner(db), Endpoints: policy,
+		Lister: lister, Mutations: infra.NewAIResourceMutationRunner(db), Endpoints: policy,
 	})
 	if err != nil {
 		panic(err)

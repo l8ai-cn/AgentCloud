@@ -108,7 +108,7 @@ func expertMatches(
 	return expert != nil &&
 		expert.Name == definition.Name &&
 		optionalString(expert.Description) == definition.Description &&
-		expert.AgentSlug == "video-studio" &&
+		expert.AgentSlug == definitionWorkerType(definition) &&
 		optionalString(expert.Prompt) == definition.Prompt &&
 		expert.InteractionMode == expertdom.InteractionModePTY &&
 		expert.AutomationLevel == expertdom.AutomationLevelAutoEdit &&

@@ -45,6 +45,30 @@ export function OIDCSection({ form, update, isEdit }: ProtocolSectionProps) {
           onChange={(e) => update("oidc_scopes", e.target.value)}
         />
       </div>
+      <div className="space-y-2">
+        <Label htmlFor="oidc_authorize_extra_params">Authorize Extra Params (JSON)</Label>
+        <Input
+          id="oidc_authorize_extra_params"
+          placeholder='{"tenantId":"TEST"}'
+          value={form.oidc_authorize_extra_params}
+          onChange={(e) => update("oidc_authorize_extra_params", e.target.value)}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="default_organization_id">Default Organization ID</Label>
+        <Input
+          id="default_organization_id"
+          type="number"
+          placeholder="e.g. 1"
+          value={form.default_organization_id ?? ""}
+          onChange={(e) =>
+            update(
+              "default_organization_id",
+              e.target.value === "" ? undefined : Number(e.target.value),
+            )
+          }
+        />
+      </div>
     </fieldset>
   );
 }

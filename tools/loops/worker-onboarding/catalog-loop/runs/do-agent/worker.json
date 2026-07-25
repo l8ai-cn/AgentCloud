@@ -2,7 +2,7 @@
   "schema_version": 1,
   "slug": "do-agent",
   "status": "blocked",
-  "definition_hash": "sha256:f4348e3bb9baf3973078c475b5ac724fab016d06c10673d927d21dd80a267bb8",
+  "definition_hash": "sha256:6e9a22dca3cedd5722965fba833759bde106ead79d8964020396693497562a4a",
   "source_refs": [
     "config/worker-types/catalog.json"
   ]

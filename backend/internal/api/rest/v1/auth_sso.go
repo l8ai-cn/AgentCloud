@@ -54,15 +54,19 @@ func (h *SSOAuthHandler) RegisterRoutes(rg *gin.RouterGroup) {
 
 // authenticateSSO creates/gets the user from SSO identity, checks if active, and generates tokens.
 // It does NOT write HTTP responses — callers decide how to handle errors (JSON vs redirect).
-func (h *SSOAuthHandler) authenticateSSO(c *gin.Context, protocol sso.Protocol, configID int64, userInfo *ssoprovider.UserInfo) (*userDomain.User, *auth.TokenPair, error) {
-	providerName := ssoservice.SSOProviderName(protocol, configID)
+func (h *SSOAuthHandler) authenticateSSO(c *gin.Context, cfg *sso.Config, userInfo *ssoprovider.UserInfo) (*userDomain.User, *auth.TokenPair, error) {
+	providerName := ssoservice.SSOProviderName(cfg.Protocol, cfg.ID)
 	u, tokens, err := h.authService.SSOLogin(c.Request.Context(), &auth.SSOLoginRequest{
-		ProviderName: providerName,
-		ExternalID:   userInfo.ExternalID,
-		Username:     userInfo.Username,
-		Email:        userInfo.Email,
-		Name:         userInfo.Name,
-		AvatarURL:    userInfo.AvatarURL,
+		ProviderName:          providerName,
+		ExternalID:            userInfo.ExternalID,
+		Username:              userInfo.Username,
+		Email:                 userInfo.Email,
+		Name:                  userInfo.Name,
+		AvatarURL:             userInfo.AvatarURL,
+		EmailVerified:         userInfo.EmailVerified,
+		DefaultOrganizationID: cfg.DefaultOrganizationID,
+		IdPTenantID:           userInfo.TenantID,
+		IdPRoles:              userInfo.Roles,
 	})
 	if err != nil {
 		return nil, nil, err

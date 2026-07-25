@@ -25,6 +25,7 @@ type fakeStore struct {
 	nextID               int64
 	createErr            error
 	updateErr            error
+	recordRunErr         error
 	marketLookupMisses   int
 	beforeMarketUpdate   func()
 	marketUpdateStarted  chan struct{}
@@ -173,12 +174,18 @@ func (f *fakeStore) SlugExists(_ context.Context, orgID int64, slug string, excl
 	return false, nil
 }
 
-func (f *fakeStore) List(_ context.Context, orgID int64, limit, offset int) ([]expertdom.Expert, int64, error) {
+func (f *fakeStore) List(
+	_ context.Context,
+	orgID int64,
+	limit, offset int,
+	snapshotMaxID *int64,
+) ([]expertdom.Expert, int64, error) {
 	f.mutex.Lock()
 	defer f.mutex.Unlock()
 	var out []expertdom.Expert
 	for _, e := range f.rows {
-		if e.OrganizationID == orgID {
+		if e.OrganizationID == orgID &&
+			(snapshotMaxID == nil || e.ID <= *snapshotMaxID) {
 			out = append(out, *e)
 		}
 	}
@@ -188,6 +195,9 @@ func (f *fakeStore) List(_ context.Context, orgID int64, limit, offset int) ([]e
 func (f *fakeStore) RecordRun(_ context.Context, orgID, id int64, at time.Time) error {
 	f.mutex.Lock()
 	defer f.mutex.Unlock()
+	if f.recordRunErr != nil {
+		return f.recordRunErr
+	}
 	e, ok := f.rows[id]
 	if !ok || e.OrganizationID != orgID {
 		return expertdom.ErrNotFound

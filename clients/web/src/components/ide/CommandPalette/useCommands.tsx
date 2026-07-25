@@ -149,8 +149,7 @@ export function useCommands(t: (key: string) => string): {
         icon: <LogOut className="w-4 h-4" />,
         keywords: ["logout", "signout", "exit"],
         action: () => {
-          logout();
-          router.push("/login");
+          void logout().then(() => router.push("/login"));
         },
       },
     ],

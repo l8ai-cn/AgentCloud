@@ -22,6 +22,8 @@ type Service interface {
 	SetConnectionEnabled(context.Context, service.Actor, int64, bool) error
 	ValidateConnection(context.Context, service.Actor, int64) error
 	DeleteConnection(context.Context, service.Actor, int64) error
+	DiscoverConnectionModels(context.Context, service.Actor, int64) (service.ModelDiscoveryView, error)
+	ImportConnectionModels(context.Context, service.Actor, int64, service.ImportModelsInput) (service.ModelImportView, error)
 	CreateResource(context.Context, service.Actor, service.CreateResourceInput) (service.ResourceView, error)
 	UpdateResource(context.Context, service.Actor, int64, service.UpdateResourceInput) (service.ResourceView, error)
 	SetResourceEnabled(context.Context, service.Actor, int64, bool) error
@@ -65,6 +67,10 @@ func mapServiceError(err error) error {
 	switch {
 	case errors.Is(err, service.ErrProbeUnsupported):
 		code, message = connect.CodeUnimplemented, "AI resource provider validation unsupported"
+	case errors.Is(err, service.ErrDiscoveryUnsupported):
+		code, message = connect.CodeUnimplemented, "AI resource model discovery unsupported"
+	case errors.Is(err, service.ErrDiscovery):
+		code, message = connect.CodeFailedPrecondition, "AI resource model discovery failed"
 	case errors.Is(err, service.ErrProviderEndpointUnavailable):
 		code, message = connect.CodeFailedPrecondition, "AI resource provider endpoint unavailable"
 	case errors.Is(err, service.ErrNotFound):

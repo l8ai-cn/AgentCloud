@@ -16,6 +16,7 @@ type ToolModelRequirement struct {
 	ProtocolAdapters []slugkit.Slug
 	Modality         resourcedomain.Modality
 	Capability       resourcedomain.Capability
+	Required         bool
 	Environment      ToolModelEnvironment
 }
 

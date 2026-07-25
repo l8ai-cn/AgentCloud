@@ -157,7 +157,13 @@ func (*runExpertStore) SlugExists(context.Context, int64, string, int64) (bool, 
 	return false, nil
 }
 
-func (*runExpertStore) List(context.Context, int64, int, int) ([]expertdom.Expert, int64, error) {
+func (*runExpertStore) List(
+	context.Context,
+	int64,
+	int,
+	int,
+	*int64,
+) ([]expertdom.Expert, int64, error) {
 	return nil, 0, nil
 }
 
