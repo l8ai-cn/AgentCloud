@@ -1,6 +1,9 @@
 # Oilan Endpoints
 
 - App: https://dowork.l8ai.cn (`/api`, `/proto.`, `/relay`, `/health`)
+- Agents entry: https://agents.l8ai.cn (same backend/web stack as dowork)
+- IM pairing (logged-in): `/settings/im-pair` — see
+  [`docs/integrations/im-worker-connect.md`](../../../docs/integrations/im-worker-connect.md)
 - Isolated Pod preview: `https://<pod-key>.l8ai.cn` (`/preview` only)
 - Mobile Worker entry: https://mobile.l8ai.cn
 - Marketplace Storefront: https://market.l8ai.cn
@@ -9,6 +12,10 @@
 - Admin console: https://admin.l8ai.cn (separate host, no `/admin` basePath)
 - Object storage (presigned URLs): https://minio.dowork.l8ai.cn
 - Test account: `admin@agentcloud.local / Ab123456`
+
+Live namespace is still **`agentsmesh`** (Harbor `…/agentsmesh/*`). Repo
+`deploy.sh` targets `agentcloud` — do not mix them until the namespace
+migration lands.
 
 DNS for `dowork.l8ai.cn`, `market.l8ai.cn`, `mobile.l8ai.cn`,
 `admin.l8ai.cn`, `*.l8ai.cn`, and `minio.dowork.l8ai.cn` must point at the
