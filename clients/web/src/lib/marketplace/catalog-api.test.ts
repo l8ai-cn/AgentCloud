@@ -1,19 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { sessionStorageKey } from "@/lib/light-session";
 import { fetchMarketplaceListingDetail, fetchMarketplaceListings } from "./catalog-api";
 
 describe("marketplace catalog API", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     window.localStorage.clear();
-    window.localStorage.setItem(
-      sessionStorageKey(window.location.origin),
-      JSON.stringify({
-        access_token: "market-token",
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-      }),
-    );
   });
 
   it("reads the catalog through the same-origin marketplace API", async () => {
@@ -29,7 +21,7 @@ describe("marketplace catalog API", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("/api/marketplace/v1/markets/agent-cloud-market/listings"),
       expect.objectContaining({
-        headers: expect.objectContaining({ Authorization: "Bearer market-token" }),
+        headers: expect.not.objectContaining({ Authorization: expect.anything() }),
       }),
     );
   });

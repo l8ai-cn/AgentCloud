@@ -1,7 +1,10 @@
 import { getApiBaseUrl } from "@/lib/env";
-import { getAuthManager } from "@/lib/wasm-core";
-import { readCurrentOrg } from "@/stores/auth";
 import { buildSessionImportWorkerPlan } from "./sessionImportWorkerPlan";
+import {
+  authenticatedOrganizationFetch,
+  readJsonResponse,
+  requireCurrentOrganizationSlug,
+} from "./authenticatedRequest";
 
 export type ImportCodexResult = {
   sessionId: string;
@@ -15,32 +18,13 @@ export type ImportCodexResult = {
 
 type ConversationItemWire = Record<string, unknown> & { id: string; type: string };
 
-function orgHeaders(): HeadersInit | null {
-  const token = getAuthManager().get_token();
-  const org = readCurrentOrg()?.slug;
-  if (!token || !org) return null;
-  return {
-    Authorization: `Bearer ${token}`,
-    "X-Organization-Slug": org,
-    "Content-Type": "application/json",
-  };
-}
-
 async function sessionFetch(path: string, init?: RequestInit): Promise<Response> {
-  const h = orgHeaders();
-  if (!h) throw new Error("not authenticated");
   const base = getApiBaseUrl().replace(/\/$/, "");
-  const res = await fetch(`${base}/v1${path}`, { ...init, headers: h });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(body || `request failed: ${res.status}`);
-  }
-  return res;
+  return authenticatedOrganizationFetch(`${base}/v1${path}`, init);
 }
 
 async function sessionReq<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await sessionFetch(path, init);
-  return res.json() as Promise<T>;
+  return readJsonResponse<T>(await sessionFetch(path, init));
 }
 
 /** Migrate a local Codex rollout or output_* directory into a new Worker session. */
@@ -49,8 +33,7 @@ export async function importCodexSession(
   agentId: string,
   options: { title?: string; hostId?: string; modelResourceId?: number } = {},
 ): Promise<ImportCodexResult> {
-  const orgSlug = readCurrentOrg()?.slug;
-  if (!orgSlug) throw new Error("not authenticated");
+  const orgSlug = requireCurrentOrganizationSlug();
   const plan = await buildSessionImportWorkerPlan({
     orgSlug,
     workerTypeSlug: agentId,

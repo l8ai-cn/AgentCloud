@@ -1,6 +1,5 @@
 import { getApiBaseUrl } from "@/lib/env";
-import { getAuthManager } from "@/lib/wasm-core";
-import { readCurrentOrg } from "@/stores/auth";
+import { authenticatedOrganizationFetch } from "./authenticatedRequest";
 
 export async function loadSessionArtifactRepresentation(
   input: {
@@ -16,9 +15,6 @@ export async function loadSessionArtifactRepresentation(
   if (!input.artifactId || !input.representationId || !input.digest) {
     throw new Error("artifact_identity_missing");
   }
-  const token = getAuthManager().get_token();
-  const org = readCurrentOrg()?.slug;
-  if (!token || !org) throw new Error("Not authenticated");
   const base = getApiBaseUrl().replace(/\/$/, "");
   const query = new URLSearchParams({
     artifact_id: input.artifactId,
@@ -26,19 +22,10 @@ export async function loadSessionArtifactRepresentation(
     representation_id: input.representationId,
     revision: input.revision.toString(),
   });
-  const response = await fetch(
+  const response = await authenticatedOrganizationFetch(
     `${base}/v1/sessions/${encodeURIComponent(input.sessionId)}` +
       `/artifacts/content?${query.toString()}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "X-Organization-Slug": org,
-      },
-    },
   );
-  if (!response.ok) {
-    throw new Error(`Artifact request failed (${response.status})`);
-  }
   return response.blob();
 }
 

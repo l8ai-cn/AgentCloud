@@ -1,8 +1,8 @@
 package v1
 
 import (
-	runnersvc "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	"github.com/gin-gonic/gin"
+	runnersvc "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 )
 
 func registerPodQueueRoutes(rg *gin.RouterGroup, svc *Services, previewPublicOrigin string) {
@@ -27,12 +27,6 @@ func registerPodQueueRoutes(rg *gin.RouterGroup, svc *Services, previewPublicOri
 	}
 	if svc.RelayManager != nil && svc.RelayTokenGenerator != nil {
 		podOpts = append(podOpts, WithRelayPreview(svc.RelayManager, svc.RelayTokenGenerator, previewPublicOrigin))
-	}
-	if svc.SandboxFsService != nil {
-		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))
-	}
-	if svc.SandboxFsService != nil {
-		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))
 	}
 	if svc.SandboxFsService != nil {
 		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))

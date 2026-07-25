@@ -1,4 +1,8 @@
-import { marketplaceRequest, MarketplaceRequestError } from "./client";
+import {
+  authenticatedMarketplaceRequest,
+  publicMarketplaceRequest,
+  MarketplaceRequestError,
+} from "./client";
 import type { MarketplaceListingDetail } from "./catalog-api";
 
 export type { MarketplaceListingDetail } from "./catalog-api";
@@ -28,7 +32,7 @@ export async function fetchMarketplaceListing(
   marketSlug: string,
   listingSlug: string,
 ): Promise<MarketplaceListingDetail> {
-  return marketplaceRequest(
+  return publicMarketplaceRequest(
     `/markets/${encodeURIComponent(marketSlug)}/listings/${encodeURIComponent(listingSlug)}`,
   );
 }
@@ -41,7 +45,7 @@ export async function createInstallationPlan(
   modelResourceID: number,
   toolModelResourceIDs: Record<string, number>,
 ): Promise<InstallationPlan> {
-  return marketplaceRequest(
+  return authenticatedMarketplaceRequest(
     `/markets/${encodeURIComponent(marketSlug)}/listings/${encodeURIComponent(listingSlug)}/plans`,
     {
       method: "POST",
@@ -60,7 +64,7 @@ export async function createInstallationPlan(
 export async function applyInstallationPlan(
   plan: InstallationPlan,
 ): Promise<InstallationResult> {
-  return marketplaceRequest(
+  return authenticatedMarketplaceRequest(
     `/installation-operations/${encodeURIComponent(plan.operation_id)}/apply`,
     {
       method: "POST",

@@ -3,6 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { sessionStorageKey } from "@/lib/light-session";
 import { fetchOrganizationApplications } from "./application-api";
 
+vi.mock("@/lib/wasm-core", () => ({
+  getAuthManager: () => ({ get_token: () => "market-token" }),
+}));
+
 describe("organization applications API", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -28,11 +32,10 @@ describe("organization applications API", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       expect.stringContaining("/organizations/9/applications"),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          Authorization: "Bearer market-token",
-        }),
-      }),
+      expect.anything(),
     );
+    const headers = new Headers(fetchMock.mock.calls[0][1]?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer market-token");
+    expect(headers.get("X-Organization-Slug")).toBeNull();
   });
 });

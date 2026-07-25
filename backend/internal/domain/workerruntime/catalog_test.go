@@ -15,7 +15,7 @@ func TestDefaultCatalogExposesImmutableRuntimeSelections(t *testing.T) {
 	catalog := DefaultCatalog()
 
 	allImages := catalog.Images()
-	require.Len(t, allImages, 6)
+	require.Len(t, allImages, 7)
 	for _, image := range allImages {
 		assert.Regexp(t, regexp.MustCompile(`^sha256:[a-f0-9]{64}$`), image.Digest)
 		assert.True(t, strings.HasSuffix(image.Reference, "@"+image.Digest))
@@ -26,6 +26,7 @@ func TestDefaultCatalogExposesImmutableRuntimeSelections(t *testing.T) {
 	assert.True(t, allImages[3].Enabled)
 	assert.True(t, allImages[4].Enabled)
 	assert.True(t, allImages[5].Enabled)
+	assert.True(t, allImages[6].Enabled)
 
 	images := catalog.ImagesFor("codex-cli")
 	require.Len(t, images, 1)
@@ -36,11 +37,7 @@ func TestDefaultCatalogExposesImmutableRuntimeSelections(t *testing.T) {
 	assert.Equal(t, int64(4), videoImages[0].ID)
 	assert.Equal(t, "video-studio-stable", videoImages[0].Slug)
 	assert.True(t, videoImages[0].Enabled)
-	echoImages := catalog.ImagesFor("e2e-echo")
-	require.Len(t, echoImages, 1)
-	assert.Equal(t, int64(9), echoImages[0].ID)
-	assert.Equal(t, "e2e-echo-stable", echoImages[0].Slug)
-	assert.True(t, echoImages[0].Enabled)
+	assert.Empty(t, catalog.ImagesFor("e2e-echo"))
 
 	target := catalog.Target(1)
 	require.NotNil(t, target)
@@ -97,7 +94,7 @@ func TestLoadCatalogReadsExplicitDevelopmentLock(t *testing.T) {
 	assert.True(t, images[0].Enabled)
 }
 
-func TestDefaultCatalogPublishesDoAgentForSeedance(t *testing.T) {
+func TestDefaultCatalogPublishesSeparateDoAgentAndSeedanceImages(t *testing.T) {
 	catalog := DefaultCatalog()
 
 	doAgentImages := catalog.ImagesFor("do-agent")
@@ -105,8 +102,9 @@ func TestDefaultCatalogPublishesDoAgentForSeedance(t *testing.T) {
 	require.Len(t, doAgentImages, 1)
 	require.Len(t, seedanceImages, 1)
 	assert.True(t, doAgentImages[0].Enabled)
-	assert.Equal(t, doAgentImages[0], seedanceImages[0])
-	assert.Equal(t, []string{"do-agent", "seedance-expert"}, doAgentImages[0].WorkerTypeSlugs)
+	assert.NotEqual(t, doAgentImages[0].ID, seedanceImages[0].ID)
+	assert.Equal(t, []string{"do-agent"}, doAgentImages[0].WorkerTypeSlugs)
+	assert.Equal(t, []string{"seedance-expert"}, seedanceImages[0].WorkerTypeSlugs)
 	assert.Regexp(t, regexp.MustCompile(`^repo\.aiedulab\.cn:8443/agentcloud/runner-do-agent@sha256:[a-f0-9]{64}$`), doAgentImages[0].Reference)
 }
 
@@ -114,6 +112,21 @@ func TestDefaultCatalogDoesNotInventUnknownWorkerImages(t *testing.T) {
 	catalog := DefaultCatalog()
 
 	assert.Empty(t, catalog.ImagesFor("unknown-worker"))
+}
+
+func TestDefaultCatalogUsesStableRuntimeImageIDs(t *testing.T) {
+	catalog := DefaultCatalog()
+	expected := map[string]int64{
+		"codex-cli": 1, "claude-code": 2, "gemini-cli": 3,
+		"video-studio": 4, "do-agent": 5, "pattern-designer": 6,
+		"seedance-expert": 7,
+	}
+
+	for workerType, id := range expected {
+		images := catalog.ImagesFor(workerType)
+		require.Len(t, images, 1, workerType)
+		assert.Equal(t, id, images[0].ID, workerType)
+	}
 }
 
 func TestDefaultCatalogDoesNotUseMutableEnvironmentImageReferences(t *testing.T) {

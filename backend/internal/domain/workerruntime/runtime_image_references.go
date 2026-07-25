@@ -8,21 +8,21 @@ import (
 const RuntimeImageReferencesEnv = "COORDINATOR_RUNNER_IMAGES"
 
 var coordinatorDefaultRuntimeImages = []CatalogRuntimeImage{
-	runtimeImage(1, "codex-cli", "Codex CLI", "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:963c99fb047c0a4fed518eb9949e805fd31329a8395526fbb1fe34d8254ebea1"),
-	runtimeImage(2, "claude-code", "Claude Code", "repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f"),
-	runtimeImage(3, "gemini-cli", "Gemini CLI", "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4"),
+	runtimeImage("codex-cli", "Codex CLI", "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:963c99fb047c0a4fed518eb9949e805fd31329a8395526fbb1fe34d8254ebea1"),
+	runtimeImage("claude-code", "Claude Code", "repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f"),
+	runtimeImage("gemini-cli", "Gemini CLI", "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4"),
 }
 
 var configurableRuntimeImages = map[string]CatalogRuntimeImage{
 	"codex-cli":   coordinatorDefaultRuntimeImages[0],
 	"claude-code": coordinatorDefaultRuntimeImages[1],
 	"gemini-cli":  coordinatorDefaultRuntimeImages[2],
-	"do-agent":    runtimeImage(4, "do-agent", "DoAgent", ""),
-	"grok-build":  runtimeImage(5, "grok-build", "Grok Build", ""),
-	"openclaw":    runtimeImage(6, "openclaw", "OpenClaw", ""),
-	"hermes":      runtimeImage(7, "hermes", "Hermes", ""),
-	"minimax-cli": runtimeImage(8, "minimax-cli", "MiniMax CLI", ""),
-	"e2e-echo":    runtimeImage(9, "e2e-echo", "E2E Echo", ""),
+	"do-agent":    runtimeImage("do-agent", "DoAgent", ""),
+	"grok-build":  runtimeImage("grok-build", "Grok Build", ""),
+	"openclaw":    runtimeImage("openclaw", "OpenClaw", ""),
+	"hermes":      runtimeImage("hermes", "Hermes", ""),
+	"minimax-cli": runtimeImage("minimax-cli", "MiniMax CLI", ""),
+	"e2e-echo":    runtimeImage("e2e-echo", "E2E Echo", ""),
 }
 
 func ParseRuntimeImageReferences(raw string) ([]CatalogRuntimeImage, map[string]string, error) {
@@ -76,9 +76,9 @@ func validCoordinatorImageDigest(digest string) bool {
 	return true
 }
 
-func runtimeImage(id int64, slug, name, reference string) CatalogRuntimeImage {
+func runtimeImage(slug, name, reference string) CatalogRuntimeImage {
 	image := CatalogRuntimeImage{
-		ID:              id,
+		ID:              stableRuntimeImageID(slug),
 		Slug:            slug + "-stable",
 		Name:            name,
 		Reference:       reference,
@@ -89,4 +89,16 @@ func runtimeImage(id int64, slug, name, reference string) CatalogRuntimeImage {
 		image.Digest, _ = coordinatorImageDigest(reference)
 	}
 	return image
+}
+
+func stableRuntimeImageID(workerType string) int64 {
+	ids, err := parseRuntimeImageIDRegistry()
+	if err != nil {
+		panic(err)
+	}
+	id, ok := ids[workerType]
+	if !ok {
+		panic(fmt.Sprintf("missing stable runtime image id for %q", workerType))
+	}
+	return id
 }

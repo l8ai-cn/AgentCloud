@@ -11,6 +11,9 @@ import (
 //go:embed runtime_catalog.lock.json
 var runtimeCatalogLockJSON []byte
 
+//go:embed runtime_image_id_registry.json
+var runtimeImageIDRegistryJSON []byte
+
 type runtimeCatalogLock struct {
 	SchemaVersion int                   `json:"schema_version"`
 	Revision      string                `json:"revision"`
@@ -57,9 +60,13 @@ func parseRuntimeCatalogLock(raw []byte) (runtimeCatalogLock, error) {
 	ids := make(map[int64]struct{}, len(lock.Images))
 	slugs := make(map[string]struct{}, len(lock.Images))
 	workerTypes := make(map[string]struct{}, len(lock.Images))
+	stableIDs, err := parseRuntimeImageIDRegistry()
+	if err != nil {
+		return runtimeCatalogLock{}, err
+	}
 	for index, image := range lock.Images {
 		if image.ID <= 0 || strings.TrimSpace(image.Slug) == "" ||
-			strings.TrimSpace(image.Name) == "" || len(image.WorkerTypeSlugs) == 0 {
+			strings.TrimSpace(image.Name) == "" || len(image.WorkerTypeSlugs) != 1 {
 			return runtimeCatalogLock{}, fmt.Errorf("runtime catalog image %d is incomplete", index)
 		}
 		if _, exists := ids[image.ID]; exists {
@@ -91,12 +98,55 @@ func parseRuntimeCatalogLock(raw []byte) (runtimeCatalogLock, error) {
 					workerType,
 				)
 			}
+			stableID, exists := stableIDs[workerType]
+			if !exists {
+				return runtimeCatalogLock{}, fmt.Errorf(
+					"runtime catalog image %q has unregistered worker type %q",
+					image.Slug,
+					workerType,
+				)
+			}
+			if stableID != image.ID {
+				return runtimeCatalogLock{}, fmt.Errorf(
+					"runtime catalog image %q id %d does not match stable id %d for %q",
+					image.Slug,
+					image.ID,
+					stableID,
+					workerType,
+				)
+			}
 			workerTypes[workerType] = struct{}{}
 		}
 		ids[image.ID] = struct{}{}
 		slugs[image.Slug] = struct{}{}
 	}
 	return lock, nil
+}
+
+func parseRuntimeImageIDRegistry() (map[string]int64, error) {
+	rawIDs := map[string]int64{}
+	if err := json.Unmarshal(runtimeImageIDRegistryJSON, &rawIDs); err != nil {
+		return nil, fmt.Errorf("decode runtime image id registry: %w", err)
+	}
+	if len(rawIDs) == 0 {
+		return nil, fmt.Errorf("runtime image id registry is empty")
+	}
+	ids := make(map[int64]string, len(rawIDs))
+	for workerType, id := range rawIDs {
+		if strings.TrimSpace(workerType) == "" || id <= 0 {
+			return nil, fmt.Errorf("runtime image id registry has invalid entry")
+		}
+		if previous, exists := ids[id]; exists {
+			return nil, fmt.Errorf(
+				"runtime image id registry repeats id %d for %q and %q",
+				id,
+				previous,
+				workerType,
+			)
+		}
+		ids[id] = workerType
+	}
+	return rawIDs, nil
 }
 
 func DefaultCatalogRevision() string {

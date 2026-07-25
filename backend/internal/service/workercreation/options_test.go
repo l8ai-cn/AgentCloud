@@ -119,7 +119,7 @@ func TestServiceListOptionsAllowsInternalWorkerTypesInE2EEnvironment(
   "schema_version": 1,
   "revision": "e2e-runtime-catalog",
   "images": [{
-    "id": 1,
+	    "id": 16,
     "slug": "e2e-echo-local",
     "name": "E2E Echo",
     "reference": "docker-daemon://agentcloud-runner-e2e-echo:latest@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",

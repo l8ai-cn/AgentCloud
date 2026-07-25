@@ -87,13 +87,9 @@ export function isAuthExpired(err: unknown): boolean {
   return parseServiceError(err).kind === "auth_expired";
 }
 
-// GetPodConnection rejects with `failed_precondition: "pod is not active"` while
-// a pod is still spinning up or has just completed — a normal lifecycle
-// transient, not a connection failure. There is no distinct ServiceError kind
-// for it (connect_call.rs leaves `code: None`, not parsing the Connect-JSON
-// body), so match the stable backend message (backend connection.go).
 export function isPodNotConnectable(err: unknown): boolean {
-  return /pod is not active/i.test(extractMessage(err));
+  const svc = parseServiceError(err);
+  return svc.kind === "http" && svc.code === "failed_precondition";
 }
 
 export function getErrorStatus(err: unknown): number | undefined {

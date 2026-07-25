@@ -2,37 +2,43 @@
 
 import { useEffect, useState } from "react";
 import { userApi } from "@/lib/api";
+import { getAuthManager } from "@/lib/wasm-core";
+import { useAuthStore } from "@/stores/auth";
 
-// The wasm-cached auth user omits is_system_admin (see clients/core auth_types),
-// so admin-only chrome resolves it via GetMe. Cache the in-flight promise at
-// module scope so multiple mounts (ActivityBar, guards) share one request.
-let cached: Promise<boolean> | null = null;
+let cached: { token: string; value: Promise<boolean> } | null = null;
 
 export function resolveIsSystemAdmin(): Promise<boolean> {
-  if (!cached) {
-    cached = userApi
+  const token = getAuthManager().get_token();
+  if (!token) {
+    cached = null;
+    return Promise.resolve(false);
+  }
+  if (cached?.token !== token) {
+    const value = userApi
       .getMe()
       .then(({ user }) => user.is_system_admin)
       .catch(() => {
-        cached = null;
+        if (cached?.token === token) cached = null;
         return false;
       });
+    cached = { token, value };
   }
-  return cached;
+  return cached.value;
 }
 
 export function useIsSystemAdmin(): boolean {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const authTick = useAuthStore((state) => state._tick);
+  const [state, setState] = useState({ authTick: -1, isAdmin: false });
 
   useEffect(() => {
     let active = true;
     resolveIsSystemAdmin().then((v) => {
-      if (active) setIsAdmin(v);
+      if (active) setState({ authTick, isAdmin: v });
     });
     return () => {
       active = false;
     };
-  }, []);
+  }, [authTick]);
 
-  return isAdmin;
+  return state.authTick === authTick && state.isAdmin;
 }

@@ -30,18 +30,29 @@ const NAMESPACE_PREFIX = "agent-cloud-auth";
 // Mirrors Rust state.rs::url_slug — keep in sync. Same algorithm runs in
 // e2e-playwright/fixtures/blockstore.fixture.ts (live cross-check).
 export function urlSlug(baseUrl: string): string {
-  try {
-    const u = new URL(baseUrl);
-    const port = u.port ? `_${u.port}` : "";
-    const raw = `${u.protocol.replace(":", "")}_${u.hostname.toLowerCase()}${port}`;
-    return raw.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
-  } catch {
-    return baseUrl.toLowerCase().replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
-  }
+  const trimmed = baseUrl.replace(/\/+$/, "");
+  const schemeIndex = trimmed.indexOf("://");
+  const scheme = schemeIndex >= 0 ? trimmed.slice(0, schemeIndex) : "";
+  const rest = schemeIndex >= 0 ? trimmed.slice(schemeIndex + 3) : trimmed;
+  const authority = rest.split(/[/?#]/, 1)[0] ?? rest;
+  const normalized = scheme
+    ? `${scheme.toLowerCase()}_${authority.toLowerCase()}`
+    : authority.toLowerCase();
+  return normalized.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
 }
 
 export function sessionStorageKey(baseUrl: string): string {
   return `${NAMESPACE_PREFIX}/${urlSlug(baseUrl)}/session`;
+}
+
+// Same-tab companion to the cross-tab `storage` event. `storage` only fires
+// for *other* documents, so logout/login in this tab must ping subscribers
+// (useLightSession → useRedirectIfAuthenticated) explicitly.
+export const LIGHT_SESSION_CHANGED_EVENT = "agent-cloud-auth-session";
+
+export function notifyLightSessionChanged(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(LIGHT_SESSION_CHANGED_EVENT));
 }
 
 
@@ -119,6 +130,7 @@ export function writeLightSession(input: PersistedSessionWriteInput): void {
     schema_version: SCHEMA_VERSION,
   };
   window.localStorage.setItem(sessionStorageKey(baseUrl), JSON.stringify(blob));
+  notifyLightSessionChanged();
 }
 
 export function updateLightSessionOrgSlug(orgSlug: string | null, baseUrl?: string): void {
@@ -128,10 +140,12 @@ export function updateLightSessionOrgSlug(orgSlug: string | null, baseUrl?: stri
   if (!existing) return;
   existing.current_org_slug = orgSlug;
   window.localStorage.setItem(sessionStorageKey(url), JSON.stringify(existing));
+  notifyLightSessionChanged();
 }
 
 export function clearLightSession(baseUrl?: string): void {
   if (typeof window === "undefined") return;
   const url = baseUrl ?? resolveLightBaseUrl();
   window.localStorage.removeItem(sessionStorageKey(url));
+  notifyLightSessionChanged();
 }

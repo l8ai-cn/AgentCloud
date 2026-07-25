@@ -1,4 +1,4 @@
-import { marketplaceRequest } from "./client";
+import { authenticatedMarketplaceRequest } from "./client";
 import type { MarketplaceResourceType } from "./catalog-api";
 
 export interface MarketplaceOrganizationApplication {
@@ -17,7 +17,7 @@ export interface MarketplaceOrganizationApplication {
 export async function fetchOrganizationApplications(
   organizationID: number,
 ): Promise<MarketplaceOrganizationApplication[]> {
-  const response = await marketplaceRequest<{
+  const response = await authenticatedMarketplaceRequest<{
     applications: MarketplaceOrganizationApplication[];
   }>(`/organizations/${organizationID}/applications`);
   return response.applications;

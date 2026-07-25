@@ -122,21 +122,22 @@ describe("typed helpers", () => {
     expect(getErrorMessage(new Error("random"))).toBe("random");
   });
 
-  it("isPodNotConnectable matches the GetPodConnection lifecycle precondition", () => {
-    // wire-JSON shape (ServiceError::to_wire)
+  it("isPodNotConnectable matches the Connect failed_precondition code", () => {
     expect(
       isPodNotConnectable(
-        new Error('{"kind":"http","status":400,"message":"pod is not active"}'),
+        new Error(
+          '{"kind":"http","status":412,"code":"failed_precondition","message":"localized backend message"}',
+        ),
       ),
     ).toBe(true);
-    // raw transport shape (ApiError::Http Display, code:null + " @ url")
     expect(
       isPodNotConnectable(
-        new Error('{"status":400,"code":null,"message":"{\\"code\\":\\"failed_precondition\\",\\"message\\":\\"pod is not active\\"} @ http://x/GetPodConnection"}'),
+        new Error(
+          '{"kind":"http","status":412,"code":"failed_precondition","message":"pod is not active"}',
+        ),
       ),
     ).toBe(true);
-    // unrelated errors must not match (no broad "active" mask)
-    expect(isPodNotConnectable(new Error("pod is active"))).toBe(false);
+    expect(isPodNotConnectable(new Error("pod is not active"))).toBe(false);
     expect(
       isPodNotConnectable(new Error('{"kind":"resource_not_found","resource":"pod"}')),
     ).toBe(false);

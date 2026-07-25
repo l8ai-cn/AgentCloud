@@ -7,6 +7,10 @@ import {
   MarketplaceAcquireError,
 } from "./acquire-api";
 
+vi.mock("@/lib/wasm-core", () => ({
+  getAuthManager: () => ({ get_token: () => "market-token" }),
+}));
+
 describe("marketplace acquisition API", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -46,11 +50,13 @@ describe("marketplace acquisition API", () => {
         "/installation-operations/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb/apply",
       ),
       expect.objectContaining({
-        headers: expect.objectContaining({
-          "Idempotency-Key": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-        }),
+        method: "POST",
       }),
     );
+    const headers = new Headers(fetchMock.mock.calls[0][1]?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer market-token");
+    expect(headers.get("Idempotency-Key")).toBe("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb");
+    expect(headers.get("X-Organization-Slug")).toBeNull();
   });
 
   it("creates a plan with the selected organization and bearer token", async () => {
@@ -74,9 +80,6 @@ describe("marketplace acquisition API", () => {
       expect.stringContaining("/markets/agent-cloud-market/listings/delivery/plans"),
       expect.objectContaining({
         method: "POST",
-        headers: expect.objectContaining({
-          Authorization: "Bearer market-token",
-        }),
         body: JSON.stringify({
           listing_version_id: "31",
           target_platform_organization_id: "9",
@@ -87,6 +90,9 @@ describe("marketplace acquisition API", () => {
         }),
       }),
     );
+    const headers = new Headers(fetchMock.mock.calls[0][1]?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer market-token");
+    expect(headers.get("X-Organization-Slug")).toBeNull();
   });
 
   it("surfaces stable marketplace error codes", async () => {

@@ -2,53 +2,17 @@
 
 import { cn } from "@/lib/utils";
 import { getPodDisplayName } from "@/lib/pod-display-name";
+import { getPodStatusDisplay } from "@/lib/pod-status-display";
 import { Pod } from "@/stores/pod";
 import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import {
-  Square,
   Terminal,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  RefreshCw,
   Smartphone,
 } from "lucide-react";
 import { SidebarPodContextMenu } from "./SidebarPodContextMenu";
 import { SidebarPodActionsMenu } from "./SidebarPodActionsMenu";
-
-const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
-  initializing: { bg: "bg-warning-bg", text: "text-warning", dot: "bg-warning" },
-  running: { bg: "bg-info-bg", text: "text-info", dot: "bg-info" },
-  paused: { bg: "bg-accent", text: "text-primary", dot: "bg-primary" },
-  disconnected: { bg: "bg-muted", text: "text-muted-foreground", dot: "bg-muted-foreground" },
-  orphaned: { bg: "bg-warning-bg", text: "text-warning", dot: "bg-warning" },
-  completed: { bg: "bg-success-bg", text: "text-success", dot: "bg-success" },
-  terminated: { bg: "bg-muted", text: "text-muted-foreground", dot: "bg-muted-foreground" },
-  error: { bg: "bg-danger-bg", text: "text-danger", dot: "bg-danger" },
-  failed: { bg: "bg-danger-bg", text: "text-danger", dot: "bg-danger" },
-};
-
-function getStatusIcon(status: string) {
-  switch (status) {
-    case "initializing":
-      return <Clock className="w-3 h-3" />;
-    case "running":
-      return <Loader2 className="w-3 h-3 animate-spin" />;
-    case "orphaned":
-      return <RefreshCw className="w-3 h-3 animate-spin" />;
-    case "paused":
-      return <Square className="w-3 h-3" />;
-    case "terminated":
-      return <CheckCircle className="w-3 h-3" />;
-    case "failed":
-      return <XCircle className="w-3 h-3" />;
-    default:
-      return <Square className="w-3 h-3" />;
-  }
-}
 
 interface PodListItemProps {
   pod: Pod;
@@ -66,7 +30,8 @@ interface PodListItemProps {
 
 export function PodListItem({ pod, isOpen, onClick, onTerminate, onDelete, onWake, onRename, onShare, onOpenMobile, onPublishExpert, onTogglePerpetual }: PodListItemProps) {
   const t = useTranslations("mobile.access");
-  const status = statusColors[pod.status] || statusColors.terminated;
+  const status = getPodStatusDisplay(pod.status);
+  const StatusIcon = status.icon;
 
   return (
     <SidebarPodContextMenu
@@ -89,8 +54,8 @@ export function PodListItem({ pod, isOpen, onClick, onTerminate, onDelete, onWak
         )}
         onClick={onClick}
       >
-        <div className={cn("flex items-center justify-center", status.text)}>
-          {getStatusIcon(pod.status)}
+        <div className={cn("flex items-center justify-center", status.color)}>
+          <StatusIcon className={cn("h-3 w-3", status.spin && "animate-spin")} />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -142,5 +107,3 @@ export function PodListItem({ pod, isOpen, onClick, onTerminate, onDelete, onWak
     </SidebarPodContextMenu>
   );
 }
-
-export { statusColors };

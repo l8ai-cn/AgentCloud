@@ -4,8 +4,10 @@ import {
 } from "@agent-cloud/agent-ui";
 
 import { getApiBaseUrl } from "@/lib/env";
-import { getAuthManager } from "@/lib/wasm-core";
-import { readCurrentOrg } from "@/stores/auth";
+import {
+  authenticatedOrganizationFetch,
+  requireCurrentOrganizationSlug,
+} from "./authenticatedRequest";
 
 export async function listPodWorkspaceArtifacts(
   podKey: string,
@@ -56,22 +58,13 @@ async function podWorkspaceFetch(
   podKey: string,
   suffix: string,
 ): Promise<Response> {
-  const token = getAuthManager().get_token();
-  const org = readCurrentOrg()?.slug;
-  if (!token || !org) {
-    throw new Error("Not authenticated");
-  }
+  const org = requireCurrentOrganizationSlug();
   const base = getApiBaseUrl().replace(/\/$/, "");
   const apiRoot = base.endsWith("/api") ? base : `${base}/api`;
-  const response = await fetch(
+  return authenticatedOrganizationFetch(
     `${apiRoot}/v1/orgs/${encodeURIComponent(org)}/pods/${encodeURIComponent(podKey)}${suffix}`,
     {
       cache: "no-store",
-      headers: { Authorization: `Bearer ${token}` },
     },
   );
-  if (!response.ok) {
-    throw new Error(`Workspace artifact request failed (${response.status})`);
-  }
-  return response;
 }
