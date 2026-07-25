@@ -25,11 +25,8 @@ import {
   type IMProviderMeta,
   type IMProviderType,
 } from "@/lib/api/imChannelApi";
+import { isWeixinProvider, normalizeIMProvider } from "./weixin-provider";
 import type { TranslationFn } from "../GeneralSettings";
-
-function isWeixinProvider(type: string) {
-  return type === "weixin" || type === "wechat";
-}
 
 interface IMCreateDialogProps {
   open: boolean;
@@ -69,7 +66,7 @@ export function IMCreateDialog({
         ? {}
         : (JSON.parse(config) as Record<string, unknown>);
       await createIMConnection({
-        provider: isWeixinProvider(provider) ? "weixin" : provider,
+        provider: normalizeIMProvider(provider) as typeof provider,
         name: name.trim(),
         channel_id: channelId ? Number(channelId) : undefined,
         config: parsed,

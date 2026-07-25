@@ -1,5 +1,5 @@
 import { lightFetch } from "@/lib/light-auth/api-fetch";
-import { readCurrentOrg } from "@/stores/auth";
+import { imChannelsBasePath } from "@/lib/api/imChannelApiBase";
 
 export type IMProviderType = "feishu" | "dingtalk" | "wecom" | "slack" | "weixin" | "wechat";
 export type IMConnectionStatus = "disabled" | "active" | "error";
@@ -9,6 +9,9 @@ export interface IMProviderMeta {
   display_name: string;
 }
 
+export type IMDMPolicy = "pairing" | "open" | "allowlist" | "disabled" | "guest";
+export type IMGroupPolicy = "open" | "allowlist" | "disabled";
+
 export interface IMConnection {
   id: number;
   organization_id: number;
@@ -17,6 +20,11 @@ export interface IMConnection {
   channel_id?: number | null;
   config: Record<string, unknown>;
   status: IMConnectionStatus;
+  transport?: string;
+  dm_policy?: IMDMPolicy;
+  group_policy?: IMGroupPolicy;
+  allow_from?: string[] | unknown;
+  streaming_mode?: string;
   last_error?: string | null;
   created_by_user_id: number;
   created_at: string;
@@ -30,6 +38,10 @@ export interface CreateIMConnectionInput {
   channel_id?: number;
   config: Record<string, unknown>;
   status?: IMConnectionStatus;
+  dm_policy?: IMDMPolicy;
+  group_policy?: IMGroupPolicy;
+  allow_from?: string[];
+  transport?: string;
 }
 
 export interface UpdateIMConnectionInput {
@@ -37,11 +49,14 @@ export interface UpdateIMConnectionInput {
   channel_id?: number | null;
   config?: Record<string, unknown>;
   status?: IMConnectionStatus;
+  dm_policy?: IMDMPolicy;
+  group_policy?: IMGroupPolicy;
+  allow_from?: string[];
+  transport?: string;
 }
 
 function base(): string {
-  const slug = readCurrentOrg()?.slug ?? "";
-  return `/api/v1/orgs/${slug}/im-channels`;
+  return imChannelsBasePath();
 }
 
 export async function listIMProviders(): Promise<IMProviderMeta[]> {

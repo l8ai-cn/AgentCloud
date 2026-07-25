@@ -9,6 +9,7 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
+	"net/http"
 	"sort"
 	"strings"
 )
@@ -75,4 +76,23 @@ func parseWeComXMLEncrypt(body []byte) (string, error) {
 		return "", errors.New("wecom xml missing Encrypt")
 	}
 	return env.Encrypt, nil
+}
+
+func wecomSigParams(headers http.Header) (timestamp, nonce, signature string) {
+	timestamp = headers.Get("X-Wecom-Timestamp")
+	nonce = headers.Get("X-Wecom-Nonce")
+	signature = headers.Get("X-Wecom-Signature")
+	if timestamp == "" {
+		timestamp = headers.Get("timestamp")
+	}
+	if nonce == "" {
+		nonce = headers.Get("nonce")
+	}
+	if signature == "" {
+		signature = headers.Get("msg_signature")
+	}
+	if signature == "" {
+		signature = headers.Get("signature")
+	}
+	return timestamp, nonce, signature
 }

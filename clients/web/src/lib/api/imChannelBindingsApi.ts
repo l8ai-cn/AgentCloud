@@ -1,9 +1,8 @@
 import { lightFetch } from "@/lib/light-auth/api-fetch";
-import { readCurrentOrg } from "@/stores/auth";
+import { imChannelsBasePath } from "@/lib/api/imChannelApiBase";
 
 function base(): string {
-  const slug = readCurrentOrg()?.slug ?? "";
-  return `/api/v1/orgs/${slug}/im-channels`;
+  return imChannelsBasePath();
 }
 
 export interface IMIdentityBinding {

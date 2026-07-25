@@ -1,6 +1,23 @@
 package imbridge
 
-import "strings"
+import (
+	"strings"
+
+	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
+)
+
+func textLimitForProvider(provider string) int {
+	switch provider {
+	case domain.ProviderDingTalk:
+		return 3800
+	case domain.ProviderFeishu:
+		return 8000
+	case domain.ProviderWeCom:
+		return 2000
+	default:
+		return 3500
+	}
+}
 
 func chunkText(text string, limit int) []string {
 	text = strings.TrimSpace(text)

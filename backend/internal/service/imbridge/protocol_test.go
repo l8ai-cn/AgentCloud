@@ -96,3 +96,44 @@ func bytesRepeat(b byte, n int) []byte {
 	}
 	return out
 }
+
+
+func TestApplyRouteMention(t *testing.T) {
+	require.Equal(t, "hello", applyRouteMention("hello", nil))
+	require.Equal(t, "@coder hello", applyRouteMention("hello", &routeResolution{
+		TargetKind: "pod", TargetRef: "coder",
+	}))
+	require.Equal(t, "@coder please", applyRouteMention("@coder please", &routeResolution{
+		TargetKind: "pod", TargetRef: "coder",
+	}))
+}
+
+func TestChunkText(t *testing.T) {
+	require.Nil(t, chunkText("  ", 10))
+	require.Equal(t, []string{"short"}, chunkText("short", 10))
+	parts := chunkText("abcdefghi", 3)
+	require.Equal(t, []string{"abc", "def", "ghi"}, parts)
+}
+
+func TestWithRetrySucceeds(t *testing.T) {
+	n := 0
+	err := withRetry(func() error {
+		n++
+		if n < 2 {
+			return assertErr("transient")
+		}
+		return nil
+	})
+	require.NoError(t, err)
+	require.Equal(t, 2, n)
+}
+
+type assertErr string
+
+func (e assertErr) Error() string { return string(e) }
+
+func TestProgressText(t *testing.T) {
+	require.Equal(t, "⏳ Working…", progressText(nil))
+	require.Equal(t, "⏳ Working on @coder…", progressText(&routeResolution{TargetRef: "coder"}))
+}
+

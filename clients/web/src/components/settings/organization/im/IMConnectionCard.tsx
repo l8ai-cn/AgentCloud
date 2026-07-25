@@ -5,13 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Copy, Trash2 } from "lucide-react";
 import {
   updateIMConnection,
@@ -20,6 +13,9 @@ import {
   type IMConnection,
 } from "@/lib/api/imChannelApi";
 import { IMRouteBindingsPanel } from "./IMRouteBindingsPanel";
+import { IMPolicyControls } from "./IMPolicyControls";
+import { IMIdentityBindingsPanel } from "./IMIdentityBindingsPanel";
+import { isWeixinProvider } from "./weixin-provider";
 import type { TranslationFn } from "../GeneralSettings";
 
 const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive"> = {
@@ -27,10 +23,6 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive"> = 
   disabled: "secondary",
   error: "destructive",
 };
-
-function isWeixinProvider(type: string) {
-  return type === "weixin" || type === "wechat";
-}
 
 function isWeixinLoggedIn(conn: IMConnection) {
   const cfg = conn.config as Record<string, unknown> | undefined;
@@ -156,46 +148,8 @@ export function IMConnectionCard({
 
       {expanded && (
         <div className="space-y-4 border-t pt-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label className="text-xs">{t("settings.imChannels.policy.dm")}</Label>
-              <Select
-                value={conn.dm_policy ?? "pairing"}
-                onValueChange={(v) => savePolicy({ dm_policy: v as IMDMPolicy })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(["pairing", "open", "allowlist", "disabled", "guest"] as const).map(
-                    (v) => (
-                      <SelectItem key={v} value={v}>
-                        {t(`settings.imChannels.policy.dmOptions.${v}`)}
-                      </SelectItem>
-                    )
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <Label className="text-xs">{t("settings.imChannels.policy.group")}</Label>
-              <Select
-                value={conn.group_policy ?? "allowlist"}
-                onValueChange={(v) => savePolicy({ group_policy: v as IMGroupPolicy })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(["open", "allowlist", "disabled"] as const).map((v) => (
-                    <SelectItem key={v} value={v}>
-                      {t(`settings.imChannels.policy.groupOptions.${v}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          <IMPolicyControls conn={conn} t={t} onChange={savePolicy} />
+          <IMIdentityBindingsPanel connectionId={conn.id} t={t} onError={onError} />
           <IMRouteBindingsPanel connectionId={conn.id} t={t} onError={onError} />
         </div>
       )}

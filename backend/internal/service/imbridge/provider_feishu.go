@@ -119,29 +119,6 @@ func (p *FeishuProvider) ParseInbound(_ context.Context, raw json.RawMessage, he
 	}, nil
 }
 
-func (p *FeishuProvider) SendOutbound(ctx context.Context, raw json.RawMessage, msg OutboundMessage) error {
-	var cfg feishuBridgeConfig
-	if err := json.Unmarshal(raw, &cfg); err != nil {
-		return err
-	}
-	token, err := p.tenantToken(ctx, cfg)
-	if err != nil {
-		return err
-	}
-	chatID := msg.ExternalThreadID
-	if chatID == "" {
-		chatID = cfg.DefaultChatID
-	}
-	payload := map[string]any{
-		"receive_id": chatID,
-		"msg_type":   "text",
-		"content":    map[string]string{"text": msg.Text},
-	}
-	return doJSONRequest(ctx, p.client(), http.MethodPost,
-		"https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
-		map[string]string{"Authorization": "Bearer " + token}, payload, nil)
-}
-
 func (p *FeishuProvider) tenantToken(ctx context.Context, cfg feishuBridgeConfig) (string, error) {
 	var out struct {
 		Code              int    `json:"code"`

@@ -40,7 +40,7 @@ func (b *Bridge) StartWeixinQRLogin(ctx context.Context, orgID, connectionID int
 	if err != nil {
 		return nil, err
 	}
-	if conn.Provider != domain.ProviderWeixin && conn.Provider != domain.ProviderWeChat {
+	if NormalizeProvider(conn.Provider) != domain.ProviderWeixin {
 		return nil, fmt.Errorf("connection is not a weixin provider")
 	}
 	p, err := GetProvider(b.registry, domain.ProviderWeixin)

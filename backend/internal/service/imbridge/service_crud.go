@@ -24,9 +24,7 @@ type CreateConnectionRequest struct {
 }
 
 func (s *Service) CreateConnection(ctx context.Context, req *CreateConnectionRequest) (*domain.Connection, error) {
-	if req.Provider == domain.ProviderWeChat {
-		req.Provider = domain.ProviderWeixin
-	}
+	req.Provider = NormalizeProvider(req.Provider)
 	provider, err := GetProvider(s.registry, req.Provider)
 	if err != nil {
 		return nil, ErrInvalidProvider

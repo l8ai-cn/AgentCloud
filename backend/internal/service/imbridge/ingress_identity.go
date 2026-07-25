@@ -86,38 +86,6 @@ func (b *Bridge) ensurePairing(ctx context.Context, conn *domain.Connection, ext
 	return code, binding, nil
 }
 
-func (b *Bridge) PairWithCode(ctx context.Context, orgID, userID int64, code string) (*domain.IdentityBinding, error) {
-	code = strings.ToUpper(strings.TrimSpace(code))
-	if code == "" {
-		return nil, ErrInvalidConfig
-	}
-	binding, err := b.repo.GetIdentityBindingByCode(ctx, code)
-	if err != nil {
-		return nil, err
-	}
-	if binding == nil || binding.PairingExpiresAt == nil || binding.PairingExpiresAt.Before(time.Now().UTC()) {
-		return nil, ErrNotFound
-	}
-	if _, err := b.GetConnection(ctx, orgID, binding.ConnectionID); err != nil {
-		return nil, ErrNotFound
-	}
-	binding.UserID = &userID
-	binding.Status = domain.BindingBound
-	binding.PairingCode = nil
-	binding.PairingExpiresAt = nil
-	if err := b.repo.UpdateIdentityBinding(ctx, binding); err != nil {
-		return nil, err
-	}
-	return binding, nil
-}
-
-func (b *Bridge) ListIdentityBindings(ctx context.Context, orgID, connectionID int64) ([]*domain.IdentityBinding, error) {
-	if _, err := b.GetConnection(ctx, orgID, connectionID); err != nil {
-		return nil, err
-	}
-	return b.repo.ListIdentityBindings(ctx, connectionID)
-}
-
 func randomPairingCode() (string, error) {
 	const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	out := make([]byte, 6)
@@ -132,5 +100,5 @@ func randomPairingCode() (string, error) {
 }
 
 func pairingPrompt(code string) string {
-	return fmt.Sprintf("请在 Agent Cloud 个人设置中输入配对码 %s（10 分钟内有效）以绑定此 IM 身份。", code)
+	return fmt.Sprintf("请在 Agent Cloud 个人设置 → IM 配对 中输入配对码 %s（10 分钟内有效）以绑定此 IM 身份。", code)
 }

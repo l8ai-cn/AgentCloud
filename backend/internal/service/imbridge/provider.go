@@ -23,6 +23,7 @@ type OutboundMessage struct {
 	Text             string
 	SenderLabel      string
 	ContextToken     string // Weixin iLink reply token
+	ReplaceMessageID string // when set, prefer in-place edit (progress draft)
 }
 
 // Provider implements one IM platform. Registry pattern mirrors OpenClaw
@@ -34,4 +35,11 @@ type Provider interface {
 	VerifyWebhook(ctx context.Context, cfg json.RawMessage, headers http.Header, body []byte) error
 	ParseInbound(ctx context.Context, cfg json.RawMessage, headers http.Header, body []byte) (*InboundEvent, error)
 	SendOutbound(ctx context.Context, cfg json.RawMessage, msg OutboundMessage) error
+}
+
+// OutboundTracker is optional: platforms that can return/edit message IDs
+// (Feishu patch, DingTalk AI Card) implement progress drafts.
+type OutboundTracker interface {
+	SendOutboundTracked(ctx context.Context, cfg json.RawMessage, msg OutboundMessage) (messageID string, err error)
+	UpdateOutbound(ctx context.Context, cfg json.RawMessage, msg OutboundMessage) error
 }

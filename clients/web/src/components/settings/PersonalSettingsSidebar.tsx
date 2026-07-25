@@ -4,7 +4,7 @@ import React from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { GitBranch, Bell, User, Settings } from "lucide-react";
+import { GitBranch, Bell, User, Settings, Link2 } from "lucide-react";
 
 interface PersonalSettingsSidebarProps {
   className?: string;
@@ -36,6 +36,13 @@ export function PersonalSettingsSidebar({ className }: PersonalSettingsSidebarPr
       labelKey: "settings.personal.tabs.notifications",
       icon: Bell,
       descKey: "settings.personal.tabs.notificationsDesc",
+    },
+    {
+      id: "im-pair",
+      path: "/settings/im-pair",
+      labelKey: "settings.personal.tabs.imPair",
+      icon: Link2,
+      descKey: "settings.personal.tabs.imPairDesc",
     },
   ];
 

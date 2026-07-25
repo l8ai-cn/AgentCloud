@@ -20,10 +20,16 @@ func NewRegistry(httpClient *http.Client) map[string]Provider {
 	}
 }
 
-func GetProvider(registry map[string]Provider, providerType string) (Provider, error) {
+// NormalizeProvider maps legacy aliases onto canonical provider ids.
+func NormalizeProvider(providerType string) string {
 	if providerType == domain.ProviderWeChat {
-		providerType = domain.ProviderWeixin
+		return domain.ProviderWeixin
 	}
+	return providerType
+}
+
+func GetProvider(registry map[string]Provider, providerType string) (Provider, error) {
+	providerType = NormalizeProvider(providerType)
 	p, ok := registry[providerType]
 	if !ok {
 		return nil, fmt.Errorf("unsupported im provider: %s", providerType)

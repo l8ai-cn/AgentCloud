@@ -34,9 +34,6 @@ func (b *Bridge) deliverOutbound(ctx context.Context, conn *domain.Connection, c
 	if conn.Status != domain.StatusActive {
 		return nil
 	}
-	if conn.OrganizationID == 0 {
-		return nil
-	}
 	if conn.ChannelID != nil && *conn.ChannelID != channelID {
 		return nil
 	}
@@ -49,42 +46,22 @@ func (b *Bridge) deliverOutbound(ctx context.Context, conn *domain.Connection, c
 	}
 	threadID := ""
 	contextToken := ""
+	replaceID := ""
 	if mapping != nil {
 		threadID = mapping.ExternalThreadID
 		if mapping.ContextToken != nil {
 			contextToken = *mapping.ContextToken
 		}
-	}
-	p, err := GetProvider(b.registry, conn.Provider)
-	if err != nil {
-		return nil
-	}
-	cfg, err := b.providerConfig(conn)
-	if err != nil {
-		return err
-	}
-	for _, chunk := range chunkText(body, textLimitForProvider(conn.Provider)) {
-		if err := p.SendOutbound(ctx, cfg, OutboundMessage{
-			ExternalThreadID: threadID,
-			Text:             chunk,
-			SenderLabel:      "Agent Cloud",
-			ContextToken:     contextToken,
-		}); err != nil {
-			return err
+		if mapping.DraftMessageID != nil {
+			replaceID = *mapping.DraftMessageID
 		}
 	}
-	return nil
-}
-
-func textLimitForProvider(provider string) int {
-	switch provider {
-	case domain.ProviderDingTalk:
-		return 3800
-	case domain.ProviderFeishu:
-		return 8000
-	case domain.ProviderWeCom:
-		return 2000
-	default:
-		return 3500
+	if _, err := GetProvider(b.registry, conn.Provider); err != nil {
+		return err
 	}
+	_, err = b.sendChunks(ctx, conn, threadID, contextToken, body, replaceID)
+	if err == nil && mapping != nil && replaceID != "" {
+		b.clearDraft(ctx, mapping)
+	}
+	return err
 }

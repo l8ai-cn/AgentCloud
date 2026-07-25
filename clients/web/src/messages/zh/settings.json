@@ -172,7 +172,9 @@
         "notifications": "通知",
         "notificationsDesc": "推送通知偏好",
         "support": "支持工单",
-        "supportDesc": "提交和跟踪支持请求"
+        "supportDesc": "提交和跟踪支持请求",
+        "imPair": "IM 配对",
+        "imPairDesc": "用配对码绑定即时通讯身份"
       },
       "general": {
         "title": "通用设置",
@@ -210,6 +212,17 @@
         "session": "会话",
         "sessionDescription": "从当前设备退出登录。",
         "logout": "退出登录"
+      },
+      "imPair": {
+        "pageTitle": "IM 配对",
+        "pageDescription": "输入 IM 机器人发来的配对码，将外部聊天身份绑定到当前账号。",
+        "title": "输入配对码",
+        "description": "当 IM 机器人回复 6 位配对码时，请在 10 分钟内粘贴到此处。",
+        "code": "配对码",
+        "submit": "配对",
+        "submitting": "配对中…",
+        "success": "已绑定身份 {user}",
+        "failed": "配对码无效或已过期"
       }
     },
     "language": {
@@ -315,32 +328,32 @@
       "loadSchemaFailed": "加载配置架构失败",
       "noConfigFields": "该镜像暂无可配置选项",
       "invalidJson": "无效的 JSON 格式",
-    "credentials": {
-      "title": "API 凭据",
-      "description": "服务商凭据在 AI 资源中管理。运行时环境变量 Bundle 不承载模型 API 密钥。"
-    },
-    "credentialBundles": {
-      "title": "凭据 Bundle",
-      "description": "将此 Worker 的连接凭据加密保存为 Bundle。创建 Worker 时可选择默认 Bundle。",
-      "empty": "暂无凭据 Bundle。添加一组以便创建 Worker 时复用。",
-      "noKeys": "未配置凭据字段",
-      "add": "添加",
-      "addTitle": "添加凭据 Bundle",
-      "editTitle": "编辑凭据 Bundle",
-      "name": "名称",
-      "namePlaceholder": "如：personal-cursor / team-openai",
-      "descriptionLabel": "描述",
-      "clearDefault": "取消默认",
-      "confirmDelete": "确定要删除这组凭据 Bundle 吗？引用它的 Worker 将不再获得这些凭据。",
-      "created": "凭据 Bundle 已创建",
-      "updated": "凭据 Bundle 已更新",
-      "deleted": "凭据 Bundle 已删除",
-      "defaultSet": "默认凭据 Bundle 已更新",
-      "saveFailed": "保存凭据 Bundle 失败",
-      "failedToSetDefault": "设置默认凭据 Bundle 失败",
-      "failedToDelete": "删除凭据 Bundle 失败"
-    },
-    "runtime": {
+      "credentials": {
+        "title": "API 凭据",
+        "description": "服务商凭据在 AI 资源中管理。运行时环境变量 Bundle 不承载模型 API 密钥。"
+      },
+      "credentialBundles": {
+        "title": "凭据 Bundle",
+        "description": "将此 Worker 的连接凭据加密保存为 Bundle。创建 Worker 时可选择默认 Bundle。",
+        "empty": "暂无凭据 Bundle。添加一组以便创建 Worker 时复用。",
+        "noKeys": "未配置凭据字段",
+        "add": "添加",
+        "addTitle": "添加凭据 Bundle",
+        "editTitle": "编辑凭据 Bundle",
+        "name": "名称",
+        "namePlaceholder": "如：personal-cursor / team-openai",
+        "descriptionLabel": "描述",
+        "clearDefault": "取消默认",
+        "confirmDelete": "确定要删除这组凭据 Bundle 吗？引用它的 Worker 将不再获得这些凭据。",
+        "created": "凭据 Bundle 已创建",
+        "updated": "凭据 Bundle 已更新",
+        "deleted": "凭据 Bundle 已删除",
+        "defaultSet": "默认凭据 Bundle 已更新",
+        "saveFailed": "保存凭据 Bundle 失败",
+        "failedToSetDefault": "设置默认凭据 Bundle 失败",
+        "failedToDelete": "删除凭据 Bundle 失败"
+      },
+      "runtime": {
         "title": "运行时配置",
         "description": "设置此镜像的默认运行参数。这些配置将在创建新 Worker 时使用。"
       },
@@ -1023,6 +1036,43 @@
         "loginSuccess": "微信登录成功",
         "loginFailed": "微信登录失败，请重试",
         "createHint": "创建后点击「扫码登录」，使用微信 iLink 授权（无需 Webhook）。"
+      },
+      "manage": {
+        "show": "管理路由与策略",
+        "hide": "收起详情"
+      },
+      "policy": {
+        "dm": "私聊策略",
+        "group": "群聊策略",
+        "dmOptions": {
+          "pairing": "需配对",
+          "open": "开放",
+          "allowlist": "白名单",
+          "disabled": "禁用",
+          "guest": "访客（记在连接创建者名下）"
+        },
+        "groupOptions": {
+          "open": "开放",
+          "allowlist": "白名单",
+          "disabled": "禁用"
+        }
+      },
+      "routes": {
+        "title": "默认 Worker 路由",
+        "description": "消息未 @worker 时自动补上默认 worker slug，以便触发 PodPromptHook。",
+        "empty": "暂无默认路由。用户需 @mention worker，或在会话中使用 /use。",
+        "loadError": "加载路由失败",
+        "createFailed": "创建路由失败",
+        "deleteFailed": "删除路由失败",
+        "peerKind": "对端类型",
+        "workerSlug": "Worker slug",
+        "add": "添加路由"
+      },
+      "bindings": {
+        "title": "身份绑定",
+        "description": "已配对或待配对的 IM 用户。",
+        "empty": "暂无绑定。私聊策略为配对时，首次私聊会生成待配对码。",
+        "loadError": "加载身份绑定失败"
       }
     },
     "org": {

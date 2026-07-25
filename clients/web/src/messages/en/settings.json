@@ -172,7 +172,9 @@
         "notifications": "Notifications",
         "notificationsDesc": "Push notification preferences",
         "support": "Support Tickets",
-        "supportDesc": "Submit and track support requests"
+        "supportDesc": "Submit and track support requests",
+        "imPair": "IM Pairing",
+        "imPairDesc": "Bind your IM identity with a pairing code"
       },
       "general": {
         "title": "General Settings",
@@ -210,6 +212,17 @@
         "session": "Session",
         "sessionDescription": "Sign out from your current session on this device.",
         "logout": "Sign Out"
+      },
+      "imPair": {
+        "pageTitle": "IM Pairing",
+        "pageDescription": "Enter the pairing code sent by an IM bot to bind that chat identity to your account.",
+        "title": "Enter pairing code",
+        "description": "When an IM bot replies with a 6-character code, paste it here within 10 minutes.",
+        "code": "Pairing code",
+        "submit": "Pair",
+        "submitting": "Pairing…",
+        "success": "Paired identity {user}",
+        "failed": "Invalid or expired pairing code"
       }
     },
     "language": {
@@ -315,32 +328,32 @@
       "loadSchemaFailed": "Failed to load configuration schema",
       "noConfigFields": "No configuration options available for this agent",
       "invalidJson": "Invalid JSON format",
-    "credentials": {
-      "title": "API Credentials",
-      "description": "Provider credentials are managed in AI Resources. Runtime env bundles must not contain model API secrets."
-    },
-    "credentialBundles": {
-      "title": "Credential bundles",
-      "description": "Store this Worker's connection credentials as encrypted bundles. Choose a default bundle when creating a Worker.",
-      "empty": "No credential bundles yet. Add one to reuse it when creating Workers.",
-      "noKeys": "No credential fields configured",
-      "add": "Add",
-      "addTitle": "Add credential bundle",
-      "editTitle": "Edit credential bundle",
-      "name": "Name",
-      "namePlaceholder": "e.g. personal-cursor / team-openai",
-      "descriptionLabel": "Description",
-      "clearDefault": "Clear default",
-      "confirmDelete": "Delete this credential bundle? Workers that reference it will no longer receive these credentials.",
-      "created": "Credential bundle created",
-      "updated": "Credential bundle updated",
-      "deleted": "Credential bundle deleted",
-      "defaultSet": "Default credential bundle updated",
-      "saveFailed": "Failed to save credential bundle",
-      "failedToSetDefault": "Failed to set default credential bundle",
-      "failedToDelete": "Failed to delete credential bundle"
-    },
-    "runtime": {
+      "credentials": {
+        "title": "API Credentials",
+        "description": "Provider credentials are managed in AI Resources. Runtime env bundles must not contain model API secrets."
+      },
+      "credentialBundles": {
+        "title": "Credential bundles",
+        "description": "Store this Worker's connection credentials as encrypted bundles. Choose a default bundle when creating a Worker.",
+        "empty": "No credential bundles yet. Add one to reuse it when creating Workers.",
+        "noKeys": "No credential fields configured",
+        "add": "Add",
+        "addTitle": "Add credential bundle",
+        "editTitle": "Edit credential bundle",
+        "name": "Name",
+        "namePlaceholder": "e.g. personal-cursor / team-openai",
+        "descriptionLabel": "Description",
+        "clearDefault": "Clear default",
+        "confirmDelete": "Delete this credential bundle? Workers that reference it will no longer receive these credentials.",
+        "created": "Credential bundle created",
+        "updated": "Credential bundle updated",
+        "deleted": "Credential bundle deleted",
+        "defaultSet": "Default credential bundle updated",
+        "saveFailed": "Failed to save credential bundle",
+        "failedToSetDefault": "Failed to set default credential bundle",
+        "failedToDelete": "Failed to delete credential bundle"
+      },
+      "runtime": {
         "title": "Runtime Configuration",
         "description": "Set default runtime parameters for this agent. These settings will be used when creating new pods."
       },
@@ -1023,6 +1036,43 @@
         "loginSuccess": "WeChat login successful",
         "loginFailed": "WeChat login failed, please retry",
         "createHint": "After creating, use QR Login for iLink authorization (no webhook needed)."
+      },
+      "manage": {
+        "show": "Manage routing & policy",
+        "hide": "Hide details"
+      },
+      "policy": {
+        "dm": "DM policy",
+        "group": "Group policy",
+        "dmOptions": {
+          "pairing": "Pairing required",
+          "open": "Open",
+          "allowlist": "Allowlist",
+          "disabled": "Disabled",
+          "guest": "Guest (owner attribution)"
+        },
+        "groupOptions": {
+          "open": "Open",
+          "allowlist": "Allowlist",
+          "disabled": "Disabled"
+        }
+      },
+      "routes": {
+        "title": "Default worker routes",
+        "description": "When a message has no @worker mention, prepend the default worker slug so PodPromptHook can fire.",
+        "empty": "No default routes. Users must @mention a worker slug, or set /use in chat.",
+        "loadError": "Failed to load routes",
+        "createFailed": "Failed to create route",
+        "deleteFailed": "Failed to delete route",
+        "peerKind": "Peer kind",
+        "workerSlug": "Worker slug",
+        "add": "Add route"
+      },
+      "bindings": {
+        "title": "Identity bindings",
+        "description": "IM users paired or pending a pairing code.",
+        "empty": "No bindings yet. First DM with pairing policy creates a pending code.",
+        "loadError": "Failed to load identity bindings"
       }
     },
     "org": {
