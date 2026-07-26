@@ -7,10 +7,10 @@ metadata:
   name: {{ .Values.backend.name }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
     app: {{ .Values.backend.name }}
   annotations:
-    kubernetes.io/change-cause: "agentsmesh {{ $tag }}"
+    kubernetes.io/change-cause: "agentcloud {{ $tag }}"
 spec:
   replicas: {{ .Values.backend.replicas }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
@@ -25,7 +25,7 @@ spec:
     metadata:
       labels:
         app: {{ .Values.backend.name }}
-        {{- include "agentsmesh.labels" . | nindent 8 }}
+        {{- include "agentcloud.labels" . | nindent 8 }}
       annotations:
         {{ .Values.rolloutTokenDomain }}/rollout-token: {{ default (.Values.rolloutToken | default .Release.Revision) (get (default dict .Values.rolloutTokens) "backend") | quote }}
     spec:
@@ -46,7 +46,7 @@ spec:
               mountPath: /kube-tools
       containers:
         - name: {{ .Values.backend.name }}
-          image: {{ include "agentsmesh.image" (dict "repository" $repo "tag" $tag) }}
+          image: {{ include "agentcloud.image" (dict "repository" $repo "tag" $tag) }}
           imagePullPolicy: Always
           ports:
             - name: http
@@ -70,7 +70,7 @@ spec:
             - name: COORDINATOR_RUNNER_K8S_IMAGE_PULL_POLICY
               value: "Always"
             - name: COORDINATOR_RUNNER_K8S_SSL_SECRET
-              value: agentsmesh-pki-ca
+              value: agentcloud-pki-ca
             - name: COORDINATOR_RUNNER_K8S_READY_TIMEOUT_SECONDS
               value: "180"
             - name: COORDINATOR_RUNNER_NODE_ID_PREFIX
@@ -116,10 +116,10 @@ spec:
       volumes:
         - name: pki-ca
           secret:
-            secretName: agentsmesh-pki-ca
+            secretName: agentcloud-pki-ca
         - name: access-token
           secret:
-            secretName: agentsmesh-access-token
+            secretName: agentcloud-access-token
         - name: kube-tools
           emptyDir: {}
         - name: data
@@ -131,7 +131,7 @@ metadata:
   name: {{ .Values.backend.name }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
     app: {{ .Values.backend.name }}
 spec:
   selector:

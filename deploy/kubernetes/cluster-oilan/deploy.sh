@@ -135,7 +135,30 @@ sync_worker_definitions() {
   dexec "kubectl -n ${NS} wait --for=condition=complete job/worker-definition-sync --timeout=300s"
 }
 
+# Refuse to create a ghost stack in an empty namespace. Live oilan data lives
+# under whatever namespace currently holds postgres-data; after the
+# agentsmesh→agentcloud migration that is agentcloud. Override only when you
+# intentionally bootstrap a brand-new environment.
+require_live_namespace() {
+  if [[ "${ALLOW_FRESH_NAMESPACE:-0}" == "1" ]]; then
+    echo "==> ALLOW_FRESH_NAMESPACE=1 — skipping live-namespace guard"
+    return 0
+  fi
+  if ! dexec "kubectl get ns ${NS}" >/dev/null 2>&1; then
+    echo "namespace ${NS} does not exist. Refusing to create a ghost stack." >&2
+    echo "Pass ALLOW_FRESH_NAMESPACE=1 only for intentional greenfield bootstrap," >&2
+    echo "or finish the agentsmesh→agentcloud migration first." >&2
+    return 1
+  fi
+  if ! dexec "kubectl -n ${NS} get pvc postgres-data" >/dev/null 2>&1; then
+    echo "namespace ${NS} exists but has no postgres-data PVC — refusing deploy." >&2
+    echo "Pass ALLOW_FRESH_NAMESPACE=1 only for intentional greenfield bootstrap." >&2
+    return 1
+  fi
+}
+
 apply_all() {
+  require_live_namespace
   echo "==> namespace + secrets"
   dexec "kubectl apply -f 00-namespace.yaml"
   dexec "chmod 600 generated-secrets/*.yaml; status=0; cleanup_status=0; kubectl apply -f generated-secrets || status=\$?; rm -f generated-secrets/*.yaml || cleanup_status=\$?; rmdir generated-secrets || cleanup_status=\$?; test \${status} -ne 0 || status=\${cleanup_status}; exit \${status}"

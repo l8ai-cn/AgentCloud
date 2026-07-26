@@ -5,10 +5,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: agentsmesh-agents
+  name: agentcloud-agents
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "20m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
@@ -76,10 +76,10 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: agentsmesh-agents-relay
+  name: agentcloud-agents-relay
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
@@ -106,10 +106,10 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: agentsmesh-agents-tunnel
+  name: agentcloud-agents-tunnel
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -136,10 +136,10 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: agentsmesh-login-amp-agents
+  name: agentcloud-login-amp-agents
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:

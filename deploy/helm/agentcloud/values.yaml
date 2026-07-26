@@ -1,7 +1,7 @@
 # Shared base chart defaults. Environment overlays live under
 # deploy/environments/<env>/values.yaml.
 
-namespace: agentsmesh
+namespace: agentcloud
 imageTag: &releaseTag release-unset
 image:
   repository: docker.cnb.cool/l8ai/doworker/backend
@@ -9,10 +9,10 @@ image:
 revisionHistoryLimit: 3
 rolloutToken: ""
 rolloutTokens: {}
-rolloutTokenDomain: agentsmesh.l8ai.cn
+rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
-  - name: agentsmesh-regcred
+  - name: agentcloud-regcred
 
 backend:
   enabled: true
@@ -21,11 +21,11 @@ backend:
   image:
     name: backend
     repository: docker.cnb.cool/l8ai/doworker/backend
-  serviceAccountName: agentsmesh-backend
-  configMapName: agentsmesh-config
+  serviceAccountName: agentcloud-backend
+  configMapName: agentcloud-config
   secrets:
-    - agentsmesh-secrets
-    - agentsmesh-gitea
+    - agentcloud-secrets
+    - agentcloud-gitea
   service:
     httpPort: 8080
     grpcPort: 9090
@@ -71,8 +71,8 @@ relay:
   image:
     name: relay
     repository: docker.cnb.cool/l8ai/doworker/relay
-  configMapName: agentsmesh-config
-  secretsName: agentsmesh-secrets
+  configMapName: agentcloud-config
+  secretsName: agentcloud-secrets
   service:
     port: 8090
   strategy:

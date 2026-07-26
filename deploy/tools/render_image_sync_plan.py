@@ -9,7 +9,7 @@ from typing import Any
 import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-BASE_VALUES = ROOT / "deploy" / "helm" / "agentsmesh" / "values.yaml"
+BASE_VALUES = ROOT / "deploy" / "helm" / "agentcloud" / "values.yaml"
 SOURCE_REGISTRY = "docker.cnb.cool/l8ai/doworker"
 SERVICES = ("backend", "web", "relay")
 
@@ -62,7 +62,7 @@ def render_plan(environment: str) -> list[dict[str, str]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Render AgentsMesh pre-Helm image sync plan from Helm values."
+        description="Render AgentCloud pre-Helm image sync plan from Helm values."
     )
     parser.add_argument("environment", help="environment under deploy/environments")
     parser.add_argument(

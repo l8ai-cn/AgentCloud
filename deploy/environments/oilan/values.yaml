@@ -1,5 +1,6 @@
-# Oilan runtime overlay for the shared AgentsMesh base chart.
-namespace: agentsmesh
+# Oilan runtime overlay for the shared AgentCloud base chart.
+# Namespace/secrets use agentcloud; Harbor image project stays agentsmesh for now.
+namespace: agentcloud
 imageTag: &releaseTag release-20260726
 image:
   repository: repo.aiedulab.cn:8443/agentsmesh/backend
@@ -8,15 +9,21 @@ rolloutTokens:
   backend: oilan-20260726-amp-authz
   web: oilan-20260726-amp-authz
   relay: oilan-20260726-amp-authz
+rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
-  - name: agentsmesh-regcred
+  - name: agentcloud-regcred
 
 backend:
   replicas: 1
   image:
     name: backend
     repository: repo.aiedulab.cn:8443/agentsmesh/backend
+  serviceAccountName: agentcloud-backend
+  configMapName: agentcloud-config
+  secrets:
+    - agentcloud-secrets
+    - agentcloud-gitea
   coordinatorOrgSlug: dev-org
   coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentsmesh/runner-video-studio@sha256:f3463bc567f1ed8516486e95e17d50f48834275aae7931221b1a3eeb3c526a5d,e2e-echo=repo.aiedulab.cn:8443/agentsmesh/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentsmesh/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653,seedance-expert=repo.aiedulab.cn:8443/agentsmesh/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653"
   strategy:
@@ -32,13 +39,6 @@ web:
     repository: repo.aiedulab.cn:8443/agentsmesh/web
   primaryDomain: agents.l8ai.cn
   useHttps: "true"
-
-ingress:
-  enabled: true
-  agents:
-    enabled: true
-    host: agents.l8ai.cn
-    loginAmp: true
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -50,8 +50,17 @@ relay:
   image:
     name: relay
     repository: repo.aiedulab.cn:8443/agentsmesh/relay
+  configMapName: agentcloud-config
+  secretsName: agentcloud-secrets
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 0
       maxUnavailable: 1
+
+ingress:
+  enabled: true
+  agents:
+    enabled: true
+    host: agents.l8ai.cn
+    loginAmp: true

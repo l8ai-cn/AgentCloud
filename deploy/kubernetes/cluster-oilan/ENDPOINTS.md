@@ -14,13 +14,11 @@
 - Object storage (presigned URLs): https://minio.dowork.l8ai.cn
 - Test account: `admin@agentcloud.local / Ab123456`
 
-Live namespace is **`agentsmesh`** (Harbor `…/agentsmesh/*`).
+Live namespace is **`agentcloud`**. Harbor image project is still
+`…/agentsmesh/*` until a separate retag; k8s secrets/ingress use `agentcloud-*`.
 `agents.l8ai.cn` ingress (+ relay + tunnel + AMP `/login`) is owned by
-`deploy/helm/agentsmesh` — do not revive `41-agents-ingress.yaml` under the
-kustomize tree (`namespace: agentcloud` would rewrite it into a dead ns).
-
-Repo `deploy.sh` still targets `agentcloud` for the rest of the stack; do not
-mix that path with live `agentsmesh` until the namespace migration lands.
+`deploy/helm/agentcloud` — do not revive `41-agents-ingress.yaml` under the
+kustomize tree.
 
 DNS for `agents.l8ai.cn`, `dowork.l8ai.cn`, `market.l8ai.cn`, `mobile.l8ai.cn`,
 `admin.l8ai.cn`, `*.l8ai.cn`, and `minio.dowork.l8ai.cn` must point at the

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# DoOps CD for AgentsMesh oilan (AMP-aligned):
+# DoOps CD for AgentCloud oilan (AMP-aligned):
 #   1) sync CNB release images → Harbor (operator host with docker)
 #   2) push Helm chart + values via DoOps
 #   3) helm upgrade --install on the cluster node
@@ -11,10 +11,10 @@ set -euo pipefail
 
 ENVIRONMENT="${1:?usage: doops_helm_deploy.sh <environment>}"
 TARGET="${DOOPS_TARGET:-gw-oilan-node}"
-RELEASE_NAME="${HELM_RELEASE_NAME:-agentsmesh}"
+RELEASE_NAME="${HELM_RELEASE_NAME:-agentcloud}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 RELEASE_VERSION="$(tr -d '[:space:]' <"${REPO_ROOT}/deploy/release-version.txt")"
-CHART_DIR="${REPO_ROOT}/deploy/helm/agentsmesh"
+CHART_DIR="${REPO_ROOT}/deploy/helm/agentcloud"
 VALUES_FILE="${REPO_ROOT}/deploy/environments/${ENVIRONMENT}/values.yaml"
 
 export PATH="/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin:${PATH}"
@@ -74,8 +74,8 @@ TAG='${RELEASE_VERSION}'
 for kind_name in \
   deploy/backend deploy/web deploy/relay \
   svc/backend svc/web svc/relay \
-  ingress/agentsmesh-agents ingress/agentsmesh-agents-relay \
-  ingress/agentsmesh-agents-tunnel ingress/agentsmesh-login-amp-agents
+  ingress/agentcloud-agents ingress/agentcloud-agents-relay \
+  ingress/agentcloud-agents-tunnel ingress/agentcloud-login-amp-agents
 do
   kind=\${kind_name%%/*}
   name=\${kind_name#*/}

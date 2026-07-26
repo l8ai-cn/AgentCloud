@@ -7,10 +7,10 @@ metadata:
   name: {{ .Values.relay.name }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
     app: {{ .Values.relay.name }}
   annotations:
-    kubernetes.io/change-cause: "agentsmesh {{ $tag }}"
+    kubernetes.io/change-cause: "agentcloud {{ $tag }}"
 spec:
   replicas: {{ .Values.relay.replicas }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
@@ -25,7 +25,7 @@ spec:
     metadata:
       labels:
         app: {{ .Values.relay.name }}
-        {{- include "agentsmesh.labels" . | nindent 8 }}
+        {{- include "agentcloud.labels" . | nindent 8 }}
       annotations:
         {{ .Values.rolloutTokenDomain }}/rollout-token: {{ default (.Values.rolloutToken | default .Release.Revision) (get (default dict .Values.rolloutTokens) "relay") | quote }}
     spec:
@@ -33,7 +33,7 @@ spec:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       containers:
         - name: {{ .Values.relay.name }}
-          image: {{ include "agentsmesh.image" (dict "repository" $repo "tag" $tag) }}
+          image: {{ include "agentcloud.image" (dict "repository" $repo "tag" $tag) }}
           imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.relay.service.port }}
@@ -93,7 +93,7 @@ metadata:
   name: {{ .Values.relay.name }}
   namespace: {{ .Values.namespace }}
   labels:
-    {{- include "agentsmesh.labels" . | nindent 4 }}
+    {{- include "agentcloud.labels" . | nindent 4 }}
     app: {{ .Values.relay.name }}
 spec:
   selector:
