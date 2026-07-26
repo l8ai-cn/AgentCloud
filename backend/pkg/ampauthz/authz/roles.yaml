@@ -2,6 +2,7 @@ roles:
   - code: ORG_OWNER
     name: Organization owner
     roleType: APP_ADMIN
+    systemRole: true
     description: Full control of the AgentCloud organization (maps to owner).
     permissions:
       - agentscloud:org:settings:write
@@ -12,9 +13,19 @@ roles:
       - agentscloud:ai_resource:manage
       - agentscloud:pod:use
       - agentscloud:ticket:use
+      - authz:application:view
+      - authz:model:view
+      - authz:app_role:view
+      - authz:app_role:create
+      - authz:app_role:update
+      - authz:app_role:delete
+      - authz:app_role:assign
+      - authz:app_role:explain
     features:
       - AGENTSCLOUD_ORG_ADMIN
       - AGENTSCLOUD_BILLING
+      - AGENTSCLOUD_MEMBER
+      - APP_WORKSPACE
   - code: ORG_ADMIN
     name: Organization admin
     roleType: OPERATOR
@@ -27,8 +38,15 @@ roles:
       - agentscloud:ai_resource:manage
       - agentscloud:pod:use
       - agentscloud:ticket:use
+      - authz:application:view
+      - authz:model:view
+      - authz:app_role:view
+      - authz:app_role:assign
+      - authz:app_role:explain
     features:
       - AGENTSCLOUD_ORG_ADMIN
+      - AGENTSCLOUD_MEMBER
+      - APP_WORKSPACE
   - code: ORG_MEMBER
     name: Organization member
     roleType: VIEWER
@@ -38,10 +56,11 @@ roles:
       - agentscloud:ticket:use
     features:
       - AGENTSCLOUD_MEMBER
-  # AMP partner-template aliases accepted at login sync
   - code: APP_ADMIN
     name: App admin (AMP template)
     roleType: APP_ADMIN
+    systemRole: true
+    description: AMP partner-template alias for organization owner.
     permissions:
       - agentscloud:org:settings:write
       - agentscloud:member:invite
@@ -51,9 +70,23 @@ roles:
       - agentscloud:ai_resource:manage
       - agentscloud:pod:use
       - agentscloud:ticket:use
+      - authz:application:view
+      - authz:model:view
+      - authz:app_role:view
+      - authz:app_role:create
+      - authz:app_role:update
+      - authz:app_role:delete
+      - authz:app_role:assign
+      - authz:app_role:explain
+    features:
+      - AGENTSCLOUD_ORG_ADMIN
+      - AGENTSCLOUD_BILLING
+      - AGENTSCLOUD_MEMBER
+      - APP_WORKSPACE
   - code: OPERATOR
     name: Operator (AMP template)
     roleType: OPERATOR
+    description: AMP partner-template alias for organization admin.
     permissions:
       - agentscloud:org:settings:write
       - agentscloud:member:invite
@@ -62,9 +95,20 @@ roles:
       - agentscloud:ai_resource:manage
       - agentscloud:pod:use
       - agentscloud:ticket:use
+      - authz:application:view
+      - authz:model:view
+      - authz:app_role:view
+      - authz:app_role:assign
+    features:
+      - AGENTSCLOUD_ORG_ADMIN
+      - AGENTSCLOUD_MEMBER
+      - APP_WORKSPACE
   - code: VIEWER
     name: Viewer (AMP template)
     roleType: VIEWER
+    description: AMP partner-template alias for organization member.
     permissions:
       - agentscloud:pod:use
       - agentscloud:ticket:use
+    features:
+      - AGENTSCLOUD_MEMBER

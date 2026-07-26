@@ -13,10 +13,17 @@ import (
 var authzFS embed.FS
 
 type permissionsDoc struct {
+	// Legacy flat list (pre AMP resources schema).
 	Permissions []struct {
 		Code string `yaml:"code"`
 		Name string `yaml:"name"`
 	} `yaml:"permissions"`
+	// AMP local-file standard: resources[].permissions[].code
+	Resources []struct {
+		Permissions []struct {
+			Code string `yaml:"code"`
+		} `yaml:"permissions"`
+	} `yaml:"resources"`
 }
 
 type rolesDoc struct {
@@ -47,6 +54,13 @@ func loadCatalog() {
 		for _, p := range perms.Permissions {
 			if p.Code != "" {
 				knownPerms[p.Code] = struct{}{}
+			}
+		}
+		for _, resource := range perms.Resources {
+			for _, p := range resource.Permissions {
+				if p.Code != "" {
+					knownPerms[p.Code] = struct{}{}
+				}
 			}
 		}
 

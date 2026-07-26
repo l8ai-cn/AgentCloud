@@ -1,7 +1,41 @@
 features:
-  - code: AGENTSCLOUD_ORG_ADMIN
-    name: Organization administration surfaces
-  - code: AGENTSCLOUD_BILLING
-    name: Billing and license surfaces
+  - code: AGENTSCLOUD_ROOT
+    name: Agent Cloud
+    type: GROUP
+    sort: 10
+    permissions: []
   - code: AGENTSCLOUD_MEMBER
-    name: Member workspace surfaces
+    name: Member workspace
+    type: FEATURE
+    parentCode: AGENTSCLOUD_ROOT
+    sort: 20
+    permissions:
+      - agentscloud:pod:use
+      - agentscloud:ticket:use
+  - code: AGENTSCLOUD_ORG_ADMIN
+    name: Organization administration
+    type: FEATURE
+    parentCode: AGENTSCLOUD_ROOT
+    sort: 30
+    permissions:
+      - agentscloud:org:settings:write
+      - agentscloud:member:invite
+      - agentscloud:runner:manage
+      - agentscloud:repo:manage
+      - agentscloud:ai_resource:manage
+  - code: AGENTSCLOUD_BILLING
+    name: Billing
+    type: FEATURE
+    parentCode: AGENTSCLOUD_ROOT
+    sort: 40
+    permissions:
+      - agentscloud:billing:manage
+  - code: APP_WORKSPACE
+    name: Account & roles
+    type: FEATURE
+    parentCode: AGENTSCLOUD_ROOT
+    sort: 90
+    permissions:
+      - authz:application:view
+      - authz:model:view
+      - authz:app_role:view

@@ -88,3 +88,17 @@ func TestBindFederatedOrganization_SyncsMappedRole(t *testing.T) {
 	assert.Equal(t, int64(42), binder.synced[0].userID)
 	assert.Equal(t, organization.RoleOwner, binder.synced[0].role)
 }
+
+func TestBindFederatedOrganization_EmptyRolesPreserve(t *testing.T) {
+	binder := &stubOrgBinder{byTenant: map[string]int64{"6": 2}}
+	svc := &Service{orgBinder: binder}
+
+	err := svc.bindFederatedOrganization(context.Background(), 42, &SSOLoginRequest{
+		ProviderName: "oidc:1",
+		IdPTenantID:  "6",
+		IdPRoles:     nil,
+	})
+	require.NoError(t, err)
+	require.Len(t, binder.synced, 1)
+	assert.Equal(t, "", binder.synced[0].role)
+}

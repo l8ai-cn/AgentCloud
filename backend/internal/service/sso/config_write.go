@@ -97,6 +97,9 @@ func (s *Service) setOIDCFields(cfg *sso.Config, req *CreateConfigRequest) error
 		}
 		cfg.OIDCAuthorizeExtraParams = &req.OIDCAuthorizeExtraParams
 	}
+	if err := guardOIDCAuthorizeExtraParams(sso.ProtocolOIDC, req.EnforceSSO, cfg.OIDCAuthorizeExtraParams); err != nil {
+		return err
+	}
 	return nil
 }
 

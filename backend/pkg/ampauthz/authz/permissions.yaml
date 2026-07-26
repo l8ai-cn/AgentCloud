@@ -1,17 +1,109 @@
-permissions:
-  - code: agentscloud:org:settings:write
-    name: Manage organization settings
-  - code: agentscloud:member:invite
-    name: Invite and manage members
-  - code: agentscloud:runner:manage
-    name: Manage runners and clusters
-  - code: agentscloud:billing:manage
-    name: Manage billing and licenses
-  - code: agentscloud:repo:manage
-    name: Manage repositories
-  - code: agentscloud:ai_resource:manage
-    name: Manage org AI resources
-  - code: agentscloud:pod:use
-    name: Create and use pods
-  - code: agentscloud:ticket:use
-    name: Use tickets and channels
+resources:
+  - code: agentscloud:org
+    name: Organization
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:org:settings:write
+        action: update
+        riskLevel: L2
+        approvalRequired: false
+  - code: agentscloud:member
+    name: Members
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:member:invite
+        action: manage
+        riskLevel: L2
+        approvalRequired: false
+  - code: agentscloud:runner
+    name: Runners
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:runner:manage
+        action: manage
+        riskLevel: L2
+        approvalRequired: false
+  - code: agentscloud:billing
+    name: Billing
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:billing:manage
+        action: manage
+        riskLevel: L3
+        approvalRequired: false
+  - code: agentscloud:repo
+    name: Repositories
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:repo:manage
+        action: manage
+        riskLevel: L2
+        approvalRequired: false
+  - code: agentscloud:ai_resource
+    name: AI resources
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:ai_resource:manage
+        action: manage
+        riskLevel: L2
+        approvalRequired: false
+  - code: agentscloud:pod
+    name: Pods
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:pod:use
+        action: manage
+        riskLevel: L1
+        approvalRequired: false
+  - code: agentscloud:ticket
+    name: Tickets
+    scopes: [ALL]
+    permissions:
+      - code: agentscloud:ticket:use
+        action: manage
+        riskLevel: L1
+        approvalRequired: false
+  - code: authz:application
+    name: Application info
+    scopes: [ALL]
+    permissions:
+      - code: authz:application:view
+        action: view
+        riskLevel: L1
+        approvalRequired: false
+  - code: authz:model
+    name: Permission model
+    scopes: [ALL]
+    permissions:
+      - code: authz:model:view
+        action: view
+        riskLevel: L1
+        approvalRequired: false
+  - code: authz:app_role
+    name: Roles and assignments
+    scopes: [ALL]
+    permissions:
+      - code: authz:app_role:view
+        action: view
+        riskLevel: L2
+        approvalRequired: false
+      - code: authz:app_role:create
+        action: create
+        riskLevel: L2
+        approvalRequired: false
+      - code: authz:app_role:update
+        action: update
+        riskLevel: L2
+        approvalRequired: false
+      - code: authz:app_role:delete
+        action: delete
+        riskLevel: L2
+        approvalRequired: false
+      - code: authz:app_role:assign
+        action: assign
+        riskLevel: L2
+        approvalRequired: false
+      - code: authz:app_role:explain
+        action: explain
+        riskLevel: L2
+        approvalRequired: false

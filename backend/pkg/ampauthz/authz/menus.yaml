@@ -49,10 +49,7 @@ menus:
     path: /workspace
     pageKey: authz.workspace
     order: 90
-    permissionMode: ALL
     permissionCodes:
-      - authz:application:view
-      - authz:model:view
       - authz:app_role:view
     featureCodes:
-      - AGENTSCLOUD_ORG_ADMIN
+      - APP_WORKSPACE

@@ -34,6 +34,22 @@ func (s *Service) UpdateConfig(ctx context.Context, id int64, req *UpdateConfigR
 		return existing, nil
 	}
 
+	enforceSSO := existing.EnforceSSO
+	if req.EnforceSSO != nil {
+		enforceSSO = *req.EnforceSSO
+	}
+	extra := existing.OIDCAuthorizeExtraParams
+	if req.OIDCAuthorizeExtraParams != nil {
+		if *req.OIDCAuthorizeExtraParams == "" {
+			extra = nil
+		} else {
+			extra = req.OIDCAuthorizeExtraParams
+		}
+	}
+	if err := guardOIDCAuthorizeExtraParams(existing.Protocol, enforceSSO, extra); err != nil {
+		return nil, err
+	}
+
 	if err := s.repo.Update(ctx, id, updates); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrConfigNotFound

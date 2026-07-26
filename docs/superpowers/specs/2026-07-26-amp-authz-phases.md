@@ -48,6 +48,15 @@ Import the YAML bundle into AMP app `AGENTCLOUD` for each customer tenant.
 | Runner gRPC tokens / reactivate | `agentscloud:runner:manage` |
 | Cancel another user's queued pod | `agentscloud:runner:manage` |
 
+## Guards
+
+| Guard | Behavior |
+|---|---|
+| Empty IdP `roles` | Ensure membership only — **never demote** existing org role |
+| `enforce_sso` OIDC | Requires `oidc_authorize_extra_params.tenantId` |
+| Startup | `ampauthz.MustCatalogReady()` fails fast if `/authz` bundle missing |
+| Connect runner tokens | `agentscloud:runner:manage` via `ampauthz.RoleHasPermission` |
+
 ## Ops checklist (per customer tenant)
 
 1. Create AgentCloud org (slug).
@@ -56,3 +65,5 @@ Import the YAML bundle into AMP app `AGENTCLOUD` for each customer tenant.
 4. Import `authz/*.yaml` into AMP app `AGENTCLOUD` for that tenant; assign roles.
 5. Login must assert `tenant_id` matching `amp_tenant_id` or fail with `tenant_unbound`.
 6. Local: `bash scripts/setup-amp-softlinks.sh` when working across AMP + AgentsMesh.
+7. Prefer web `AmpPreferredLogin` (`?local=1` escape hatch) over ingress `/login` rewrite snippets — keep ingress transparent (`/api`→backend, `/`→web, `/auth/*` on web).
+8. Oilan alias host `agents.l8ai.cn` is in `deploy/kubernetes/cluster-oilan/41-agents-ingress.yaml`.

@@ -103,13 +103,14 @@ func TestSSO_EnforceSSO(t *testing.T) {
 
 	// Create config with enforce_sso=true and is_enabled=true
 	_, err := svc.CreateConfig(ctx, &CreateConfigRequest{
-		Domain:       "strict.io",
-		Name:         "Strict OIDC",
-		Protocol:     "oidc",
-		IsEnabled:    true,
-		EnforceSSO:   true,
-		OIDCIssuerURL:  "https://idp.strict.io",
-		OIDCClientID:   "strict-client",
+		Domain:                   "strict.io",
+		Name:                     "Strict OIDC",
+		Protocol:                 "oidc",
+		IsEnabled:                true,
+		EnforceSSO:               true,
+		OIDCIssuerURL:            "https://idp.strict.io",
+		OIDCClientID:             "strict-client",
+		OIDCAuthorizeExtraParams: `{"tenantId":"6"}`,
 	}, 1)
 	require.NoError(t, err)
 
