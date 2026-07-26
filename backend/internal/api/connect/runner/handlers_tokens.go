@@ -9,9 +9,17 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/api/connect/interceptors"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	runner "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/ampauthz"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/protoconv"
 	runnerapiv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/runner_api/v1"
 )
+
+func requireRunnerManage(tenant *middleware.TenantContext) error {
+	if tenant == nil || !ampauthz.RoleHasPermission(tenant.UserRole, ampauthz.PermRunnerManage) {
+		return connect.NewError(connect.CodePermissionDenied, errors.New("runner manage permission required"))
+	}
+	return nil
+}
 
 // Token CRUD — registration tokens minted for gRPC runner enrollment. Only
 // org admins/owners can mint, list, or delete. The single-use semantics are
@@ -27,8 +35,8 @@ func (s *Server) CreateRunnerToken(
 		return nil, err
 	}
 	tenant := middleware.GetTenant(ctx)
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
+	if err := requireRunnerManage(tenant); err != nil {
+		return nil, err
 	}
 	if req.Msg.GetClusterId() <= 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument, errors.New("cluster_id is required"))
@@ -80,8 +88,8 @@ func (s *Server) ListRunnerTokens(
 		return nil, err
 	}
 	tenant := middleware.GetTenant(ctx)
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
+	if err := requireRunnerManage(tenant); err != nil {
+		return nil, err
 	}
 	tokens, err := s.runnerSvc.ListGRPCRegistrationTokens(ctx, tenant.OrganizationID)
 	if err != nil {
@@ -105,8 +113,8 @@ func (s *Server) DeleteRunnerToken(
 		return nil, err
 	}
 	tenant := middleware.GetTenant(ctx)
-	if tenant.UserRole != "owner" && tenant.UserRole != "admin" {
-		return nil, connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
+	if err := requireRunnerManage(tenant); err != nil {
+		return nil, err
 	}
 	if err := s.runnerSvc.DeleteGRPCRegistrationToken(ctx, req.Msg.GetId(), tenant.OrganizationID); err != nil {
 		return nil, mapServiceError(err)

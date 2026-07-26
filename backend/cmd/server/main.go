@@ -22,6 +22,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/relay"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/ticket"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/ampauthz"
 )
 
 func main() {
@@ -55,6 +56,10 @@ func main() {
 	defer appLogger.Close()
 	appLogger.SetDefault()
 	slog.Info("Logger initialized", "level", cfg.Log.Level, "file", cfg.Log.FilePath)
+
+	if err := ampauthz.MustCatalogReady(); err != nil {
+		log.Fatalf("Failed to load AMP authz catalog: %v", err)
+	}
 
 	otelProvider, err := otelinit.InitProvider(context.Background(), "agent-cloud-backend", "1.0.0")
 	if err != nil {

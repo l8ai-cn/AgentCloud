@@ -87,7 +87,15 @@ func (s *Service) bindFederatedOrganization(ctx context.Context, userID int64, r
 		return nil
 	}
 
-	role := ampauthz.MapIdPRoles(req.IdPRoles)
+	role := ""
+	if len(req.IdPRoles) == 0 {
+		// Empty roles are common before AMP catalog assignment. Never demote.
+		slog.WarnContext(ctx, "federated login omitted IdP roles; preserving membership role",
+			"provider", req.ProviderName, "user_id", userID,
+			"org_id", orgID, "idp_tenant_id", req.IdPTenantID)
+	} else {
+		role = ampauthz.MapIdPRoles(req.IdPRoles)
+	}
 	if err := s.orgBinder.SyncFederatedMember(ctx, orgID, userID, role); err != nil {
 		slog.ErrorContext(ctx, "failed to sync federated organization membership",
 			"provider", req.ProviderName, "user_id", userID,
