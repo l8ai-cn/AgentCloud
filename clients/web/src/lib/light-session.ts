@@ -44,6 +44,15 @@ export function sessionStorageKey(baseUrl: string): string {
   return `${NAMESPACE_PREFIX}/${urlSlug(baseUrl)}/session`;
 }
 
+// The `storage` event only fires in *other* tabs, so same-tab writers must
+// announce themselves or useLightSession would render a stale session until
+// the next navigation.
+export const LIGHT_SESSION_CHANGED_EVENT = "agent-cloud-auth:session-changed";
+
+export function notifyLightSessionChanged(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(LIGHT_SESSION_CHANGED_EVENT));
+}
 
 // Resolve the canonical base_url light writers use. MUST stay byte-equal with
 // the value wasm-core.ts feeds to WasmAuthManager — bootstrap clears the
@@ -119,6 +128,7 @@ export function writeLightSession(input: PersistedSessionWriteInput): void {
     schema_version: SCHEMA_VERSION,
   };
   window.localStorage.setItem(sessionStorageKey(baseUrl), JSON.stringify(blob));
+  notifyLightSessionChanged();
 }
 
 export function updateLightSessionOrgSlug(orgSlug: string | null, baseUrl?: string): void {
@@ -128,10 +138,12 @@ export function updateLightSessionOrgSlug(orgSlug: string | null, baseUrl?: stri
   if (!existing) return;
   existing.current_org_slug = orgSlug;
   window.localStorage.setItem(sessionStorageKey(url), JSON.stringify(existing));
+  notifyLightSessionChanged();
 }
 
 export function clearLightSession(baseUrl?: string): void {
   if (typeof window === "undefined") return;
   const url = baseUrl ?? resolveLightBaseUrl();
   window.localStorage.removeItem(sessionStorageKey(url));
+  notifyLightSessionChanged();
 }

@@ -63,8 +63,6 @@ export function MarketplaceDetailPage({
             <p className="mt-1 text-xl font-semibold text-foreground">v{listing.version}</p>
             <p className="mt-5 text-xs font-medium text-muted-foreground">运行类型</p>
             <p className="mt-1 text-sm font-medium text-foreground">{listing.agent_slug}</p>
-            <p className="mt-5 text-xs font-medium text-muted-foreground">内置 Skills</p>
-            <p className="mt-1 text-sm text-foreground">{listing.skill_slugs.length} 项</p>
             <p className="mt-5 text-xs font-medium text-muted-foreground">预计额度</p>
             <p className="mt-1 text-sm text-foreground">{credits ?? "将在启用确认时核对"}</p>
             <div className="mt-6">
