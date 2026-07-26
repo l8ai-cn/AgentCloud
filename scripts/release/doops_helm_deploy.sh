@@ -71,7 +71,12 @@ NS='${NAMESPACE}'
 RELEASE='${RELEASE_NAME}'
 TAG='${RELEASE_VERSION}'
 
-for kind_name in deploy/backend deploy/web deploy/relay svc/backend svc/web svc/relay; do
+for kind_name in \
+  deploy/backend deploy/web deploy/relay \
+  svc/backend svc/web svc/relay \
+  ingress/agentsmesh-agents ingress/agentsmesh-agents-relay \
+  ingress/agentsmesh-agents-tunnel ingress/agentsmesh-login-amp-agents
+do
   kind=\${kind_name%%/*}
   name=\${kind_name#*/}
   if kubectl -n \"\$NS\" get \"\$kind\" \"\$name\" >/dev/null 2>&1; then
