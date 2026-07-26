@@ -25,7 +25,7 @@ resources:
   - 39-marketplace-web.yaml
   - 42-mobile.yaml
   - 40-ingress.yaml
-  # agents.l8ai.cn is owned by deploy/helm/agentsmesh (agentsmesh ns).
+  # agents.l8ai.cn is owned by deploy/helm/agentcloud (agentcloud ns).
   # Do not re-add 41-agents-ingress.yaml here: kustomize forces namespace
   # agentcloud, which does not exist on oilan.
   - 43-mobile-ingress.yaml
