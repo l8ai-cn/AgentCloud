@@ -72,19 +72,19 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 
 ## Oilan 生产部署（`agentsmesh`）
 
-正式 `deploy/kubernetes/cluster-oilan/deploy.sh` 目标命名空间仍是 **`agentcloud`**；
-线上负载在 **`agentsmesh`**（Harbor `repo.aiedulab.cn:8443/agentsmesh/*`）。
-在完成 [namespace 迁移](../superpowers/plans/2026-07-25-oilan-namespace-migration.md)
-之前，IM 热修走下面路径，**不要**对空 `agentcloud` ns 盲跑 `deploy.sh`。
+线上负载在 **`agentcloud`**（已从 `agentsmesh` 迁出；Harbor 镜像项目仍为
+`repo.aiedulab.cn:8443/agentsmesh/*`）。`deploy.sh` 带幽灵 ns 防护：目标 ns 若无
+`postgres-data` PVC 会拒绝执行，除非显式 `ALLOW_FRESH_NAMESPACE=1`。
+迁移说明 → [namespace 迁移](../superpowers/plans/2026-07-25-oilan-namespace-migration.md)。
 
 ### 已发布坐标（2026-07-26）
 
 | 项 | 值 |
 |---|---|
-| Namespace | `agentsmesh` |
+| Namespace | `agentcloud`（已从 `agentsmesh` 迁出） |
 | Backend image | `repo.aiedulab.cn:8443/agentsmesh/backend:im-locale-bindings` |
 | Web image | `repo.aiedulab.cn:8443/agentsmesh/web:im-locale-bindings` |
-| DB | `schema_migrations.version = 236`，`dirty = false` |
+| DB | 物理库仍名 `agentsmesh`；`schema_migrations.version = 236`，`dirty = false` |
 | 入口 | **https://agents.l8ai.cn**（canonical）；`dowork.l8ai.cn` 为别名；配对页 `/settings/im-pair` |
 | 分支 | `main`（CNB：`cnb.cool/l8ai/doworker`） |
 
@@ -95,11 +95,10 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 
 ### agents.l8ai.cn ingress
 
-SSOT：`deploy/helm/agentsmesh/templates/ingress-agents.yaml`
-（`agentsmesh-agents` / `-relay` / `-tunnel` / `agentsmesh-login-amp-agents`）。
+SSOT：`deploy/helm/agentcloud/templates/ingress-agents.yaml`
+（`agentcloud-agents` / `-relay` / `-tunnel` / `agentcloud-login-amp-agents`）。
 `PRIMARY_DOMAIN` 与 token issuer / JWKS 均为 `agents.l8ai.cn`；
 `RELAY_ALLOWED_ORIGINS` 含 agents + dowork + mobile。
-不要把 ingress 加回 kustomize（`namespace: agentcloud` 会改写到空 ns）。
 
 ### 热修重放（backend）— 仅限应急
 

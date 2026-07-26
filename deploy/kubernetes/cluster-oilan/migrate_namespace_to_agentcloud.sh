@@ -51,6 +51,7 @@ dexec "kubectl create ns ${NEW} --dry-run=client -o yaml | kubectl apply -f -"
 echo "==> scale down ${OLD} (write freeze)"
 dexec "
 set -euo pipefail
+kubectl -n ${OLD} delete ds --all --ignore-not-found
 kubectl -n ${OLD} scale deploy --all --replicas=0
 # Wait until no running pods remain (ignore Succeeded/Failed jobs).
 for i in \$(seq 1 60); do
