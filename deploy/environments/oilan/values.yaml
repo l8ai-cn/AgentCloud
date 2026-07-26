@@ -6,9 +6,9 @@ image:
   repository: repo.aiedulab.cn:8443/agentsmesh/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260726-amp-authz
-  web: oilan-20260726-amp-authz
-  relay: oilan-20260726-amp-authz
+  backend: oilan-20260726-login-fix
+  web: oilan-20260726-login-fix
+  relay: oilan-20260726-login-fix
 rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
