@@ -1,0 +1,146 @@
+{{- if .Values.backend.enabled }}
+{{- $tag := required "imageTag is required" .Values.imageTag }}
+{{- $repo := required "backend.image.repository is required" .Values.backend.image.repository }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "agentsmesh.labels" . | nindent 4 }}
+    app: {{ .Values.backend.name }}
+  annotations:
+    kubernetes.io/change-cause: "agentsmesh {{ $tag }}"
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- with .Values.backend.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.backend.name }}
+        {{- include "agentsmesh.labels" . | nindent 8 }}
+      annotations:
+        {{ .Values.rolloutTokenDomain }}/rollout-token: {{ default (.Values.rolloutToken | default .Release.Revision) (get (default dict .Values.rolloutTokens) "backend") | quote }}
+    spec:
+      serviceAccountName: {{ .Values.backend.serviceAccountName }}
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      initContainers:
+        - name: kubectl-install
+          image: repo.aiedulab.cn:8443/agentsmesh/kubectl:1.28
+          imagePullPolicy: Always
+          command: ["sh", "-c", "cp \"$(command -v kubectl)\" /kube-tools/kubectl && chmod +x /kube-tools/kubectl"]
+          volumeMounts:
+            - name: kube-tools
+              mountPath: /kube-tools
+      containers:
+        - name: {{ .Values.backend.name }}
+          image: {{ include "agentsmesh.image" (dict "repository" $repo "tag" $tag) }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.service.httpPort }}
+            - name: grpc
+              containerPort: {{ .Values.backend.service.grpcPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.backend.configMapName }}
+            {{- range .Values.backend.secrets }}
+            - secretRef:
+                name: {{ . }}
+            {{- end }}
+          env:
+            - name: COORDINATOR_RUNNER_LAUNCHER
+              value: "k8s"
+            - name: COORDINATOR_RUNNER_K8S_KUBECTL
+              value: "/kube-tools/kubectl"
+            - name: COORDINATOR_RUNNER_K8S_NAMESPACE
+              value: {{ .Values.namespace | quote }}
+            - name: COORDINATOR_RUNNER_K8S_IMAGE_PULL_POLICY
+              value: "Always"
+            - name: COORDINATOR_RUNNER_K8S_SSL_SECRET
+              value: agentsmesh-pki-ca
+            - name: COORDINATOR_RUNNER_K8S_READY_TIMEOUT_SECONDS
+              value: "180"
+            - name: COORDINATOR_RUNNER_NODE_ID_PREFIX
+              value: coord-runner-
+            - name: COORDINATOR_RUNNER_ORG_SLUG
+              value: {{ .Values.backend.coordinatorOrgSlug | default "dev-org" | quote }}
+            - name: COORDINATOR_RUNNER_BACKEND_URL
+              value: "http://backend:8080"
+            - name: COORDINATOR_RUNNER_GRPC_ENDPOINT
+              value: "backend:9090"
+            - name: COORDINATOR_RUNNER_RELAY_BASE_URL
+              value: "ws://relay:8090"
+            {{- if .Values.backend.coordinatorRunnerImages }}
+            - name: COORDINATOR_RUNNER_IMAGES
+              value: {{ .Values.backend.coordinatorRunnerImages | quote }}
+            {{- end }}
+          volumeMounts:
+            - name: pki-ca
+              mountPath: /app/ssl
+              readOnly: true
+            - name: access-token
+              mountPath: /app/access-token
+              readOnly: true
+            - name: kube-tools
+              mountPath: /kube-tools
+              readOnly: true
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.httpPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.backend.service.httpPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+      volumes:
+        - name: pki-ca
+          secret:
+            secretName: agentsmesh-pki-ca
+        - name: access-token
+          secret:
+            secretName: agentsmesh-access-token
+        - name: kube-tools
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.backend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "agentsmesh.labels" . | nindent 4 }}
+    app: {{ .Values.backend.name }}
+spec:
+  selector:
+    app: {{ .Values.backend.name }}
+  ports:
+    - name: http
+      port: {{ .Values.backend.service.httpPort }}
+      targetPort: {{ .Values.backend.service.httpPort }}
+    - name: grpc
+      port: {{ .Values.backend.service.grpcPort }}
+      targetPort: {{ .Values.backend.service.grpcPort }}
+{{- end }}

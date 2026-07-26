@@ -1,0 +1,88 @@
+# Shared base chart defaults. Environment overlays live under
+# deploy/environments/<env>/values.yaml.
+
+namespace: agentsmesh
+imageTag: &releaseTag release-unset
+image:
+  repository: docker.cnb.cool/l8ai/doworker/backend
+  tag: *releaseTag
+revisionHistoryLimit: 3
+rolloutToken: ""
+rolloutTokens: {}
+rolloutTokenDomain: agentsmesh.l8ai.cn
+
+imagePullSecrets:
+  - name: agentsmesh-regcred
+
+backend:
+  enabled: true
+  name: backend
+  replicas: 1
+  image:
+    name: backend
+    repository: docker.cnb.cool/l8ai/doworker/backend
+  serviceAccountName: agentsmesh-backend
+  configMapName: agentsmesh-config
+  secrets:
+    - agentsmesh-secrets
+    - agentsmesh-gitea
+  service:
+    httpPort: 8080
+    grpcPort: 9090
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+
+web:
+  enabled: true
+  name: web
+  replicas: 1
+  image:
+    name: web
+    repository: docker.cnb.cool/l8ai/doworker/web
+  primaryDomain: dowork.l8ai.cn
+  useHttps: "true"
+  service:
+    port: 3000
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+
+relay:
+  enabled: true
+  name: relay
+  replicas: 1
+  image:
+    name: relay
+    repository: docker.cnb.cool/l8ai/doworker/relay
+  configMapName: agentsmesh-config
+  secretsName: agentsmesh-secrets
+  service:
+    port: 8090
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 512Mi

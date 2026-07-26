@@ -1,0 +1,46 @@
+# CNB builds release images only. Deployment is handled by DoOps + Helm.
+".agentsmesh-release-artifacts": &agentsmesh-release-artifacts
+  - name: agentsmesh release artifacts
+    runner:
+      cpus: 8
+    services:
+      - docker
+    docker:
+      image: docker:27-cli
+    stages:
+      - name: 构建 AgentsMesh 业务镜像
+        script: |
+          set -eu
+          release_version="$(tr -d '[:space:]' < deploy/release-version.txt)"
+          if ! printf '%s' "${release_version}" | grep -Eq '^release-[0-9]{8}$'; then
+            echo "invalid deploy/release-version.txt: ${release_version}" >&2
+            exit 64
+          fi
+          for service_dockerfile in \
+            "backend:backend/Dockerfile" \
+            "relay:relay/Dockerfile" \
+            "web:clients/web/Dockerfile"
+          do
+            service="${service_dockerfile%%:*}"
+            dockerfile="${service_dockerfile#*:}"
+            image="docker.cnb.cool/l8ai/doworker/${service}:${release_version}"
+            docker build \
+              --platform linux/amd64 \
+              --file "${dockerfile}" \
+              --tag "${image}" \
+              --label "org.opencontainers.image.revision=${CNB_COMMIT}" \
+              --label "org.opencontainers.image.version=${release_version}" \
+              --build-arg "CACHEBUST=${CNB_COMMIT}-${service}" \
+              .
+            docker push "${image}"
+            printf 'AGENTSMESH_SERVICE=%s:success image=%s\n' "${service}" "${image}"
+          done
+
+main:
+  push: *agentsmesh-release-artifacts
+
+"release/*":
+  push: *agentsmesh-release-artifacts
+
+"release-*":
+  push: *agentsmesh-release-artifacts
