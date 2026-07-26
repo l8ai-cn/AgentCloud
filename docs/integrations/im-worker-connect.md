@@ -85,7 +85,7 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 | Backend image | `repo.aiedulab.cn:8443/agentsmesh/backend:im-locale-bindings` |
 | Web image | `repo.aiedulab.cn:8443/agentsmesh/web:im-locale-bindings` |
 | DB | `schema_migrations.version = 236`，`dirty = false` |
-| 入口 | https://agents.l8ai.cn 、 https://dowork.l8ai.cn ；配对页 `/settings/im-pair` |
+| 入口 | **https://agents.l8ai.cn**（canonical）；`dowork.l8ai.cn` 为别名；配对页 `/settings/im-pair` |
 | 分支 | `main`（CNB：`cnb.cool/l8ai/doworker`） |
 
 含 IM 所需的中间 migration：`000232` rebrand → `000233` SSO → `000234` AMP tenant →
@@ -93,13 +93,13 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 
 `im-locale-bindings` 走的是下面的应急热修路径，未过发布闸门，需要补一次正规构建。
 
-### agents.l8ai.cn ingress 现状
+### agents.l8ai.cn ingress
 
-线上 `agents.l8ai.cn` 由 `agentsmesh/agentsmesh-agents` 提供，**手工 apply，不在 git 里**。
-仓库中的 `deploy/kubernetes/cluster-oilan/41-agents-ingress.yaml` 声明的是 `agentcloud`
-命名空间（该 ns 在集群中不存在），`deploy/helm/agentsmesh` chart 也没有 ingress 模板。
-线上该 host 没有 `/relay` 路径，终端数据面靠 `PRIMARY_DOMAIN=dowork.l8ai.cn` 落到
-dowork 的 relay ingress。收编进 Helm 前不要对 `agentcloud` ns 跑 `deploy.sh`。
+SSOT：`deploy/helm/agentsmesh/templates/ingress-agents.yaml`
+（`agentsmesh-agents` / `-relay` / `-tunnel` / `agentsmesh-login-amp-agents`）。
+`PRIMARY_DOMAIN` 与 token issuer / JWKS 均为 `agents.l8ai.cn`；
+`RELAY_ALLOWED_ORIGINS` 含 agents + dowork + mobile。
+不要把 ingress 加回 kustomize（`namespace: agentcloud` 会改写到空 ns）。
 
 ### 热修重放（backend）— 仅限应急
 
@@ -145,6 +145,7 @@ doops -session "$SESSION" exec --target gw-oilan-node --cmd '
 # 外网
 curl -sk -o /dev/null -w "%{http_code}\n" https://agents.l8ai.cn/health          # 200
 curl -sk -o /dev/null -w "%{http_code}\n" https://agents.l8ai.cn/settings/im-pair # 200
+curl -sk -o /dev/null -w "%{http_code}\n" https://agents.l8ai.cn/relay/health     # 200
 
 # 集群内（期望 401 = 路由已挂）
 kubectl -n agentsmesh exec deploy/backend -- \

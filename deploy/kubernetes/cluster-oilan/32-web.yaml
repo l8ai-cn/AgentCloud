@@ -30,7 +30,7 @@ spec:
             - name: NODE_ENV
               value: "production"
             - name: PRIMARY_DOMAIN
-              value: "dowork.l8ai.cn"
+              value: "agents.l8ai.cn"
             - name: USE_HTTPS
               value: "true"
           readinessProbe:

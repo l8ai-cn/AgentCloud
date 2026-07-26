@@ -30,8 +30,15 @@ web:
   image:
     name: web
     repository: repo.aiedulab.cn:8443/agentsmesh/web
-  primaryDomain: dowork.l8ai.cn
+  primaryDomain: agents.l8ai.cn
   useHttps: "true"
+
+ingress:
+  enabled: true
+  agents:
+    enabled: true
+    host: agents.l8ai.cn
+    loginAmp: true
   strategy:
     type: RollingUpdate
     rollingUpdate:

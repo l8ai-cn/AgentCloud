@@ -4,12 +4,12 @@ metadata:
   name: agentcloud-config
   namespace: agentcloud
 data:
-  PRIMARY_DOMAIN: "dowork.l8ai.cn"
-  PUBLIC_WEB_URL: "https://dowork.l8ai.cn"
+  PRIMARY_DOMAIN: "agents.l8ai.cn"
+  PUBLIC_WEB_URL: "https://agents.l8ai.cn"
   PREVIEW_PUBLIC_ORIGIN: "https://l8ai.cn"
   PREVIEW_COOKIE_MODE: "partitioned"
   MOBILE_PUBLIC_BASE_URL: "https://mobile.l8ai.cn"
-  RELAY_ALLOWED_ORIGINS: "https://dowork.l8ai.cn,https://mobile.l8ai.cn"
+  RELAY_ALLOWED_ORIGINS: "https://agents.l8ai.cn,https://dowork.l8ai.cn,https://mobile.l8ai.cn"
   USE_HTTPS: "true"
 
   DB_HOST: "postgres"
@@ -22,7 +22,7 @@ data:
 
   SERVER_ADDRESS: ":8080"
   GRPC_ADDRESS: ":9090"
-  GRPC_PUBLIC_ENDPOINT: "grpcs://dowork.l8ai.cn"
+  GRPC_PUBLIC_ENDPOINT: "grpcs://agents.l8ai.cn"
   DEBUG: "false"
   CORS_ALLOWED_ORIGINS: "*"
   LOG_LEVEL: "info"
@@ -32,14 +32,14 @@ data:
   ADMIN_ENABLED: "true"
   ACCESS_TOKEN_PRIVATE_KEY_FILE: "/app/access-token/private.pem"
   ACCESS_TOKEN_PUBLIC_KEY_FILE: "/app/access-token/public.pem"
-  ACCESS_TOKEN_ISSUER: "https://dowork.l8ai.cn"
+  ACCESS_TOKEN_ISSUER: "https://agents.l8ai.cn"
   ACCESS_TOKEN_AUDIENCES: "agentcloud-api,marketplace-api"
   ACCESS_TOKEN_CORE_AUDIENCE: "agentcloud-api"
   ACCESS_TOKEN_EXPIRATION_HOURS: "24"
   MARKETPLACE_HTTP_ADDRESS: ":8080"
-  MARKETPLACE_IDENTITY_ISSUER: "https://dowork.l8ai.cn"
+  MARKETPLACE_IDENTITY_ISSUER: "https://agents.l8ai.cn"
   MARKETPLACE_IDENTITY_AUDIENCE: "marketplace-api"
-  MARKETPLACE_IDENTITY_JWKS_URL: "https://dowork.l8ai.cn/.well-known/jwks.json"
+  MARKETPLACE_IDENTITY_JWKS_URL: "https://agents.l8ai.cn/.well-known/jwks.json"
   MARKETPLACE_RUNTIME_BRIDGE_URL: "http://backend:8080/api/internal/marketplace/installations"
 
   # Object storage: in-cluster MinIO for the SDK, public host for presigned URLs.

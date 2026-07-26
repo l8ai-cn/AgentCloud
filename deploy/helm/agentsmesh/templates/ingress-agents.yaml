@@ -1,0 +1,162 @@
+{{- if and .Values.ingress.enabled .Values.ingress.agents.enabled }}
+{{- $host := required "ingress.agents.host is required" .Values.ingress.agents.host }}
+{{- $tls := .Values.ingress.tlsSecret }}
+{{- $class := .Values.ingress.className }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentsmesh-agents
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "agentsmesh.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: {{ $class }}
+  tls:
+    - hosts: [{{ $host | quote }}]
+      secretName: {{ $tls }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /api/marketplace/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: marketplace
+                port:
+                  number: 8080
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: {{ .Values.backend.service.httpPort }}
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: {{ .Values.backend.service.httpPort }}
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: {{ .Values.backend.service.httpPort }}
+          - path: /proto.
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: {{ .Values.backend.service.httpPort }}
+          - path: /.well-known
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: {{ .Values.backend.service.httpPort }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: {{ .Values.web.service.port }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentsmesh-agents-relay
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "agentsmesh.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: {{ $class }}
+  tls:
+    - hosts: [{{ $host | quote }}]
+      secretName: {{ $tls }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /relay(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: relay
+                port:
+                  number: {{ .Values.relay.service.port }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentsmesh-agents-tunnel
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "agentsmesh.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: {{ $class }}
+  tls:
+    - hosts: [{{ $host | quote }}]
+      secretName: {{ $tls }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /runner/tunnel
+            pathType: Prefix
+            backend:
+              service:
+                name: relay
+                port:
+                  number: {{ .Values.relay.service.port }}
+{{- if .Values.ingress.agents.loginAmp }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentsmesh-login-amp-agents
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "agentsmesh.labels" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  ingressClassName: {{ $class }}
+  tls:
+    - hosts: [{{ $host | quote }}]
+      secretName: {{ $tls }}
+  rules:
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /login
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: {{ .Values.web.service.port }}
+{{- end }}
+{{- end }}

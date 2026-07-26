@@ -66,4 +66,4 @@ Import the YAML bundle into AMP app `AGENTCLOUD` for each customer tenant.
 5. Login must assert `tenant_id` matching `amp_tenant_id` or fail with `tenant_unbound`.
 6. Local: `bash scripts/setup-amp-softlinks.sh` when working across AMP + AgentsMesh.
 7. Prefer web `AmpPreferredLogin` (`?local=1` escape hatch) over ingress `/login` rewrite snippets — keep ingress transparent (`/api`→backend, `/`→web, `/auth/*` on web).
-8. Oilan alias host `agents.l8ai.cn` is in `deploy/kubernetes/cluster-oilan/41-agents-ingress.yaml`.
+8. Oilan canonical host `agents.l8ai.cn` is in `deploy/helm/agentsmesh/templates/ingress-agents.yaml`.

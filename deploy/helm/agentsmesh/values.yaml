@@ -48,7 +48,7 @@ web:
   image:
     name: web
     repository: docker.cnb.cool/l8ai/doworker/web
-  primaryDomain: dowork.l8ai.cn
+  primaryDomain: agents.l8ai.cn
   useHttps: "true"
   service:
     port: 3000
@@ -86,3 +86,14 @@ relay:
       memory: 128Mi
     limits:
       memory: 512Mi
+
+# agents.l8ai.cn is the canonical public entry. dowork.l8ai.cn stays as a
+# hand-managed alias until it is absorbed into this chart.
+ingress:
+  enabled: true
+  className: nginx
+  tlsSecret: l8ai-wildcard-tls
+  agents:
+    enabled: true
+    host: agents.l8ai.cn
+    loginAmp: true

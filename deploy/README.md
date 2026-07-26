@@ -3,9 +3,10 @@
 - **CI (CNB):** `.cnb.yml` builds `backend` / `relay` / `web` as
   `docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD`
 - **Version SSOT:** `deploy/release-version.txt` (`release-YYYYMMDD`)
-- **Helm chart:** `deploy/helm/agentsmesh/`
+- **Helm chart:** `deploy/helm/agentsmesh/` (backend / web / relay / `agents.l8ai.cn` ingress)
 - **Environment values:** `deploy/environments/<env>/values.yaml`
 - **CD (DoOps):** `scripts/release/doops_helm_deploy.sh`
+- **Canonical entry:** https://agents.l8ai.cn (`dowork.l8ai.cn` kept as alias)
 
 ## Release flow
 

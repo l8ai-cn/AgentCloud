@@ -27,7 +27,7 @@ spec:
             - name: BACKEND_URL
               value: "http://backend:8080"
             - name: PRIMARY_DOMAIN
-              value: "dowork.l8ai.cn"
+              value: "agents.l8ai.cn"
             - name: PREVIEW_PUBLIC_ORIGIN
               valueFrom:
                 configMapKeyRef:
