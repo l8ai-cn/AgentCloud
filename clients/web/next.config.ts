@@ -118,6 +118,23 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  async redirects() {
+    return [
+      { source: "/catalog", destination: "/marketplace", permanent: true },
+      { source: "/catalog/:path*", destination: "/marketplace", permanent: true },
+      {
+        source: "/apps/:listingSlug",
+        destination: "/marketplace/acquire?listing=:listingSlug",
+        permanent: true,
+      },
+      {
+        source: "/listings/:listingSlug",
+        destination: "/marketplace/acquire?listing=:listingSlug",
+        permanent: true,
+      },
+    ];
+  },
+
   async rewrites() {
     if (process.env.NODE_ENV === "development") {
       const proxyTarget = getDevProxyTarget();

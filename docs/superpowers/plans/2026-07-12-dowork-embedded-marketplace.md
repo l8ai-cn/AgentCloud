@@ -3,6 +3,10 @@
 **Goal:** close Marketplace inside the AgentCloud organization workflow while
 retaining independent Marketplace API data ownership.
 
+**Status (2026-07-26):** done for deploy path. Standalone `clients/marketplace-web`
+removed; `market.l8ai.cn` serves `web` with host/path redirects to
+`agents.l8ai.cn/marketplace*`. Marketplace API remains a separate Go service.
+
 ## Acceptance Scenarios
 
 1. Given an authenticated member opens `/{org}/marketplace`, when the catalog
@@ -16,19 +20,8 @@ retaining independent Marketplace API data ownership.
 
 ## Steps And Checks
 
-1. Add market activity and nested routes.
-   - Change activity union, resolver, activity bar, and sidebar.
-   - Verify `resolveActivityFromPathname`.
-2. Build dashboard catalog and detail.
-   - Add authenticated same-origin catalog API client and no Zustand catalog cache.
-   - Verify request path and encoded detail identifier with Vitest.
-3. Bind acquisition to organization route.
-   - Resolve matching organization membership and omit picker for nested route.
-   - Verify plan/apply API unit tests and success destination.
-4. Replace public traffic.
-   - Redirect root compatibility page internally.
-   - Delete standalone workload and redirect `market.l8ai.cn` with ingress.
-   - Update release verification and deployment scripts.
-5. Validate and publish.
-   - Run Vitest, lint, TypeScript, production build, Kustomize render, doops
-     deploy/health, and authenticated browser smoke test.
+1. [x] Add market activity and nested routes.
+2. [x] Build dashboard catalog and detail.
+3. [x] Bind acquisition to organization route.
+4. [x] Replace public traffic — delete standalone workload; `market.l8ai.cn` → web.
+5. [x] Release/CD no longer builds or deploys `marketplace-web`.
