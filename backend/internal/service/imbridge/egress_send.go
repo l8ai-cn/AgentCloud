@@ -31,7 +31,7 @@ func (b *Bridge) sendChunks(ctx context.Context, conn *domain.Connection, target
 			ExternalThreadID: target.ThreadID,
 			PeerKind:         target.PeerKind,
 			Text:             chunk,
-			SenderLabel:      "Agent Cloud",
+			SenderLabel:      senderLabel,
 			ContextToken:     target.ContextToken,
 		}
 		if i == 0 && target.ReplaceID != "" {

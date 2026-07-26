@@ -23,6 +23,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/ticket"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/ampauthz"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/i18n"
 )
 
 func main() {
@@ -59,6 +60,10 @@ func main() {
 
 	if err := ampauthz.MustCatalogReady(); err != nil {
 		log.Fatalf("Failed to load AMP authz catalog: %v", err)
+	}
+
+	if err := i18n.Init(i18n.DefaultConfig()); err != nil {
+		log.Fatalf("Failed to load locales: %v", err)
 	}
 
 	otelProvider, err := otelinit.InitProvider(context.Background(), "agent-cloud-backend", "1.0.0")

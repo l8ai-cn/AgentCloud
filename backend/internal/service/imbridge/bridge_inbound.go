@@ -27,7 +27,7 @@ func (b *Bridge) DeliverInbound(ctx context.Context, conn *domain.Connection, ev
 	}
 	mapping, _ := b.repo.GetThreadMapping(ctx, conn.ID, event.ExternalThreadID)
 	if identity.Pending && identity.Code != "" {
-		_ = b.replyText(ctx, conn, event, pairingPrompt(identity.Code))
+		_ = b.replyText(ctx, conn, event, pairingPrompt(conn, identity.Code))
 		return ErrPairingRequired
 	}
 	if handled, reply, err := b.handleCommand(ctx, conn, event, mapping); handled {

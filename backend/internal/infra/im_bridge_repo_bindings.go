@@ -54,10 +54,38 @@ func (r *imBridgeRepository) GetIdentityBindingByCode(ctx context.Context, pairi
 	return &row, nil
 }
 
-func (r *imBridgeRepository) ListIdentityBindings(ctx context.Context, connectionID int64) ([]*domain.IdentityBinding, error) {
-	var rows []*domain.IdentityBinding
-	err := r.db.WithContext(ctx).Where("connection_id = ?", connectionID).Order("id ASC").Find(&rows).Error
+func (r *imBridgeRepository) GetIdentityBindingByID(ctx context.Context, connectionID, bindingID int64) (*domain.IdentityBinding, error) {
+	var row domain.IdentityBinding
+	err := r.db.WithContext(ctx).
+		Where("connection_id = ? AND id = ?", connectionID, bindingID).
+		First(&row).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &row, nil
+}
+
+func (r *imBridgeRepository) ListIdentityBindingViews(ctx context.Context, connectionID int64) ([]*domain.IdentityBindingView, error) {
+	var rows []*domain.IdentityBindingView
+	err := r.db.WithContext(ctx).
+		Table("im_identity_bindings AS b").
+		Select(`b.id, b.connection_id, b.external_user_id, b.external_name, b.user_id,
+		        u.name AS user_name, u.email AS user_email,
+		        b.status, b.pairing_expires_at, b.created_at, b.updated_at`).
+		Joins("LEFT JOIN users u ON u.id = b.user_id").
+		Where("b.connection_id = ?", connectionID).
+		Order("b.id ASC").
+		Scan(&rows).Error
 	return rows, err
+}
+
+func (r *imBridgeRepository) DeleteIdentityBinding(ctx context.Context, connectionID, bindingID int64) error {
+	return r.db.WithContext(ctx).
+		Where("connection_id = ? AND id = ?", connectionID, bindingID).
+		Delete(&domain.IdentityBinding{}).Error
 }
 
 func (r *imBridgeRepository) UpsertIdentityBinding(ctx context.Context, binding *domain.IdentityBinding) error {

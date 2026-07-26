@@ -21,6 +21,7 @@ type CreateConnectionRequest struct {
 	GroupPolicy     string
 	AllowFrom       json.RawMessage
 	Transport       string
+	Locale          string
 }
 
 func (s *Service) CreateConnection(ctx context.Context, req *CreateConnectionRequest) (*domain.Connection, error) {
@@ -59,6 +60,7 @@ func (s *Service) CreateConnection(ctx context.Context, req *CreateConnectionReq
 		GroupPolicy:     defaultStr(req.GroupPolicy, domain.GroupPolicyAllowlist),
 		AllowFrom:       defaultJSON(req.AllowFrom, []byte("[]")),
 		StreamingMode:   "progress",
+		Locale:          defaultStr(req.Locale, DefaultLocaleForProvider(req.Provider)),
 		CreatedByUserID: req.CreatedByUserID,
 	}
 	if conn.Name == "" {
@@ -81,6 +83,7 @@ type UpdateConnectionRequest struct {
 	GroupPolicy *string
 	AllowFrom   json.RawMessage
 	Transport   *string
+	Locale      *string
 }
 
 func (s *Service) UpdateConnection(ctx context.Context, orgID, id int64, req *UpdateConnectionRequest) (*domain.Connection, error) {
@@ -131,6 +134,12 @@ func (s *Service) UpdateConnection(ctx context.Context, orgID, id int64, req *Up
 	}
 	if req.Transport != nil {
 		conn.Transport = *req.Transport
+	}
+	if req.Locale != nil {
+		if !IsSupportedLocale(*req.Locale) {
+			return nil, fmt.Errorf("%w: unsupported locale %s", ErrInvalidConfig, *req.Locale)
+		}
+		conn.Locale = *req.Locale
 	}
 	if err := s.repo.UpdateConnection(ctx, conn); err != nil {
 		return nil, err

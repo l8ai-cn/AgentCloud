@@ -1002,7 +1002,7 @@
       "dismiss": "关闭",
       "enable": "启用",
       "disable": "停用",
-      "webhookUrl": "Webhook URL",
+      "webhookUrl": "Webhook 地址",
       "copyWebhook": "复制 Webhook",
       "webhookHint": "在 IM 平台的事件订阅 / 机器人回调中填入此 URL。启用连接后才会处理入站消息。",
       "boundChannel": "绑定频道 #{id}",
@@ -1065,14 +1065,30 @@
         "createFailed": "创建路由失败",
         "deleteFailed": "删除路由失败",
         "peerKind": "对端类型",
-        "workerSlug": "Worker slug",
+        "workerSlug": "Worker 标识",
         "add": "添加路由"
       },
       "bindings": {
         "title": "身份绑定",
         "description": "已配对或待配对的 IM 用户。",
         "empty": "暂无绑定。私聊策略为配对时，首次私聊会生成待配对码。",
-        "loadError": "加载身份绑定失败"
+        "loadError": "加载身份绑定失败",
+        "status": {
+          "pending": "待配对",
+          "bound": "已绑定",
+          "blocked": "已阻断"
+        },
+        "block": "阻断该 IM 身份",
+        "unblock": "解除阻断",
+        "unbind": "解绑（需重新配对）",
+        "updateFailed": "更新身份绑定失败",
+        "deleteFailed": "解绑身份失败"
+      },
+      "locale": {
+        "label": "机器人语言",
+        "en": "English",
+        "zh-CN": "简体中文",
+        "hint": "/help、配对提示、进度提示等机器人回复所使用的语言。"
       }
     },
     "org": {

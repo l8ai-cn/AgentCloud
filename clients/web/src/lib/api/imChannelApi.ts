@@ -11,6 +11,7 @@ export interface IMProviderMeta {
 
 export type IMDMPolicy = "pairing" | "open" | "allowlist" | "disabled" | "guest";
 export type IMGroupPolicy = "open" | "allowlist" | "disabled";
+export type IMLocale = "en" | "zh-CN";
 
 export interface IMConnection {
   id: number;
@@ -25,6 +26,7 @@ export interface IMConnection {
   group_policy?: IMGroupPolicy;
   allow_from?: string[] | unknown;
   streaming_mode?: string;
+  locale?: IMLocale;
   last_error?: string | null;
   created_by_user_id: number;
   created_at: string;
@@ -42,6 +44,7 @@ export interface CreateIMConnectionInput {
   group_policy?: IMGroupPolicy;
   allow_from?: string[];
   transport?: string;
+  locale?: IMLocale;
 }
 
 export interface UpdateIMConnectionInput {
@@ -53,6 +56,7 @@ export interface UpdateIMConnectionInput {
   group_policy?: IMGroupPolicy;
   allow_from?: string[];
   transport?: string;
+  locale?: IMLocale;
 }
 
 function base(): string {

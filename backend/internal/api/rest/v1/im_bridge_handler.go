@@ -60,6 +60,7 @@ type createIMConnectionRequest struct {
 	GroupPolicy string          `json:"group_policy"`
 	AllowFrom   json.RawMessage `json:"allow_from"`
 	Transport   string          `json:"transport"`
+	Locale      string          `json:"locale"`
 }
 
 func (h *IMBridgeHandler) CreateConnection(c *gin.Context) {
@@ -81,6 +82,7 @@ func (h *IMBridgeHandler) CreateConnection(c *gin.Context) {
 		GroupPolicy:     req.GroupPolicy,
 		AllowFrom:       req.AllowFrom,
 		Transport:       req.Transport,
+		Locale:          req.Locale,
 	})
 	if err != nil {
 		if errors.Is(err, imbridgesvc.ErrInvalidProvider) || errors.Is(err, imbridgesvc.ErrInvalidConfig) {
@@ -102,6 +104,7 @@ type updateIMConnectionRequest struct {
 	GroupPolicy *string         `json:"group_policy"`
 	AllowFrom   json.RawMessage `json:"allow_from"`
 	Transport   *string         `json:"transport"`
+	Locale      *string         `json:"locale"`
 }
 
 func (h *IMBridgeHandler) UpdateConnection(c *gin.Context) {
@@ -125,6 +128,7 @@ func (h *IMBridgeHandler) UpdateConnection(c *gin.Context) {
 		GroupPolicy: req.GroupPolicy,
 		AllowFrom:   req.AllowFrom,
 		Transport:   req.Transport,
+		Locale:      req.Locale,
 	})
 	if err != nil {
 		if errors.Is(err, imbridgesvc.ErrInvalidConfig) {

@@ -2,7 +2,6 @@ package imbridge
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
@@ -13,11 +12,11 @@ func progressEnabled(conn *domain.Connection) bool {
 	return mode == "" || mode == "progress"
 }
 
-func progressText(route *routeResolution) string {
+func progressText(conn *domain.Connection, route *routeResolution) string {
 	if route == nil || route.TargetRef == "" {
-		return "⏳ Working…"
+		return botText(conn, "progress_working")
 	}
-	return fmt.Sprintf("⏳ Working on @%s…", route.TargetRef)
+	return botText(conn, "progress_working_on", route.TargetRef)
 }
 
 func (b *Bridge) startProgressDraft(
@@ -35,7 +34,7 @@ func (b *Bridge) startProgressDraft(
 	if route == nil || route.TargetRef == "" || mapping.DraftMessageID != nil {
 		return
 	}
-	msgID, err := b.sendChunks(ctx, conn, eventTarget(event), progressText(route))
+	msgID, err := b.sendChunks(ctx, conn, eventTarget(event), progressText(conn, route))
 	if err != nil || msgID == "" {
 		return
 	}

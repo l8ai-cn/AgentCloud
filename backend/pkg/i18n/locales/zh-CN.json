@@ -142,6 +142,24 @@
     "channel_archived": "频道已归档",
     "channel_unarchived": "频道已取消归档"
   },
+  "im_bridge": {
+    "pairing_prompt": "请在 Agent Cloud 个人设置 → IM 配对 中输入配对码 %s（10 分钟内有效）以绑定此 IM 身份。",
+    "progress_working": "⏳ 处理中…",
+    "progress_working_on": "⏳ @%s 处理中…",
+    "command_help": "可用指令：/help /workers /use <pod> /status /new /stop /pair",
+    "command_pair_hint": "请向机器人发送任意消息以获取配对码，然后在网页个人设置中输入。",
+    "workers_unavailable": "worker 目录不可用",
+    "workers_none": "当前组织没有在线 worker",
+    "workers_online": "在线 worker：\n- %s",
+    "use_usage": "用法：/use <pod-key>",
+    "use_switched": "已切换本会话 worker 为 %s",
+    "new_nothing": "无可重置会话",
+    "new_reset": "已重置会话 worker 选择",
+    "status_line": "连接=%s 状态=%s 会话worker=%s",
+    "status_unbound": "(未绑定)",
+    "stop_nothing": "没有可停止的 worker",
+    "stop_sent": "已向 worker 发送停止请求"
+  },
   "ticket": {
     "ticket": "工单",
     "tickets": "工单列表",

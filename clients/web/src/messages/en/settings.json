@@ -1072,7 +1072,23 @@
         "title": "Identity bindings",
         "description": "IM users paired or pending a pairing code.",
         "empty": "No bindings yet. First DM with pairing policy creates a pending code.",
-        "loadError": "Failed to load identity bindings"
+        "loadError": "Failed to load identity bindings",
+        "status": {
+          "pending": "Pending pairing",
+          "bound": "Bound",
+          "blocked": "Blocked"
+        },
+        "block": "Block this IM identity",
+        "unblock": "Unblock",
+        "unbind": "Unbind (requires re-pairing)",
+        "updateFailed": "Failed to update identity binding",
+        "deleteFailed": "Failed to unbind identity"
+      },
+      "locale": {
+        "label": "Bot language",
+        "en": "English",
+        "zh-CN": "简体中文",
+        "hint": "Language used for bot replies such as /help, pairing prompts, and progress notices."
       }
     },
     "org": {

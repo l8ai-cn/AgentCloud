@@ -5,14 +5,17 @@ function base(): string {
   return imChannelsBasePath();
 }
 
+export type IMBindingStatus = "pending" | "bound" | "blocked";
+
 export interface IMIdentityBinding {
   id: number;
   connection_id: number;
   external_user_id: string;
   external_name?: string | null;
   user_id?: number | null;
-  status: string;
-  pairing_code?: string | null;
+  user_name?: string | null;
+  user_email?: string | null;
+  status: IMBindingStatus;
   pairing_expires_at?: string | null;
   created_at: string;
   updated_at: string;
@@ -56,6 +59,32 @@ export async function listIMIdentityBindings(
     { authenticated: true }
   );
   return res.bindings ?? [];
+}
+
+export async function setIMIdentityBindingStatus(
+  connectionId: number,
+  bindingId: number,
+  status: IMBindingStatus
+): Promise<IMIdentityBinding> {
+  const res = await lightFetch<{ binding: IMIdentityBinding }>(
+    `${base()}/${connectionId}/bindings/${bindingId}`,
+    {
+      method: "PATCH",
+      authenticated: true,
+      body: JSON.stringify({ status }),
+    }
+  );
+  return res.binding;
+}
+
+export async function deleteIMIdentityBinding(
+  connectionId: number,
+  bindingId: number
+): Promise<void> {
+  await lightFetch(`${base()}/${connectionId}/bindings/${bindingId}`, {
+    method: "DELETE",
+    authenticated: true,
+  });
 }
 
 export async function listIMRouteBindings(connectionId: number): Promise<IMRouteBinding[]> {

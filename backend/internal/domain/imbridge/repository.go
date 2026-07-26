@@ -19,9 +19,11 @@ type Repository interface {
 
 	GetIdentityBinding(ctx context.Context, connectionID int64, externalUserID string) (*IdentityBinding, error)
 	GetIdentityBindingByCode(ctx context.Context, pairingCode string) (*IdentityBinding, error)
-	ListIdentityBindings(ctx context.Context, connectionID int64) ([]*IdentityBinding, error)
+	GetIdentityBindingByID(ctx context.Context, connectionID, bindingID int64) (*IdentityBinding, error)
+	ListIdentityBindingViews(ctx context.Context, connectionID int64) ([]*IdentityBindingView, error)
 	UpsertIdentityBinding(ctx context.Context, binding *IdentityBinding) error
 	UpdateIdentityBinding(ctx context.Context, binding *IdentityBinding) error
+	DeleteIdentityBinding(ctx context.Context, connectionID, bindingID int64) error
 
 	ListRouteBindings(ctx context.Context, connectionID int64) ([]*RouteBinding, error)
 	CreateRouteBinding(ctx context.Context, binding *RouteBinding) error

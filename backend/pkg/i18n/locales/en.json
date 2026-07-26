@@ -142,6 +142,24 @@
     "channel_archived": "Channel archived",
     "channel_unarchived": "Channel unarchived"
   },
+  "im_bridge": {
+    "pairing_prompt": "Send the pairing code %s under Personal Settings → IM Pairing in Agent Cloud to link this IM identity (valid for 10 minutes).",
+    "progress_working": "⏳ Working…",
+    "progress_working_on": "⏳ Working on @%s…",
+    "command_help": "Commands: /help /workers /use <pod> /status /new /stop /pair",
+    "command_pair_hint": "Send the bot any message to receive a pairing code, then enter it in personal settings on the web.",
+    "workers_unavailable": "Worker catalog unavailable.",
+    "workers_none": "No workers are online in this organization.",
+    "workers_online": "Online workers:\n- %s",
+    "use_usage": "Usage: /use <pod-key>",
+    "use_switched": "This conversation now targets %s.",
+    "new_nothing": "No conversation to reset.",
+    "new_reset": "Cleared this conversation's worker selection.",
+    "status_line": "connection=%s status=%s conversation worker=%s",
+    "status_unbound": "(unbound)",
+    "stop_nothing": "No worker to stop.",
+    "stop_sent": "Stop request sent to the worker."
+  },
   "ticket": {
     "ticket": "Ticket",
     "tickets": "Tickets",

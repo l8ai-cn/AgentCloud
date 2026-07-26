@@ -7,9 +7,12 @@ import (
 )
 
 type fakeRepository struct {
-	threadMapping *domain.ThreadMapping
-	routeBindings []*domain.RouteBinding
-	upserted      []*domain.ThreadMapping
+	threadMapping  *domain.ThreadMapping
+	routeBindings  []*domain.RouteBinding
+	upserted       []*domain.ThreadMapping
+	connection     *domain.Connection
+	binding        *domain.IdentityBinding
+	deletedBinding [2]int64
 }
 
 func (r *fakeRepository) GetThreadMapping(context.Context, int64, string) (*domain.ThreadMapping, error) {
@@ -34,7 +37,7 @@ func (r *fakeRepository) ListActiveByProvider(context.Context, string) ([]*domai
 }
 
 func (r *fakeRepository) GetConnection(context.Context, int64, int64) (*domain.Connection, error) {
-	return nil, nil
+	return r.connection, nil
 }
 
 func (r *fakeRepository) GetConnectionByToken(context.Context, string, string) (*domain.Connection, error) {
@@ -61,8 +64,17 @@ func (r *fakeRepository) GetIdentityBindingByCode(context.Context, string) (*dom
 	return nil, nil
 }
 
-func (r *fakeRepository) ListIdentityBindings(context.Context, int64) ([]*domain.IdentityBinding, error) {
+func (r *fakeRepository) GetIdentityBindingByID(context.Context, int64, int64) (*domain.IdentityBinding, error) {
+	return r.binding, nil
+}
+
+func (r *fakeRepository) ListIdentityBindingViews(context.Context, int64) ([]*domain.IdentityBindingView, error) {
 	return nil, nil
+}
+
+func (r *fakeRepository) DeleteIdentityBinding(_ context.Context, connectionID, bindingID int64) error {
+	r.deletedBinding = [2]int64{connectionID, bindingID}
+	return nil
 }
 
 func (r *fakeRepository) UpsertIdentityBinding(context.Context, *domain.IdentityBinding) error {

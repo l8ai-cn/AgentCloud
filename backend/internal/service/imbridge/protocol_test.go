@@ -13,6 +13,7 @@ import (
 
 	channelDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/channel"
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/i18n"
 	"github.com/stretchr/testify/require"
 )
 
@@ -204,8 +205,26 @@ type assertErr string
 
 func (e assertErr) Error() string { return string(e) }
 
-func TestProgressText(t *testing.T) {
-	require.Equal(t, "⏳ Working…", progressText(nil))
-	require.Equal(t, "⏳ Working on @coder…", progressText(&routeResolution{TargetRef: "coder"}))
+func TestProgressTextFollowsConnectionLocale(t *testing.T) {
+	require.NoError(t, i18n.Init(i18n.DefaultConfig()))
+	en := &domain.Connection{Locale: domain.LocaleEnglish}
+	zh := &domain.Connection{Locale: domain.LocaleChinese}
+
+	require.Equal(t, "⏳ Working…", progressText(en, nil))
+	require.Equal(t, "⏳ Working on @coder…", progressText(en, &routeResolution{TargetRef: "coder"}))
+	require.Equal(t, "⏳ @coder 处理中…", progressText(zh, &routeResolution{TargetRef: "coder"}))
+}
+
+func TestBotTextDefaultsToChineseForUnsetLocale(t *testing.T) {
+	require.NoError(t, i18n.Init(i18n.DefaultConfig()))
+	require.Contains(t, botText(&domain.Connection{}, "pairing_prompt", "AB12CD"), "配对码 AB12CD")
+}
+
+func TestDefaultLocaleForProvider(t *testing.T) {
+	require.Equal(t, domain.LocaleEnglish, DefaultLocaleForProvider(domain.ProviderSlack))
+	require.Equal(t, domain.LocaleChinese, DefaultLocaleForProvider(domain.ProviderFeishu))
+	require.Equal(t, domain.LocaleChinese, DefaultLocaleForProvider(domain.ProviderWeChat))
+	require.True(t, IsSupportedLocale(domain.LocaleEnglish))
+	require.False(t, IsSupportedLocale("fr"))
 }
 

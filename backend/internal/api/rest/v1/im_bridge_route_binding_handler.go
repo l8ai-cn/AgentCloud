@@ -11,40 +11,6 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/pkg/apierr"
 )
 
-type pairIMRequest struct {
-	Code string `json:"code" binding:"required"`
-}
-
-func (h *IMBridgeHandler) PairIdentity(c *gin.Context) {
-	tenant := middleware.GetTenant(c)
-	var req pairIMRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		apierr.ValidationError(c, err.Error())
-		return
-	}
-	binding, err := h.bridge.PairWithCode(c.Request.Context(), tenant.OrganizationID, tenant.UserID, req.Code)
-	if err != nil {
-		h.notFoundOrInternal(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"binding": binding})
-}
-
-func (h *IMBridgeHandler) ListIdentityBindings(c *gin.Context) {
-	tenant := middleware.GetTenant(c)
-	id, err := strconv.ParseInt(c.Param("connectionId"), 10, 64)
-	if err != nil {
-		apierr.ValidationError(c, "invalid connection id")
-		return
-	}
-	rows, err := h.bridge.ListIdentityBindings(c.Request.Context(), tenant.OrganizationID, id)
-	if err != nil {
-		h.notFoundOrInternal(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"bindings": rows})
-}
-
 func (h *IMBridgeHandler) ListRouteBindings(c *gin.Context) {
 	tenant := middleware.GetTenant(c)
 	id, err := strconv.ParseInt(c.Param("connectionId"), 10, 64)

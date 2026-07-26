@@ -42,7 +42,12 @@ const (
 	BindingPending = "pending"
 	BindingBound   = "bound"
 	BindingBlocked = "blocked"
+
+	LocaleEnglish = "en"
+	LocaleChinese = "zh-CN"
 )
+
+var SupportedLocales = []string{LocaleEnglish, LocaleChinese}
 
 var SupportedProviders = []string{
 	ProviderFeishu,
@@ -67,6 +72,7 @@ type Connection struct {
 	GroupPolicy     string          `gorm:"size:16;not null;default:'allowlist'" json:"group_policy"`
 	AllowFrom       json.RawMessage `gorm:"type:jsonb;not null;default:'[]'" json:"allow_from"`
 	StreamingMode   string          `gorm:"size:16;not null;default:'progress'" json:"streaming_mode"`
+	Locale          string          `gorm:"size:16;not null;default:'zh-CN'" json:"locale"`
 	LastSeenAt      *time.Time      `json:"last_seen_at,omitempty"`
 	LastError       *string         `gorm:"type:text" json:"last_error,omitempty"`
 	CreatedByUserID int64           `gorm:"not null" json:"created_by_user_id"`

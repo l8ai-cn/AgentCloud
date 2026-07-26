@@ -20,6 +20,8 @@ func registerIMBridgeRoutes(rg *gin.RouterGroup, svc *Services) {
 		group.PATCH("/:connectionId", h.UpdateConnection)
 		group.DELETE("/:connectionId", h.DeleteConnection)
 		group.GET("/:connectionId/bindings", h.ListIdentityBindings)
+		group.PATCH("/:connectionId/bindings/:bindingId", h.UpdateIdentityBinding)
+		group.DELETE("/:connectionId/bindings/:bindingId", h.DeleteIdentityBinding)
 		group.GET("/:connectionId/routes", h.ListRouteBindings)
 		group.POST("/:connectionId/routes", h.CreateRouteBinding)
 		group.DELETE("/:connectionId/routes/:routeId", h.DeleteRouteBinding)

@@ -2,9 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
+  deleteIMIdentityBinding,
   listIMIdentityBindings,
+  setIMIdentityBindingStatus,
+  type IMBindingStatus,
   type IMIdentityBinding,
 } from "@/lib/api/imChannelBindingsApi";
+import { IMIdentityBindingRow } from "./IMIdentityBindingRow";
 import type { TranslationFn } from "../GeneralSettings";
 
 interface IMIdentityBindingsPanelProps {
@@ -20,6 +24,7 @@ export function IMIdentityBindingsPanel({
 }: IMIdentityBindingsPanelProps) {
   const [rows, setRows] = useState<IMIdentityBinding[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<number | null>(null);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -37,6 +42,22 @@ export function IMIdentityBindingsPanel({
     refresh();
   }, [refresh]);
 
+  const mutate = useCallback(
+    async (bindingId: number, action: () => Promise<unknown>, errorKey: string) => {
+      setBusyId(bindingId);
+      try {
+        await action();
+        await refresh();
+      } catch (err) {
+        console.error("Failed to update IM binding:", err);
+        onError(t(errorKey));
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [onError, refresh, t]
+  );
+
   return (
     <div className="space-y-2">
       <div>
@@ -52,10 +73,26 @@ export function IMIdentityBindingsPanel({
       ) : (
         <ul className="space-y-1">
           {rows.map((row) => (
-            <li key={row.id} className="text-xs font-mono border rounded-md px-3 py-2">
-              {row.external_name || row.external_user_id} · {row.status}
-              {row.user_id ? ` · user#${row.user_id}` : ""}
-            </li>
+            <IMIdentityBindingRow
+              key={row.id}
+              binding={row}
+              busy={busyId === row.id}
+              t={t}
+              onSetStatus={(status: IMBindingStatus) =>
+                mutate(
+                  row.id,
+                  () => setIMIdentityBindingStatus(connectionId, row.id, status),
+                  "settings.imChannels.bindings.updateFailed"
+                )
+              }
+              onDelete={() =>
+                mutate(
+                  row.id,
+                  () => deleteIMIdentityBinding(connectionId, row.id),
+                  "settings.imChannels.bindings.deleteFailed"
+                )
+              }
+            />
           ))}
         </ul>
       )}

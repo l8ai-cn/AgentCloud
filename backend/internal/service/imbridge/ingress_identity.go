@@ -3,7 +3,6 @@ package imbridge
 import (
 	"context"
 	"crypto/rand"
-	"fmt"
 	"math/big"
 	"strings"
 	"time"
@@ -99,6 +98,6 @@ func randomPairingCode() (string, error) {
 	return string(out), nil
 }
 
-func pairingPrompt(code string) string {
-	return fmt.Sprintf("请在 Agent Cloud 个人设置 → IM 配对 中输入配对码 %s（10 分钟内有效）以绑定此 IM 身份。", code)
+func pairingPrompt(conn *domain.Connection, code string) string {
+	return botText(conn, "pairing_prompt", code)
 }

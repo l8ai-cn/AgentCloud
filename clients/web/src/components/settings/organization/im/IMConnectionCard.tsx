@@ -10,6 +10,7 @@ import {
   updateIMConnection,
   type IMDMPolicy,
   type IMGroupPolicy,
+  type IMLocale,
   type IMConnection,
 } from "@/lib/api/imChannelApi";
 import { IMRouteBindingsPanel } from "./IMRouteBindingsPanel";
@@ -57,6 +58,7 @@ export function IMConnectionCard({
   const savePolicy = async (patch: {
     dm_policy?: IMDMPolicy;
     group_policy?: IMGroupPolicy;
+    locale?: IMLocale;
   }) => {
     try {
       await updateIMConnection(conn.id, patch);
