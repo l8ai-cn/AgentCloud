@@ -73,38 +73,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: agentcloud-marketplace
-  namespace: agentcloud
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
-    nginx.ingress.kubernetes.io/ssl-redirect: "false"
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts: ["market.l8ai.cn"]
-      secretName: l8ai-wildcard-tls
-  rules:
-    - host: market.l8ai.cn
-      http:
-        paths:
-          - path: /api/marketplace/v1
-            pathType: Prefix
-            backend:
-              service:
-                name: marketplace
-                port:
-                  number: 8080
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: marketplace-web
-                port:
-                  number: 3000
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
   name: agentcloud-admin
   namespace: agentcloud
   annotations:

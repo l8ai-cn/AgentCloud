@@ -183,9 +183,9 @@ validate the existing `agentcloud` Secret.
 | `31/32/33/42-*` | relay / web / web-admin / mobile |
 | `34/35-runner-*` | standing runner pods |
 | `38-marketplace` | Marketplace API Deployment/Service |
-| `39-marketplace-web` | independent public Marketplace Storefront |
 | `release/kustomization` | immutable platform image digests |
-| `40-ingress` | ingress-nginx routes (app / admin host / relay rewrite / minio host) |
+| `40-ingress` | dowork / admin / relay / tunnel ingress |
+| `41-marketplace-ingress` | market API + UI redirect → `agents.l8ai.cn/marketplace` |
 | `44-preview-ingress` | isolated HTTPS pod preview gateway |
 | `60-prepull-daemonset` | warm agent-runtime image cache |
 

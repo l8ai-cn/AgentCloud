@@ -42,8 +42,6 @@ jobs:
             file: backend/Dockerfile
           - service: marketplace
             file: marketplace/Dockerfile
-          - service: marketplace-web
-            file: clients/marketplace-web/Dockerfile
           - service: relay
             file: relay/Dockerfile
           - service: web
@@ -51,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Free disk
-        if: matrix.service == 'marketplace-web' || matrix.service == 'web'
+        if: matrix.service == 'web'
         run: |
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
             /usr/local/share/boost "$AGENT_TOOLSDIRECTORY" || true
@@ -118,7 +116,7 @@ jobs:
         run: |
           set -euo pipefail
           entries="$(mktemp)"
-          for service in backend marketplace marketplace-web relay web; do
+          for service in backend marketplace relay web; do
             digest="$(cat "digests/${service}.txt")"
             jq -nc \
               --arg service "${service}" \

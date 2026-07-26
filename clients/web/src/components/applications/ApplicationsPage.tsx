@@ -59,9 +59,11 @@ export function ApplicationsPage({
 
   return (
     <main className="mx-auto w-full max-w-6xl space-y-8 px-5 py-8 lg:px-8">
-      <ApplicationsHeader />
+      <ApplicationsHeader orgSlug={orgSlug} />
       {state.kind === "error" ? <ApplicationsError message={state.message} /> : null}
-      {state.kind === "ready" && applications.length === 0 ? <ApplicationsEmpty focused={Boolean(installationID)} /> : null}
+      {state.kind === "ready" && applications.length === 0 ? (
+        <ApplicationsEmpty orgSlug={orgSlug} focused={Boolean(installationID)} />
+      ) : null}
       {state.kind === "ready" && applications.length > 0 ? (
         <>
           {expertError ? (
@@ -85,7 +87,7 @@ export function ApplicationsPage({
   );
 }
 
-function ApplicationsHeader() {
+function ApplicationsHeader({ orgSlug }: { orgSlug: string }) {
   return (
     <header className="flex flex-col justify-between gap-4 border-b border-border pb-6 sm:flex-row sm:items-end">
       <div>
@@ -96,7 +98,7 @@ function ApplicationsHeader() {
         </p>
       </div>
       <Button asChild variant="outline" className="gap-2">
-        <Link href="https://market.l8ai.cn">
+        <Link href={`/${orgSlug}/marketplace`}>
           <Store className="h-4 w-4" />
           浏览应用市场
         </Link>
@@ -105,7 +107,13 @@ function ApplicationsHeader() {
   );
 }
 
-function ApplicationsEmpty({ focused = false }: { focused?: boolean }) {
+function ApplicationsEmpty({
+  orgSlug,
+  focused = false,
+}: {
+  orgSlug: string;
+  focused?: boolean;
+}) {
   return (
     <EmptyState
       size="full"
@@ -114,7 +122,7 @@ function ApplicationsEmpty({ focused = false }: { focused?: boolean }) {
       description={focused ? "该应用可能已移除，或你没有当前组织的访问权限。" : "请先在公开应用市场选择应用，完成启用后会显示在这里。"}
       actions={(
         <Button asChild>
-          <Link href="https://market.l8ai.cn">前往应用市场</Link>
+          <Link href={`/${orgSlug}/marketplace`}>前往应用市场</Link>
         </Button>
       )}
     />

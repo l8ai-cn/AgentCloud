@@ -17,6 +17,7 @@ func TestDefaultMarketplaceSeedContract(t *testing.T) {
 	for _, fragment := range []string{
 		"'agent-cloud-market'",
 		"'market.l8ai.cn'",
+		"'agents.l8ai.cn'",
 		"'dowork.l8ai.cn'",
 		"'software-delivery'",
 		"'software-delivery-expert'",

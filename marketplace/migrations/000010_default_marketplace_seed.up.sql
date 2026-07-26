@@ -26,6 +26,8 @@ BEGIN
     VALUES
         (market_id, 'market.l8ai.cn', 'platform', 'active',
          'platform-market-l8ai', TRUE, NOW()),
+        (market_id, 'agents.l8ai.cn', 'platform', 'active',
+         'platform-market-agents', FALSE, NOW()),
         (market_id, 'dowork.l8ai.cn', 'platform', 'active',
          'platform-market-core', FALSE, NOW()),
         (market_id, 'localhost', 'platform', 'active',

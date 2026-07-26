@@ -80,7 +80,6 @@ docker_push() {
   case "${dest}" in
     backend) PLATFORM_DIGEST_BACKEND="${digest}" ;;
     marketplace) PLATFORM_DIGEST_MARKETPLACE="${digest}" ;;
-    marketplace-web) PLATFORM_DIGEST_MARKETPLACE_WEB="${digest}" ;;
     relay) PLATFORM_DIGEST_RELAY="${digest}" ;;
     web) PLATFORM_DIGEST_WEB="${digest}" ;;
     web-admin) PLATFORM_DIGEST_WEB_ADMIN="${digest}" ;;
@@ -111,7 +110,6 @@ write_platform_release() {
 
   ensure_release_digest PLATFORM_DIGEST_BACKEND backend
   ensure_release_digest PLATFORM_DIGEST_MARKETPLACE marketplace
-  ensure_release_digest PLATFORM_DIGEST_MARKETPLACE_WEB marketplace-web
   ensure_release_digest PLATFORM_DIGEST_RELAY relay
   ensure_release_digest PLATFORM_DIGEST_WEB web
   ensure_release_digest PLATFORM_DIGEST_WEB_ADMIN web-admin
@@ -133,8 +131,6 @@ images:
     digest: ${PLATFORM_DIGEST_BACKEND}
   - name: ${PROJ}/marketplace
     digest: ${PLATFORM_DIGEST_MARKETPLACE}
-  - name: ${PROJ}/marketplace-web
-    digest: ${PLATFORM_DIGEST_MARKETPLACE_WEB}
   - name: ${PROJ}/relay
     digest: ${PLATFORM_DIGEST_RELAY}
   - name: ${PROJ}/web

@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "${DIR}/../../.." && pwd)"
 REG="${REG:-repo.aiedulab.cn:8443}"
 PROJ="${REG}/agentcloud"
 PLATFORM="${PLATFORM:-linux/amd64}"
-STAGING_SERVICES=(backend marketplace marketplace-web relay web)
+STAGING_SERVICES=(backend marketplace relay web)
 
 # shellcheck disable=SC1091
 source "${DIR}/harbor-image-publishing.sh"
@@ -21,7 +21,7 @@ validate_manifest() {
     .schema_version == 1 and
     .platform == "linux/amd64" and
     (.source_commit | test("^[a-f0-9]{40}$")) and
-    (.images | keys == ["backend", "marketplace", "marketplace-web", "relay", "web"]) and
+    (.images | keys == ["backend", "marketplace", "relay", "web"]) and
     all(
       .images[];
       (.source | type == "string") and
@@ -64,7 +64,6 @@ record_platform_digest() {
   case "${service}" in
     backend) export PLATFORM_DIGEST_BACKEND="${digest}" ;;
     marketplace) export PLATFORM_DIGEST_MARKETPLACE="${digest}" ;;
-    marketplace-web) export PLATFORM_DIGEST_MARKETPLACE_WEB="${digest}" ;;
     relay) export PLATFORM_DIGEST_RELAY="${digest}" ;;
     web) export PLATFORM_DIGEST_WEB="${digest}" ;;
   esac

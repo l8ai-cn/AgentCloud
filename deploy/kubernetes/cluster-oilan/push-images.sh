@@ -3,12 +3,11 @@
 # on doops-114-k8s pull from repo.aiedulab.cn:8443/agentcloud/* (fast, node-local).
 #
 #   ./push-images.sh all        # platform + infra + runners
-#   ./push-images.sh platform   # backend/marketplace/marketplace-web/relay/web/web-admin/mobile
+#   ./push-images.sh platform   # backend/marketplace/relay/web/web-admin/mobile
 #   ./push-images.sh mobile-access # backend/relay/mobile only
-#   ./push-images.sh marketplace-core # backend/marketplace/marketplace-web/web
-#   ./push-images.sh video-expert # backend/marketplace/marketplace-web/web/web-admin
+#   ./push-images.sh marketplace-core # backend/marketplace/web
+#   ./push-images.sh video-expert # backend/marketplace/web/web-admin
 #   ./push-images.sh web        # rebuild Web and retain other current digests
-#   ./push-images.sh marketplace-web # rebuild public marketplace and retain other current digests
 #   ./push-images.sh infra      # postgres/redis/minio/mc/kubectl mirrors
 #   ./push-images.sh runners    # agent-runtime images (claude/codex/video/gemini/grok/openclaw/hermes/e2e-echo)
 #   ./push-images.sh do-agent   # trusted do-agent artifact and immutable image only
@@ -25,7 +24,6 @@ TARGET="${1:-all}"
 PLATFORM="${PLATFORM:-linux/amd64}"
 PLATFORM_DIGEST_BACKEND=""
 PLATFORM_DIGEST_MARKETPLACE=""
-PLATFORM_DIGEST_MARKETPLACE_WEB=""
 PLATFORM_DIGEST_RELAY=""
 PLATFORM_DIGEST_WEB=""
 PLATFORM_DIGEST_WEB_ADMIN=""
@@ -40,11 +38,12 @@ source "${SCRIPT_DIR}/harbor-infra-mirror.sh"
 source "${SCRIPT_DIR}/harbor_immutable_release.sh"
 # shellcheck source=release_source_guard.sh
 source "${SCRIPT_DIR}/release_source_guard.sh"
+# shellcheck source=push-runner-video-studio.sh
+source "${SCRIPT_DIR}/push-runner-video-studio.sh"
 
 push_platform() {
   docker_push backend/Dockerfile backend
   docker_push marketplace/Dockerfile marketplace
-  docker_push clients/marketplace-web/Dockerfile marketplace-web
   docker_push relay/Dockerfile relay
   docker_push clients/web/Dockerfile web
   docker_push clients/web-admin/Dockerfile web-admin
@@ -55,7 +54,6 @@ push_platform() {
 push_marketplace_core() {
   docker_push backend/Dockerfile backend
   docker_push marketplace/Dockerfile marketplace
-  docker_push clients/marketplace-web/Dockerfile marketplace-web
   docker_push clients/web/Dockerfile web
   write_platform_release
 }
@@ -63,7 +61,6 @@ push_marketplace_core() {
 push_video_expert() {
   docker_push backend/Dockerfile backend
   docker_push marketplace/Dockerfile marketplace
-  docker_push clients/marketplace-web/Dockerfile marketplace-web
   docker_push clients/web/Dockerfile web
   docker_push clients/web-admin/Dockerfile web-admin
   write_platform_release
@@ -77,11 +74,6 @@ push_mobile_access() {
 
 push_web() {
   docker_push clients/web/Dockerfile web
-  write_platform_release
-}
-
-push_marketplace_web() {
-  docker_push clients/marketplace-web/Dockerfile marketplace-web
   write_platform_release
 }
 
@@ -137,13 +129,12 @@ main() {
     video-expert) push_video_expert ;;
     mobile-access) push_mobile_access ;;
     web)      push_web ;;
-    marketplace-web) push_marketplace_web ;;
     infra)    push_infra; write_platform_release ;;
     runners)  bash "${SCRIPT_DIR}/push-runner-images.sh" all ;;
     do-agent) bash "${SCRIPT_DIR}/push-runner-images.sh" do-agent ;;
     video-runtime) push_video_runtime ;;
     all)      push_infra; bash "${SCRIPT_DIR}/push-runner-images.sh" all defer-platform-source-metadata; push_platform ;;
-    *) echo "usage: $0 [all|platform|marketplace-core|video-expert|mobile-access|web|marketplace-web|infra|runners|do-agent|video-runtime]" >&2; exit 1 ;;
+    *) echo "usage: $0 [all|platform|marketplace-core|video-expert|mobile-access|web|infra|runners|do-agent|video-runtime]" >&2; exit 1 ;;
   esac
   echo "==> done: ${TARGET}"
 }

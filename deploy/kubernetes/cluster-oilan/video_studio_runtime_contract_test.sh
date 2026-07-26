@@ -52,10 +52,11 @@ push_video_expert="$(
     capture && /^}/ { exit }
   ' "$PUSH_IMAGES"
 )"
-for image in backend marketplace marketplace-web web web-admin; do
+for image in backend marketplace web web-admin; do
   grep -Fq "docker_push" <<< "$push_video_expert"
   grep -Fq "$image" <<< "$push_video_expert"
 done
+! grep -Fq "marketplace-web" <<< "$push_video_expert"
 ! grep -Fq "mobile" <<< "$push_video_expert"
 grep -Fq 'harbor-image-publishing.sh' "$PUSH_IMAGES"
 grep -Fq 'docker_build_with_retry' "$PUBLISHING"
@@ -203,7 +204,6 @@ fi
 [[ "$FIXTURE_HASHES" == "$(find "$FIXTURE_ROOT" -type f -print0 | sort -z | xargs -0 shasum -a 256)" ]]
 
 for dockerfile in \
-  clients/marketplace-web/Dockerfile \
   clients/web/Dockerfile \
   clients/web-admin/Dockerfile; do
   corepack_line="$(grep -n 'corepack prepare' "${ROOT}/${dockerfile}" | cut -d: -f1)"

@@ -173,7 +173,6 @@ apply_all() {
   dexec "kubectl apply -f /tmp/agentcloud-release.yaml"
   dexec "kubectl -n ${NS} rollout status deploy/backend --timeout=300s"
   dexec "kubectl -n ${NS} rollout status deploy/marketplace --timeout=300s"
-  dexec "kubectl -n ${NS} rollout status deploy/marketplace-web --timeout=300s"
   mark_application_writes_restored
   echo "==> minio bucket + worker definition sync"
   dexec "kubectl -n ${NS} delete job minio-setup worker-definition-sync --ignore-not-found"
@@ -184,7 +183,7 @@ apply_all() {
 
 status() {
   echo "==> rollout status"
-  for d in gitea backend marketplace marketplace-web relay web web-admin mobile runner-e2e-echo; do
+  for d in gitea backend marketplace relay web web-admin mobile runner-e2e-echo; do
     dexec "kubectl -n ${NS} rollout status deploy/${d} --timeout=240s"
   done
   local preview_probe=release-preview-probe

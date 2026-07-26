@@ -7,8 +7,6 @@ images:
     digest: sha256:d67ddbc4bb9fb3b83a8c91e257770ee0450d5358aa8733cb9477b036a1fd9530
   - name: repo.aiedulab.cn:8443/agentcloud/marketplace
     digest: sha256:8fb4c4410bd07002615a2cbaeea7e0339bc8a7008bc20700396fbaf9c05fe1f8
-  - name: repo.aiedulab.cn:8443/agentcloud/marketplace-web
-    digest: sha256:ce41a309e47214dc2824eb6c41828a4de117bf90f58a76e110535ae366055e95
   - name: repo.aiedulab.cn:8443/agentcloud/relay
     digest: sha256:6301eefc50e077d0a73c4d0bed08c1ffa3ef4970a15b7281475ac228a3e61061
   - name: repo.aiedulab.cn:8443/agentcloud/web
