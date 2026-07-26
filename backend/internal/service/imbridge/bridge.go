@@ -68,12 +68,12 @@ func (b *Bridge) HandleWebhookDeliver(ctx context.Context, provider string, conn
 		return nil, err
 	}
 	if err := p.VerifyWebhook(ctx, cfg, hdr, body); err != nil {
-		b.markError(ctx, conn, err.Error())
+		b.noteFailure(ctx, conn, err)
 		return nil, err
 	}
 	event, err := p.ParseInbound(ctx, cfg, hdr, body)
 	if err != nil {
-		b.markError(ctx, conn, err.Error())
+		b.noteFailure(ctx, conn, err)
 		return nil, err
 	}
 	if event == nil {
@@ -94,7 +94,7 @@ func (b *Bridge) HandleWebhookDeliver(ctx context.Context, provider string, conn
 		if err == ErrUnauthorized || err == ErrPairingRequired {
 			return map[string]string{"status": "rejected"}, nil
 		}
-		b.markError(ctx, conn, err.Error())
+		b.noteFailure(ctx, conn, err)
 		return nil, err
 	}
 	now := time.Now().UTC()

@@ -12,7 +12,10 @@ import (
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
 )
 
-type WeComProvider struct{ HTTP *http.Client }
+type WeComProvider struct {
+	HTTP   *http.Client
+	tokens *tokenCache
+}
 
 func (p *WeComProvider) Type() string        { return domain.ProviderWeCom }
 func (p *WeComProvider) DisplayName() string { return "企业微信" }

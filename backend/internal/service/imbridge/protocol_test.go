@@ -1,6 +1,7 @@
 package imbridge
 
 import (
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -11,6 +12,7 @@ import (
 	"testing"
 
 	channelDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/channel"
+	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
 	"github.com/stretchr/testify/require"
 )
 
@@ -117,7 +119,7 @@ func TestChunkText(t *testing.T) {
 
 func TestWithRetrySucceeds(t *testing.T) {
 	n := 0
-	err := withRetry(func() error {
+	err := withRetry(t.Context(), func() error {
 		n++
 		if n < 2 {
 			return assertErr("transient")
@@ -126,6 +128,76 @@ func TestWithRetrySucceeds(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, 2, n)
+}
+
+func TestWithRetryStopsOnPermanentError(t *testing.T) {
+	n := 0
+	err := withRetry(t.Context(), func() error {
+		n++
+		return &httpStatusError{StatusCode: http.StatusForbidden, Body: "app revoked"}
+	})
+	require.Error(t, err)
+	require.Equal(t, 1, n)
+	require.True(t, isPermanentError(err))
+}
+
+func TestWithRetryTreatsRateLimitAsTransient(t *testing.T) {
+	n := 0
+	err := withRetry(t.Context(), func() error {
+		n++
+		return &httpStatusError{StatusCode: http.StatusTooManyRequests}
+	})
+	require.Error(t, err)
+	require.Equal(t, egressMaxAttempts, n)
+	require.False(t, isPermanentError(err))
+}
+
+func TestWithRetryAbortsOnCanceledContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	n := 0
+	err := withRetry(ctx, func() error {
+		n++
+		return assertErr("transient")
+	})
+	require.Error(t, err)
+	require.Equal(t, 1, n)
+}
+
+func TestFeishuVerifyRejectsTokenlessEvent(t *testing.T) {
+	p := &FeishuProvider{}
+	cfg, _ := json.Marshal(feishuBridgeConfig{AppID: "a", AppSecret: "b", VerificationToken: "tok-v2"})
+
+	event := []byte(`{"header":{"event_type":"im.message.receive_v1"},"event":{"message":{"content":"hi"}}}`)
+	require.Error(t, p.VerifyWebhook(t.Context(), cfg, http.Header{}, event))
+
+	handshake := []byte(`{"type":"url_verification","challenge":"abc"}`)
+	require.NoError(t, p.VerifyWebhook(t.Context(), cfg, http.Header{}, handshake))
+}
+
+func TestWeComSendRequestAddressesGroupsByChatID(t *testing.T) {
+	cfg := weComBridgeConfig{AgentID: 42}
+
+	endpoint, payload := wecomSendRequest(cfg, OutboundMessage{
+		ExternalThreadID: "chat-1", PeerKind: domain.PeerGroup, Text: "hi",
+	})
+	require.Contains(t, endpoint, "appchat/send")
+	require.Equal(t, "chat-1", payload["chatid"])
+	require.NotContains(t, payload, "touser")
+
+	endpoint, payload = wecomSendRequest(cfg, OutboundMessage{
+		ExternalThreadID: "user-1", PeerKind: domain.PeerDirect, Text: "hi",
+	})
+	require.Contains(t, endpoint, "message/send")
+	require.Equal(t, "user-1", payload["touser"])
+	require.Equal(t, int64(42), payload["agentid"])
+}
+
+func TestChunkTextKeepsNewlineCutInRuneUnits(t *testing.T) {
+	text := "中文第一行内容\n中文第二行内容需要更长一些以便触发切分"
+	parts := chunkText(text, 12)
+	require.Greater(t, len(parts), 1)
+	require.Equal(t, "中文第一行内容", parts[0])
 }
 
 type assertErr string

@@ -9,12 +9,13 @@ import (
 
 func NewRegistry(httpClient *http.Client) map[string]Provider {
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = defaultProviderClient
 	}
+	tokens := newTokenCache()
 	return map[string]Provider{
-		domain.ProviderFeishu:   &FeishuProvider{HTTP: httpClient},
+		domain.ProviderFeishu:   &FeishuProvider{HTTP: httpClient, tokens: tokens},
 		domain.ProviderDingTalk: &DingTalkProvider{HTTP: httpClient},
-		domain.ProviderWeCom:    &WeComProvider{HTTP: httpClient},
+		domain.ProviderWeCom:    &WeComProvider{HTTP: httpClient, tokens: tokens},
 		domain.ProviderSlack:    &SlackProvider{HTTP: httpClient},
 		domain.ProviderWeixin:   NewWeixinProvider(httpClient),
 	}

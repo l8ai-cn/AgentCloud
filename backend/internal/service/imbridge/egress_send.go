@@ -3,29 +3,20 @@ package imbridge
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
 )
 
-func withRetry(fn func() error) error {
-	var last error
-	for attempt := 0; attempt < 3; attempt++ {
-		if err := fn(); err == nil {
-			return nil
-		} else {
-			last = err
-		}
-		time.Sleep(time.Duration(40<<attempt) * time.Millisecond)
-	}
-	return last
+// egressTarget is where one outbound burst goes; ReplaceID set means the first
+// chunk edits an existing progress draft instead of appending a message.
+type egressTarget struct {
+	ThreadID     string
+	PeerKind     string
+	ContextToken string
+	ReplaceID    string
 }
 
-func (b *Bridge) sendChunks(
-	ctx context.Context,
-	conn *domain.Connection,
-	threadID, contextToken, text, replaceID string,
-) (lastMessageID string, err error) {
+func (b *Bridge) sendChunks(ctx context.Context, conn *domain.Connection, target egressTarget, text string) (lastMessageID string, err error) {
 	p, err := GetProvider(b.registry, conn.Provider)
 	if err != nil {
 		return "", err
@@ -37,13 +28,14 @@ func (b *Bridge) sendChunks(
 	tracker, _ := p.(OutboundTracker)
 	for i, chunk := range chunkText(text, textLimitForProvider(conn.Provider)) {
 		msg := OutboundMessage{
-			ExternalThreadID: threadID,
+			ExternalThreadID: target.ThreadID,
+			PeerKind:         target.PeerKind,
 			Text:             chunk,
 			SenderLabel:      "Agent Cloud",
-			ContextToken:     contextToken,
+			ContextToken:     target.ContextToken,
 		}
-		if i == 0 && replaceID != "" {
-			msg.ReplaceMessageID = replaceID
+		if i == 0 && target.ReplaceID != "" {
+			msg.ReplaceMessageID = target.ReplaceID
 		}
 		id, sendErr := sendOne(ctx, p, tracker, cfg, msg)
 		if sendErr != nil {
@@ -58,7 +50,7 @@ func (b *Bridge) sendChunks(
 
 func sendOne(ctx context.Context, p Provider, tracker OutboundTracker, cfg json.RawMessage, msg OutboundMessage) (string, error) {
 	var messageID string
-	err := withRetry(func() error {
+	err := withRetry(ctx, func() error {
 		if tracker != nil && msg.ReplaceMessageID != "" {
 			if err := tracker.UpdateOutbound(ctx, cfg, msg); err == nil {
 				messageID = msg.ReplaceMessageID

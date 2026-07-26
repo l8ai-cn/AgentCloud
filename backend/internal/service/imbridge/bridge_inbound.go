@@ -14,21 +14,18 @@ func (b *Bridge) DeliverInbound(ctx context.Context, conn *domain.Connection, ev
 	if !b.claimMessage(ctx, conn.ID, event.ExternalMessageID) {
 		return nil
 	}
-	if err := b.checkGroupPolicy(conn, event); err != nil {
+	if err := b.checkGroupPolicy(ctx, conn, event); err != nil {
 		return err
 	}
 	identity, err := b.resolveIdentity(ctx, conn, event)
 	if err != nil {
 		return err
 	}
-	channelID, err := b.resolveChannel(ctx, conn, event.ExternalThreadID, event.ContextToken)
+	channelID, err := b.resolveChannel(ctx, conn, event)
 	if err != nil {
 		return err
 	}
 	mapping, _ := b.repo.GetThreadMapping(ctx, conn.ID, event.ExternalThreadID)
-	if mapping != nil {
-		mapping.PeerKind = inferPeerKind(event)
-	}
 	if identity.Pending && identity.Code != "" {
 		_ = b.replyText(ctx, conn, event, pairingPrompt(identity.Code))
 		return ErrPairingRequired
@@ -74,6 +71,14 @@ func (b *Bridge) claimMessage(ctx context.Context, connectionID int64, externalM
 }
 
 func (b *Bridge) replyText(ctx context.Context, conn *domain.Connection, event *InboundEvent, text string) error {
-	_, err := b.sendChunks(ctx, conn, event.ExternalThreadID, event.ContextToken, text, "")
+	_, err := b.sendChunks(ctx, conn, eventTarget(event), text)
 	return err
+}
+
+func eventTarget(event *InboundEvent) egressTarget {
+	return egressTarget{
+		ThreadID:     event.ExternalThreadID,
+		PeerKind:     inferPeerKind(event),
+		ContextToken: event.ContextToken,
+	}
 }

@@ -23,7 +23,7 @@ func (b *Bridge) OutboundHook() channelSvc.PostSendHook {
 		}
 		for _, conn := range conns {
 			if err := b.deliverOutbound(ctx, conn, mc.Channel.ID, body); err != nil {
-				b.markError(ctx, conn, err.Error())
+				b.noteFailure(ctx, conn, err)
 			}
 		}
 		return nil
@@ -44,23 +44,22 @@ func (b *Bridge) deliverOutbound(ctx context.Context, conn *domain.Connection, c
 	if conn.ChannelID == nil && mapping == nil {
 		return nil
 	}
-	threadID := ""
-	contextToken := ""
-	replaceID := ""
+	target := egressTarget{PeerKind: domain.PeerGroup}
 	if mapping != nil {
-		threadID = mapping.ExternalThreadID
+		target.ThreadID = mapping.ExternalThreadID
+		target.PeerKind = mapping.PeerKind
 		if mapping.ContextToken != nil {
-			contextToken = *mapping.ContextToken
+			target.ContextToken = *mapping.ContextToken
 		}
 		if mapping.DraftMessageID != nil {
-			replaceID = *mapping.DraftMessageID
+			target.ReplaceID = *mapping.DraftMessageID
 		}
 	}
 	if _, err := GetProvider(b.registry, conn.Provider); err != nil {
 		return err
 	}
-	_, err = b.sendChunks(ctx, conn, threadID, contextToken, body, replaceID)
-	if err == nil && mapping != nil && replaceID != "" {
+	_, err = b.sendChunks(ctx, conn, target, body)
+	if err == nil && mapping != nil && target.ReplaceID != "" {
 		b.clearDraft(ctx, mapping)
 	}
 	return err

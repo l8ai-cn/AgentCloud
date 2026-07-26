@@ -7,11 +7,15 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/imbridge"
 )
 
-type FeishuProvider struct{ HTTP *http.Client }
+type FeishuProvider struct {
+	HTTP   *http.Client
+	tokens *tokenCache
+}
 
 func (p *FeishuProvider) Type() string        { return domain.ProviderFeishu }
 func (p *FeishuProvider) DisplayName() string { return "飞书" }
@@ -45,8 +49,10 @@ func (p *FeishuProvider) VerifyWebhook(_ context.Context, raw json.RawMessage, h
 		return err
 	}
 	var envelope struct {
-		Token  string `json:"token"`
-		Header struct {
+		Token     string `json:"token"`
+		Type      string `json:"type"`
+		Challenge string `json:"challenge"`
+		Header    struct {
 			Token string `json:"token"`
 		} `json:"header"`
 	}
@@ -57,7 +63,15 @@ func (p *FeishuProvider) VerifyWebhook(_ context.Context, raw json.RawMessage, h
 	if token == "" {
 		token = envelope.Header.Token
 	}
-	if token != "" && token != cfg.VerificationToken {
+	if token == "" {
+		// The URL-verification handshake carries no event payload and cannot
+		// reach a worker, so it stays acceptable without a token.
+		if envelope.Type == "url_verification" && envelope.Challenge != "" {
+			return nil
+		}
+		return errors.New("feishu payload missing verification token")
+	}
+	if token != cfg.VerificationToken {
 		return errors.New("feishu verification token mismatch")
 	}
 	return nil
@@ -120,9 +134,14 @@ func (p *FeishuProvider) ParseInbound(_ context.Context, raw json.RawMessage, he
 }
 
 func (p *FeishuProvider) tenantToken(ctx context.Context, cfg feishuBridgeConfig) (string, error) {
+	cacheKey := "feishu:" + cfg.AppID
+	if token, ok := p.tokens.get(cacheKey); ok {
+		return token, nil
+	}
 	var out struct {
 		Code              int    `json:"code"`
 		TenantAccessToken string `json:"tenant_access_token"`
+		Expire            int    `json:"expire"`
 	}
 	err := doJSONRequest(ctx, p.client(), http.MethodPost,
 		"https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
@@ -133,6 +152,7 @@ func (p *FeishuProvider) tenantToken(ctx context.Context, cfg feishuBridgeConfig
 	if out.Code != 0 || out.TenantAccessToken == "" {
 		return "", fmt.Errorf("feishu auth failed code=%d", out.Code)
 	}
+	p.tokens.set(cacheKey, out.TenantAccessToken, time.Duration(out.Expire)*time.Second)
 	return out.TenantAccessToken, nil
 }
 

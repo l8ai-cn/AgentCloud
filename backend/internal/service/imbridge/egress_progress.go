@@ -27,11 +27,16 @@ func (b *Bridge) startProgressDraft(
 	mapping *domain.ThreadMapping,
 	route *routeResolution,
 ) {
-	if !progressEnabled(conn) || event == nil {
+	if !progressEnabled(conn) || event == nil || mapping == nil {
 		return
 	}
-	msgID, err := b.sendChunks(ctx, conn, event.ExternalThreadID, event.ContextToken, progressText(route), "")
-	if err != nil || msgID == "" || mapping == nil {
+	// Without a routed worker nothing will ever replace the draft, and an
+	// existing draft already owns this thread's placeholder.
+	if route == nil || route.TargetRef == "" || mapping.DraftMessageID != nil {
+		return
+	}
+	msgID, err := b.sendChunks(ctx, conn, eventTarget(event), progressText(route))
+	if err != nil || msgID == "" {
 		return
 	}
 	mapping.DraftMessageID = &msgID

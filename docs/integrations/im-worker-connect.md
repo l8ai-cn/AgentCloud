@@ -10,12 +10,30 @@
 | 协议 | 飞书 / 钉钉 / 企微 webhook；微信 iLink 扫码 + long-poll |
 | 入站 | `@worker-slug` → 结构化 pod mention → `PodPromptHook` |
 | 身份 | 配对码绑定 IM 外部用户 ↔ AgentsMesh user；`dm_policy` / `group_policy` / `allow_from` |
-| 路由 | `/use` > `@mention` > `im_route_bindings`；`/workers` `/help` `/status` `/new` `/stop` |
-| 出站 | 精确定位线程、文本分片、重试；飞书 progress draft（可 Update） |
+| 路由 | `@mention` > `/use` > `im_route_bindings`；`/workers` `/help` `/status` `/new` `/stop` |
+| 出站 | 精确定位线程、文本分片、瞬时错误重试；飞书 progress draft（可 Update） |
 | 凭据 | `config_encrypted` AES；API 回显 redact |
 | 幂等 | `im_inbound_dedupe` |
 
 未上线：飞书 CardKit / 钉钉 AI Card 富卡片；飞书 WS / 钉钉 Stream 长连接 + Redis 选主。
+
+### 群准入语义
+
+`group_policy = allowlist`（默认）下，群消息必须命中以下之一才放行，**空 `allow_from`
+不再等于全放行**：
+
+- `allow_from` 命中群 ID、发送者外部 ID、发送者昵称或 `user:<昵称>`，`*` 为通配；
+- 连接通过 `channel_id` 固定绑定到某个协作频道；
+- 该群此前已建立 `im_thread_mappings`（即更宽策略下已被接纳过）。
+
+群内未完成配对的发送者仍按连接创建者归属，所以放宽到 `open` 等于把 worker 操作权
+交给整个群。要恢复旧的宽松行为，显式改 `group_policy = open` 或把 `*` 写进 `allow_from`。
+
+### 失败与连接状态
+
+只有平台永久性拒绝（4xx，凭据吊销 / 应用删除）会把连接置成 `error` 并停止收发；
+超时、5xx、429、伪造签名只写 `last_error`，连接保持 `active`。所有平台调用带
+15s 超时，重试仅针对瞬时错误且感知 ctx 取消。飞书 / 企微 access token 按租户缓存。
 
 ## 用户路径
 
@@ -70,7 +88,12 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 
 含 IM 所需的中间 migration：`000232` rebrand → `000233` SSO → `000234` AMP tenant → `000235` IM。
 
-### 热修重放（backend）
+### 热修重放（backend）— 仅限应急
+
+下面这条路径**绕过发布闸门**：产物不经 `release_source_guard.sh` /
+`verify_release_images.sh`，镜像没有 source revision 标签，也不进 digest 锁。
+只在生产已经受影响、且正规流水线不可用时使用；用完必须补一次正规构建，把同一
+commit 以带 digest 的镜像重新发布，再更新 `deploy/kubernetes/cluster-oilan` 的锁定值。
 
 本机交叉编译 + 以现网镜像为底座，避免本机拉 Docker Hub：
 
@@ -127,6 +150,10 @@ kubectl -n agentsmesh exec deploy/postgres -- \
 
 ## 回滚
 
-1. `kubectl -n agentsmesh set image` 指回上一个已知 digest（如 `amp-authz-guards`）。
-2. DB：仅在确认无依赖新表数据时，用带 `000235` 的二进制执行 `migrate down 1`
-   （或按需逐级 down）。跨过 `232–234` 的回滚需单独评估 SSO/AMP 列。
+`kubectl -n agentsmesh set image` 指回上一个已知 digest（如 `amp-authz-guards`）即可，
+**不要动 DB**：`000235` 是纯增量（新列都带 NOT NULL DEFAULT，新表旧代码不读），旧镜像
+配新 schema 可以正常运行。
+
+`migrate down 1` 会 DROP `im_identity_bindings` / `im_route_bindings` /
+`im_inbound_dedupe` 并丢掉已有配对与路由，只有在确认要彻底下线 IM 能力时才执行。
+跨 `232–234` 的回滚涉及 SSO / AMP 列，需单独评估。

@@ -13,11 +13,13 @@ type routeResolution struct {
 }
 
 func (b *Bridge) resolveRoute(ctx context.Context, conn *domain.Connection, event *InboundEvent, mapping *domain.ThreadMapping) (*routeResolution, error) {
-	if mapping != nil && mapping.ActiveTargetRef != nil && strings.TrimSpace(*mapping.ActiveTargetRef) != "" {
-		return &routeResolution{TargetKind: domain.TargetPod, TargetRef: *mapping.ActiveTargetRef}, nil
-	}
+	// An explicit mention addresses this one message; /use is only the sticky
+	// default for the thread, so it must not rewrite an addressed message.
 	if refs := slugMentionRe.FindAllStringSubmatch(event.Text, -1); len(refs) > 0 {
 		return &routeResolution{TargetKind: domain.TargetPod, TargetRef: refs[0][1]}, nil
+	}
+	if mapping != nil && mapping.ActiveTargetRef != nil && strings.TrimSpace(*mapping.ActiveTargetRef) != "" {
+		return &routeResolution{TargetKind: domain.TargetPod, TargetRef: *mapping.ActiveTargetRef}, nil
 	}
 	routes, err := b.repo.ListRouteBindings(ctx, conn.ID)
 	if err != nil {

@@ -348,12 +348,22 @@ type Capabilities struct {
 - [x] 凭据 AES 加密落库（`config_encrypted` 双读；API 返回 redact）
 - [x] 出站精确定位 + 文本分片（`chunk.go` / `bridge_outbound.go`）
 - [x] 身份绑定：配对码 / dmPolicy / groupPolicy / allowFrom + `POST .../im-channels/pair`
-- [x] Worker 路由：`/use` > `@mention` > route bindings；`/workers` `/help` `/status` `/new` `/stop`
+- [x] Worker 路由：`@mention` > `/use` > route bindings；`/workers` `/help` `/status` `/new` `/stop`
 - [x] migration `000235_im_worker_connect`
 - [x] 设置页：策略 / 路由绑定；个人设置「IM 配对」输码
 - [x] P3 骨架：出站重试 + progress draft（飞书 SendTracked/Update；最终回复原地改草稿）
 - [x] **Oilan 生产热修**：`agentsmesh` ns 已滚到 `*:im-worker-connect`，DB **235**  
   运维说明 → [`docs/integrations/im-worker-connect.md`](../../docs/integrations/im-worker-connect.md)
+- [x] 上线后评审加固（已提交，未发布，待下一次滚动）：
+  - 平台调用 15s 超时；重试只针对瞬时错误且感知 ctx；4xx 不再重试
+  - 连接只在永久性 4xx 下 latch 成 `error`，抖动 / 伪造签名只写 `last_error`
+  - 群 `allowlist` 空名单不再全放行，改为「命中名单 / 已绑定 channel / 已有 thread mapping」
+  - 群准入名单参数错位修正（此前把 thread id 当外部用户 ID 比对）
+  - 飞书 webhook 缺 token 直接拒绝（仅 url_verification 握手豁免）
+  - 企微群回复改走 `appchat/send`（此前把 ChatId 塞 `touser`，群单向）
+  - `peer_kind` 在 thread mapping 落库并回填，出站寻址不再一律按群
+  - 飞书 / 企微 access token 按租户缓存，不再每条消息换一次
+  - progress draft 仅在命中路由且无在途草稿时下发，避免永久悬挂的 `⏳`
 - [ ] P3 完整：钉钉 AI Card / 飞书 CardKit 富卡片；订阅 `pod:agent_status_changed`
 - [ ] P4：飞书 WS / 钉钉 Stream + Redis 多副本锁
 - [ ] Redis 跨副本 inbound dedupe（当前 DB claim 已可跨副本）

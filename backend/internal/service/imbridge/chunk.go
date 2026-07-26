@@ -35,8 +35,12 @@ func chunkText(text string, limit int) []string {
 			n = len(runes)
 		}
 		if n < len(runes) {
-			if cut := strings.LastIndex(string(runes[:n]), "\n"); cut > limit/2 {
-				n = len([]rune(string(runes[:n])[:cut]))
+			// LastIndex is a byte offset; compare in runes so CJK text does not
+			// break at a far earlier newline than the limit intends.
+			if cut := strings.LastIndex(string(runes[:n]), "\n"); cut > 0 {
+				if head := []rune(string(runes[:n])[:cut]); len(head) > limit/2 {
+					n = len(head)
+				}
 			}
 		}
 		out = append(out, string(runes[:n]))

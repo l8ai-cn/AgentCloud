@@ -1,6 +1,7 @@
 package imbridge
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 
@@ -42,7 +43,7 @@ func allowFromMatches(raw json.RawMessage, externalUserID, senderName string) bo
 	return false
 }
 
-func (b *Bridge) checkGroupPolicy(conn *domain.Connection, event *InboundEvent) error {
+func (b *Bridge) checkGroupPolicy(ctx context.Context, conn *domain.Connection, event *InboundEvent) error {
 	peer := inferPeerKind(event)
 	if peer == domain.PeerDirect {
 		return nil
@@ -53,11 +54,17 @@ func (b *Bridge) checkGroupPolicy(conn *domain.Connection, event *InboundEvent) 
 	case domain.GroupPolicyOpen:
 		return nil
 	default: // allowlist
-		if len(conn.AllowFrom) == 0 || string(conn.AllowFrom) == "[]" {
-			// Empty allowlist with allowlist policy: allow known thread mappings / bound channel.
+		if allowFromMatches(conn.AllowFrom, event.ExternalUserID, event.SenderName) ||
+			allowFromMatches(conn.AllowFrom, event.ExternalThreadID, "") {
 			return nil
 		}
-		if allowFromMatches(conn.AllowFrom, event.ExternalThreadID, event.ExternalUserID) {
+		// An operator-configured destination is itself an allow decision: a
+		// connection pinned to one channel, or a group already mapped while a
+		// looser policy was in effect.
+		if conn.ChannelID != nil {
+			return nil
+		}
+		if mapping, err := b.repo.GetThreadMapping(ctx, conn.ID, event.ExternalThreadID); err == nil && mapping != nil {
 			return nil
 		}
 		return ErrUnauthorized

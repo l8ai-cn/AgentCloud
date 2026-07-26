@@ -4,11 +4,21 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 )
+
+// providerHTTPTimeout bounds every IM platform call. Without it a hung upstream
+// blocks the webhook handler and the channel post-send hook indefinitely.
+const providerHTTPTimeout = 15 * time.Second
+
+const errorBodyMaxLen = 256
+
+var defaultProviderClient = &http.Client{Timeout: providerHTTPTimeout}
 
 type httpJSON struct {
 	HTTP *http.Client
@@ -18,7 +28,37 @@ func (h httpJSON) client() *http.Client {
 	if h.HTTP != nil {
 		return h.HTTP
 	}
-	return http.DefaultClient
+	return defaultProviderClient
+}
+
+type httpStatusError struct {
+	StatusCode int
+	Body       string
+}
+
+func (e *httpStatusError) Error() string {
+	return fmt.Sprintf("http %d: %s", e.StatusCode, e.Body)
+}
+
+// isPermanentError reports upstream rejections that will not succeed on retry
+// and that justify latching a connection off (revoked credentials, deleted app).
+func isPermanentError(err error) bool {
+	var statusErr *httpStatusError
+	if !errors.As(err, &statusErr) {
+		return false
+	}
+	switch statusErr.StatusCode {
+	case http.StatusRequestTimeout, http.StatusTooManyRequests:
+		return false
+	}
+	return statusErr.StatusCode >= 400 && statusErr.StatusCode < 500
+}
+
+func truncateForStorage(s string) string {
+	if len(s) <= errorBodyMaxLen {
+		return s
+	}
+	return s[:errorBodyMaxLen] + "…"
 }
 
 func doJSONRequest(ctx context.Context, c *http.Client, method, rawURL string, headers map[string]string, body any, out any) error {
@@ -48,7 +88,7 @@ func doJSONRequest(ctx context.Context, c *http.Client, method, rawURL string, h
 		return err
 	}
 	if resp.StatusCode >= 300 {
-		return fmt.Errorf("http %d: %s", resp.StatusCode, string(data))
+		return &httpStatusError{StatusCode: resp.StatusCode, Body: truncateForStorage(string(data))}
 	}
 	if out == nil {
 		return nil

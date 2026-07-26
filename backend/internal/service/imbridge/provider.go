@@ -20,6 +20,7 @@ type InboundEvent struct {
 // OutboundMessage is the normalized outbound payload for collaboration channels.
 type OutboundMessage struct {
 	ExternalThreadID string
+	PeerKind         string // domain.PeerDirect | domain.PeerGroup — drives platform addressing
 	Text             string
 	SenderLabel      string
 	ContextToken     string // Weixin iLink reply token
