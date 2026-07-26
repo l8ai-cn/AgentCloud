@@ -52,6 +52,7 @@ GET/POST   /api/v1/orgs/:org/im-channels
 GET/PATCH/DELETE /api/v1/orgs/:org/im-channels/:connectionId
 GET/POST   /api/v1/orgs/:org/im-channels/:connectionId/routes
 GET        /api/v1/orgs/:org/im-channels/:connectionId/bindings
+PATCH/DELETE /api/v1/orgs/:org/im-channels/:connectionId/bindings/:bindingId
 POST       /api/v1/orgs/:org/im-channels/pair
 POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 ```
@@ -63,7 +64,8 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 | Provider / Bridge | `backend/internal/service/imbridge/` |
 | Domain / Repo | `backend/internal/domain/imbridge/`、`backend/internal/infra/im_bridge_repo*.go` |
 | REST | `backend/internal/api/rest/v1/routes_im_bridge.go`、`im_bridge_*.go` |
-| Migration | `backend/migrations/000235_im_worker_connect.{up,down}.sql` |
+| Migration | `backend/migrations/000235_im_worker_connect.*`、`000236_im_connection_locale.*` |
+| Bot 文案 | `backend/internal/service/imbridge/bot_text.go`、`backend/pkg/i18n/locales/*.json` |
 | Org UI | `clients/web/src/components/settings/organization/im/` |
 | 个人配对 | `clients/web/src/app/(dashboard)/settings/im-pair/` |
 | API client | `clients/web/src/lib/api/imChannelApi.ts`、`imChannelBindingsApi.ts` |
@@ -80,13 +82,24 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 | 项 | 值 |
 |---|---|
 | Namespace | `agentsmesh` |
-| Backend image | `repo.aiedulab.cn:8443/agentsmesh/backend:im-worker-connect` |
-| Web image | `repo.aiedulab.cn:8443/agentsmesh/web:im-worker-connect` |
-| DB | `schema_migrations.version = 235`，`dirty = false` |
+| Backend image | `repo.aiedulab.cn:8443/agentsmesh/backend:im-locale-bindings` |
+| Web image | `repo.aiedulab.cn:8443/agentsmesh/web:im-locale-bindings` |
+| DB | `schema_migrations.version = 236`，`dirty = false` |
 | 入口 | https://agents.l8ai.cn 、 https://dowork.l8ai.cn ；配对页 `/settings/im-pair` |
-| 分支 | `feat/im-worker-connect-deploy`（CNB：`cnb.cool/l8ai/doworker`） |
+| 分支 | `main`（CNB：`cnb.cool/l8ai/doworker`） |
 
-含 IM 所需的中间 migration：`000232` rebrand → `000233` SSO → `000234` AMP tenant → `000235` IM。
+含 IM 所需的中间 migration：`000232` rebrand → `000233` SSO → `000234` AMP tenant →
+`000235` IM → `000236` connection locale。
+
+`im-locale-bindings` 走的是下面的应急热修路径，未过发布闸门，需要补一次正规构建。
+
+### agents.l8ai.cn ingress 现状
+
+线上 `agents.l8ai.cn` 由 `agentsmesh/agentsmesh-agents` 提供，**手工 apply，不在 git 里**。
+仓库中的 `deploy/kubernetes/cluster-oilan/41-agents-ingress.yaml` 声明的是 `agentcloud`
+命名空间（该 ns 在集群中不存在），`deploy/helm/agentsmesh` chart 也没有 ingress 模板。
+线上该 host 没有 `/relay` 路径，终端数据面靠 `PRIMARY_DOMAIN=dowork.l8ai.cn` 落到
+dowork 的 relay ingress。收编进 Helm 前不要对 `agentcloud` ns 跑 `deploy.sh`。
 
 ### 热修重放（backend）— 仅限应急
 
@@ -150,9 +163,9 @@ kubectl -n agentsmesh exec deploy/postgres -- \
 
 ## 回滚
 
-`kubectl -n agentsmesh set image` 指回上一个已知 digest（如 `amp-authz-guards`）即可，
-**不要动 DB**：`000235` 是纯增量（新列都带 NOT NULL DEFAULT，新表旧代码不读），旧镜像
-配新 schema 可以正常运行。
+`kubectl -n agentsmesh set image` 指回上一个已知 digest（如 `im-worker-connect`）即可，
+**不要动 DB**：`000235` / `000236` 都是纯增量（新列都带 NOT NULL DEFAULT，新表旧代码不读），
+旧镜像配新 schema 可以正常运行。
 
 `migrate down 1` 会 DROP `im_identity_bindings` / `im_route_bindings` /
 `im_inbound_dedupe` 并丢掉已有配对与路由，只有在确认要彻底下线 IM 能力时才执行。
