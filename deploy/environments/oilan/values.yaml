@@ -1,14 +1,14 @@
 # Oilan runtime overlay for the shared AgentCloud base chart.
 # Namespace/secrets use agentcloud; Harbor image project stays agentsmesh for now.
 namespace: agentcloud
-imageTag: &releaseTag release-20260726
+imageTag: &releaseTag release-20260727
 image:
-  repository: repo.aiedulab.cn:8443/agentsmesh/backend
+  repository: docker.cnb.cool/l8ai/doworker/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260726-login-fix
-  web: oilan-20260726-login-fix
-  relay: oilan-20260726-login-fix
+  backend: oilan-20260727-lc-embed
+  web: oilan-20260727-lc-embed
+  relay: oilan-20260727-lc-embed
 rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
@@ -18,7 +18,7 @@ backend:
   replicas: 1
   image:
     name: backend
-    repository: repo.aiedulab.cn:8443/agentsmesh/backend
+    repository: docker.cnb.cool/l8ai/doworker/backend
   serviceAccountName: agentcloud-backend
   configMapName: agentcloud-config
   secrets:
@@ -36,7 +36,7 @@ web:
   replicas: 1
   image:
     name: web
-    repository: repo.aiedulab.cn:8443/agentsmesh/web
+    repository: docker.cnb.cool/l8ai/doworker/web
   primaryDomain: agents.l8ai.cn
   useHttps: "true"
   strategy:
@@ -49,7 +49,7 @@ relay:
   replicas: 1
   image:
     name: relay
-    repository: repo.aiedulab.cn:8443/agentsmesh/relay
+    repository: docker.cnb.cool/l8ai/doworker/relay
   configMapName: agentcloud-config
   secretsName: agentcloud-secrets
   strategy:
