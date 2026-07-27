@@ -11,6 +11,7 @@ import (
 	skilldom "github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	expertsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/expert"
+	"github.com/l8ai-cn/agentcloud/backend/internal/service/gitops"
 	skillsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/skill"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workercreation"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
@@ -187,6 +188,13 @@ func platformSkillRequest(
 	request BootstrapRequest,
 	definition SkillDefinition,
 ) *skillsvc.EnsurePlatformSkillRequest {
+	extra := make([]gitops.FileChange, 0, len(definition.BundleFiles))
+	for _, file := range definition.BundleFiles {
+		extra = append(extra, gitops.FileChange{
+			Path:    file.Path,
+			Content: file.Content,
+		})
+	}
 	return &skillsvc.EnsurePlatformSkillRequest{
 		UserID:       request.PublisherUserID,
 		Slug:         definition.Slug,
@@ -195,5 +203,6 @@ func platformSkillRequest(
 		License:      definition.License,
 		Instructions: definition.Instructions,
 		Tags:         definition.Tags,
+		ExtraFiles:   extra,
 	}
 }

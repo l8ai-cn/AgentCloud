@@ -11,8 +11,8 @@ import (
 func TestOperatorPartnerManifestIsCompleteAndInternallyConsistent(t *testing.T) {
 	skills, err := Skills()
 	require.NoError(t, err)
-	require.Len(t, skills, 17)
-	require.Len(t, Experts(), 5)
+	require.Len(t, skills, 20)
+	require.Len(t, Experts(), 8)
 
 	skillSlugs := make(map[string]struct{}, len(skills))
 	for _, skill := range skills {
@@ -23,6 +23,17 @@ func TestOperatorPartnerManifestIsCompleteAndInternallyConsistent(t *testing.T) 
 		require.NotEmpty(t, strings.TrimSpace(skill.Instructions))
 		require.NotContains(t, skill.Instructions, "TODO")
 		require.NotContains(t, skillSlugs, skill.Slug)
+		if skill.Slug == "learning-companion" {
+			require.NotEmpty(t, skill.BundleFiles)
+			paths := map[string]struct{}{}
+			for _, file := range skill.BundleFiles {
+				paths[file.Path] = struct{}{}
+			}
+			require.Contains(t, paths, "bin/start-domain-server.sh")
+			require.Contains(t, paths, "program/server.py")
+			require.Contains(t, paths, "program/run_domain_server.py")
+			require.Contains(t, paths, "program/local_wiki.py")
+		}
 		skillSlugs[skill.Slug] = struct{}{}
 		for _, source := range skill.ResearchSources {
 			require.True(t, strings.HasPrefix(source.URL, "https://github.com/"))

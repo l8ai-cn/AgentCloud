@@ -132,6 +132,11 @@ const nextConfig: NextConfig = {
         destination: "/marketplace/acquire?listing=:listingSlug",
         permanent: true,
       },
+      {
+        source: "/iframe.html",
+        destination: "/iframe",
+        permanent: false,
+      },
     ];
   },
 

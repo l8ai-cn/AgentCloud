@@ -22,6 +22,9 @@ const (
 	ScopeWorkflowWrite Scope = "workflows:write"
 	ScopeExpertRead    Scope = "experts:read"
 	ScopeExpertWrite   Scope = "experts:write"
+	// ScopeSessionEmbed mints browser-facing embed contexts, so it hands a
+	// third-party front-end direct access to a worker's conversation.
+	ScopeSessionEmbed Scope = "sessions:embed"
 )
 
 var AllScopes = map[Scope]bool{
@@ -37,6 +40,7 @@ var AllScopes = map[Scope]bool{
 	ScopeWorkflowWrite: true,
 	ScopeExpertRead:    true,
 	ScopeExpertWrite:   true,
+	ScopeSessionEmbed:  true,
 }
 
 func ValidateScope(s string) bool {

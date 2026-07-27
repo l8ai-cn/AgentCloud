@@ -33,12 +33,12 @@ func (d *Deps) handleCreateEmbedContext(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid embed context"})
 		return
 	}
-	origins, err := validateEmbedOrigins(body.ParentOrigins)
+	origins, err := embedtoken.ValidateOrigins(body.ParentOrigins)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	capabilities, err := validateEmbedCapabilities(body.Capabilities)
+	capabilities, err := embedtoken.ValidateCapabilities(body.Capabilities)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -134,6 +134,7 @@ func (d *Deps) handleRedeemEmbedContext(c *gin.Context) {
 		"access_token":   accessToken,
 		"expires_at":     expiresAt.Unix(),
 		"session_id":     claims.SessionID,
+		"org_slug":       claims.OrganizationSlug,
 		"capabilities":   claims.Capabilities,
 		"parent_origins": claims.AllowedParentOrigins,
 	})

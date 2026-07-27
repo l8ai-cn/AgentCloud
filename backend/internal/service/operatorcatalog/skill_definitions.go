@@ -93,5 +93,23 @@ func skillDefinitions() []SkillDefinition {
 			Description: "把课程内容转成结构清晰、可讲授的演示课件方案。",
 			License:     "Proprietary", Tags: []string{"course", "slides", "presentation"},
 		},
+		{
+			Slug: "learning-companion", Name: "学伴学习空间",
+			Description: "为单个学生维护知识图谱、掌握度、练习与成长证据的持久学习空间。",
+			License:     "Proprietary",
+			Tags:        []string{"education", "learning", "knowledge-graph", "student"},
+		},
+		{
+			Slug: "teacher-assistant", Name: "教师助理工作台",
+			Description: "为教师维护课程建设、实验建设与教学运营的项目工作台。",
+			License:     "Proprietary",
+			Tags:        []string{"education", "teaching", "course", "operations"},
+		},
+		{
+			Slug: "coding-lab-experiment", Name: "编码实验助手",
+			Description: "为 Zhiyong agentcloud 实验类型提供隔离编码工作区与可验收产出约定。",
+			License:     "Proprietary",
+			Tags:        []string{"education", "lab", "coding", "experiment"},
+		},
 	}
 }

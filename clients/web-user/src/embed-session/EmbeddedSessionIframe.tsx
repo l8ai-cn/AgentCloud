@@ -14,8 +14,29 @@ import { EMBED_READY_MESSAGE, readAllowedEmbedOpenProof } from "./embedParentHan
 
 const EMBED_OPEN_ERROR = "无法打开嵌入会话，请刷新或联系管理员。";
 
+// React Strict Mode remounts in dev after the first effect clears the URL
+// query; keep the one-shot context / access in module scope across remounts.
+let retainedEmbedContext: string | null = null;
+let retainedSessionAccess: EmbedSessionAccess | null = null;
+let redemptionInFlight: Promise<EmbedSessionAccess> | null = null;
+
+function takeEmbedContextFromLocation(): string {
+  try {
+    const context = readEmbedContext(window.location.search);
+    retainedEmbedContext = context;
+    return context;
+  } catch (error) {
+    if (retainedEmbedContext) {
+      return retainedEmbedContext;
+    }
+    throw error;
+  }
+}
+
 export function EmbeddedSessionIframe() {
-  const [access, setAccess] = useState<EmbedSessionAccess | null>(null);
+  const [access, setAccess] = useState<EmbedSessionAccess | null>(
+    retainedSessionAccess,
+  );
   const [pendingContext, setPendingContext] = useState<{
     bootstrap: EmbedContextBootstrap;
     context: string;
@@ -26,7 +47,11 @@ export function EmbeddedSessionIframe() {
     let active = true;
     const open = async () => {
       try {
-        const context = readEmbedContext(window.location.search);
+        if (retainedSessionAccess) {
+          if (active) setAccess(retainedSessionAccess);
+          return;
+        }
+        const context = takeEmbedContextFromLocation();
         if (window.parent === window) {
           throw new Error("Embedded session must be opened in an iframe");
         }
@@ -45,25 +70,32 @@ export function EmbeddedSessionIframe() {
   }, []);
 
   useEffect(() => {
-    if (!pendingContext) return;
-    let redemptionStarted = false;
+    if (!pendingContext || retainedSessionAccess) return;
     const onMessage = (event: MessageEvent) => {
       const proof = readAllowedEmbedOpenProof(
         event,
         window.parent,
         pendingContext.bootstrap.parentOrigins,
       );
-      if (!proof || redemptionStarted) return;
-      redemptionStarted = true;
-      void redeemEmbedContextOnce(pendingContext.context, proof).then(
-        (nextAccess) => {
-          setAccess(nextAccess);
-          setPendingContext(null);
-        },
-        () => {
-          setError(EMBED_OPEN_ERROR);
-        },
-      );
+      if (!proof) return;
+      if (!redemptionInFlight) {
+        redemptionInFlight = redeemEmbedContextOnce(
+          pendingContext.context,
+          proof,
+        );
+        void redemptionInFlight.then(
+          (nextAccess) => {
+            retainedSessionAccess = nextAccess;
+            retainedEmbedContext = null;
+            setAccess(nextAccess);
+            setPendingContext(null);
+          },
+          () => {
+            redemptionInFlight = null;
+            setError(EMBED_OPEN_ERROR);
+          },
+        );
+      }
     };
     window.addEventListener("message", onMessage);
     pendingContext.bootstrap.parentOrigins.forEach((origin) =>

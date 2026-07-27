@@ -25,19 +25,30 @@ func TestBootstrapVideoExpertsIsIdempotent(t *testing.T) {
 	bootstrapper := NewBootstrapper(skills, experts, workers, snapshots, artifacts)
 	request := validBootstrapRequest()
 
+	catalogSkills, err := Skills()
+	require.NoError(t, err)
+	skillCount, expertCount := len(catalogSkills), len(Experts())
+	publishableCount := 0
+	for _, definition := range Experts() {
+		if marketPublishable(definition) {
+			publishableCount++
+		}
+	}
+	require.Greater(t, publishableCount, 0)
+
 	first, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
 	require.Equal(t, BootstrapResult{
-		CreatedSkills:  17,
-		CreatedExperts: 5,
-		Published:      5,
+		CreatedSkills:  skillCount,
+		CreatedExperts: expertCount,
+		Published:      publishableCount,
 	}, first)
-	require.Len(t, skills.rows, 17)
-	require.Len(t, experts.experts, 5)
-	require.Len(t, experts.published, 5)
-	require.Equal(t, 5, workers.calls)
-	require.Equal(t, 5, snapshots.createCalls)
-	require.Equal(t, 5, artifacts.createCalls)
+	require.Len(t, skills.rows, skillCount)
+	require.Len(t, experts.experts, expertCount)
+	require.Len(t, experts.published, publishableCount)
+	require.Equal(t, expertCount, workers.calls)
+	require.Equal(t, expertCount, snapshots.createCalls)
+	require.Equal(t, expertCount, artifacts.createCalls)
 	expert := experts.experts["video-production-expert"]
 	require.JSONEq(
 		t,
@@ -53,9 +64,9 @@ func TestBootstrapVideoExpertsIsIdempotent(t *testing.T) {
 	second, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
 	require.Equal(t, BootstrapResult{}, second)
-	require.Equal(t, 5, workers.calls)
-	require.Equal(t, 5, snapshots.createCalls)
-	require.Equal(t, 5, artifacts.createCalls)
+	require.Equal(t, expertCount, workers.calls)
+	require.Equal(t, expertCount, snapshots.createCalls)
+	require.Equal(t, expertCount, artifacts.createCalls)
 }
 
 func TestBootstrapVideoExpertsRebuildsLegacyPromptArtifact(t *testing.T) {
@@ -68,6 +79,7 @@ func TestBootstrapVideoExpertsRebuildsLegacyPromptArtifact(t *testing.T) {
 	request := validBootstrapRequest()
 	_, err := bootstrapper.Run(context.Background(), request)
 	require.NoError(t, err)
+	rebuiltSnapshotID := int64(len(Experts()) + 1)
 	expert := experts.experts["video-production-expert"]
 	require.NotNil(t, expert.WorkerSpecSnapshotID)
 	legacySnapshotID := *expert.WorkerSpecSnapshotID
@@ -80,10 +92,10 @@ func TestBootstrapVideoExpertsRebuildsLegacyPromptArtifact(t *testing.T) {
 
 	require.Equal(t, BootstrapResult{}, result)
 	require.NotEqual(t, legacySnapshotID, *expert.WorkerSpecSnapshotID)
-	require.Equal(t, int64(6), *expert.WorkerSpecSnapshotID)
-	require.Equal(t, 6, workers.calls)
-	require.Equal(t, 6, snapshots.createCalls)
-	require.Equal(t, 6, artifacts.createCalls)
+	require.Equal(t, rebuiltSnapshotID, *expert.WorkerSpecSnapshotID)
+	require.Equal(t, int(rebuiltSnapshotID), workers.calls)
+	require.Equal(t, int(rebuiltSnapshotID), snapshots.createCalls)
+	require.Equal(t, int(rebuiltSnapshotID), artifacts.createCalls)
 	require.True(
 		t,
 		artifactMatchesInstructionContract(

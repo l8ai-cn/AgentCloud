@@ -136,6 +136,10 @@ func NewRouter(cfg *config.Config, svc *v1.Services, db *gorm.DB, logger *slog.L
 		// The Pod REST API (/api/v1/orgs/:slug/pod/*) has been removed.
 	}
 
+	// Session routes wire svc.EmbedTokens / svc.AgentSessions, which the
+	// external API reuses to mint embed contexts — register them first.
+	registerSessionRoutes(r, cfg, svc, db, redisClient)
+
 	// External API (API key authenticated, for third-party service access)
 	if svc.APIKeyAdapter != nil {
 		extScoped := apiV1.Group("/ext/orgs/:slug")
@@ -170,8 +174,6 @@ func NewRouter(cfg *config.Config, svc *v1.Services, db *gorm.DB, logger *slog.L
 			},
 		)
 	}
-
-	registerSessionRoutes(r, cfg, svc, db, redisClient)
 
 	return r
 }

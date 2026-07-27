@@ -85,6 +85,13 @@ func (b *PodBuilder) setup(ctx context.Context) (string, string, string, error) 
 		}
 		return "", "", "", err
 	}
+	if err := startSkillDomainServers(ctx, result.WorkingDir); err != nil {
+		err = fmt.Errorf("failed to start skill domain servers: %w", err)
+		if sandboxOwned {
+			err = errors.Join(err, b.cleanupSandbox(ctx, sandboxRoot, "skill domain server error"))
+		}
+		return "", "", "", err
+	}
 	if reusesWorkspace {
 		if err := persistWorkspaceAlias(b.deps.Config.WorkspaceRoot, podSandboxRoot, result.WorkingDir); err != nil {
 			if errors.Is(err, errWorkspaceAliasOutsideRunnerRoot) {

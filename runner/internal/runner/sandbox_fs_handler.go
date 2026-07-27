@@ -127,6 +127,10 @@ func (h *RunnerMessageHandler) dispatchSandboxFsOpWorkspace(
 		return h.sandboxFsSearchWorkspace(workspace, cmd.Payload, cmd.IncludeGlob, cmd.ExcludeGlob)
 	case "skill_discover":
 		return h.sandboxFsWorkerSkillDiscoverWorkspace(workspace, cmd.Path)
+	case "http_proxy":
+		return h.sandboxFsHTTPProxyWorkspace(workspace, cmd.Path, cmd.Payload)
+	case "list_interfaces":
+		return h.sandboxFsListInterfacesWorkspace(workspace)
 	default:
 		return fsErrResult(fmt.Sprintf("unknown op %q", cmd.Op)), nil
 	}

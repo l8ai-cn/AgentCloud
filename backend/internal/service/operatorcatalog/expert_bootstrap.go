@@ -11,7 +11,6 @@ import (
 	expertsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/expert"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workercreation"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
-	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
 )
 
 func (bootstrapper *Bootstrapper) ensureExpert(
@@ -54,6 +53,9 @@ func (bootstrapper *Bootstrapper) ensureExpert(
 	default:
 		return false, false, err
 	}
+	if !marketPublishable(definition) {
+		return created, false, nil
+	}
 	published, err := bootstrapper.ensurePublished(
 		ctx,
 		request,
@@ -77,11 +79,7 @@ func (bootstrapper *Bootstrapper) createExpert(
 		}
 		skillIDs = append(skillIDs, row.ID)
 	}
-	workerType, runtimeImageID, err := definitionRuntime(definition, request)
-	if err != nil {
-		return nil, err
-	}
-	secretRefs, err := definitionSecretRefs(definition, request)
+	resolved, err := resolveDefinition(definition, request)
 	if err != nil {
 		return nil, err
 	}
@@ -97,9 +95,7 @@ func (bootstrapper *Bootstrapper) createExpert(
 			request,
 			definition,
 			skillIDs,
-			workerType,
-			runtimeImageID,
-			secretRefs,
+			resolved,
 		),
 	)
 	if err != nil {
@@ -125,12 +121,12 @@ func (bootstrapper *Bootstrapper) createExpert(
 		Name:                 definition.Name,
 		Slug:                 definition.Slug,
 		Description:          &description,
-		AgentSlug:            workerType.String(),
+		AgentSlug:            resolved.WorkerType.String(),
 		Prompt:               &prompt,
-		InteractionMode:      expertdom.InteractionModePTY,
+		InteractionMode:      string(resolved.InteractionMode),
 		AutomationLevel:      expertdom.AutomationLevelAutoEdit,
 		SkillSlugs:           definition.SkillSlugs,
-		ConfigOverrides:      partnerConfigOverrides(),
+		ConfigOverrides:      definitionConfigOverrides(definition),
 		WorkerSpecSnapshotID: &snapshot.ID,
 		ExpertType:           stringPointer(definition.Category),
 	})
@@ -155,18 +151,16 @@ func workerDraft(
 	request BootstrapRequest,
 	definition ExpertDefinition,
 	skillIDs []int64,
-	workerType slugkit.Slug,
-	runtimeImageID int64,
-	secretRefs map[string]specdomain.SecretReference,
+	resolved resolvedDefinition,
 ) workercreation.Draft {
 	return workercreation.Draft{
 		OptionsRevision:  revision,
 		OrganizationSlug: request.OrganizationSlug,
 		WorkerSpec: specservice.Draft{
-			ModelResourceID: request.ModelResourceID,
-			WorkerTypeSlug:  workerType,
+			ModelResourceID: resolved.ModelResourceID,
+			WorkerTypeSlug:  resolved.WorkerType,
 			Runtime: specservice.RuntimeSelection{
-				RuntimeImageID:    runtimeImageID,
+				RuntimeImageID:    resolved.RuntimeImageID,
 				PlacementPolicy:   specdomain.PlacementPolicyExplicit,
 				ComputeTargetID:   1,
 				DeploymentMode:    specdomain.DeploymentModePooled,
@@ -174,14 +168,16 @@ func workerDraft(
 			},
 			TypeConfig: specdomain.TypeConfig{
 				SchemaVersion:   1,
-				Values:          partnerConfigOverrides(),
-				SecretRefs:      secretRefs,
-				InteractionMode: specdomain.InteractionModePTY,
+				Values:          resolved.ConfigOverrides,
+				SecretRefs:      resolved.SecretRefs,
+				InteractionMode: resolved.InteractionMode,
 				AutomationLevel: specdomain.AutomationLevelAutoEdit,
 			},
 			Workspace: specdomain.Workspace{
-				SkillIDs:     skillIDs,
-				Instructions: definition.Prompt,
+				SkillIDs:               skillIDs,
+				Instructions:           definition.Prompt,
+				ConfigBundleIDs:        resolved.ConfigBundleIDs,
+				ConfigDocumentBindings: resolved.ConfigDocuments,
 			},
 			Lifecycle: specdomain.Lifecycle{
 				TerminationPolicy: specdomain.TerminationPolicyManual,

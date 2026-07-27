@@ -27,6 +27,9 @@ type marketplaceBootstrapOptions struct {
 	modelResourceID  int64
 	runtimeImageID   int64
 	lovartBundleID   int64
+	// do-agent declares a required "settings" config document, so its
+	// partners cannot be published without a config bundle supplying it.
+	doAgentSettingsBundleID int64
 }
 
 func runBootstrapMarketplace(arguments []string) error {
@@ -112,6 +115,12 @@ func parseMarketplaceBootstrapOptions(
 	flags.Int64Var(&options.modelResourceID, "model-resource-id", 0, "publisher model resource ID")
 	flags.Int64Var(&options.runtimeImageID, "runtime-image-id", 4, "video-studio runtime image ID")
 	flags.Int64Var(&options.lovartBundleID, "lovart-env-bundle-id", 0, "Lovart credential env bundle ID")
+	flags.Int64Var(
+		&options.doAgentSettingsBundleID,
+		"do-agent-settings-bundle-id",
+		0,
+		"DoAgent settings config bundle ID",
+	)
 	if err := flags.Parse(arguments); err != nil {
 		return options, err
 	}
