@@ -11,7 +11,8 @@ func validBootstrapRequest() BootstrapRequest {
 		ModelResourceID:  17,
 		RuntimeImageID:   19,
 		CredentialBundleIDs: map[string]int64{
-			"lovart": 31,
+			"lovart":            31,
+			"do-agent-settings": 37,
 		},
 	}
 }

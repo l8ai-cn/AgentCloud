@@ -2,7 +2,6 @@ package skill
 
 import (
 	"context"
-	"errors"
 	"sync"
 	"testing"
 
@@ -75,68 +74,24 @@ func TestEnsurePlatformSkillUsesStableOperatorPackageIdentity(t *testing.T) {
 	)
 }
 
-func TestEnsurePlatformSkillRejectsManifestDrift(t *testing.T) {
-	service := NewPlatformCatalogService(
-		newFakeStore(),
-		&fakePackager{},
-	)
-	_, _, err := service.EnsurePlatformSkill(
-		context.Background(),
-		platformSkillRequest(),
-	)
-	require.NoError(t, err)
-	changed := platformSkillRequest()
-	changed.Instructions = "Use a different release gate."
-
-	_, _, err = service.EnsurePlatformSkill(context.Background(), changed)
-
-	require.ErrorIs(t, err, ErrPlatformSkillConflict)
-}
-
-func TestEnsurePlatformSkillDeletesNewPackageOnCatalogConflict(t *testing.T) {
+func TestEnsurePlatformSkillUpdatesManifestDrift(t *testing.T) {
 	store := newFakeStore()
-	packager := &fakePackager{}
-	service := NewPlatformCatalogService(store, packager)
-	_, _, err := service.EnsurePlatformSkill(
+	service := NewPlatformCatalogService(store, &fakePackager{})
+	first, _, err := service.EnsurePlatformSkill(
 		context.Background(),
 		platformSkillRequest(),
 	)
 	require.NoError(t, err)
-	packager.reused = false
 	changed := platformSkillRequest()
 	changed.Instructions = "Use a different release gate."
 
-	_, _, err = service.EnsurePlatformSkill(context.Background(), changed)
+	updated, created, err := service.EnsurePlatformSkill(context.Background(), changed)
 
-	require.ErrorIs(t, err, ErrPlatformSkillConflict)
-	require.Len(t, packager.deletedKeys, 1)
-}
-
-func TestEnsurePlatformSkillSerializesConflictingCatalogWrites(t *testing.T) {
-	store := newKeyedLockStore()
-	first := NewPlatformCatalogService(store, &fakePackager{})
-	second := NewPlatformCatalogService(store, &fakePackager{})
-	changed := platformSkillRequest()
-	changed.Instructions = "Use a different release gate."
-	results := make(chan error, 2)
-	go func() {
-		_, _, err := first.EnsurePlatformSkill(
-			context.Background(),
-			platformSkillRequest(),
-		)
-		results <- err
-	}()
-	go func() {
-		_, _, err := second.EnsurePlatformSkill(context.Background(), changed)
-		results <- err
-	}()
-
-	errA, errB := <-results, <-results
-
-	require.True(t,
-		(errA == nil && errors.Is(errB, ErrPlatformSkillConflict)) ||
-			(errB == nil && errors.Is(errA, ErrPlatformSkillConflict)),
-	)
+	require.NoError(t, err)
+	require.False(t, created)
+	require.Equal(t, first.ID, updated.ID)
+	require.Equal(t, first.Version+1, updated.Version)
+	require.NotEqual(t, first.ContentSha, updated.ContentSha)
 	require.Len(t, store.rows, 1)
 }
 

@@ -110,7 +110,7 @@ func expertMatches(
 		optionalString(expert.Description) == definition.Description &&
 		expert.AgentSlug == definitionWorkerType(definition) &&
 		optionalString(expert.Prompt) == definition.Prompt &&
-		expert.InteractionMode == expertdom.InteractionModePTY &&
+		expert.InteractionMode == string(definitionInteractionMode(definition)) &&
 		expert.AutomationLevel == expertdom.AutomationLevelAutoEdit &&
 		expert.WorkerSpecSnapshotID != nil &&
 		slices.Equal([]string(expert.SkillSlugs), definition.SkillSlugs)

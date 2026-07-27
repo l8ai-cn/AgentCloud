@@ -57,6 +57,15 @@ func validateDefinitionModels(
 		) {
 		return fmt.Errorf("worker definition rejects the planned primary model adapter")
 	}
+	return validateDefinitionToolModels(definition, spec)
+}
+
+// The resolver omits optional tool models the operator did not select, so
+// parity is enforced only over required roles.
+func validateDefinitionToolModels(
+	definition workerdefinition.Definition,
+	spec workerspec.Spec,
+) error {
 	requirements := make(
 		map[string]workerdefinition.ToolModelRequirement,
 		len(definition.ToolModelRequirements),
@@ -64,15 +73,26 @@ func validateDefinitionModels(
 	for _, requirement := range definition.ToolModelRequirements {
 		requirements[requirement.ID] = requirement
 	}
-	if len(requirements) != len(spec.Runtime.ToolModelBindings) {
-		return fmt.Errorf("worker definition tool model requirements do not match WorkerSpec")
-	}
+	bound := make(map[string]struct{}, len(spec.Runtime.ToolModelBindings))
 	for _, binding := range spec.Runtime.ToolModelBindings {
-		requirement, exists := requirements[binding.Role.String()]
+		role := binding.Role.String()
+		requirement, exists := requirements[role]
 		if !exists || !toolRequirementMatches(requirement, binding) {
 			return fmt.Errorf(
 				"worker definition rejects tool model role %q",
 				binding.Role,
+			)
+		}
+		if _, duplicate := bound[role]; duplicate {
+			return fmt.Errorf("WorkerSpec duplicates tool model role %q", role)
+		}
+		bound[role] = struct{}{}
+	}
+	for _, requirement := range definition.ToolModelRequirements {
+		if _, exists := bound[requirement.ID]; requirement.Required && !exists {
+			return fmt.Errorf(
+				"worker definition requires tool model role %q",
+				requirement.ID,
 			)
 		}
 	}

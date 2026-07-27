@@ -58,7 +58,13 @@ func (s *PlatformCatalogService) publishLocked(
 			existing, getErr := locked.GetPlatformBySlug(ctx, req.Slug)
 			if getErr == nil {
 				*row = existing
-				return !platformSkillMatches(existing, req, tags, pkg), nil
+				if platformSkillMatches(existing, req, tags, pkg) {
+					return false, nil
+				}
+				applyOperatorSkillManifest(*row, req, tags)
+				applyStoredPackage(*row, pkg)
+				(*row).Version++
+				return false, locked.Update(ctx, *row)
 			}
 			if !errors.Is(getErr, skilldom.ErrNotFound) {
 				return false, getErr
@@ -87,18 +93,27 @@ func newOperatorSkill(
 	tags []string,
 	userID int64,
 ) *skilldom.Skill {
-	return &skilldom.Skill{
-		Slug:          req.Slug,
-		DisplayName:   strings.TrimSpace(req.Name),
-		Description:   strings.TrimSpace(req.Description),
-		License:       strings.TrimSpace(req.License),
-		Tags:          tags,
+	row := &skilldom.Skill{
 		IsActive:      true,
 		DefaultBranch: "main",
 		InstallSource: skilldom.SourceOperator,
 		Version:       1,
 		CreatedByID:   &userID,
 	}
+	applyOperatorSkillManifest(row, req, tags)
+	return row
+}
+
+func applyOperatorSkillManifest(
+	row *skilldom.Skill,
+	req *EnsurePlatformSkillRequest,
+	tags []string,
+) {
+	row.Slug = req.Slug
+	row.DisplayName = strings.TrimSpace(req.Name)
+	row.Description = strings.TrimSpace(req.Description)
+	row.License = strings.TrimSpace(req.License)
+	row.Tags = tags
 }
 
 func platformSkillMatches(

@@ -43,11 +43,7 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 		expectedSkillIDs = append(expectedSkillIDs, row.ID)
 	}
 	slices.Sort(expectedSkillIDs)
-	workerType, runtimeImageID, err := definitionRuntime(definition, request)
-	if err != nil {
-		return err
-	}
-	secretRefs, err := definitionSecretRefs(definition, request)
+	resolved, err := resolveDefinition(definition, request)
 	if err != nil {
 		return err
 	}
@@ -55,14 +51,14 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 	if snapshot.ID != *expert.WorkerSpecSnapshotID ||
 		snapshot.OrganizationID != request.OrganizationID ||
 		!specdom.HasResolvedProtocolAdapters(spec) ||
-		spec.Runtime.ModelBinding.ResourceID != request.ModelResourceID ||
-		spec.Runtime.Image.ID != runtimeImageID ||
-		spec.Runtime.WorkerType.Slug != workerType ||
+		spec.Runtime.ModelBinding.ResourceID != resolved.ModelResourceID ||
+		spec.Runtime.Image.ID != resolved.RuntimeImageID ||
+		spec.Runtime.WorkerType.Slug != resolved.WorkerType ||
 		spec.Workspace.Instructions != definition.Prompt ||
 		!slices.Equal(spec.Workspace.SkillIDs, expectedSkillIDs) {
 		return ErrCatalogConflict
 	}
-	if !workerConfigMatchesCatalog(spec.TypeConfig, secretRefs) {
+	if !workerConfigMatchesCatalog(spec.TypeConfig, resolved) {
 		return bootstrapper.rebuildExpertSnapshotForDefinition(
 			ctx,
 			request,
@@ -77,7 +73,9 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 		snapshot.ID,
 	)
 	artifactFound := err == nil
-	if artifactFound && artifactMatchesInstructionContract(artifact) {
+	if artifactFound &&
+		artifactMatchesInstructionContract(artifact) &&
+		artifactSkillsMatchCatalog(artifact, skills) {
 		return nil
 	}
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -96,12 +94,12 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 
 func workerConfigMatchesCatalog(
 	config specdom.TypeConfig,
-	secretRefs map[string]specdom.SecretReference,
+	resolved resolvedDefinition,
 ) bool {
-	return config.InteractionMode == specdom.InteractionModePTY &&
+	return config.InteractionMode == resolved.InteractionMode &&
 		config.AutomationLevel == specdom.AutomationLevelAutoEdit &&
-		reflect.DeepEqual(config.SecretRefs, secretRefs) &&
-		reflect.DeepEqual(config.Values, partnerConfigOverrides())
+		reflect.DeepEqual(config.SecretRefs, resolved.SecretRefs) &&
+		reflect.DeepEqual(config.Values, resolved.ConfigOverrides)
 }
 
 func (bootstrapper *Bootstrapper) rebuildExpertSnapshotForDefinition(
@@ -153,11 +151,7 @@ func (bootstrapper *Bootstrapper) prepareExpertSnapshot(
 	definition ExpertDefinition,
 	expectedSkillIDs []int64,
 ) (workercreation.Prepared, error) {
-	workerType, runtimeImageID, err := definitionRuntime(definition, request)
-	if err != nil {
-		return workercreation.Prepared{}, err
-	}
-	secretRefs, err := definitionSecretRefs(definition, request)
+	resolved, err := resolveDefinition(definition, request)
 	if err != nil {
 		return workercreation.Prepared{}, err
 	}
@@ -173,9 +167,7 @@ func (bootstrapper *Bootstrapper) prepareExpertSnapshot(
 			request,
 			definition,
 			expectedSkillIDs,
-			workerType,
-			runtimeImageID,
-			secretRefs,
+			resolved,
 		),
 	)
 }
@@ -185,4 +177,21 @@ func artifactMatchesInstructionContract(document workerdependency.Document) bool
 	return source != "" &&
 		!strings.Contains("\n"+source+"\n", "\nPROMPT ") &&
 		strings.Contains(source, `"/AGENTS.md"`)
+}
+
+func artifactSkillsMatchCatalog(
+	document workerdependency.Document,
+	skills map[string]*skilldom.Skill,
+) bool {
+	for _, pinned := range document.Skills {
+		row := skills[pinned.Slug.String()]
+		if row == nil {
+			return false
+		}
+		digest := strings.TrimPrefix(strings.TrimSpace(pinned.ContentDigest), "sha256:")
+		if digest == "" || digest != row.ContentSha || pinned.Version != row.Version {
+			return false
+		}
+	}
+	return true
 }

@@ -62,6 +62,7 @@ func (s *PlatformCatalogService) EnsurePlatformSkill(
 	if err != nil {
 		return nil, false, err
 	}
+	files = append(files, req.ExtraFiles...)
 	prepared, err := s.prepare(ctx, slug, files)
 	if err != nil {
 		return nil, false, err

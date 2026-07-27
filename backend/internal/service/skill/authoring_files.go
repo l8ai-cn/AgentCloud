@@ -30,6 +30,8 @@ type EnsurePlatformSkillRequest struct {
 	License      string
 	Instructions string
 	Tags         []string
+	// ExtraFiles are packaged next to SKILL.md / skill.json (scripts, servers…).
+	ExtraFiles []gitops.FileChange
 }
 
 type UpdateSkillRequest struct {

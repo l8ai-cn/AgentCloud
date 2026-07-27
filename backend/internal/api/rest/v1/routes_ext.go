@@ -18,8 +18,11 @@ func RegisterExtRoutes(rg *gin.RouterGroup, svc *Services) {
 			podOpts = append(podOpts, WithCommandSender(sender))
 		}
 	}
+	if svc.SandboxFsService != nil {
+		podOpts = append(podOpts, WithPodWorkspaceSandbox(svc.SandboxFsService))
+	}
 	podHandler := NewPodHandler(svc.Pod, svc.Runner, svc.PodOrchestrator, podOpts...)
-	registerExtPodWorkerRoutes(rg, podHandler)
+	registerExtPodWorkerRoutes(rg, podHandler, extWorkerEmbedHandler(svc))
 
 	// Ticket routes
 	ticketHandler := NewTicketHandler(svc.Ticket)
@@ -110,4 +113,16 @@ func RegisterExtRoutes(rg *gin.RouterGroup, svc *Services) {
 			workflowsWrite.POST("/:workflow_slug/runs/:run_id/cancel", workflowHandler.CancelRun)
 		}
 	}
+}
+
+func extWorkerEmbedHandler(svc *Services) *WorkerEmbedContextHandler {
+	if svc.AgentSessions == nil || svc.EmbedTokens == nil || svc.Pod == nil {
+		return nil
+	}
+	return NewWorkerEmbedContextHandler(
+		svc.AgentSessions,
+		svc.EmbedTokens,
+		svc.User,
+		svc.Pod,
+	)
 }

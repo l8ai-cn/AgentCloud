@@ -130,6 +130,7 @@ func registerEmbedRoutes(v1 *gin.RouterGroup, d Deps) {
 
 	embedded.POST("/sessions/:id/events", d.handlePostEvent)
 	registerEmbedAttachmentRoutes(embedded, d)
+	registerEmbedInterfaceRoutes(embedded, d)
 
 	approvals := embedded.Group("")
 	approvals.Use(requireEmbedCapability("approve"))
