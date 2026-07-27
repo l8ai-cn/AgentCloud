@@ -1,80 +1,9 @@
 package operatorcatalog
 
 func Experts() []ExpertDefinition {
+	// Education partners first so oilan bootstrap can persist them even when
+	// later video/pattern experts still lack org-specific model/credential IDs.
 	return []ExpertDefinition{
-		{
-			Slug: "video-production-expert", Name: "视频制作伙伴",
-			Summary:     "从创意到可交付成片的一体化视频制作。",
-			Description: "负责短视频方案、素材、Remotion 合成、动效和交付质检。",
-			Category:    "video", Icon: "clapperboard",
-			Tags:     []string{"video", "production", "remotion", "short-video"},
-			Outcomes: []string{"成片方案", "可复现工程", "平台规格成片", "质检报告"},
-			SkillSlugs: []string{
-				"short-video-directing", "media-rights-research",
-				"remotion-video-production", "video-motion-graphics",
-				"video-delivery-qa",
-			},
-			Prompt: "Own the video from brief to verified master. Confirm creative direction before rendering, preserve asset rights evidence, and do not deliver an unverified file.",
-		},
-		{
-			Slug: "video-editing-expert", Name: "视频剪辑伙伴",
-			Summary:     "以叙事、节奏、声音和字幕为核心完成专业剪辑。",
-			Description: "分析素材，确认剪辑策略，生成 EDL，完成动效、字幕、声音和交付检查。",
-			Category:    "video", Icon: "scissors",
-			Tags:     []string{"video", "editing", "ffmpeg", "subtitles"},
-			Outcomes: []string{"剪辑策略", "EDL", "预览片", "交付母版", "质检报告"},
-			SkillSlugs: []string{
-				"video-editing-workflow", "video-motion-graphics",
-				"video-delivery-qa",
-			},
-			Prompt: "Edit from an explicit strategy and reversible EDL. Preserve source media, keep subtitles on the output timeline, and verify every cut before delivery.",
-		},
-		{
-			Slug: "short-video-director", Name: "短视频编导伙伴",
-			Summary:     "把传播目标转成可拍、可剪、可验证的短视频执行方案。",
-			Description: "完成选题提炼、结构、脚本、分镜、镜头表、素材计划和剪辑简报。",
-			Category:    "video", Icon: "film",
-			Tags:     []string{"video", "directing", "script", "storyboard"},
-			Outcomes: []string{"创意简报", "成稿脚本", "镜头表", "连续性说明", "剪辑简报"},
-			SkillSlugs: []string{
-				"short-video-directing", "media-rights-research",
-				"video-delivery-qa",
-			},
-			Prompt: "Turn the objective into a feasible short-video plan. Ground claims in supplied facts, identify every visual source, and hand production an executable script and shot list.",
-		},
-		{
-			Slug: "pattern-design-partner", Name: "花型设计伙伴",
-			Summary:     "把参考图、元素和风格要求转成可评审、可接版的花型方案。",
-			Description: "完成花型分析、元素重绘、画布铺排、无缝接版检查和交付建议。",
-			Category:    "design", Icon: "palette",
-			Tags:     []string{"pattern", "textile", "design", "seamless"},
-			Outcomes: []string{"花型分析", "元素生成", "重复画布", "接版证据", "生产风险"},
-			SkillSlugs: []string{
-				"pattern-generate", "canvas-compose",
-				"pattern-seam-review", "lovart-api",
-			},
-			Prompt:         "Turn visual references into production-aware textile patterns. Keep every source traceable, separate motifs from repeats, prove seam quality, and call out manufacturing risks before delivery.",
-			WorkerTypeSlug: "pattern-designer", RuntimeImageID: 6,
-			SecretRefs: map[string]string{
-				"LOVART_ACCESS_KEY": "lovart",
-				"LOVART_SECRET_KEY": "lovart",
-			},
-		},
-		{
-			Slug: "course-development-partner", Name: "课程研发伙伴",
-			Summary:     "从教学目标到课程资产的一体化研发伙伴。",
-			Description: "完成课程研究、大纲、章节任务、课件正文、实验、练习评价和交付审核。",
-			Category:    "education", Icon: "graduation-cap",
-			Tags:     []string{"course", "education", "curriculum", "assessment"},
-			Outcomes: []string{"课程蓝图", "章节任务", "课件正文", "实验手册", "练习评价", "交付清单"},
-			SkillSlugs: []string{
-				"course-researcher", "course-architect",
-				"course-builder", "course-lab-builder",
-				"course-practice-builder", "course-ppt",
-			},
-			Prompt:         "Develop complete course assets from explicit learning outcomes. Use backward design, keep references mapped to lessons, require human review gates, and verify every deliverable against observable student work.",
-			WorkerTypeSlug: "codex-cli", RuntimeImageID: 1,
-		},
 		{
 			Slug: "learning-companion-partner", Name: "AI 学伴",
 			Summary:     "为单个学生持续维护知识图谱、掌握度和练习复盘的学习伙伴。",
@@ -127,6 +56,82 @@ func Experts() []ExpertDefinition {
 			ModelResourceID:    4,
 			ConfigOverrides:    map[string]any{},
 			ConfigDocumentRefs: map[string]string{"settings": "do-agent-settings"},
+		},
+		{
+			Slug: "course-development-partner", Name: "课程研发伙伴",
+			Summary:     "从教学目标到课程资产的一体化研发伙伴。",
+			Description: "完成课程研究、大纲、章节任务、课件正文、实验、练习评价和交付审核。",
+			Category:    "education", Icon: "graduation-cap",
+			Tags:     []string{"course", "education", "curriculum", "assessment"},
+			Outcomes: []string{"课程蓝图", "章节任务", "课件正文", "实验手册", "练习评价", "交付清单"},
+			SkillSlugs: []string{
+				"course-researcher", "course-architect",
+				"course-builder", "course-lab-builder",
+				"course-practice-builder", "course-ppt",
+			},
+			Prompt:         "Develop complete course assets from explicit learning outcomes. Use backward design, keep references mapped to lessons, require human review gates, and verify every deliverable against observable student work.",
+			WorkerTypeSlug: "codex-cli", RuntimeImageID: 1,
+		},
+		{
+			Slug: "video-production-expert", Name: "视频制作伙伴",
+			Summary:     "从创意到可交付成片的一体化视频制作。",
+			Description: "负责短视频方案、素材、Remotion 合成、动效和交付质检。",
+			Category:    "video", Icon: "clapperboard",
+			Tags:     []string{"video", "production", "remotion", "short-video"},
+			Outcomes: []string{"成片方案", "可复现工程", "平台规格成片", "质检报告"},
+			SkillSlugs: []string{
+				"short-video-directing", "media-rights-research",
+				"remotion-video-production", "video-motion-graphics",
+				"video-delivery-qa",
+			},
+			Prompt:          "Own the video from brief to verified master. Confirm creative direction before rendering, preserve asset rights evidence, and do not deliver an unverified file.",
+			ModelResourceID: 51,
+		},
+		{
+			Slug: "video-editing-expert", Name: "视频剪辑伙伴",
+			Summary:     "以叙事、节奏、声音和字幕为核心完成专业剪辑。",
+			Description: "分析素材，确认剪辑策略，生成 EDL，完成动效、字幕、声音和交付检查。",
+			Category:    "video", Icon: "scissors",
+			Tags:     []string{"video", "editing", "ffmpeg", "subtitles"},
+			Outcomes: []string{"剪辑策略", "EDL", "预览片", "交付母版", "质检报告"},
+			SkillSlugs: []string{
+				"video-editing-workflow", "video-motion-graphics",
+				"video-delivery-qa",
+			},
+			Prompt:          "Edit from an explicit strategy and reversible EDL. Preserve source media, keep subtitles on the output timeline, and verify every cut before delivery.",
+			ModelResourceID: 51,
+		},
+		{
+			Slug: "short-video-director", Name: "短视频编导伙伴",
+			Summary:     "把传播目标转成可拍、可剪、可验证的短视频执行方案。",
+			Description: "完成选题提炼、结构、脚本、分镜、镜头表、素材计划和剪辑简报。",
+			Category:    "video", Icon: "film",
+			Tags:     []string{"video", "directing", "script", "storyboard"},
+			Outcomes: []string{"创意简报", "成稿脚本", "镜头表", "连续性说明", "剪辑简报"},
+			SkillSlugs: []string{
+				"short-video-directing", "media-rights-research",
+				"video-delivery-qa",
+			},
+			Prompt:          "Turn the objective into a feasible short-video plan. Ground claims in supplied facts, identify every visual source, and hand production an executable script and shot list.",
+			ModelResourceID: 51,
+		},
+		{
+			Slug: "pattern-design-partner", Name: "花型设计伙伴",
+			Summary:     "把参考图、元素和风格要求转成可评审、可接版的花型方案。",
+			Description: "完成花型分析、元素重绘、画布铺排、无缝接版检查和交付建议。",
+			Category:    "design", Icon: "palette",
+			Tags:     []string{"pattern", "textile", "design", "seamless"},
+			Outcomes: []string{"花型分析", "元素生成", "重复画布", "接版证据", "生产风险"},
+			SkillSlugs: []string{
+				"pattern-generate", "canvas-compose",
+				"pattern-seam-review", "lovart-api",
+			},
+			Prompt:         "Turn visual references into production-aware textile patterns. Keep every source traceable, separate motifs from repeats, prove seam quality, and call out manufacturing risks before delivery.",
+			WorkerTypeSlug: "pattern-designer", RuntimeImageID: 6,
+			SecretRefs: map[string]string{
+				"LOVART_ACCESS_KEY": "lovart",
+				"LOVART_SECRET_KEY": "lovart",
+			},
 		},
 	}
 }
