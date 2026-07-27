@@ -94,7 +94,7 @@ jobs:
           test "${digest#sha256:}" != "$digest"
           mkdir -p digests
           printf '%s\n' "$digest" > "digests/${{ matrix.service }}.txt"
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: oilan-digest-${{ matrix.service }}
           path: digests/${{ matrix.service }}.txt
@@ -136,7 +136,7 @@ jobs:
           jq -e '
             .source_commit | test("^[a-f0-9]{40}$")
           ' oilan-staging-release.json >/dev/null
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: oilan-staging-release
           path: oilan-staging-release.json
