@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: runner-do-agent-l8ai
+  namespace: agentcloud
+  labels:
+    app.kubernetes.io/name: agentsmesh-runner
+    agentsmesh.io/runtime: do-agent
+    agentsmesh.io/org: l8ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: runner-do-agent-l8ai
+  template:
+    metadata:
+      labels:
+        app: runner-do-agent-l8ai
+        app.kubernetes.io/name: agentsmesh-runner
+        agentsmesh.io/runtime: do-agent
+        agentsmesh.io/org: l8ai
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      imagePullSecrets:
+        - name: agentcloud-regcred
+      containers:
+        - name: runner
+          image: repo.aiedulab.cn:8443/agentsmesh/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff
+          imagePullPolicy: Always
+          command: ["/usr/local/bin/runner-entrypoint.sh"]
+          env:
+            - name: HOME
+              value: /home/runner
+            - name: RUNNER_NODE_ID
+              value: coord-runner-amesh-runner-2-do-agent
+            - name: RUNNER_ORG_SLUG
+              value: l8ai
+            - name: AGENT_RUNTIME
+              value: do-agent
+            - name: DEFAULT_AGENT
+              value: do-agent
+            - name: BACKEND_URL
+              value: http://backend:8080
+            - name: GRPC_ENDPOINT
+              value: backend:9090
+            - name: RELAY_BASE_URL
+              value: ws://relay:8090
+            - name: MAX_CONCURRENT_PODS
+              value: "10"
+            - name: SSL_DIR
+              value: /app/ssl
+          volumeMounts:
+            - name: ssl
+              mountPath: /app/ssl
+              readOnly: true
+            - name: home
+              mountPath: /home/runner
+            - name: workspace
+              mountPath: /workspace
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: ssl
+          secret:
+            secretName: agentcloud-pki-ca
+        - name: home
+          emptyDir: {}
+        - name: workspace
+          emptyDir: {}

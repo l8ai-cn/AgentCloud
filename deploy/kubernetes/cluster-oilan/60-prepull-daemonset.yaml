@@ -27,7 +27,7 @@ spec:
             limits:
               memory: 64Mi
         - name: do-agent
-          image: repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653
+          image: repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff
           imagePullPolicy: IfNotPresent
           command: ["sleep", "infinity"]
           resources:
