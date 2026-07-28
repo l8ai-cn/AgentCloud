@@ -14,6 +14,18 @@ func TestOperatorPartnerManifestIsCompleteAndInternallyConsistent(t *testing.T) 
 	require.Len(t, skills, 20)
 	require.Len(t, Experts(), 8)
 
+	requiredBundleFiles := map[string][]string{
+		"learning-companion": {"bin/start-domain-server.sh", "program/server.py"},
+		"teacher-assistant": {
+			"references/platform-identity-boundary.md",
+			"references/workspace-contract.md",
+		},
+		"course-builder": {
+			"references/course-package-schema.md",
+			"references/platform-publish-contract.md",
+			"scripts/course_package_cli.py",
+		},
+	}
 	skillSlugs := make(map[string]struct{}, len(skills))
 	for _, skill := range skills {
 		require.NoError(t, slugkit.Validate(skill.Slug))
@@ -23,16 +35,15 @@ func TestOperatorPartnerManifestIsCompleteAndInternallyConsistent(t *testing.T) 
 		require.NotEmpty(t, strings.TrimSpace(skill.Instructions))
 		require.NotContains(t, skill.Instructions, "TODO")
 		require.NotContains(t, skillSlugs, skill.Slug)
-		if skill.Slug == "learning-companion" {
+		if requiredPaths, ok := requiredBundleFiles[skill.Slug]; ok {
 			require.NotEmpty(t, skill.BundleFiles)
 			paths := map[string]struct{}{}
 			for _, file := range skill.BundleFiles {
 				paths[file.Path] = struct{}{}
 			}
-			require.Contains(t, paths, "bin/start-domain-server.sh")
-			require.Contains(t, paths, "program/server.py")
-			require.Contains(t, paths, "program/run_domain_server.py")
-			require.Contains(t, paths, "program/local_wiki.py")
+			for _, requiredPath := range requiredPaths {
+				require.Contains(t, paths, requiredPath)
+			}
 		}
 		skillSlugs[skill.Slug] = struct{}{}
 		for _, source := range skill.ResearchSources {

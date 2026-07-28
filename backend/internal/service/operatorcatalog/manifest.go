@@ -8,9 +8,9 @@ import (
 	"strings"
 )
 
-const Revision = "operator-partners-2026-07-27-coding-lab"
+const Revision = "operator-partners-2026-07-28-course-skills-v2"
 
-//go:embed assets/skills/*.md assets/skills/learning-companion/**
+//go:embed assets/skills
 var skillAssets embed.FS
 
 type ResearchSource struct {
