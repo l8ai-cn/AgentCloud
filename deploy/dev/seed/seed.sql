@@ -180,8 +180,38 @@ BEGIN
     );
 
     -- =========================================================================
-    -- 3.1 创建 Pro 订阅 (plan_id = 2)
+    -- 3.1 订阅计划 + Pro 订阅
     -- =========================================================================
+    -- Fresh DBs are provisioned from schema.sql only (no migration seed).
+    -- Keep the classic based/pro/enterprise plan rows so fixtures and billing
+    -- tests have a stable FK target.
+
+    INSERT INTO subscription_plans (
+        id, name, display_name, price_per_seat_monthly, max_users, max_runners,
+        max_repositories, max_concurrent_pods, included_pod_minutes, features
+    )
+    SELECT 1, 'based', 'Based', 0, 1, 1, 3, 1, 0, '{}'::jsonb
+    WHERE NOT EXISTS (SELECT 1 FROM subscription_plans WHERE name = 'based');
+
+    INSERT INTO subscription_plans (
+        id, name, display_name, price_per_seat_monthly, max_users, max_runners,
+        max_repositories, max_concurrent_pods, included_pod_minutes, features
+    )
+    SELECT 2, 'pro', 'Pro', 20, 5, 10, 10, 5, 0, '{}'::jsonb
+    WHERE NOT EXISTS (SELECT 1 FROM subscription_plans WHERE name = 'pro');
+
+    INSERT INTO subscription_plans (
+        id, name, display_name, price_per_seat_monthly, max_users, max_runners,
+        max_repositories, max_concurrent_pods, included_pod_minutes, features
+    )
+    SELECT 3, 'enterprise', 'Enterprise', 40, 50, 100, -1, 50, 0, '{}'::jsonb
+    WHERE NOT EXISTS (SELECT 1 FROM subscription_plans WHERE name = 'enterprise');
+
+    PERFORM setval(
+        'subscription_plans_id_seq',
+        GREATEST((SELECT COALESCE(MAX(id), 1) FROM subscription_plans), 1)
+    );
+
     -- The static development fixture pre-registers every Runner type, so it
     -- needs an explicit Runner override beyond the production Pro plan.
 
@@ -190,7 +220,8 @@ BEGIN
         current_period_start, current_period_end,
         auto_renew, seat_count
     )
-    SELECT v_org_id, 2, 'active', 'monthly',
+    SELECT v_org_id, (SELECT id FROM subscription_plans WHERE name = 'pro'),
+           'active', 'monthly',
            NOW(), NOW() + INTERVAL '30 days',
            TRUE, 10
     WHERE NOT EXISTS (
