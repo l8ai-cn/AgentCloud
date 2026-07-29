@@ -40,7 +40,7 @@ if env \
   DOSQL_RELEASE_DB_TARGET="db_agentcloud_prod_postgres" \
   DOSQL_RELEASE_DB_MODE="production" \
   DOSQL_RELEASE_DB_SESSION="dosql-contract" \
-  DOSQL_RELEASE_MIGRATION_VERSION="$(find "$ROOT/../../../backend/migrations" -name '*.up.sql' -exec basename {} \; | awk -F_ '{ print $1 }' | sort -n | tail -1)" \
+  DOSQL_RELEASE_MIGRATION_VERSION="$(tr -d '[:space:]' < "$ROOT/../../../backend/schema/SCHEMA_VERSION")" \
   DOSQL_RELEASE_CHANGE_ID="change-contract" \
   DOSQL_RELEASE_OPERATION_ID="dbop-contract" \
   "$ROOT/deploy-mobile-access.sh" >/dev/null 2>&1; then

@@ -3,7 +3,6 @@
 #
 # After docker compose up, this module:
 #   - waits for postgres + gitea readiness
-#   - runs golang-migrate via the docker-compose `migrate` profile
 #   - seeds users + LemonSqueezy variant ids
 #   - registers the runner SSH key with Gitea
 #   - writes ~/.ssh/config so host-side `git@gitea:...` resolves
@@ -24,65 +23,6 @@ wait_for_service() {
         sleep 2
     done
     return 1
-}
-
-# golang-migrate via the docker compose `migrate` oneshot service.
-# Detects + repairs dirty state; refuses to force a fresh DB so a broken
-# migration surfaces loudly rather than getting masked.
-run_migrations() {
-    local db_url="postgres://agentcloud:agentcloud_dev@localhost:5432/agentcloud?sslmode=disable"
-    local compose_run="docker compose run --rm --no-deps migrate"
-
-    info "执行数据库迁移 (docker oneshot migrate)..."
-
-    local migration_output
-    migration_output=$($compose_run -database "$db_url" version 2>&1) || true
-    if echo "$migration_output" | grep -q "dirty"; then
-        warn "检测到迁移状态为 dirty，尝试修复..."
-        local dirty_version
-        dirty_version=$(echo "$migration_output" | grep -oE '[0-9]+' | head -1)
-        if [[ -n "$dirty_version" ]]; then
-            $compose_run -database "$db_url" force "$dirty_version" >/dev/null 2>&1 || true
-            success "已修复 dirty 状态 (version: $dirty_version)"
-        fi
-    fi
-
-    local migrate_result
-    migrate_result=$($compose_run -database "$db_url" up 2>&1) || true
-
-    if echo "$migrate_result" | grep -q "no change"; then
-        info "数据库已是最新版本"
-    elif echo "$migrate_result" | grep -q "^error"; then
-        error "迁移失败:"
-        echo "$migrate_result" | sed 's/^/    /'
-        local current_version latest_version
-        current_version=$($compose_run -database "$db_url" version 2>&1 | grep -oE '^[0-9]+' || echo "0")
-        latest_version=$(ls -1 "$MIGRATIONS_DIR"/*.up.sql 2>/dev/null | \
-            sed 's/.*\/\([0-9]*\)_.*/\1/' | sort -n | tail -1)
-
-        if [[ -n "$latest_version" && "$current_version" != "0" && "$current_version" != "$latest_version" ]]; then
-            warn "已有部分迁移应用 (version=$current_version)，强制设置到 $latest_version"
-            $compose_run -database "$db_url" force "$latest_version" >/dev/null 2>&1 || true
-        else
-            error "Fresh database — refusing to force version. Fix the migration and rerun."
-            return 1
-        fi
-    else
-        success "数据库迁移完成"
-    fi
-
-    local final_version
-    final_version=$($compose_run -database "$db_url" version 2>&1 | head -1)
-    info "当前迁移版本: $final_version"
-}
-
-run_marketplace_migrations() {
-    source "$ENV_FILE"
-    local repo_root="$SCRIPT_DIR/../.."
-    export MARKETPLACE_MIGRATION_DATABASE_URL="postgres://agentcloud:${POSTGRES_PASSWORD:-agentcloud_dev}@localhost:${POSTGRES_PORT}/agentcloud?sslmode=disable&x-migrations-table=marketplace_schema_migrations"
-    info "执行 Marketplace 数据库迁移..."
-    (cd "$repo_root" && go run ./marketplace/cmd/server migrate)
-    success "Marketplace 数据库迁移完成"
 }
 
 init_seed() {

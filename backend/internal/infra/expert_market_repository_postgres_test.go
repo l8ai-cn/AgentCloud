@@ -302,9 +302,9 @@ func TestExpertMarketPostgresWithdrawalRestoresPreviousRelease(t *testing.T) {
 
 func openExpertMarketPostgresTestDB(t *testing.T) *gorm.DB {
 	t.Helper()
-	dsn := os.Getenv("MIGRATIONS_POSTGRES_TEST_DSN")
+	dsn := os.Getenv("POSTGRES_INTEGRATION_TEST_DSN")
 	if dsn == "" {
-		t.Skip("MIGRATIONS_POSTGRES_TEST_DSN is not configured")
+		t.Skip("POSTGRES_INTEGRATION_TEST_DSN is not configured")
 	}
 	schema := "expert_market_repo_" + strings.ReplaceAll(
 		time.Now().UTC().Format("20060102150405.000000000"),

@@ -25,7 +25,6 @@ func TestNoLegacyModelCredentialContracts(t *testing.T) {
 		{name: "legacy model config client", parts: []string{"list", "ModelConfigs"}},
 		{name: "legacy ai model token field", parts: []string{"ai_", "model_id"}, allowed: []string{
 			"backend/internal/service/airesource/migration",
-			"backend/migrations/",
 		}},
 	}
 	failures := []string{}

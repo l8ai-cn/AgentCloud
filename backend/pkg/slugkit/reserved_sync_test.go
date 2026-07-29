@@ -12,7 +12,7 @@ import (
 // in lock-step with two sibling hardcoded sources:
 //
 //   - clients/web/src/lib/slug/reserved.ts  (frontend Validate)
-//   - backend/migrations/000115_add_slug_reserved_check.up.sql  (DB CHECK)
+//   - the slug reserved CHECK constraint in the target database
 //
 // Drift causes user-facing bugs: a slug allowed by one tier and blocked by
 // another. Adding/removing a reserved word means editing all three sources.
@@ -82,7 +82,7 @@ func assertSetsEqual(t *testing.T, leftName string, left map[string]bool, rightN
 // findRepoRoot resolves the workspace root in three modes:
 //
 //  1. Bazel test sandbox: the go_test target wires `clients/web/...` and
-//     `backend/migrations` files in via `data`. Their materialized parent
+//     schema DDL in via `data`. Their materialized parent
 //     is `$TEST_SRCDIR/_main/`.
 //  2. Bazel `bazel run` / interactive: `BUILD_WORKSPACE_DIRECTORY` points
 //     at the live source tree.

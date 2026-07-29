@@ -8,7 +8,7 @@ import (
 )
 
 // envDumpPrefixes matches the prefix set the e2e env-bundle regression relies on.
-// Keep in sync with backend/migrations/000150_e2e_echo_print_env_on_startup.
+// Keep in sync with the e2e-echo agent row seeded in the database.
 var envDumpPrefixes = []string{"E2E_TEST_", "ANTHROPIC_", "CLAUDE_"}
 
 const envDumpReadyMarker = "E2E_TEST_ENV_DUMP_READY=1"

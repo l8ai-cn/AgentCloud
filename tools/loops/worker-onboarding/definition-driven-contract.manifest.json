@@ -829,7 +829,6 @@
       "id": "runner-materialization",
       "goal": "Migrate Worker snapshots and preserve resolved Definition document targets into Runner materialization.",
       "input_refs": [
-        "backend/migrations/",
         "backend/internal/service/agentpod/",
         "runner/internal/runner/"
       ],

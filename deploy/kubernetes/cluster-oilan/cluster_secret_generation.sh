@@ -143,14 +143,12 @@ generate_cluster_secrets() {
   # shellcheck disable=SC1090
   source "${GEN}/env"
   MARKETPLACE_DATABASE_URL="postgres://agentcloud:${DB_PASSWORD}@postgres:5432/agentcloud?sslmode=disable"
-  MARKETPLACE_MIGRATION_DATABASE_URL="${MARKETPLACE_DATABASE_URL}&x-migrations-table=marketplace_schema_migrations"
 
   write_encoded_secret_manifest "${SEC}/agentcloud-secrets.yaml" agentcloud-secrets Opaque \
     DB_PASSWORD "$(encode_secret_value "${DB_PASSWORD}")" \
     JWT_SECRET "$(encode_secret_value "${JWT_SECRET}")" \
     ACCESS_TOKEN_KEY_ID "$(encode_secret_value "${ACCESS_TOKEN_KEY_ID}")" \
     MARKETPLACE_DATABASE_URL "$(encode_secret_value "${MARKETPLACE_DATABASE_URL}")" \
-    MARKETPLACE_MIGRATION_DATABASE_URL "$(encode_secret_value "${MARKETPLACE_MIGRATION_DATABASE_URL}")" \
     INTERNAL_API_SECRET "$(encode_secret_value "${INTERNAL_API_SECRET}")" \
     MINIO_ROOT_PASSWORD "$(encode_secret_value "${MINIO_ROOT_PASSWORD}")" \
     STORAGE_SECRET_KEY "$(encode_secret_value "${MINIO_ROOT_PASSWORD}")"

@@ -84,18 +84,17 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: agentcloud_migrations
+          POSTGRES_DB: agentcloud_integration
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d agentcloud_migrations"
+          --health-cmd "pg_isready -U postgres -d agentcloud_integration"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
     env:
       CI: "true"
-      MIGRATIONS_POSTGRES_TEST_DSN: postgres://postgres:postgres@localhost:5432/agentcloud_migrations?sslmode=disable
-      MARKETPLACE_POSTGRES_TEST_DSN: postgres://postgres:postgres@localhost:5432/agentcloud_migrations?sslmode=disable
+      POSTGRES_INTEGRATION_TEST_DSN: postgres://postgres:postgres@localhost:5432/agentcloud_integration?sslmode=disable
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v5

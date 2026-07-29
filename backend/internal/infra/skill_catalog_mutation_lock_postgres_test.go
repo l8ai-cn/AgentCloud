@@ -15,9 +15,9 @@ import (
 )
 
 func TestSkillMutationLockSerializesRepositoryInstancesPostgres(t *testing.T) {
-	dsn := os.Getenv("MIGRATIONS_POSTGRES_TEST_DSN")
+	dsn := os.Getenv("POSTGRES_INTEGRATION_TEST_DSN")
 	if dsn == "" {
-		t.Skip("MIGRATIONS_POSTGRES_TEST_DSN is not configured")
+		t.Skip("POSTGRES_INTEGRATION_TEST_DSN is not configured")
 	}
 	db1, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
@@ -122,9 +122,9 @@ func TestSkillMutationLockReleasesAfterPanicPostgres(t *testing.T) {
 
 func openSkillMutationLockTestDBs(t *testing.T) (*gorm.DB, *gorm.DB) {
 	t.Helper()
-	dsn := os.Getenv("MIGRATIONS_POSTGRES_TEST_DSN")
+	dsn := os.Getenv("POSTGRES_INTEGRATION_TEST_DSN")
 	if dsn == "" {
-		t.Skip("MIGRATIONS_POSTGRES_TEST_DSN is not configured")
+		t.Skip("POSTGRES_INTEGRATION_TEST_DSN is not configured")
 	}
 	open := func() *gorm.DB {
 		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{

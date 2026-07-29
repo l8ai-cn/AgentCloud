@@ -22,7 +22,6 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/.env"
-MIGRATIONS_DIR="$SCRIPT_DIR/../../backend/migrations"
 SEED_FILE="$SCRIPT_DIR/seed/seed.sql"
 LEMONSQUEEZY_SEED_FILE="$SCRIPT_DIR/seed/seed_lemonsqueezy.sql"
 E2E_ECHO_SEED_FILE="$SCRIPT_DIR/seed/e2e_echo.sql"
@@ -147,8 +146,6 @@ main() {
     docker_compose_up
     prepare_local_worker_runtime_catalog
     wait_for_postgres
-    run_migrations
-    run_marketplace_migrations
     init_seed "${COMPOSE_PROJECT_NAME}-postgres-1"
     sync_worker_definition_projections
     init_gitea

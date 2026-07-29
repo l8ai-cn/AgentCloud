@@ -93,19 +93,6 @@ services:
 
   # Migration runner — one-shot, invoked by dev.sh via `docker compose run`.
   # Replaces the old "exec into backend container" approach now that
-  # backend runs on the host. profiles=["tools"] keeps it out of
-  # `docker compose up`.
-  migrate:
-    image: migrate/migrate:v4.18.1
-    profiles: ["tools"]
-    volumes:
-      - ../../backend/migrations:/migrations:ro
-    entrypoint: ["migrate", "-path=/migrations"]
-    depends_on:
-      postgres:
-        condition: service_healthy
-    network_mode: "service:postgres"
-
   # Traefik reverse proxy (unified entry point)
   traefik:
     image: traefik:v3.6

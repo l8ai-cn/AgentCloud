@@ -7,7 +7,7 @@ import { pollUntil } from "./retry";
 export type MockAgentMode = "pty" | "acp";
 
 // Scenario names registered in //runner/internal/agents/mockagent/scenarios.go.
-// Keep in sync with that file and backend/migrations/000151..000153.
+// Keep in sync with that file and the e2e agent rows seeded in the database.
 export type MockAgentScenario =
   | "echo"
   | "autopilot"

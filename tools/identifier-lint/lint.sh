@@ -137,32 +137,6 @@ scan_ts() {
 ts_hits=$(scan_ts '\$\{[^}]*username[^}]*\}-workspace|user\.username\s*\+\s*['\''"]-workspace')
 violation "client-side personal workspace slug concat" "$ts_hits"
 
-# Rule 5: New UNIQUE VARCHAR columns in migrations (>=000135, post-契约
-# baseline) must ship with a slug CHECK constraint, OR be a known non-
-# identifier column (email, hash, token, etc). Catches the next
-# "channels.name was UNIQUE but no format CHECK" anti-pattern. Older
-# migrations are grandfathered — applying CHECK retroactively is a
-# separate backfill effort tracked elsewhere.
-if [[ "$FAST_MODE" == "1" ]]; then
-  new_migrations=$(echo "$CHANGED_FILES" | grep -E '^backend/migrations/.*\.up\.sql$' | awk -F/ '{n=$NF; gsub(/_.*/, "", n); if (n+0 >= 135) print $0}' || true)
-else
-  new_migrations=$(find backend/migrations -name '*.up.sql' -type f 2>/dev/null | awk -F/ '{n=$NF; gsub(/_.*/, "", n); if (n+0 >= 135) print $0}')
-fi
-for f in $new_migrations; do
-  if ! grep -qE 'VARCHAR\([0-9]+\)[^,]*UNIQUE|UNIQUE.*VARCHAR' "$f" 2>/dev/null; then
-    continue
-  fi
-  if grep -qiE 'UNIQUE.*(email|hash|token|url|key_hash|order_no|invoice_no|license_key|external_id)' "$f"; then
-    continue
-  fi
-  if grep -qE 'CHECK[^)]*[a-z0-9]\]?\+.*\(-' "$f" 2>/dev/null || \
-     grep -qE 'slug.*format|_username_format|_slug_format' "$f" 2>/dev/null; then
-    continue
-  fi
-  echo "❌ identifier-lint: $f adds UNIQUE column without slug format CHECK"
-  fail=1
-done
-
 # Rule 6: Frontend route / mention text must not interpolate user.username
 # raw. usernames are now slug-compliant (Layer 1-3 enforced), but a wrong
 # template like '/u/${user.username}/profile' would still wire identifier
