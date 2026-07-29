@@ -212,6 +212,17 @@ BEGIN
         GREATEST((SELECT COALESCE(MAX(id), 1) FROM subscription_plans), 1)
     );
 
+    -- Session usage aggregation prices (from retired 000163 migration seed).
+    -- Without these rows GET /v1/sessions/:id returns usage_by_model but leaves
+    -- total_cost_usd unset, which fails session-compat S3.3.
+
+    INSERT INTO model_prices (model, input_per_million, output_per_million)
+    VALUES
+        ('claude-sonnet-4-20250514', 3.0, 15.0),
+        ('gpt-4o', 2.5, 10.0),
+        ('gpt-4o-mini', 0.15, 0.6)
+    ON CONFLICT (model) DO NOTHING;
+
     -- The static development fixture pre-registers every Runner type, so it
     -- needs an explicit Runner override beyond the production Pro plan.
 
