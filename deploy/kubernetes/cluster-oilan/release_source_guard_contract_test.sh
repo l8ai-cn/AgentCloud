@@ -20,11 +20,10 @@ gh() {
 }
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 3,
+  "total_count": 2,
   "check_runs": [
     {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"}
+    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"}
   ]
 }]'
 JSON
@@ -152,11 +151,10 @@ fi
 git -C "${TMP}/repo" switch main >/dev/null
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 10,
+  "total_count": 9,
   "check_runs": [
     {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
     {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"},
     {"name":"Deploy US West","status":"queued","conclusion":null},
     {"name":"Deploy US West Relay 01","status":"completed","conclusion":"failure"},
     {"name":"Deploy US West Relay Beijing 02","status":"completed","conclusion":"cancelled"},
@@ -171,11 +169,10 @@ release_require_pushed_clean_tree "${TMP}/repo"
 
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 4,
+  "total_count": 3,
   "check_runs": [
     {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
     {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"},
     {"name":"Deploy CN staging","status":"queued","conclusion":null}
   ]
 }]'
@@ -187,11 +184,10 @@ fi
 
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 3,
+  "total_count": 2,
   "check_runs": [
     {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"failure"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"}
+    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"failure"}
   ]
 }]'
 JSON
@@ -202,10 +198,9 @@ fi
 
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 2,
+  "total_count": 1,
   "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"}
+    {"name":"Runtime release contracts","status":"completed","conclusion":"success"}
   ]
 }]'
 JSON
@@ -216,11 +211,10 @@ fi
 
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 3,
+  "total_count": 2,
   "check_runs": [
     {"name":"Runtime release contracts","status":"completed","conclusion":"skipped"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"}
+    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"}
   ]
 }]'
 JSON
@@ -231,11 +225,10 @@ fi
 
 cat > "${GH_RESPONSE_FILE}" <<'JSON'
 printf '%s\n' '[{
-  "total_count": 4,
+  "total_count": 3,
   "check_runs": [
     {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Web-user artifact preview","status":"completed","conclusion":"success"}
+    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"}
   ]
 }]'
 JSON

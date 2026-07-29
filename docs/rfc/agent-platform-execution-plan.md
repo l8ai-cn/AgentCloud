@@ -166,14 +166,15 @@ e2e-echo ACP → `AcpSessionEvent` → `SessionStreamPublisher` → SSE `turn.*`
 
 ### S8 — Session API parity（W1–W8，2026-07-05）
 
-> SSOT 细节见 `omnigent-full-parity-plan.md`。代码已落地；本节跟踪验收尾项。
+> SSOT 细节原在 `omnigent-full-parity-plan.md`；随 `clients/web-user` 于 2026-07-29 删除，
+> 该计划归档在仓库外 `_archive/AgentsMesh/docs/omnigent-full-parity-plan.md`。代码已落地。
 
 - [x] W1–W7 全部 endpoint 真实现（session API 无 501 stub）
 - [x] W8.1 agents `?after=` 游标分页
 - [x] W8.2 `session-s5-smoke.mjs` + `session_compat_smoke.sh` parity suite
 - [x] W8.3 Session compatibility smoke 纳入 S5 脚本
 - [ ] W8.4 `session_compat_smoke.sh` S0–S5 全绿（migration 175 + dev stack）
-- [ ] W8.5 web-user 全页面手工验收
+- [x] W8.5 web-user 全页面手工验收（已退役：`clients/web-user` 2026-07-29 删除）
 
 验收：`bash deploy/dev/session_compat_smoke.sh` S0–S5 全绿；CI 会话兼容 E2E 随 shell 脚本自动覆盖 S5。
 

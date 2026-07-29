@@ -134,9 +134,7 @@ def run_case(
 ) -> dict:
     print(f"\n=== {label} ===")
     sid = create_session(token, agent_id, host_id, f"L1 {label}", extra)
-    url = f"http://127.0.0.1:10020/c/{sid}"
     print(f"session: {sid}")
-    print(f"url: {url}")
     send_message(token, sid, prompt)
     ok, detail = wait_turn(token, sid)
     print(f"turn: {'OK' if ok else 'FAIL'} — {detail[:200]}")

@@ -67,9 +67,7 @@ def main() -> int:
     if not sid:
         print("FAIL: create session", file=sys.stderr)
         return 1
-    preview = f"http://127.0.0.1:10020/c/{sid}?file=gomoku%2Findex.html"
     print(f"session: {sid}")
-    print(f"preview: {preview}")
     req(
         "POST",
         f"/v1/sessions/{sid}/events",

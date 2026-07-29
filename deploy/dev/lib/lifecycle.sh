@@ -39,7 +39,6 @@ print_usage() {
   会话兼容验收 (dev 栈已起): bash deploy/dev/session_compat_smoke.sh
 
 前端日志: tail -f deploy/dev/web.log
-web-user 日志: tail -f deploy/dev/web-user.log
 EOF
 }
 
@@ -186,17 +185,13 @@ clean() {
     fi
     local web_port="${WEB_PORT:-3000}"
     local web_admin_port="${WEB_ADMIN_PORT:-3001}"
-    local web_user_port="${WEB_USER_PORT:-10020}"
 
     info "停止 host-side 服务 (air)..."
     stop_host_services
     success "host-side 服务已停止"
 
-    stop_web_user
-
     _stop_setsid web
     _stop_setsid web-admin
-    _stop_setsid web-user
 
     if lsof -i :"$web_port" &>/dev/null; then
         info "停止前端服务 (端口: $web_port)..."
@@ -237,7 +232,6 @@ show_result() {
     echo ""
     echo "  前端:       http://localhost:$WEB_PORT"
     echo "  Admin:      http://localhost:$WEB_ADMIN_PORT"
-    echo "  web-user:   http://localhost:${WEB_USER_PORT:-10020}"
     echo "  API:        http://localhost:$HTTP_PORT/api  (→ host backend :$BACKEND_HTTP_PORT)"
     echo "  Marketplace:http://localhost:$HTTP_PORT/api/marketplace  (→ host :$MARKETPLACE_HTTP_PORT)"
     echo "  Relay:      ws://localhost:$HTTP_PORT/relay  (→ host relay :$RELAY_HTTP_PORT)"
@@ -333,11 +327,11 @@ _prepare_next_port() {
     fi
 
     if [[ "$stale_lock" == false ]] && lsof -i :"$web_port" &>/dev/null; then
-        if _frontend_port_up "$web_port" && [[ "${DEV_FORCE_FRONTEND:-}" != "1" ]] && [[ "$label" != "web-user" ]]; then
+        if _frontend_port_up "$web_port" && [[ "${DEV_FORCE_FRONTEND:-}" != "1" ]]; then
             info "${label} 已在端口 $web_port 正常运行，跳过启动"
             return 1
         fi
-        if [[ "$label" == "web-user" ]] || [[ "${DEV_FORCE_FRONTEND:-}" == "1" ]] || ! _frontend_port_up "$web_port"; then
+        if [[ "${DEV_FORCE_FRONTEND:-}" == "1" ]] || ! _frontend_port_up "$web_port"; then
             if ! _frontend_port_up "$web_port"; then
                 warn "${label} 端口 $web_port 响应异常 (非 2xx/3xx)，清理并重启..."
             else
@@ -466,7 +460,5 @@ start_admin_frontend() {
 
 # shellcheck source=lifecycle_launch.sh
 source "$SCRIPT_DIR/lib/lifecycle_launch.sh"
-# shellcheck source=lifecycle_web_user.sh
-source "$SCRIPT_DIR/lib/lifecycle_web_user.sh"
 # shellcheck source=lifecycle_frontends.sh
 source "$SCRIPT_DIR/lib/lifecycle_frontends.sh"

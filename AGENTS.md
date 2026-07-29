@@ -64,7 +64,6 @@ The dev pipeline automatically:
 |---------|-----|-------|
 | **Frontend** | http://localhost:10007 | `next dev` (host) |
 | **Admin Console** | http://localhost:10011 | `next dev` (host) |
-| **web-user** | http://localhost:10020 | Vite dev server (host) |
 | **API** | http://localhost:10000/api | traefik → host backend :10015 |
 | **Relay** | ws://localhost:10000/relay | traefik → host relay :10017 |
 | **gRPC mTLS** | grpcs://localhost:10001 | traefik passthrough → host backend :10016 |
@@ -90,7 +89,6 @@ tail -f deploy/dev/runtime/backend/backend.log   # air + backend stdout
 tail -f deploy/dev/runtime/relay/relay.log
 tail -f deploy/dev/runtime/runner/runner.log
 tail -f deploy/dev/web.log                       # next dev (web)
-tail -f deploy/dev/web-user.log                  # Vite (web-user)
 docker compose logs -f postgres                  # docker infra
 ```
 

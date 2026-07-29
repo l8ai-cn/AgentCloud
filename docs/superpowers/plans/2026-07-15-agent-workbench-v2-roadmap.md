@@ -56,14 +56,10 @@
 - [ ] Add image comparison/edit, video, and presentation viewers.
 - [ ] Exit gate: component, responsive, keepalive, action, and bundle-budget tests pass.
 
-### Task 6: Migrate Web User And Embeds
+### Task 6: Migrate Web User And Embeds — 已退役
 
-**Plan:** `docs/superpowers/plans/2026-07-15-agent-workbench-web-user-embed.md`
-
-- [ ] Replace lossy embedded projections with V2 snapshot/delta runtime.
-- [ ] Integrate shared artifact and terminal adapters.
-- [ ] Publish React, plain mount, and data-only iframe entries.
-- [ ] Exit gate: Web User tests and embed production build pass.
+`clients/web-user` 于 2026-07-29 删除，工作台收敛到 `packages/agent-ui` + `clients/web`
+的 `/iframe`。原计划归档在仓库外 `_archive/AgentsMesh/docs/2026-07-15-agent-workbench-web-user-embed.md`。
 
 ### Task 7: Migrate Web To Rust Core SSOT
 

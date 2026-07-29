@@ -162,14 +162,14 @@ message AgentStatusEvent {
   string status = 2;
 }
 
-// AcpSessionEvent mirrors key ACP content to Backend for web-user SSE compat.
+// AcpSessionEvent mirrors key ACP content to Backend for /v1 session SSE compat.
 message AcpSessionEvent {
   string pod_key = 1;
   string event_type = 2;
   string json_payload = 3;
 }
 
-// AcpRelayCommand carries opaque ACP UI commands when Relay WS is absent (web-user compat).
+// AcpRelayCommand carries opaque ACP UI commands when Relay WS is absent (/v1 session compat).
 message AcpRelayCommand {
   string pod_key = 1;
   string payload_json = 2;
@@ -234,7 +234,7 @@ message ServerMessage {
     // 22 = acp_cancel_session (走 Relay)
     // 更新 Pod 永续模式命令（Backend -> Runner）
     UpdatePodPerpetualCommand update_pod_perpetual = 23;
-    // ACP relay command for web-user compat (permission_response, cancel, etc.)
+    // ACP relay command for /v1 session compat (permission_response, cancel, etc.)
     AcpRelayCommand acp_relay = 24;
     // Push refreshed org policy rules to a running pod
     UpdatePodPolicyRulesCommand update_pod_policy_rules = 25;

@@ -367,12 +367,6 @@ generate_env() {
             echo "RUNNER_2_MCP_PORT=$runner2_mcp" >> "$ENV_FILE"
             export RUNNER_2_MCP_PORT="$runner2_mcp"
         fi
-        if ! grep -q "WEB_USER_PORT" "$ENV_FILE"; then
-            local web_user_port=$((10020 + PORT_OFFSET * 50))
-            echo "WEB_USER_PORT=$web_user_port" >> "$ENV_FILE"
-            export WEB_USER_PORT="$web_user_port"
-            info "补充 WEB_USER_PORT=$web_user_port 到 .env"
-        fi
         if ! grep -q "MOBILE_LOVABLE_PORT" "$ENV_FILE"; then
             local mobile_port=$((10021 + PORT_OFFSET * 50))
             echo "MOBILE_LOVABLE_PORT=$mobile_port" >> "$ENV_FILE"
@@ -444,7 +438,6 @@ USE_HTTPS=false
 # Ports (步长 50，支持最多 500 个 worktree，端口范围 10000-35000)
 # Slots 0-14: external (docker-exposed) ports
 # Slots 15-17: host-side service ports (loopback only, behind traefik)
-# Slot 20: host-side web-user Vite dev server
 # =============================================================================
 HTTP_PORT=$http_port
 GRPC_PORT=$grpc_port
@@ -478,8 +471,6 @@ RUNNER_MCP_PORT=$((10018 + offset * 50))
 # target runner-2 without touching compose.
 RUNNER_2_MCP_PORT=$((10019 + offset * 50))
 
-# End-user workbench (clients/web-user, Vite — proxies /v1 to traefik)
-WEB_USER_PORT=$((10020 + offset * 50))
 MOBILE_LOVABLE_PORT=$((10021 + offset * 50))
 KB_GITEA_REPOSITORY_BASE_URLS=http://gitea:3000
 

@@ -269,8 +269,7 @@ AgentCloud/
 ├── clients/
 │   ├── core/         # Rust business-logic SSOT (WASM)
 │   ├── web/          # Next.js console
-│   ├── web-admin/    # Admin console (Next.js)
-│   └── web-user/     # Hive / session UI
+│   └── web-admin/    # Admin console (Next.js)
 ├── proto/            # Protocol Buffers definitions
 ├── packages/         # Shared TS packages (service-runtime, …)
 ├── deploy/

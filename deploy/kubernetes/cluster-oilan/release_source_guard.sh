@@ -56,8 +56,7 @@ release_require_ci_success() {
   jq -e '
     [
       "Runtime release contracts",
-      "Loop and sandbox security regressions",
-      "Web-user artifact preview"
+      "Loop and sandbox security regressions"
     ] as $required
     | [
         "Deploy US West",

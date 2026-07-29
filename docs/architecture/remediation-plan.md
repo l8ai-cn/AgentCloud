@@ -6,8 +6,7 @@
 
 | 组件 | 目标角色 | 本轮关系 |
 |------|----------|----------|
-| **web** | 主控制台（逐步吸收 web-admin） | P1 PersistedSession 语义对齐 |
-| **web-user** | 终端用户产品面 | 与 Rust SSOT / light-session 契约一致 |
+| **web** | 主控制台 + 终端用户产品面（逐步吸收 web-admin） | P1 PersistedSession 语义对齐 |
 | **web-admin** | 内部管理（过渡） | 记录并入 web 的 TODO，本轮不迁移 |
 | **mobile** | 移动端（未来） | Phase 4 文档化 |
 | **relay** | 独立 Gateway 隧道（演进） | 终端数据面已分离，控制面继续走 gRPC |
@@ -36,8 +35,8 @@
 |---|-----|-------|----------|----------|----------|
 | 3 | Pending drainer nil sender | `backend/internal/service/runner` | `msgSender == nil` 时 skip dispatch | 启动窗口内 drain 不 panic | `bazel test //backend/internal/service/runner:pending_drain_test` |
 | 4 | Rust `ji64` for `pod_id` | `clients/core/crates/state` | MR/Pipeline 事件用 `ji64()` 替代 `as_i64()` | 字符串编码 `pod_id` 触发 refetch | `bazel test //clients/core/crates/state:state_test` |
-| 5 | PersistedSession 语义 | `clients/web-user`, `clients/web` | auth-session 与 light-session/Rust 对齐 | 刷新后 org/user 一致 | 手动 E2E |
-| 6 | Expert Zustand | `clients/web-user` | **TODO**：范围过大，暂不迁 Rust | 文档记录 | — |
+| 5 | PersistedSession 语义 | `clients/web` | auth-session 与 light-session/Rust 对齐 | 刷新后 org/user 一致 | 手动 E2E |
+| 6 | Expert Zustand | `clients/web/src/stores/expert.ts` | **TODO**：范围过大，暂不迁 Rust | 文档记录 | — |
 
 ---
 
@@ -46,7 +45,8 @@
 **目标**：减少重复前端，统一 wasm 边界。
 
 - web-admin 路由/Connect handler 逐步迁入 `clients/web`（`/admin` 已存在 basePath）
-- web-user 成为默认用户入口；web 保留 power-user / org 管理
+- [x] `clients/web-user` 已删除（2026-07-29）：工作台收敛到 `packages/agent-ui`，
+  `clients/web` 同时承担控制台与终端用户入口（含 `/iframe` 嵌入）
 - Expert 状态最终迁入 Rust（依赖 Phase 2 #5 会话契约）
 
 **验收**：单一 `pnpm install` 树；营销页仍 0 wasm（`check-no-wasm-in-marketing.sh` 通过）。

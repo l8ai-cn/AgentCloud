@@ -9,7 +9,7 @@ POSTGRES_PORT=15432
 POSTGRES_PASSWORD=test-password
 PRIMARY_DOMAIN=localhost:10000
 PUBLIC_WEB_URL=http://localhost:10007
-MOBILE_PUBLIC_BASE_URL=http://localhost:10020
+MOBILE_PUBLIC_BASE_URL=http://localhost:10021
 PREVIEW_PUBLIC_ORIGIN=http://preview.localhost:10000
 USE_HTTPS=false
 
@@ -18,7 +18,7 @@ go() {
     [[ "$DB_PORT" == "$POSTGRES_PORT" ]]
     [[ "$PRIMARY_DOMAIN" == "localhost:10000" ]]
     [[ "$PUBLIC_WEB_URL" == "http://localhost:10007" ]]
-    [[ "$MOBILE_PUBLIC_BASE_URL" == "http://localhost:10020" ]]
+    [[ "$MOBILE_PUBLIC_BASE_URL" == "http://localhost:10021" ]]
     [[ "$PREVIEW_PUBLIC_ORIGIN" == "http://preview.localhost:10000" ]]
     [[ "$USE_HTTPS" == "false" ]]
 }

@@ -7,11 +7,7 @@ const OUT = join(process.cwd(), "output", "browser-integration");
 mkdirSync(OUT, { recursive: true });
 
 const WEB = devUrl("WEB_URL", "http://127.0.0.1:10007");
-const WEB_USER = devUrl("WEB_USER_URL", "http://127.0.0.1:5173");
 const TRAEFIK_API = devUrl("TRAEFIK_API_URL", "http://127.0.0.1:10000");
-// web-user reads import.meta.env.VITE_AGENTCLOUD_API_URL ?? "http://localhost:10000"
-// for localStorage key — must match hostname, not 127.0.0.1.
-const WEB_USER_AUTH_BASE = devUrl("WEB_USER_AUTH_URL", "http://localhost:10000");
 const API_DIRECT = devUrl("SESSION_COMPAT_API_URL", "http://localhost:10015");
 const ORG = "dev-org";
 const USER = { username: "devuser", password: "AdminAb123456" };
@@ -21,33 +17,6 @@ function authKey(baseUrl) {
   const port = u.port ? `_${u.port}` : "";
   const raw = `${u.protocol.replace(":", "")}_${u.hostname.toLowerCase()}${port}`;
   return `agent-cloud-auth/${raw.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64)}/session`;
-}
-
-async function setReactTextarea(page, testId, value) {
-  await page.evaluate(
-    ({ id, text }) => {
-      const el = document.querySelector(`[data-testid="${id}"]`);
-      if (!el || !(el instanceof HTMLTextAreaElement)) {
-        throw new Error(`textarea ${id} not found`);
-      }
-      const setter = Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, "value")?.set;
-      setter?.call(el, text);
-      el.dispatchEvent(new Event("input", { bubbles: true }));
-    },
-    { id: testId, text: value },
-  );
-}
-
-async function selectWebUserHost(page, name) {
-  await page.getByTestId("new-chat-landing-host-chip").dispatchEvent("pointerdown", { button: 0 });
-  const item = page.getByRole("menuitem").filter({ hasText: name }).first();
-  await item.waitFor({ state: "visible", timeout: 30_000 });
-  await item.click();
-  await page.waitForFunction(
-    (hostName) => document.querySelector('[data-testid="new-chat-landing-host-chip"]')?.textContent?.includes(hostName),
-    name,
-    { timeout: 30_000 },
-  );
 }
 
 async function login() {
@@ -108,7 +77,7 @@ function step(name, ok, detail = "") {
   console.log(`${ok ? "✓" : "✗"} ${name}${detail ? ` — ${detail}` : ""}`);
 }
 
-async function part1Agent Cloud(browser, auth) {
+async function part1AgentCloud(browser, auth) {
   const ctx = await browser.newContext();
   await injectSession(ctx, WEB, auth, ORG);
   const page = await ctx.newPage();
@@ -173,118 +142,16 @@ async function part1Agent Cloud(browser, auth) {
   return agent;
 }
 
-async function part2WebUser(browser, auth, agent) {
-  const ctx = await browser.newContext();
-  // Vite bakes VITE_AGENTCLOUD_API_URL at build time (defaults to :10000).
-  await injectSession(ctx, WEB_USER_AUTH_BASE, auth, ORG);
-  const page = await ctx.newPage();
-  page.setDefaultTimeout(90_000);
-
-  await page.goto(WEB_USER, { waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(6000);
-  if (page.url().includes("/login")) {
-    throw new Error(`web-user redirected to login — check JWT localStorage key`);
-  }
-  await page.screenshot({ path: join(OUT, "04-web-user-landing.png"), fullPage: true });
-
-  const input = page.getByTestId("new-chat-landing-input");
-  await input.waitFor({ state: "visible", timeout: 30_000 });
-
-  await page.waitForFunction(
-    () => {
-      const chip = document.querySelector('[data-testid="new-chat-landing-workspace-chip"]');
-      return chip && !chip.textContent?.includes("Working directory");
-    },
-    { timeout: 30_000 },
-  );
-
-  const agents = await listAgents(auth.token);
-  if (agents.some((a) => a.id === "e2e-echo")) {
-    await page.getByTestId("new-chat-landing-agent-select").dispatchEvent("pointerdown", { button: 0 });
-    await page.getByTestId("new-chat-landing-agent-e2e-echo").waitFor({ state: "visible", timeout: 30_000 });
-    await page.getByTestId("new-chat-landing-agent-e2e-echo").click();
-    await page.getByRole("heading", { name: "What should we do?" }).click();
-    await page.waitForFunction(
-      () => document.querySelector('[data-testid="new-chat-landing-agent-select"]')?.textContent?.includes("E2E Echo"),
-      { timeout: 30_000 },
-    );
-    await selectWebUserHost(page, "dev-runner-2");
-  }
-
-  const prompt = "Integration test: reply with one short greeting sentence.";
-  await setReactTextarea(page, "new-chat-landing-input", prompt);
-  await page.waitForFunction(
-    () => !document.querySelector('[data-testid="new-chat-landing-submit"]')?.disabled,
-    { timeout: 60_000 },
-  );
-
-  await page.getByTestId("new-chat-landing-input").press("Enter");
-  await page.waitForURL(/\/c\//, { timeout: 90_000 });
-  const createFailed = await page.locator('[data-testid="new-chat-landing-error"], text=/Couldn\'t create the session/i').isVisible().catch(() => false);
-  if (createFailed) {
-    const errText = await page.locator("body").innerText();
-    throw new Error(`session create failed on landing: ${errText.slice(0, 300)}`);
-  }
-  await page.waitForTimeout(15000);
-  await page.screenshot({ path: join(OUT, "05-web-user-after-send.png"), fullPage: true });
-
-  const bodyText = await page.locator("body").innerText();
-  const sessionId = page.url().match(/\/c\/([^/?#]+)/)?.[1] ?? "";
-  const hasAssistant =
-    sessionId.length > 0 &&
-    /assistant|hello|hi|greeting|pong|echo/i.test(bodyText) &&
-    !/Couldn't create|HTTP 403|400 Bad Request|unauthorized|login|failed to fetch/i.test(bodyText);
-
-  step("Web User: send message in browser", hasAssistant, hasAssistant ? `session=${sessionId}` : bodyText.slice(0, 200));
-
-  const token = auth.token;
-  const sessionsRes = await fetch(`${API_DIRECT}/v1/sessions`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "X-Organization-Slug": ORG,
-    },
-  });
-  const sessions = await sessionsRes.json();
-  const created = sessions.data?.find((s) => s.id === sessionId);
-  step("API: session created from browser", !!created, sessionId || "no session id in URL");
-
-  if (created) {
-    let itemCount = 0;
-    for (let i = 0; i < 20; i++) {
-      const itemsRes = await fetch(`${API_DIRECT}/v1/sessions/${sessionId}/items`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "X-Organization-Slug": ORG,
-        },
-      });
-      const items = await itemsRes.json();
-      itemCount = items.data?.length ?? 0;
-      if (itemCount >= 2) break;
-      await new Promise((r) => setTimeout(r, 2000));
-    }
-    step("API: conversation items persisted", itemCount >= 2, `items=${itemCount}`);
-  }
-
-  await ctx.close();
-}
-
 async function main() {
   const auth = await login();
   step("API login", true);
 
   const browser = await chromium.launch({ headless: true });
-  let agent = "e2e-echo";
   try {
-    try {
-      agent = await part1Agent Cloud(browser, auth);
-    } catch (err) {
-      report.errors.push(`part1: ${String(err?.stack ?? err)}`);
-      step("Agent Cloud: create pod via browser", false, String(err).split("\n")[0]);
-    }
-    await part2WebUser(browser, auth, agent);
+    await part1AgentCloud(browser, auth);
   } catch (err) {
-    report.errors.push(String(err?.stack ?? err));
-    step("integration run", false, String(err));
+    report.errors.push(`part1: ${String(err?.stack ?? err)}`);
+    step("Agent Cloud: create pod via browser", false, String(err).split("\n")[0]);
   } finally {
     await browser.close();
     writeFileSync(join(OUT, "report.json"), JSON.stringify(report, null, 2));

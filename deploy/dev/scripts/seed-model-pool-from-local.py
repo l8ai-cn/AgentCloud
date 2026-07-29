@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Seed dev-org model pool via REST API (same path as web-user Settings / Models).
+"""Seed dev-org model pool via REST API.
 
 Reads credentials from deploy/dev/secrets/minimax.env (preferred) or local
 developer paths; never commits API keys to git.

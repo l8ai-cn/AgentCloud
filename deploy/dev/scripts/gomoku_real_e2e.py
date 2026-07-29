@@ -97,9 +97,7 @@ def wait_done(token: str, sid: str, label: str) -> None:
 def run_case(token: str, label: str, agent_id: str, host_id: str, prompt: str, extra: dict | None = None) -> str:
     print(f"\n=== {label} ===")
     sid = create_session(token, agent_id, host_id, f"Gomoku {label}", extra)
-    url = f"http://127.0.0.1:10020/c/{sid}?file=gomoku%2Findex.html"
     print(f"session: {sid}")
-    print(f"preview: {url}")
     send_message(token, sid, prompt)
     wait_done(token, sid, label)
     return sid
@@ -117,8 +115,8 @@ def main() -> int:
         {"model_config_id": 3},
     )
     print("\n=== SUMMARY ===")
-    print(f"Codex:   http://127.0.0.1:10020/c/{codex_sid}?file=gomoku%2Findex.html")
-    print(f"Do-agent: http://127.0.0.1:10020/c/{do_sid}?file=gomoku%2Findex.html")
+    print(f"Codex session:    {codex_sid}")
+    print(f"Do-agent session: {do_sid}")
     return 0
 
 

@@ -166,7 +166,8 @@ func firstBlockText(content []map[string]any) string {
 }
 
 // allowedBlockTypes are the message content block types the web renderer
-// understands (see clients/web-user/src/lib/blocks.ts MessageContentBlock).
+// understands (see packages/agent-ui/src/omnigent/protocol/omnigentMessageContent.ts
+// OmnigentMessageContentBlock).
 var allowedBlockTypes = map[string]bool{
 	"input_text":  true,
 	"output_text": true,

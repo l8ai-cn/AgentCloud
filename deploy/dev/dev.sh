@@ -10,7 +10,7 @@
 #
 # 一键启动开发环境：
 #   ./dev.sh                # docker infra + host backend/relay + frontend
-#   ./dev.sh --frontends      # 仅重启 web + web-admin + web-user
+#   ./dev.sh --frontends      # 仅重启 web + web-admin
 #   ./dev.sh --coordinator-runners # 平台托管：Coordinator 按需起 runner
 #   ./dev.sh --runners-k8s       # runner 部署到本地 K8s 集群 (Docker Desktop)
 #   ./dev.sh --rebuild-runner   # 重 build runner binary + 重启 runner 容器
@@ -92,7 +92,7 @@ main() {
     for arg in "$@"; do
         case "$arg" in
             --backend-only) backend_only=true ;;
-            --lite) export DEV_LITE=1; export WEB_USER_SKIP=1 ;;
+            --lite) export DEV_LITE=1 ;;
             --frontends|-f) ;;
             --coordinator-runners|--runners-k8s) ;;
         esac

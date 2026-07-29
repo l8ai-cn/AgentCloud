@@ -47,13 +47,9 @@ export function devUrl(name, fallback) {
     case "WEB_URL":
       if (runtimeEnv.PUBLIC_WEB_URL) return runtimeEnv.PUBLIC_WEB_URL;
       return urlFromHostPort("127.0.0.1", slotPort(7), urlFromHostPort("127.0.0.1", runtimeEnv.WEB_PORT, fallback));
-    case "WEB_USER_URL":
-      return urlFromHostPort("127.0.0.1", slotPort(20), urlFromHostPort("127.0.0.1", runtimeEnv.WEB_USER_PORT, fallback));
     case "TRAEFIK_API_URL":
       if (runtimeEnv.PRIMARY_DOMAIN) return `http://${runtimeEnv.PRIMARY_DOMAIN}`;
       return urlFromHostPort("127.0.0.1", runtimeEnv.HTTP_PORT, fallback);
-    case "WEB_USER_AUTH_URL":
-      return runtimeEnv.VITE_DO_WORKER_API_URL ?? runtimeEnv.VITE_AGENTCLOUD_API_URL ?? fallback;
     case "SESSION_COMPAT_API_URL":
       return urlFromHostPort(
         "localhost",

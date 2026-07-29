@@ -5,3 +5,13 @@ This project is licensed under the Business Source License 1.1 (BSL 1.1).
 See LICENSE for details.
 
 Third-party dependencies are licensed under their respective licenses.
+
+Portions of the agent workbench derive from the Omnigent project:
+
+- Source: https://github.com/omnigent-ai/omnigent
+- Path: web/
+- Commit: 31248506a3b2fc8092e360474a7279dd3010c3cb
+- License: Apache License 2.0
+
+Upstream Apache-2.0 terms apply to the original Omnigent web UI source.
+Modifications are owned by Agent Cloud contributors.
