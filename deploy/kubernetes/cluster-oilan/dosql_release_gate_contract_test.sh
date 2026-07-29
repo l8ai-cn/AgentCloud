@@ -6,10 +6,7 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 
 latest_version() {
-  find "$ROOT/../../../backend/migrations" -name '*.up.sql' -exec basename {} \; |
-    awk -F_ '{ print $1 }' |
-    sort -n |
-    tail -1
+  tr -d '[:space:]' < "$ROOT/../../../backend/schema/SCHEMA_VERSION"
 }
 
 create_fixture() {

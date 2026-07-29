@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-latest_backend_migration_version() {
-  find "${DIR}/../../../backend/migrations" -name '*.up.sql' -exec basename {} \; |
-    awk -F_ '{ print $1 }' |
-    sort -n |
-    tail -1
+expected_schema_version() {
+  tr -d '[:space:]' < "${DIR}/../../../backend/schema/SCHEMA_VERSION"
 }
 
 require_text_env() {
@@ -17,7 +14,7 @@ require_text_env() {
 
 require_dosql_database_evidence() {
   local expected_version repo_root audit_root
-  expected_version="$(latest_backend_migration_version)"
+  expected_version="$(expected_schema_version)"
   repo_root="$(cd "${DIR}/../../.." && pwd)"
   audit_root="${repo_root}/.dosql"
   require_text_env DOSQL_RELEASE_DB_TARGET
@@ -31,7 +28,7 @@ require_dosql_database_evidence() {
   fi
   if [[ -n "${DOSQL_RELEASE_MIGRATION_VERSION:-}" &&
       "${DOSQL_RELEASE_MIGRATION_VERSION}" != "${expected_version}" ]]; then
-    echo "DOSQL_RELEASE_MIGRATION_VERSION must equal latest backend migration ${expected_version}" >&2
+    echo "DOSQL_RELEASE_MIGRATION_VERSION must equal backend/schema/SCHEMA_VERSION ${expected_version}" >&2
     return 1
   fi
   node "${DIR}/dosql_release_evidence_validate.mjs" \
