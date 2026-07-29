@@ -111,7 +111,7 @@ func coreTableDDLs() []string {
 			organization_id INTEGER NOT NULL, provider_type TEXT NOT NULL, name TEXT NOT NULL,
 			base_url TEXT NOT NULL,
 			client_id TEXT, client_secret_encrypted TEXT, bot_token_encrypted TEXT,
-			ssh_key_id INTEGER, is_default INTEGER NOT NULL DEFAULT 0,
+			is_default INTEGER NOT NULL DEFAULT 0,
 			is_active INTEGER NOT NULL DEFAULT 1,
 			created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
