@@ -7,9 +7,10 @@ import (
 )
 
 // ReclaimIdleWorkers terminates workers that have outlived the idle budget in
-// their own spec. Unlike the stale-pod sweep, which only records that a worker
-// stopped reporting, this frees the remote compute — the worker's owner is gone
-// and nobody else will ask for it back.
+// their own spec. This is Agent Cloud's own resource reclaim, modelled on
+// Zhiyong's heartbeat-idle stop: activity baseline plus a declared timeout,
+// then a real terminate. It does not depend on any caller to free compute.
+// The stale-pod sweep only records that a worker went quiet; this one frees it.
 func (pc *PodCoordinator) ReclaimIdleWorkers(ctx context.Context) (int, error) {
 	keys, err := pc.podStore.ListIdleExpiredPodKeys(ctx, time.Now())
 	if err != nil {

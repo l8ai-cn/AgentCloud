@@ -19,8 +19,8 @@ type StaleTerminalCleaner interface {
 }
 
 // IdleWorkerReclaimer frees workers whose spec-declared idle budget ran out.
-// It is separate from the stale sweep because that one only records that a
-// worker went quiet, while this one gives the remote compute back.
+// Separate from the stale sweep (which only marks quiet workers) and from any
+// external product reclaim: Agent Cloud owns worker compute on its own clock.
 type IdleWorkerReclaimer interface {
 	ReclaimIdleWorkers(ctx context.Context) (int, error)
 }

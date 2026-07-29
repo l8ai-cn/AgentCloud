@@ -100,6 +100,26 @@ func TestListIdleExpiredPodKeysIgnoresWorkersWithoutASpec(t *testing.T) {
 	assert.Empty(t, keys)
 }
 
+// Zhiyong measures idle from last heartbeat, else started_at. Workers that
+// never reported activity still have a create/start clock and must expire on
+// that baseline rather than being skipped forever.
+func TestListIdleExpiredPodKeysUsesStartClockWhenActivityIsMissing(t *testing.T) {
+	db := testkit.SetupTestDB(t)
+	now := time.Now()
+	seedIdleSpec(t, db, 1, idleSpecJSON("idle", 30))
+	require.NoError(t, db.Exec(
+		`INSERT INTO pods (organization_id, pod_key, status, started_at, created_at, worker_spec_snapshot_id)
+		 VALUES (?, 'pod-started', ?, ?, ?, ?)`,
+		idleReclaimOrgID, agentpod.StatusRunning,
+		now.Add(-45*time.Minute), now.Add(-50*time.Minute), 1,
+	).Error)
+
+	keys, err := (&podRepo{db: db}).ListIdleExpiredPodKeys(context.Background(), now)
+
+	require.NoError(t, err)
+	assert.Equal(t, []string{"pod-started"}, keys)
+}
+
 // A spec we cannot read says nothing about whether its worker is idle, so a
 // decode regression must not become a mass termination.
 func TestListIdleExpiredPodKeysSkipsUnreadableSpecs(t *testing.T) {
