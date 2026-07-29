@@ -23,6 +23,7 @@ fn preserves_tool_model_requirements_on_worker_type_options() {
             protocol_adapters: vec!["openai-compatible".into()],
             modality: "video".into(),
             capability: "video-generation".into(),
+            required: true,
         }],
         ..Default::default()
     };
