@@ -59,11 +59,7 @@ const sourceToolCatalog = new Map<string, ReadonlyMap<string, SourceToolDescript
         "image_generation",
         { semanticKey: "media.image.generate", schemaVersion: "1" },
       ],
-    ]),
-  ],
-  [
-    "web-user",
-    new Map([
+      // Codex CLI 以 OpenAI Responses item 形式上报这组工具调用
       ["web_search_call", { semanticKey: "web.search", schemaVersion: "1" }],
       [
         "file_search_call",
