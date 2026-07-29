@@ -10,6 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// 专家安装一律只要求工作区执行权。marketplace 把这一列作为 required_permissions
+// 透出给安装计划和商店响应，所以必须显式写入，不能落到列默认值 []。
+const expertRequiredPermissions = `["workspace.execute"]`
+
 type expertCatalogReferences struct {
 	MarketplaceID    int64
 	SpaceID          int64
@@ -96,11 +100,12 @@ INSERT INTO marketplace.marketplace_catalog_item_versions
   (catalog_item_id, version, source_revision, content_digest, manifest,
    permissions, compatibility, dependency_lock, validation_status,
    created_by_platform_user_id)
-VALUES (?, ?, ?, ?, ?::jsonb, '["workspace.execute"]'::jsonb, ?::jsonb,
+VALUES (?, ?, ?, ?, ?::jsonb, ?::jsonb, ?::jsonb,
   ?::jsonb, 'passed', ?)
 ON CONFLICT (catalog_item_id, version) DO NOTHING
 `, catalogItemID, version, fmt.Sprintf("expert-release-%d", release.ReleaseID),
-		payload.ContentDigest, string(payload.Manifest), string(payload.Compatibility),
+		payload.ContentDigest, string(payload.Manifest), expertRequiredPermissions,
+		string(payload.Compatibility),
 		string(payload.DependencyLock), release.PublisherUserID).Error; err != nil {
 		return 0, err
 	}
@@ -139,20 +144,18 @@ func ensureExpertListingVersion(
 	outcomes []byte,
 	tags []string,
 ) (int64, error) {
+	// use_cases / target_audience / requirements / release_notes 不写：
+	// expert_market_releases 不收集这些字段，投影时没有可信来源，
+	// 列上的 jsonb 默认值就是唯一诚实的取值。
 	if err := tx.Exec(`
 INSERT INTO marketplace.marketplace_listing_versions
   (listing_id, catalog_item_id, catalog_item_version_id, revision, display_name,
-   tagline, description, outcomes, use_cases, target_audience, requirements,
-   tags, quota_plan_id, release_notes, review_status)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb, '[]'::jsonb,
-  '["内容团队","品牌团队","视频创作者"]'::jsonb,
-  '["目标组织已配置可用 Runner","目标组织已配置可用模型资源"]'::jsonb,
-  ?, ?, ?, 'approved')
+   tagline, description, outcomes, tags, quota_plan_id, review_status)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?, ?, 'approved')
 ON CONFLICT (listing_id, revision) DO NOTHING
 `, refs.ListingID, refs.CatalogItemID, refs.CatalogVersionID, release.Version,
 		release.Name, release.Summary, release.Description, string(outcomes),
-		pq.Array(tags), refs.QuotaPlanID,
-		fmt.Sprintf("专家市场审核发布版本 %d。", release.Version)).Error; err != nil {
+		pq.Array(tags), refs.QuotaPlanID).Error; err != nil {
 		return 0, err
 	}
 	var row struct {
