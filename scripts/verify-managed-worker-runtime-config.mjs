@@ -8,7 +8,14 @@ const definitions = readJson(path.join(root, "config/worker-types/catalog.json")
 const lock = readJson(
   path.join(root, "backend/internal/domain/workerruntime/runtime_catalog.lock.json"),
 );
-const formalSlugs = new Set(definitions.worker_types.map((worker) => worker.slug));
+const formalSlugs = new Set(
+  definitions.worker_types
+    .filter((worker) => {
+      const definition = readJson(path.join(root, worker.definition_path));
+      return !definition.internal;
+    })
+    .map((worker) => worker.slug),
+);
 const released = new Map(
   lock.images
     .filter((image) => image.enabled)

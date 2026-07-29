@@ -21,6 +21,6 @@
   "image": {
     "repository": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent",
     "tag": "4e17ae3f40f1-runner-61b505bd1dcd",
-    "digest": "sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653"
+    "digest": "sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff"
   }
 }

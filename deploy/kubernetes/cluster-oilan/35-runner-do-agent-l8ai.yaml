@@ -28,7 +28,7 @@ spec:
         - name: agentcloud-regcred
       containers:
         - name: runner
-          image: repo.aiedulab.cn:8443/agentsmesh/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff
+          image: repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff
           imagePullPolicy: Always
           command: ["/usr/local/bin/runner-entrypoint.sh"]
           env:

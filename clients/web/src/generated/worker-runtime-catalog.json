@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runtimeCatalogRevision": "runtime-catalog-2026-07-20-077eb4511113",
+  "runtimeCatalogRevision": "runtime-catalog-2026-07-29-hotfix-align",
   "workers": [
     {
       "slug": "aider",
@@ -191,6 +191,46 @@
           "anthropic"
         ]
       },
+      "toolModelRequirements": [
+        {
+          "id": "seedance-video",
+          "required": false,
+          "provider_keys": [
+            "doubao",
+            "sub2api-seedance"
+          ],
+          "protocol_adapters": [
+            "openai-compatible",
+            "ark-seedance"
+          ],
+          "modality": "video",
+          "capability": "video-generation",
+          "environment": {
+            "api_key": "SEEDANCE_API_KEY",
+            "base_url": "SEEDANCE_BASE_URL",
+            "model_id": "SEEDANCE_MODEL"
+          }
+        },
+        {
+          "id": "minimax-video",
+          "required": false,
+          "provider_keys": [
+            "custom-openai-compatible",
+            "minimax"
+          ],
+          "protocol_adapters": [
+            "openai-compatible",
+            "minimax"
+          ],
+          "modality": "video",
+          "capability": "video-generation",
+          "environment": {
+            "api_key": "MINIMAX_VIDEO_API_KEY",
+            "base_url": "MINIMAX_VIDEO_BASE_URL",
+            "model_id": "MINIMAX_VIDEO_MODEL"
+          }
+        }
+      ],
       "credentialBindings": [
         {
           "sourceKind": "model_resource",
@@ -221,7 +261,7 @@
       ],
       "runtimeImage": {
         "name": "Do Agent",
-        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
         "availability": "locked_available"
       },
       "validationStatus": "runtime_ready_unverified"
@@ -326,6 +366,43 @@
           "sourceKind": "model_resource",
           "sourceRef": "openai-compatible",
           "environmentVariable": "OPENAI_API_KEY"
+        }
+      ],
+      "configFields": [],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "validationStatus": "runtime_image_unavailable"
+    },
+    {
+      "slug": "kimi-code",
+      "name": "Kimi Code",
+      "executable": "kimi",
+      "adapterId": "kimi-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "credentialBindings": [
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_API_KEY"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_BASE_URL"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_MODEL_NAME"
         }
       ],
       "configFields": [],
@@ -531,7 +608,7 @@
       ],
       "configDocuments": [],
       "runtimeImage": {
-        "name": "Codex CLI",
+        "name": "Pattern Designer",
         "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
         "availability": "locked_available"
       },
@@ -602,8 +679,8 @@
         }
       ],
       "runtimeImage": {
-        "name": "Do Agent",
-        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
+        "name": "Seedance Expert",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
         "availability": "locked_available"
       },
       "validationStatus": "runtime_ready_unverified"

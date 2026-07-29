@@ -32,12 +32,20 @@ function updateFiles(root, digest, releaseCommit, releaseTag) {
   const catalog = readJson(paths.catalog);
   const backend = readFileSync(paths.backend, "utf8");
   const builds = [readJson(paths.doAgentBuild), readJson(paths.seedanceBuild)];
-  const entry = catalog.images?.filter((image) => image.slug === "do-agent-stable") ?? [];
-  if (entry.length !== 1) throw new Error("runtime catalog must contain one do-agent-stable image");
-  const currentDigest = entry[0].digest;
+  const entries = (catalog.images ?? []).filter((image) =>
+    ["do-agent-stable", "seedance-expert-stable"].includes(image.slug)
+    || (image.worker_type_slugs || []).some((slug) => slug === "do-agent" || slug === "seedance-expert"),
+  );
+  if (entries.length < 1) throw new Error("runtime catalog must contain do-agent runtime image(s)");
+  const currentDigest = entries[0].digest;
   const currentReference = `${IMAGE}@${currentDigest}`;
-  if (!DIGEST_RE.test(currentDigest) || entry[0].reference !== currentReference) {
+  if (!DIGEST_RE.test(currentDigest)) {
     throw new Error("runtime catalog do-agent reference is inconsistent");
+  }
+  for (const entry of entries) {
+    if (entry.digest !== currentDigest || entry.reference !== currentReference) {
+      throw new Error("do-agent/seedance runtime catalog references disagree");
+    }
   }
   if (release.image.repository !== IMAGE || release.image.digest !== currentDigest) {
     throw new Error("do-agent release manifest and runtime catalog disagree");
@@ -48,8 +56,10 @@ function updateFiles(root, digest, releaseCommit, releaseTag) {
   release.image.tag = releaseTag;
   release.image.digest = digest;
   catalog.revision = `runtime-catalog-2026-07-16-${releaseCommit.slice(0, 12)}`;
-  entry[0].reference = `${IMAGE}@${digest}`;
-  entry[0].digest = digest;
+  for (const entry of entries) {
+    entry.reference = `${IMAGE}@${digest}`;
+    entry.digest = digest;
+  }
   for (const build of builds) {
     build.validated_at = process.env.RUNTIME_OBSERVED_AT;
     build.image = `${IMAGE}@${digest}`;

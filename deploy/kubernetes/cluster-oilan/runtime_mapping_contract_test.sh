@@ -47,19 +47,24 @@ if expected_remote:
         "remote Harbor digest does not match the trusted release manifest"
     )
 
-matches = [
-    image
+by_slug = {
+    slug: image
     for image in catalog["images"]
-    if set(image["worker_type_slugs"]) == {"do-agent", "seedance-expert"}
-]
-assert len(matches) == 1, "runtime catalog must publish one shared do-agent/seedance-expert image"
-image = matches[0]
-assert image["enabled"] is True, "do-agent runtime image must be enabled"
-reference = image["reference"]
-digest = image["digest"]
-assert digest == release_image["digest"]
-assert reference == f"{release_image['repository']}@{digest}"
-assert re.fullmatch(r"sha256:[a-f0-9]{64}", digest)
+    for slug in image.get("worker_type_slugs", [])
+}
+assert "do-agent" in by_slug, "runtime catalog missing do-agent image"
+assert "seedance-expert" in by_slug, "runtime catalog missing seedance-expert image"
+for slug in ("do-agent", "seedance-expert"):
+    image = by_slug[slug]
+    assert image["enabled"] is True, f"{slug} runtime image must be enabled"
+    assert image["digest"] == release_image["digest"]
+    assert image["reference"] == f"{release_image['repository']}@{image['digest']}"
+    assert re.fullmatch(r"sha256:[a-f0-9]{64}", image["digest"])
+reference = by_slug["do-agent"]["reference"]
+digest = by_slug["do-agent"]["digest"]
+assert by_slug["seedance-expert"]["reference"] == reference, (
+    "do-agent and seedance-expert must share the same runner image reference"
+)
 
 mapping_line = re.search(
     r'name: COORDINATOR_RUNNER_IMAGES\s+value: "([^"]+)"',

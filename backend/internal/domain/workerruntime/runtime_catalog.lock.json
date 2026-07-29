@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "runtime-catalog-2026-07-23-single-worker-images",
+  "revision": "runtime-catalog-2026-07-29-hotfix-align",
   "images": [
     {
       "id": 1,
@@ -50,8 +50,8 @@
       "id": 5,
       "slug": "do-agent-stable",
       "name": "Do Agent",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
-      "digest": "sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
+      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
+      "digest": "sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
       "worker_type_slugs": [
         "do-agent"
       ],
@@ -72,8 +72,8 @@
       "id": 7,
       "slug": "seedance-expert-stable",
       "name": "Seedance Expert",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
-      "digest": "sha256:1792eaeb4f4da7fd103a54950893817077dd8986931422ad2a83e09bf4bac653",
+      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
+      "digest": "sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
       "worker_type_slugs": [
         "seedance-expert"
       ],
