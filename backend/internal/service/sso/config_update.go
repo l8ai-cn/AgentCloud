@@ -106,12 +106,22 @@ func (s *Service) buildUpdateMap(req *UpdateConfigRequest) (map[string]interface
 	}
 	if req.OIDCAuthorizeExtraParams != nil {
 		if *req.OIDCAuthorizeExtraParams == "" {
-			updates["oidc_authorize_extra_params"] = nil
+			updates["oidc_authorize_extra_params"] = emptyJSONObject
 		} else {
 			if _, err := decodeAuthorizeExtraParams(req.OIDCAuthorizeExtraParams); err != nil {
 				return nil, err
 			}
 			updates["oidc_authorize_extra_params"] = *req.OIDCAuthorizeExtraParams
+		}
+	}
+	if req.AMPBearerAppCodes != nil {
+		if *req.AMPBearerAppCodes == "" {
+			updates["amp_bearer_app_codes"] = emptyJSONArray
+		} else {
+			if err := validateAMPBearerAppCodes(*req.AMPBearerAppCodes); err != nil {
+				return nil, err
+			}
+			updates["amp_bearer_app_codes"] = *req.AMPBearerAppCodes
 		}
 	}
 

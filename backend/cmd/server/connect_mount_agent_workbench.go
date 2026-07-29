@@ -38,6 +38,7 @@ func mountAgentWorkbenchService(
 			services.auth.AccessTokenManager(),
 			services.auth.AccessTokenAudience(),
 			restAgentWorkbenchEmbedTokens(rest),
+			services.ampBearerAuthenticator(),
 		)),
 	)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/agentpod"
 	agentsessionsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/agentsession"
 	airesourceservice "github.com/l8ai-cn/agentcloud/backend/internal/service/airesource"
+	"github.com/l8ai-cn/agentcloud/backend/internal/service/ampidentity"
 	apikeyservice "github.com/l8ai-cn/agentcloud/backend/internal/service/apikey"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/auth"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/billing"
@@ -83,6 +84,7 @@ type serviceContainer struct {
 	license             *license.Service
 	apikey              *apikeyservice.Service
 	apikeyAdapter       *apikeyservice.MiddlewareAdapter
+	ampBearerAdapter    *ampidentity.MiddlewareAdapter
 	email               email.Service
 	extension           *extensionservice.Service
 	extensionRepo       extension.Repository

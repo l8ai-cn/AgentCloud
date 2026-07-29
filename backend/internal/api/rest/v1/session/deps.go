@@ -7,6 +7,7 @@ import (
 	podDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentpod"
 	sessionDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentsession"
 	agentworkbenchdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentworkbench"
+	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	agentservice "github.com/l8ai-cn/agentcloud/backend/internal/service/agent"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/agentpod"
 	sessionsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/agentsession"
@@ -94,6 +95,7 @@ type sessionDispatchQueue interface {
 
 type Deps struct {
 	Auth               *authservice.Service
+	AMPBearer          middleware.AMPBearerAuthenticator
 	User               *userservice.Service
 	Org                *organization.Service
 	Agent              *agentservice.AgentService

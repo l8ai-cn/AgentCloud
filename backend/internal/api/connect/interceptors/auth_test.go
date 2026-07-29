@@ -78,7 +78,7 @@ func runInterceptor(
 	next connect.UnaryFunc,
 ) (connect.AnyResponse, error) {
 	t.Helper()
-	interceptor := interceptors.NewAuthInterceptor(manager, audience)
+	interceptor := interceptors.NewAuthInterceptor(manager, audience, nil)
 	req := connect.NewRequest(&echoReq{Msg: "hi"})
 	if header != "" {
 		req.Header().Set("Authorization", header)

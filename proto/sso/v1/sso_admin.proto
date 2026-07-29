@@ -73,6 +73,9 @@ message AdminSSOConfig {
   optional string oidc_scopes = 9;
   // JSON object of IdP-specific authorize params, e.g. {"tenantId":"TEST"}.
   optional string oidc_authorize_extra_params = 27;
+  // JSON array of AMP application codes whose business access tokens are
+  // accepted as bearer credentials, e.g. ["ZHIYONG"]. Empty delegates nothing.
+  optional string amp_bearer_app_codes = 28;
 
   // SAML (no certs / XML).
   optional string saml_idp_metadata_url = 10;
@@ -145,6 +148,7 @@ message CreateSSOConfigRequest {
   optional string oidc_client_secret = 8;
   optional string oidc_scopes = 9;
   optional string oidc_authorize_extra_params = 27;
+  optional string amp_bearer_app_codes = 28;
 
   // SAML.
   optional string saml_idp_metadata_url = 10;
@@ -185,6 +189,7 @@ message UpdateSSOConfigRequest {
   optional string oidc_client_secret = 7;
   optional string oidc_scopes = 8;
   optional string oidc_authorize_extra_params = 26;
+  optional string amp_bearer_app_codes = 27;
 
   optional string saml_idp_metadata_url = 9;
   optional string saml_idp_metadata_xml = 10;

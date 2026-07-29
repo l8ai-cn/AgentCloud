@@ -149,6 +149,7 @@ func buildServicesContainer(
 		EnvBundle:            services.envBundle,
 		APIKey:               services.apikey,
 		APIKeyAdapter:        services.apikeyAdapter,
+		AMPBearerAdapter:     services.ampBearerAdapter,
 		File:                 services.file,
 		GRPCRunnerHandler:    grpcResult.handler,
 		RunnerGRPCAdapter:    grpcResult.runnerAdapter,

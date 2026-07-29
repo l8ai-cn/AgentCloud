@@ -139,6 +139,9 @@ func Mount(mux *http.ServeMux, srv *Server, opts ...connect.HandlerOption) {
 	mux.Handle(DeleteOrganizationProcedure, connect.NewUnaryHandler(
 		DeleteOrganizationProcedure, srv.DeleteOrganization, opts...,
 	))
+	mux.Handle(BindOrganizationAmpTenantProcedure, connect.NewUnaryHandler(
+		BindOrganizationAmpTenantProcedure, srv.BindOrganizationAmpTenant, opts...,
+	))
 
 	mux.Handle(ListAuditLogsProcedure, connect.NewUnaryHandler(
 		ListAuditLogsProcedure, srv.ListAuditLogs, opts...,

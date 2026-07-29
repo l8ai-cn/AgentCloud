@@ -60,6 +60,20 @@ func (r *ssoConfigRepository) GetEnabledByDomain(ctx context.Context, domain str
 	return configs, err
 }
 
+func (r *ssoConfigRepository) ListAMPBearerByIssuerPrefix(ctx context.Context, issuerPrefix string) ([]*sso.Config, error) {
+	if issuerPrefix == "" {
+		return nil, nil
+	}
+	escaped := strings.NewReplacer("%", "\\%", "_", "\\_").Replace(issuerPrefix)
+	var configs []*sso.Config
+	err := r.db.WithContext(ctx).
+		Where("protocol = ? AND is_enabled = ?", sso.ProtocolOIDC, true).
+		Where("oidc_issuer_url LIKE ?", escaped+"%").
+		Where("jsonb_array_length(amp_bearer_app_codes) > 0").
+		Find(&configs).Error
+	return configs, err
+}
+
 func (r *ssoConfigRepository) List(ctx context.Context, query *sso.ListQuery, offset, limit int) ([]*sso.Config, int64, error) {
 	var configs []*sso.Config
 	var total int64

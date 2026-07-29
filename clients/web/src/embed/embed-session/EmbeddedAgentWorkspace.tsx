@@ -71,7 +71,7 @@ function EmbeddedAgentWorkspaceContent({
   locale: AgentWorkspaceLocale;
   toolRenderers?: ToolRendererRegistry<AgentToolRendererRegistration>;
 }) {
-  const { baseUrl, getAccessToken, orgSlug, sessionId } = access;
+  const { baseUrl, getAccessToken, orgSlug, sessionApi, sessionId } = access;
   const [workbench, setWorkbench] = useState<EmbeddedAgentWorkbenchRuntime | null>(null);
   const [error, setError] = useState<string | null>(null);
   const builtinContentRenderers = useMemo(() => createBuiltinContentRenderers(), []);
@@ -80,10 +80,8 @@ function EmbeddedAgentWorkspaceContent({
   useEffect(() => {
     let active = true;
     let opened: EmbeddedAgentWorkbenchRuntime | null = null;
-    setWorkbench(null);
-    setError(null);
     void createEmbeddedAgentWorkbenchRuntime(
-      { baseUrl, getAccessToken, orgSlug, sessionId },
+      { baseUrl, getAccessToken, orgSlug, sessionApi, sessionId },
       { fetch },
     ).then(
       (result) => {
@@ -104,8 +102,11 @@ function EmbeddedAgentWorkspaceContent({
     return () => {
       active = false;
       opened?.runtime.close(sessionId);
+      // 重连前必须清空上一会话的 runtime，否则会渲染已 close 的 runtime。
+      setWorkbench(null);
+      setError(null);
     };
-  }, [baseUrl, fetch, getAccessToken, locale, orgSlug, sessionId]);
+  }, [baseUrl, fetch, getAccessToken, locale, orgSlug, sessionApi, sessionId]);
 
   if (error) {
     return <WorkspaceState message={error} role="alert" />;

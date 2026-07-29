@@ -35,6 +35,7 @@ func registerSessionRoutes(
 	}
 	sessionDeps := sessionapi.Deps{
 		Auth:               svc.Auth,
+		AMPBearer:          ampBearerAuthenticator(svc),
 		User:               svc.User,
 		Org:                svc.Org,
 		Agent:              svc.AgentSvc,

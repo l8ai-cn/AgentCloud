@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
+	"github.com/l8ai-cn/agentcloud/backend/internal/api/connect/interceptors"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	authpkg "github.com/l8ai-cn/agentcloud/backend/pkg/auth"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/embedtoken"
@@ -19,15 +20,18 @@ type authInterceptor struct {
 	embedTokens EmbedTokenValidator
 	manager     *authpkg.AccessTokenManager
 	audience    string
+	ampBearer   middleware.AMPBearerAuthenticator
 }
 
 func NewAuthInterceptor(
 	manager *authpkg.AccessTokenManager,
 	audience string,
 	embedTokens EmbedTokenValidator,
+	ampBearer middleware.AMPBearerAuthenticator,
 ) connect.Interceptor {
 	return &authInterceptor{
 		manager: manager, audience: audience, embedTokens: embedTokens,
+		ampBearer: ampBearer,
 	}
 }
 
@@ -72,6 +76,9 @@ func (auth *authInterceptor) authenticate(
 	tokenValue, err := bearerValue(header.Get("Authorization"))
 	if err != nil {
 		return ctx, err
+	}
+	if interceptors.RoutesAMPBearer(auth.ampBearer, tokenValue) {
+		return interceptors.InjectAMPTenant(ctx, auth.ampBearer, tokenValue)
 	}
 	if auth.manager != nil {
 		if claims, validateErr := auth.manager.ValidateToken(

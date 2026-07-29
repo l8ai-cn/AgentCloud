@@ -81,6 +81,12 @@ func TenantMiddleware(orgService OrganizationService) gin.HandlerFunc {
 			return
 		}
 
+		if ampOrgID, federated := ampOrganizationID(c); federated && ampOrgID != org.GetID() {
+			apierr.AbortForbidden(c, apierr.NOT_ORG_MEMBER,
+				"Your identity provider tenant does not own this organization")
+			return
+		}
+
 		isMember, err := orgService.IsMember(c.Request.Context(), org.GetID(), userID)
 		if err != nil || !isMember {
 			apierr.AbortForbidden(c, apierr.NOT_ORG_MEMBER, "You are not a member of this organization")

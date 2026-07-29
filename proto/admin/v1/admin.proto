@@ -72,6 +72,7 @@ service AdminService {
   rpc GetOrganization(GetOrganizationRequest) returns (AdminOrganization);
   rpc GetOrganizationMembers(GetOrganizationMembersRequest) returns (GetOrganizationMembersResponse);
   rpc DeleteOrganization(DeleteOrganizationRequest) returns (DeleteOrganizationResponse);
+  rpc BindOrganizationAmpTenant(BindOrganizationAmpTenantRequest) returns (AdminOrganization);
 
   // Runners
   rpc ListRunners(ListRunnersRequest) returns (ListRunnersResponse);
@@ -188,6 +189,10 @@ message AdminOrganization {
   string subscription_status = 6;
   string created_at = 7 [(amesh.codegen.v1.field_convert) = "rfc3339"];
   string updated_at = 8 [(amesh.codegen.v1.field_convert) = "rfc3339"];
+  optional string amp_tenant_id = 9 [
+    (amesh.codegen.v1.field_rename) = "AmpTenantID",
+    (amesh.codegen.v1.field_convert) = "string_ptr"
+  ];
 }
 
 // AdminOrganizationMember mirrors the REST `memberResponse` shape (nested
@@ -381,6 +386,12 @@ message DeleteOrganizationRequest {
 
 message DeleteOrganizationResponse {
   string message = 1;
+}
+
+// An empty amp_tenant_id unbinds the organization from AMP.
+message BindOrganizationAmpTenantRequest {
+  int64 org_id = 1;
+  string amp_tenant_id = 2;
 }
 
 // --- Runners ---

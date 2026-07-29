@@ -30,6 +30,7 @@ type CreateConfigRequest struct {
 	OIDCClientSecret         string `json:"oidc_client_secret,omitempty"`
 	OIDCScopes               string `json:"oidc_scopes,omitempty"`
 	OIDCAuthorizeExtraParams string `json:"oidc_authorize_extra_params,omitempty"`
+	AMPBearerAppCodes        string `json:"amp_bearer_app_codes,omitempty"`
 
 	SAMLIDPMetadataURL string `json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPMetadataXML string `json:"saml_idp_metadata_xml,omitempty"`
@@ -61,6 +62,7 @@ type UpdateConfigRequest struct {
 	OIDCClientSecret         *string `json:"oidc_client_secret,omitempty"`
 	OIDCScopes               *string `json:"oidc_scopes,omitempty"`
 	OIDCAuthorizeExtraParams *string `json:"oidc_authorize_extra_params,omitempty"`
+	AMPBearerAppCodes        *string `json:"amp_bearer_app_codes,omitempty"`
 
 	SAMLIDPMetadataURL *string `json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPMetadataXML *string `json:"saml_idp_metadata_xml,omitempty"`
@@ -101,6 +103,7 @@ type ConfigResponse struct {
 	OIDCClientID             string `json:"oidc_client_id,omitempty"`
 	OIDCScopes               string `json:"oidc_scopes,omitempty"`
 	OIDCAuthorizeExtraParams string `json:"oidc_authorize_extra_params,omitempty"`
+	AMPBearerAppCodes        string `json:"amp_bearer_app_codes,omitempty"`
 
 	SAMLIDPMetadataURL string `json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPSSOURL      string `json:"saml_idp_sso_url,omitempty"`

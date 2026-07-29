@@ -29,7 +29,15 @@ type Config struct {
 	OIDCScopes                *string `gorm:"column:oidc_scopes;type:text" json:"oidc_scopes,omitempty"`
 	// OIDCAuthorizeExtraParams is a JSON object of IdP-specific authorize
 	// parameters outside OIDC core, e.g. AMP's required `tenantId`.
-	OIDCAuthorizeExtraParams *string `gorm:"column:oidc_authorize_extra_params;type:jsonb" json:"oidc_authorize_extra_params,omitempty"`
+	// The column is NOT NULL with a '{}' default, so the default tag keeps GORM
+	// from writing an explicit NULL when no extra params are configured.
+	OIDCAuthorizeExtraParams *string `gorm:"column:oidc_authorize_extra_params;type:jsonb;default:'{}'" json:"oidc_authorize_extra_params,omitempty"`
+	// AMPBearerAppCodes is a JSON array of AMP application codes whose business
+	// access tokens this deployment accepts as bearer credentials. AMP shards
+	// issuers per application, so accepting a token minted for another
+	// application is a deliberate, revocable trust delegation — an empty array
+	// means no delegation at all.
+	AMPBearerAppCodes *string `gorm:"column:amp_bearer_app_codes;type:jsonb;default:'[]'" json:"amp_bearer_app_codes,omitempty"`
 
 	SAMLIDPMetadataURL   *string `gorm:"column:saml_idp_metadata_url;type:text" json:"saml_idp_metadata_url,omitempty"`
 	SAMLIDPMetadataXML   *string `gorm:"column:saml_idp_metadata_xml;type:text" json:"-"`

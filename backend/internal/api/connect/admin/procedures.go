@@ -20,6 +20,8 @@ const (
 	GetOrganizationMembersProcedure = "/" + ServiceName + "/GetOrganizationMembers"
 	DeleteOrganizationProcedure     = "/" + ServiceName + "/DeleteOrganization"
 
+	BindOrganizationAmpTenantProcedure = "/" + ServiceName + "/BindOrganizationAmpTenant"
+
 	ListAuditLogsProcedure = "/" + ServiceName + "/ListAuditLogs"
 
 	ListRunnersProcedure   = "/" + ServiceName + "/ListRunners"

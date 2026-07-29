@@ -219,6 +219,7 @@ func authOptions(t *testing.T) connect.HandlerOption {
 		workbenchTestAccessTokenManager(t),
 		testAudience,
 		nil,
+		nil,
 	))
 }
 

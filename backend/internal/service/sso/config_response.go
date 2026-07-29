@@ -30,6 +30,9 @@ func (s *Service) ToConfigResponse(cfg *sso.Config) *ConfigResponse {
 		if cfg.OIDCAuthorizeExtraParams != nil {
 			resp.OIDCAuthorizeExtraParams = *cfg.OIDCAuthorizeExtraParams
 		}
+		if cfg.AMPBearerAppCodes != nil {
+			resp.AMPBearerAppCodes = *cfg.AMPBearerAppCodes
+		}
 
 	case sso.ProtocolSAML:
 		if cfg.SAMLIDPMetadataURL != nil {

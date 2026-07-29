@@ -2,6 +2,7 @@ package sso
 
 import (
 	"context"
+	"strings"
 	"sync"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/sso"
@@ -97,6 +98,22 @@ func (m *mockRepository) ListByDomain(_ context.Context, domain string) ([]*sso.
 			clone := *cfg
 			result = append(result, &clone)
 		}
+	}
+	return result, nil
+}
+
+func (m *mockRepository) ListAMPBearerByIssuerPrefix(_ context.Context, issuerPrefix string) ([]*sso.Config, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	var result []*sso.Config
+	for _, cfg := range m.configs {
+		if cfg.Protocol != sso.ProtocolOIDC || !cfg.IsEnabled ||
+			cfg.OIDCIssuerURL == nil || cfg.AMPBearerAppCodes == nil ||
+			!strings.HasPrefix(*cfg.OIDCIssuerURL, issuerPrefix) {
+			continue
+		}
+		clone := *cfg
+		result = append(result, &clone)
 	}
 	return result, nil
 }

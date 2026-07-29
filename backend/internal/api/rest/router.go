@@ -102,9 +102,10 @@ func NewRouter(cfg *config.Config, svc *v1.Services, db *gorm.DB, logger *slog.L
 
 		// Protected routes (auth required)
 		protected := apiV1.Group("")
-		protected.Use(middleware.AuthMiddleware(
+		protected.Use(middleware.AuthMiddlewareWithAMPBearer(
 			svc.Auth.AccessTokenManager(),
 			svc.Auth.AccessTokenAudience(),
+			ampBearerAuthenticator(svc),
 		))
 		{
 			// User-level routes (no tenant context required).

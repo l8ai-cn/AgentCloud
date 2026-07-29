@@ -14,13 +14,15 @@ import (
 func NewAuthInterceptor(
 	manager *authpkg.AccessTokenManager,
 	audience string,
+	ampBearer middleware.AMPBearerAuthenticator,
 ) connect.Interceptor {
-	return &authInterceptor{manager: manager, audience: audience}
+	return &authInterceptor{manager: manager, audience: audience, ampBearer: ampBearer}
 }
 
 type authInterceptor struct {
-	manager  *authpkg.AccessTokenManager
-	audience string
+	manager   *authpkg.AccessTokenManager
+	audience  string
+	ampBearer middleware.AMPBearerAuthenticator
 }
 
 func (a *authInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
@@ -51,7 +53,14 @@ func (a *authInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc
 }
 
 func (a *authInterceptor) injectTenant(ctx context.Context, header http.Header) (context.Context, error) {
-	claims, err := parseBearerToken(header.Get("Authorization"), a.manager, a.audience)
+	token, err := bearerToken(header.Get("Authorization"))
+	if err != nil {
+		return ctx, err
+	}
+	if RoutesAMPBearer(a.ampBearer, token) {
+		return InjectAMPTenant(ctx, a.ampBearer, token)
+	}
+	claims, err := validateAccessToken(token, a.manager, a.audience)
 	if err != nil {
 		return ctx, err
 	}
@@ -59,19 +68,23 @@ func (a *authInterceptor) injectTenant(ctx context.Context, header http.Header) 
 	return withClaims(ctx, claims), nil
 }
 
-func parseBearerToken(
-	header string,
+func bearerToken(header string) (string, error) {
+	parts := strings.SplitN(header, " ", 2)
+	if len(parts) != 2 || parts[0] != "Bearer" || parts[1] == "" {
+		return "", unauthenticated("authorization bearer token is required")
+	}
+	return parts[1], nil
+}
+
+func validateAccessToken(
+	token string,
 	manager *authpkg.AccessTokenManager,
 	audience string,
 ) (*middleware.JWTClaims, error) {
-	parts := strings.SplitN(header, " ", 2)
-	if len(parts) != 2 || parts[0] != "Bearer" || parts[1] == "" {
-		return nil, unauthenticated("authorization bearer token is required")
-	}
 	if manager == nil {
 		return nil, unauthenticated("access token verifier is not configured")
 	}
-	claims, err := manager.ValidateToken(parts[1], audience)
+	claims, err := manager.ValidateToken(token, audience)
 	if err != nil {
 		return nil, unauthenticated("invalid or expired token")
 	}

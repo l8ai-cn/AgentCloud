@@ -143,6 +143,7 @@ func supportTableDDLs() []string {
 			oidc_issuer_url TEXT, oidc_client_id TEXT,
 			oidc_client_secret_encrypted TEXT, oidc_scopes TEXT,
 			oidc_authorize_extra_params TEXT,
+			amp_bearer_app_codes TEXT,
 			saml_idp_metadata_url TEXT, saml_idp_metadata_xml TEXT,
 			saml_idp_sso_url TEXT, saml_idp_cert_encrypted TEXT,
 			saml_sp_entity_id TEXT, saml_name_id_format TEXT,

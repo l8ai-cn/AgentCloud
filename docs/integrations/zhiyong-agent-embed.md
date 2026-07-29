@@ -1,10 +1,55 @@
 # Zhiyong 嵌入 AI 学伴 / AI 教师助理
 
 Zhiyong 前端在自己的页面里嵌入 AgentsMesh 的对话工作台，学生 / 教师直接在
-zhiyong 内完成与 AI 学伴、AI 教师助理的全部交互。Zhiyong 后端只持组织 API Key，
-浏览器只拿到 origin 绑定的短期凭证。
+zhiyong 内完成与 AI 学伴、AI 教师助理的全部交互。
 
-## 三段式凭证
+嵌入有两种凭证模型：
+
+| 模型 | iframe 入口 | 浏览器持有 | 用在 |
+|---|---|---|---|
+| 身份直通 host-session | `/iframe?host_session=1` | 学生自己的 AMP access token | agentcloud 实验（lab-api） |
+| 组织 API Key + embed context | `/iframe?embed_context=…` | 5 分钟一次性 context | ai-api 的 copilot 面板 |
+
+身份直通是目标模型：worker 归属真实用户、会话授权走用户自己的成员身份，宿主不再代持
+能力令牌。
+
+## 身份直通（host-session）
+
+前置：AgentsMesh 侧把 AMP 配成 resource server —— `sso_configs` 的
+`amp_bearer_app_codes` 列入宿主 app_code（如 `ZHIYONG`），组织 `amp_tenant_id`
+绑定该 AMP 租户。之后同一个 AMP 用户在 AgentsMesh 里 JIT 落成同一个 user，
+其 AMP access token 在 REST `/api/v1/orgs/{slug}/**`、session `/v1/**`
+与 Connect-RPC 上都是一等 bearer。
+
+```
+zhiyong 后端（lab-api）            AgentsMesh                    zhiyong 浏览器
+    │                                 │                              │
+    │  学生 bearer 直接透传            │                              │
+    ├─ POST /orgs/{org}/experts/{slug}/run ──▶ worker 归属学生        │
+    │                                 │                              │
+    ├──── iframe_url / org_slug / pod_key（不含凭证）──────────────▶ │
+    │                                 │◀── /iframe?host_session=1 ────│
+    │                                 │─── embed.ready ─────────────▶│
+    │                                 │◀── host-session + 学生 token ─│
+    │                                 │◀── /v1/sessions/by-pod/{key} ─│
+```
+
+iframe 把父页 origin 取自 `document.referrer`（宿主不得剥离 referrer），凭证只经
+postMessage 传入、不落 URL；token 过期由宿主重新 post 一次，`pod_key` 与会话不变。
+
+```js
+iframe.src = `${iframeBase}/iframe?host_session=1`;
+window.addEventListener("message", (event) => {
+  if (event.origin !== new URL(iframeBase).origin) return;
+  if (event.data?.type !== "agentcloud.embed.ready" || event.data?.version !== 1) return;
+  iframe.contentWindow.postMessage(
+    { type: "agentcloud.embed.host-session", version: 1, accessToken, orgSlug, podKey },
+    new URL(iframeBase).origin,
+  );
+});
+```
+
+## 三段式凭证（组织 API Key 模型）
 
 | 凭证 | 持有方 | 生命周期 | 作用 |
 |---|---|---|---|
@@ -169,3 +214,7 @@ curl "$API/ext/orgs/$ORG/workers/$POD_KEY/interfaces" \
 | 400 `parent_origins must contain exact…` | origin 带了路径 / 通配符 |
 | iframe 停在 ready 不前进 | 父页 origin 不在 `parent_origins` 里，或 proof 未回传 |
 | redeem 返回 401 | context 已被兑换过或已过期（5 分钟） |
+| host-session iframe 直接报错、没发 ready | 宿主剥掉了 referrer，iframe 拿不到父页 origin |
+| 带 AMP token 请求返回 401 | 该 app_code 不在 `sso_configs.amp_bearer_app_codes`，或 JWKS 不可达 |
+| 403 `organization is outside the authenticated tenant` | token 的 AMP 租户与目标组织 `amp_tenant_id` 不是同一个 |
+| 204 `/v1/sessions/by-pod/{key}` | worker 还没有会话，等 runner 起会话或重新 run |

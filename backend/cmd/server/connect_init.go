@@ -56,6 +56,7 @@ func defaultConnectHandlerOptions(svc *serviceContainer) []connect.HandlerOption
 			interceptors.NewAuthInterceptor(
 				svc.auth.AccessTokenManager(),
 				svc.auth.AccessTokenAudience(),
+				svc.ampBearerAuthenticator(),
 			),
 		),
 	}

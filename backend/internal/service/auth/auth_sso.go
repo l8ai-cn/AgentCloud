@@ -40,24 +40,8 @@ type SSOLoginRequest struct {
 
 // SSOLogin authenticates a user via SSO identity, records the login, and returns tokens.
 func (s *Service) SSOLogin(ctx context.Context, req *SSOLoginRequest) (*user.User, *TokenPair, error) {
-	u, _, err := s.userService.GetOrCreateByExternalIdentity(ctx, userService.ExternalIdentity{
-		Provider:       req.ProviderName,
-		ProviderUserID: req.ExternalID,
-		Username:       req.Username,
-		Email:          req.Email,
-		Name:           req.Name,
-		AvatarURL:      req.AvatarURL,
-		EmailVerified:  req.EmailVerified,
-	})
+	u, _, err := s.FederateIdentity(ctx, req)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create/get user: %w", err)
-	}
-
-	if !u.IsActive {
-		return nil, nil, ErrUserDisabled
-	}
-
-	if err := s.bindFederatedOrganization(ctx, u.ID, req); err != nil {
 		return nil, nil, err
 	}
 	s.userService.RecordLogin(ctx, u.ID)
@@ -70,21 +54,57 @@ func (s *Service) SSOLogin(ctx context.Context, req *SSOLoginRequest) (*user.Use
 	return u, tokens, nil
 }
 
-func (s *Service) bindFederatedOrganization(ctx context.Context, userID int64, req *SSOLoginRequest) error {
+// FederateIdentity resolves an IdP assertion to a local user and organization
+// membership. The browser SSO callback and the AMP bearer authenticator share it
+// so both land on the same user for the same IdP subject. It returns the
+// resolved organization id, or 0 when the assertion carries no organization.
+func (s *Service) FederateIdentity(
+	ctx context.Context,
+	req *SSOLoginRequest,
+) (*user.User, int64, error) {
+	u, _, err := s.userService.GetOrCreateByExternalIdentity(ctx, userService.ExternalIdentity{
+		Provider:       req.ProviderName,
+		ProviderUserID: req.ExternalID,
+		Username:       req.Username,
+		Email:          req.Email,
+		Name:           req.Name,
+		AvatarURL:      req.AvatarURL,
+		EmailVerified:  req.EmailVerified,
+	})
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to create/get user: %w", err)
+	}
+
+	if !u.IsActive {
+		return nil, 0, ErrUserDisabled
+	}
+
+	orgID, err := s.bindFederatedOrganization(ctx, u.ID, req)
+	if err != nil {
+		return nil, 0, err
+	}
+	return u, orgID, nil
+}
+
+func (s *Service) bindFederatedOrganization(
+	ctx context.Context,
+	userID int64,
+	req *SSOLoginRequest,
+) (int64, error) {
 	if s.orgBinder == nil {
 		if req.DefaultOrganizationID != nil || req.IdPTenantID != "" {
 			slog.WarnContext(ctx, "SSO org binding requested but no binder is wired",
 				"provider", req.ProviderName, "idp_tenant_id", req.IdPTenantID)
 		}
-		return nil
+		return 0, nil
 	}
 
 	orgID, err := s.resolveFederatedOrgID(ctx, req)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if orgID <= 0 {
-		return nil
+		return 0, nil
 	}
 
 	role := ""
@@ -103,14 +123,14 @@ func (s *Service) bindFederatedOrganization(ctx context.Context, userID int64, r
 		// Misconfigured org must not lock the whole IdP out when only the
 		// static default org path is used without a tenant claim.
 		if req.IdPTenantID != "" {
-			return fmt.Errorf("federated org sync: %w", err)
+			return 0, fmt.Errorf("federated org sync: %w", err)
 		}
 	}
 	slog.InfoContext(ctx, "federated organization bound",
 		"provider", req.ProviderName, "user_id", userID,
 		"org_id", orgID, "role", role, "idp_tenant_id", req.IdPTenantID,
 		"idp_roles", req.IdPRoles)
-	return nil
+	return orgID, nil
 }
 
 func (s *Service) resolveFederatedOrgID(ctx context.Context, req *SSOLoginRequest) (int64, error) {

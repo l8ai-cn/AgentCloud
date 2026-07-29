@@ -74,6 +74,13 @@ func ResolveOrgScope(
 		)
 	}
 
+	if ampOrgID, ok := ampOrganizationFromContext(ctx); ok && ampOrgID != org.GetID() {
+		return ctx, nil, connect.NewError(
+			connect.CodePermissionDenied,
+			errors.New("organization is outside the authenticated tenant"),
+		)
+	}
+
 	role, err := orgSvc.GetMemberRole(ctx, org.GetID(), tenant.UserID)
 	if err != nil {
 		// GetMemberRole returns ErrNotMember for non-members; the service

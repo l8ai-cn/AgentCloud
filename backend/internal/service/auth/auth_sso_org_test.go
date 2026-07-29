@@ -76,13 +76,14 @@ func TestBindFederatedOrganization_SyncsMappedRole(t *testing.T) {
 	svc := &Service{orgBinder: binder}
 	defaultOrg := int64(2)
 
-	err := svc.bindFederatedOrganization(context.Background(), 42, &SSOLoginRequest{
+	orgID, err := svc.bindFederatedOrganization(context.Background(), 42, &SSOLoginRequest{
 		ProviderName:          "oidc:1",
 		IdPTenantID:           "6",
 		IdPRoles:              []string{"VIEWER", "APP_ADMIN"},
 		DefaultOrganizationID: &defaultOrg,
 	})
 	require.NoError(t, err)
+	assert.Equal(t, int64(2), orgID)
 	require.Len(t, binder.synced, 1)
 	assert.Equal(t, int64(2), binder.synced[0].orgID)
 	assert.Equal(t, int64(42), binder.synced[0].userID)
@@ -93,12 +94,13 @@ func TestBindFederatedOrganization_EmptyRolesPreserve(t *testing.T) {
 	binder := &stubOrgBinder{byTenant: map[string]int64{"6": 2}}
 	svc := &Service{orgBinder: binder}
 
-	err := svc.bindFederatedOrganization(context.Background(), 42, &SSOLoginRequest{
+	orgID, err := svc.bindFederatedOrganization(context.Background(), 42, &SSOLoginRequest{
 		ProviderName: "oidc:1",
 		IdPTenantID:  "6",
 		IdPRoles:     nil,
 	})
 	require.NoError(t, err)
+	assert.Equal(t, int64(2), orgID)
 	require.Len(t, binder.synced, 1)
 	assert.Equal(t, "", binder.synced[0].role)
 }

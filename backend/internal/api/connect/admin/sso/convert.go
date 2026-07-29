@@ -35,6 +35,7 @@ func toProtoAdminSSOConfig(r *ssoservice.ConfigResponse) *ssov1.AdminSSOConfig {
 	setStringPtr(&out.OidcClientId, r.OIDCClientID)
 	setStringPtr(&out.OidcScopes, r.OIDCScopes)
 	setStringPtr(&out.OidcAuthorizeExtraParams, r.OIDCAuthorizeExtraParams)
+	setStringPtr(&out.AmpBearerAppCodes, r.AMPBearerAppCodes)
 
 	setStringPtr(&out.SamlIdpMetadataUrl, r.SAMLIDPMetadataURL)
 	setStringPtr(&out.SamlIdpSsoUrl, r.SAMLIDPSSOURL)
@@ -91,6 +92,7 @@ func fromCreateRequest(req *ssov1.CreateSSOConfigRequest) *ssoservice.CreateConf
 		OIDCClientSecret:         req.GetOidcClientSecret(),
 		OIDCScopes:               req.GetOidcScopes(),
 		OIDCAuthorizeExtraParams: req.GetOidcAuthorizeExtraParams(),
+		AMPBearerAppCodes:        req.GetAmpBearerAppCodes(),
 		SAMLIDPMetadataURL:       req.GetSamlIdpMetadataUrl(),
 		SAMLIDPMetadataXML:       req.GetSamlIdpMetadataXml(),
 		SAMLIDPSSOURL:            req.GetSamlIdpSsoUrl(),
@@ -130,6 +132,7 @@ func fromUpdateRequest(req *ssov1.UpdateSSOConfigRequest) *ssoservice.UpdateConf
 		OIDCClientSecret:         req.OidcClientSecret,
 		OIDCScopes:               req.OidcScopes,
 		OIDCAuthorizeExtraParams: req.OidcAuthorizeExtraParams,
+		AMPBearerAppCodes:        req.AmpBearerAppCodes,
 		SAMLIDPMetadataURL:       req.SamlIdpMetadataUrl,
 		SAMLIDPMetadataXML:       req.SamlIdpMetadataXml,
 		SAMLIDPSSOURL:            req.SamlIdpSsoUrl,

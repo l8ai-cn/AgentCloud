@@ -97,6 +97,12 @@ func (s *Service) setOIDCFields(cfg *sso.Config, req *CreateConfigRequest) error
 		}
 		cfg.OIDCAuthorizeExtraParams = &req.OIDCAuthorizeExtraParams
 	}
+	if req.AMPBearerAppCodes != "" {
+		if err := validateAMPBearerAppCodes(req.AMPBearerAppCodes); err != nil {
+			return err
+		}
+		cfg.AMPBearerAppCodes = &req.AMPBearerAppCodes
+	}
 	if err := guardOIDCAuthorizeExtraParams(sso.ProtocolOIDC, req.EnforceSSO, cfg.OIDCAuthorizeExtraParams); err != nil {
 		return err
 	}

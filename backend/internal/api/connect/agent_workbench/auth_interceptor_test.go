@@ -35,6 +35,7 @@ func TestAgentWorkbenchAuthAcceptsScopedEmbedSessionToken(t *testing.T) {
 			workbenchTestAccessTokenManager(t),
 			testAudience,
 			fakeEmbedTokenValidator{claims: claims},
+			nil,
 		)),
 	)
 	server := httptest.NewServer(mux)
@@ -58,6 +59,7 @@ func TestAgentWorkbenchAuthRejectsEmbedTokenWithoutValidator(t *testing.T) {
 	interceptor := NewAuthInterceptor(
 		workbenchTestAccessTokenManager(t),
 		testAudience,
+		nil,
 		nil,
 	)
 	handler := interceptor.WrapUnary(func(

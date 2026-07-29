@@ -9,6 +9,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/agent"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/agentpod"
 	agentsessionsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/agentsession"
+	"github.com/l8ai-cn/agentcloud/backend/internal/service/ampidentity"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/billing"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/binding"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/channel"
@@ -24,6 +25,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/ticket"
 	tokenquotasvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenquota"
 	virtualkeysvc "github.com/l8ai-cn/agentcloud/backend/internal/service/virtualkey"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/ampbearer"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/crypto"
 	"gorm.io/gorm"
 )
@@ -38,6 +40,13 @@ func initializeWorkspaceServices(services *serviceContainer, cfg *config.Config,
 	services.org = organization.NewServiceWithBilling(infra.NewOrganizationRepository(db), services.billing)
 	if services.auth != nil {
 		services.auth.SetOrganizationBinder(services.org)
+		services.ampBearerAdapter = ampidentity.NewMiddlewareAdapter(
+			ampidentity.NewAuthenticator(
+				infra.NewSSOConfigRepository(db),
+				services.auth,
+				ampbearer.NewVerifier(),
+			),
+		)
 	}
 	services.aiResource = initializeAIResourceService(db, services.org, encryptor)
 	services.runnerRepo = infra.NewRunnerRepository(db)

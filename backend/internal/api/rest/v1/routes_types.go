@@ -12,6 +12,7 @@ import (
 	sessionsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/agentsession"
 	agentworkbenchsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/agentworkbench"
 	airesourcesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/airesource"
+	"github.com/l8ai-cn/agentcloud/backend/internal/service/ampidentity"
 	apikeyservice "github.com/l8ai-cn/agentcloud/backend/internal/service/apikey"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/auth"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/billing"
@@ -87,6 +88,7 @@ type Services struct {
 	PromoCode            *promocode.Service               // Promo code management
 	APIKey               *apikeyservice.Service           // API key management for third-party access
 	APIKeyAdapter        *apikeyservice.MiddlewareAdapter // API key middleware adapter
+	AMPBearerAdapter     *ampidentity.MiddlewareAdapter   // Federated AMP bearer authenticator
 	File                 *fileservice.Service
 	// NOTE: GitProvider and SSHKey services have been removed (moved to user-level settings)
 

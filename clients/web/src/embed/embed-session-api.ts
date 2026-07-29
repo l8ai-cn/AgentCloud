@@ -37,13 +37,13 @@ export function createEmbedSessionClient(
 ): EmbedSessionClient {
   const baseUrl = requiredBaseUrl(access.baseUrl);
   const baseOrigin = new URL(baseUrl).origin;
-  const sessionPath = `/v1/embed/sessions/${encodeURIComponent(access.sessionId)}`;
+  const { requestHeaders, sessionPath } = access.sessionApi;
   const request = async (path: string, init?: RequestInit) => {
     const token = (await access.getAccessToken()).trim();
     if (!token) throw new Error("agent_workbench_access_token_missing");
     return fetcher(new URL(path, baseUrl), {
       ...init,
-      headers: { ...init?.headers, Authorization: `Bearer ${token}` },
+      headers: { ...requestHeaders, ...init?.headers, Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
   };
