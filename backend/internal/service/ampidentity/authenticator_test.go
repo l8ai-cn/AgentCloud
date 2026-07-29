@@ -201,7 +201,10 @@ func verifiedClaims() ampauthz.BusinessTokenClaims {
 		PrincipalType: ampauthz.PrincipalTypeUserSession,
 		AppCode:       "ZHIYONG",
 		TenantID:      "6",
-		Roles:         json.RawMessage(`["APP_ADMIN"]`),
+		RoleGrants: json.RawMessage(
+			`[{"roleKey":"ZHIYONG/APP_ADMIN",` +
+				`"scope":{"type":"TENANT_APP","tenantId":"6","appCode":"ZHIYONG"}}]`,
+		),
 	}
 }
 

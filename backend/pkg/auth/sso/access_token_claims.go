@@ -13,11 +13,7 @@ func enrichUserInfoFromAccessToken(info *UserInfo, accessToken string) {
 	if !ok {
 		return
 	}
-	if len(info.Roles) == 0 {
-		if roles := claims.RoleCodeList(); len(roles) > 0 {
-			info.Roles = roles
-		}
-	}
+	info.Roles = claims.RoleCodeList()
 	if info.TenantID == "" {
 		info.TenantID = claims.Tenant()
 	}

@@ -29,10 +29,7 @@ type BusinessTokenClaims struct {
 	Username          string          `json:"username"`
 	PreferredUsername string          `json:"preferred_username"`
 	Name              string          `json:"name"`
-	Role              string          `json:"role"`
-	Roles             json.RawMessage `json:"roles"`
-	RoleCodes         json.RawMessage `json:"role_codes"`
-	PermissionCodes   []string        `json:"permissions"`
+	RoleGrants        json.RawMessage `json:"role_grants"`
 }
 
 func (c BusinessTokenClaims) Tenant() string {
@@ -42,13 +39,36 @@ func (c BusinessTokenClaims) Tenant() string {
 	return strings.TrimSpace(c.TenantID)
 }
 
+// RoleCodeList returns the application-local role codes carried by the token.
+// AMP emits roles only as `role_grants` on user_session tokens, shaped
+// `[{"roleKey":"<APP_CODE>/<ROLE>","scope":{…}}]`, and validates at issue time
+// that every grant belongs to the token's own tenant and app. Grants outside the
+// token's app namespace are dropped rather than reinterpreted: an out-of-scope
+// grant must never widen access.
 func (c BusinessTokenClaims) RoleCodeList() []string {
-	out := decodeRoleList(c.Roles)
-	if len(out) == 0 {
-		out = decodeRoleList(c.RoleCodes)
+	if len(c.RoleGrants) == 0 || string(c.RoleGrants) == "null" {
+		return nil
 	}
-	if len(out) == 0 && strings.TrimSpace(c.Role) != "" {
-		out = []string{strings.TrimSpace(c.Role)}
+	var grants []struct {
+		RoleKey string `json:"roleKey"`
+	}
+	if err := json.Unmarshal(c.RoleGrants, &grants); err != nil {
+		return nil
+	}
+	appCode := strings.TrimSpace(c.AppCode)
+	if appCode == "" {
+		return nil
+	}
+	prefix := appCode + "/"
+	out := make([]string, 0, len(grants))
+	for _, grant := range grants {
+		key := strings.TrimSpace(grant.RoleKey)
+		if !strings.HasPrefix(key, prefix) {
+			continue
+		}
+		if code := key[len(prefix):]; code != "" {
+			out = append(out, code)
+		}
 	}
 	return out
 }
@@ -84,46 +104,3 @@ func DecodeBusinessToken(token string) (BusinessTokenClaims, bool) {
 	return claims, true
 }
 
-func decodeRoleList(raw json.RawMessage) []string {
-	if len(raw) == 0 || string(raw) == "null" {
-		return nil
-	}
-	var asStrings []string
-	if err := json.Unmarshal(raw, &asStrings); err == nil {
-		return trimNonEmpty(asStrings)
-	}
-	var asObjects []struct {
-		Code string `json:"code"`
-		Role string `json:"role"`
-	}
-	if err := json.Unmarshal(raw, &asObjects); err == nil {
-		out := make([]string, 0, len(asObjects))
-		for _, item := range asObjects {
-			code := strings.TrimSpace(item.Code)
-			if code == "" {
-				code = strings.TrimSpace(item.Role)
-			}
-			if code != "" {
-				out = append(out, code)
-			}
-		}
-		return out
-	}
-	var single string
-	if err := json.Unmarshal(raw, &single); err == nil {
-		if single = strings.TrimSpace(single); single != "" {
-			return []string{single}
-		}
-	}
-	return nil
-}
-
-func trimNonEmpty(in []string) []string {
-	out := make([]string, 0, len(in))
-	for _, value := range in {
-		if trimmed := strings.TrimSpace(value); trimmed != "" {
-			out = append(out, trimmed)
-		}
-	}
-	return out
-}

@@ -23,7 +23,8 @@ type UserInfo struct {
 	Groups        []string
 	// TenantID is the IdP's tenant / authz_tenant claim when present.
 	TenantID string
-	// Roles are IdP application roles (e.g. AMP business JWT `roles`).
+	// Roles are application-local role codes derived from the IdP assertion —
+	// for AMP, the `role_grants` claim with the app namespace stripped.
 	// Used to sync organization_members.role on federated login.
 	Roles []string
 }

@@ -89,7 +89,12 @@ func validClaims() map[string]any {
 		"sub":            "principal:union-1",
 		"tenant_id":      "6",
 		"user_id":        "student-1",
-		"roles":          []string{"APP_USER"},
+		"role_grants": []map[string]any{{
+			"roleKey": "ZHIYONG/APP_USER",
+			"scope": map[string]any{
+				"type": "TENANT_APP", "tenantId": "6", "appCode": "ZHIYONG",
+			},
+		}},
 	}
 }
 
