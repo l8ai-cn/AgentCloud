@@ -71,6 +71,10 @@ func (s *PodService) ListStaleRecoverablePodKeys(ctx context.Context, threshold 
 	return s.repo.ListStaleRecoverablePodKeys(ctx, threshold)
 }
 
+func (s *PodService) ListIdleExpiredPodKeys(ctx context.Context, now time.Time) ([]string, error) {
+	return s.repo.ListIdleExpiredPodKeys(ctx, now)
+}
+
 func (s *PodService) CleanupStale(ctx context.Context, threshold time.Time) (int64, error) {
 	return s.repo.CleanupStale(ctx, threshold)
 }

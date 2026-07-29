@@ -84,6 +84,9 @@ func (m *mockPodStoreForTerminate) MarkStaleAsDisconnected(context.Context, time
 func (m *mockPodStoreForTerminate) ListStaleRecoverablePodKeys(context.Context, time.Time) ([]string, error) {
 	return nil, nil
 }
+func (m *mockPodStoreForTerminate) ListIdleExpiredPodKeys(context.Context, time.Time) ([]string, error) {
+	return nil, nil
+}
 func (m *mockPodStoreForTerminate) CleanupStale(context.Context, time.Time) (int64, error) {
 	return 0, nil
 }

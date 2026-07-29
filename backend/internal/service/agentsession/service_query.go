@@ -3,6 +3,7 @@ package agentsession
 import (
 	"context"
 
+	podDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentpod"
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentsession"
 )
 
@@ -10,6 +11,7 @@ type ListOptions struct {
 	Limit           int
 	Project         string
 	Alias           string
+	ReusableOnly    bool
 	IncludeArchived bool
 	PrincipalEmail  string
 }
@@ -32,14 +34,20 @@ func (s *Service) ListForUser(ctx context.Context, orgID, userID int64, opts Lis
 	if opts.Project != "" {
 		q = q.Where("project = ?", opts.Project)
 	}
-	// Alias identifies the worker, so it lives on the pod rather than the
-	// session. Scoping the subquery to orgID keeps the lookup inside the
-	// tenant even though pod_key is globally unique.
-	if opts.Alias != "" {
-		q = q.Where(
-			"pod_key IN (SELECT pod_key FROM pods WHERE organization_id = ? AND alias = ?)",
-			orgID, opts.Alias,
-		)
+	// Alias and reusability are both properties of the pod, not the session,
+	// and the session status is a lossy projection of the pod lifecycle, so
+	// neither can be answered from this table. Scoping the subquery to orgID
+	// keeps the lookup inside the tenant even though pod_key is globally
+	// unique.
+	if opts.Alias != "" || opts.ReusableOnly {
+		pods := s.db.Table("pods").Select("pod_key").Where("organization_id = ?", orgID)
+		if opts.Alias != "" {
+			pods = pods.Where("alias = ?", opts.Alias)
+		}
+		if opts.ReusableOnly {
+			pods = pods.Where("status IN ?", podDomain.ActiveStatuses())
+		}
+		q = q.Where("pod_key IN (?)", pods)
 	}
 	if !opts.IncludeArchived {
 		q = q.Where("archived = ?", false)

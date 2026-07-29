@@ -26,6 +26,7 @@ func (d *Deps) handleListSessions(c *gin.Context) {
 		Limit:           limit,
 		Project:         c.Query("project"),
 		Alias:           c.Query("alias"),
+		ReusableOnly:    c.Query("reusable") == "true",
 		IncludeArchived: c.Query("include_archived") == "true",
 		PrincipalEmail:  d.viewerEmail(c),
 	})

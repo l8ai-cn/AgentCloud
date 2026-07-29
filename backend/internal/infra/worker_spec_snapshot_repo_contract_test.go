@@ -119,14 +119,6 @@ func workerSpecSnapshotDBForContract(t *testing.T) *gorm.DB {
 INSERT INTO runners (id, organization_id, cluster_id, node_id)
 VALUES (1, 77, 700, 'workerspec-runner')
 `).Error)
-	require.NoError(t, db.Exec(`CREATE TABLE worker_spec_snapshots (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		organization_id INTEGER NOT NULL,
-		version INTEGER NOT NULL,
-		spec_json BLOB NOT NULL,
-		summary_json BLOB NOT NULL,
-		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-	)`).Error)
 	require.NoError(t, db.Exec(`CREATE TABLE worker_spec_dependency_artifacts (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		organization_id INTEGER NOT NULL,

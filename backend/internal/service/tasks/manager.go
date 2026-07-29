@@ -18,6 +18,13 @@ type StaleTerminalCleaner interface {
 	CleanupStaleTerminal(ctx context.Context, threshold time.Time) (int64, error)
 }
 
+// IdleWorkerReclaimer frees workers whose spec-declared idle budget ran out.
+// It is separate from the stale sweep because that one only records that a
+// worker went quiet, while this one gives the remote compute back.
+type IdleWorkerReclaimer interface {
+	ReclaimIdleWorkers(ctx context.Context) (int, error)
+}
+
 type DeadLetterCleaner interface {
 	CleanupExpiredMessages(ctx context.Context, olderThan time.Time) (int64, error)
 }
@@ -28,6 +35,7 @@ func DefaultConfig() Config {
 		TaskProcessorInterval:  30 * time.Second,
 		MRSyncInterval:         5 * time.Minute,
 		PodCleanupInterval:     10 * time.Minute,
+		IdleReclaimInterval:    time.Minute,
 		DLQCleanupInterval:     24 * time.Hour,
 		DLQRetentionTTL:        30 * 24 * time.Hour,
 		WorkerCount:            4,
@@ -40,6 +48,7 @@ type Config struct {
 	TaskProcessorInterval  time.Duration
 	MRSyncInterval         time.Duration
 	PodCleanupInterval     time.Duration
+	IdleReclaimInterval    time.Duration
 	DLQCleanupInterval     time.Duration
 	DLQRetentionTTL        time.Duration
 	WorkerCount            int
@@ -157,6 +166,18 @@ func (m *Manager) registerScheduledTasks() {
 			return m.cleanupStalePods(ctx)
 		},
 	})
+
+	if reclaimer, ok := m.podCleaner.(IdleWorkerReclaimer); ok {
+		_ = m.scheduler.Register(&infraTasks.Task{
+			Name:       "idle_worker_reclaim",
+			Interval:   m.cfg.IdleReclaimInterval,
+			RunOnStart: false,
+			Func: func(ctx context.Context) error {
+				_, err := reclaimer.ReclaimIdleWorkers(ctx)
+				return err
+			},
+		})
+	}
 
 	if m.dlqCleaner != nil {
 		_ = m.scheduler.Register(&infraTasks.Task{

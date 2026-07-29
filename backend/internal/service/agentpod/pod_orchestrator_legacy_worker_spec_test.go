@@ -15,14 +15,6 @@ import (
 
 func TestPrepareSnapshotWorkerCreateRejectsPersistedLegacyProtocolAdapter(t *testing.T) {
 	db := setupTestDB(t)
-	require.NoError(t, db.Exec(`CREATE TABLE worker_spec_snapshots (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		organization_id INTEGER NOT NULL,
-		version INTEGER NOT NULL,
-		spec_json BLOB NOT NULL,
-		summary_json BLOB NOT NULL,
-		created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-	)`).Error)
 	spec := podServiceWorkerSpec()
 	summary, err := specdomain.Summarize(spec)
 	require.NoError(t, err)

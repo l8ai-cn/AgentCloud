@@ -27,5 +27,6 @@ type PodStore interface {
 	ListStaleActivePodKeys(ctx context.Context, threshold time.Time) ([]string, error)
 	MarkStaleAsDisconnected(ctx context.Context, threshold time.Time) (int64, error)
 	ListStaleRecoverablePodKeys(ctx context.Context, threshold time.Time) ([]string, error)
+	ListIdleExpiredPodKeys(ctx context.Context, now time.Time) ([]string, error)
 	CleanupStale(ctx context.Context, threshold time.Time) (int64, error)
 }
