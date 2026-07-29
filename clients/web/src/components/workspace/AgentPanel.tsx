@@ -66,19 +66,17 @@ export function AgentPanel({
   useAcpRelay(podKey, paneId, liveSession);
 
   const latchRef = useRef({
-    controlGranted: controlLease.status === "granted",
-    workspaceArtifactError: workspaceArtifacts.error as string | null,
+    controlGranted: false,
+    workspaceArtifactError: null as string | null,
   });
-  latchRef.current = {
-    controlGranted: controlLease.status === "granted",
-    workspaceArtifactError: workspaceArtifacts.error,
-  };
 
   const workerRef = useMemo(
     () => ({ transport: "pod" as const, podKey }),
     [podKey],
   );
 
+  /* Transport getters close over a stable latch updated in the effect below. */
+  /* eslint-disable react-hooks/refs */
   const workerClient = useMemo(() => {
     const client = new WorkerClient();
     client.register(
@@ -94,8 +92,13 @@ export function AgentPanel({
     );
     return client;
   }, [podKey]);
+  /* eslint-enable react-hooks/refs */
 
   useEffect(() => {
+    latchRef.current = {
+      controlGranted: controlLease.status === "granted",
+      workspaceArtifactError: workspaceArtifacts.error,
+    };
     usePodStore.setState((state) => ({ _tick: state._tick + 1 }));
   }, [controlLease.status, workspaceArtifacts.error]);
 

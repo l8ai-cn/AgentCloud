@@ -330,14 +330,9 @@ func openExpertMarketPostgresTestDB(t *testing.T) *gorm.DB {
 	})
 	require.NoError(t, err)
 	require.NoError(t, db.Exec(expertMarketRepositoryBaseDDL).Error)
-	for _, migration := range []string{
-		"000220_expert_marketplace.up.sql",
-		"000221_add_expert_revision.up.sql",
-	} {
-		up, readErr := os.ReadFile("../../migrations/" + migration)
-		require.NoError(t, readErr)
-		require.NoError(t, db.Exec(string(up)).Error)
-	}
+	schemaDDL, readErr := os.ReadFile("testdata/expert_market_postgres_schema.sql")
+	require.NoError(t, readErr)
+	require.NoError(t, db.Exec(string(schemaDDL)).Error)
 	return db
 }
 

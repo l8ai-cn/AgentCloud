@@ -12,7 +12,7 @@ import (
 // in lock-step with two sibling hardcoded sources:
 //
 //   - clients/web/src/lib/slug/reserved.ts  (frontend Validate)
-//   - the slug reserved CHECK constraint in the target database
+//   - backend/schema/schema.sql organizations_slug_not_reserved CHECK
 //
 // Drift causes user-facing bugs: a slug allowed by one tier and blocked by
 // another. Adding/removing a reserved word means editing all three sources.
@@ -30,8 +30,7 @@ func TestReservedListSyncAcrossSources(t *testing.T) {
 	}
 
 	tsSet := readReservedFromFile(t, filepath.Join(repoRoot, "clients", "web", "src", "lib", "slug", "reserved.ts"), `"([a-z0-9-]+)"`)
-	sqlPath := latestReservedMigration(t, filepath.Join(repoRoot, "backend", "migrations"))
-	sqlSet := readReservedFromFile(t, sqlPath, `'([a-z0-9-]+)'`)
+	sqlSet := readReservedFromSchema(t, filepath.Join(repoRoot, "backend", "schema", "schema.sql"))
 
 	goSet := make(map[string]bool, len(reserved))
 	for k := range reserved {
@@ -123,21 +122,24 @@ func findRepoRoot() (string, error) {
 	return "", os.ErrNotExist
 }
 
-// latestReservedMigration returns the highest-numbered migration matching
-// *slug_reserved*.up.sql. The pattern is intentionally narrow so business
-// migrations whose names happen to contain "reserved" don't get mis-detected
-// as the SSOT for reserved-slug check constraints.
-func latestReservedMigration(t *testing.T, migrationsDir string) string {
+func readReservedFromSchema(t *testing.T, schemaPath string) map[string]bool {
 	t.Helper()
-	matches, err := filepath.Glob(filepath.Join(migrationsDir, "*slug_reserved*.up.sql"))
+	data, err := os.ReadFile(schemaPath)
 	if err != nil {
-		t.Fatalf("glob migrations: %v", err)
+		t.Fatalf("failed to read %s: %v", schemaPath, err)
 	}
-	if len(matches) == 0 {
-		t.Fatalf("no *slug_reserved*.up.sql migration found under %s", migrationsDir)
+	re := regexp.MustCompile(
+		`ADD CONSTRAINT organizations_slug_not_reserved CHECK \(\(\(slug\)::text <> ALL \(\(ARRAY\[([^\]]+)\]`,
+	)
+	match := re.FindStringSubmatch(string(data))
+	if match == nil {
+		t.Fatalf("organizations_slug_not_reserved CHECK not found in %s", schemaPath)
 	}
-	sort.Strings(matches) // lexicographic = numeric since migrations are zero-padded
-	return matches[len(matches)-1]
+	out := extractReservedSet(match[1], `'([a-z0-9-]+)'`)
+	if len(out) == 0 {
+		t.Fatalf("no reserved entries parsed from organizations_slug_not_reserved in %s", schemaPath)
+	}
+	return out
 }
 
 // TestReservedListIsSorted ensures the canonical list is deterministic so
