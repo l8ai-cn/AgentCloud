@@ -1,2 +1,0 @@
-ALTER TABLE pods DROP COLUMN IF EXISTS error_code;
-ALTER TABLE pods DROP COLUMN IF EXISTS error_message;

@@ -1,2 +1,0 @@
-DROP TABLE IF EXISTS loop_runs;
-DROP TABLE IF EXISTS loops;

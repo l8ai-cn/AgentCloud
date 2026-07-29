@@ -1,2 +1,0 @@
--- No-op: we don't want to delete subscriptions that were created to fix missing records.
--- Reverting this would re-introduce the data inconsistency.

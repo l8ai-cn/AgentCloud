@@ -1,2 +1,0 @@
--- Placeholder: migration 000062 was removed during development.
--- Kept as no-op to maintain sequential numbering required by golang-migrate.

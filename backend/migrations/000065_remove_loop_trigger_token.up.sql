@@ -1,2 +1,0 @@
--- No-op: trigger_token columns were never created (removed from 000060 before deployment).
--- This migration is kept as a placeholder to maintain migration numbering consistency.

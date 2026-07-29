@@ -1,2 +1,0 @@
-DROP INDEX IF EXISTS idx_runners_tags;
-ALTER TABLE runners DROP COLUMN IF EXISTS tags;

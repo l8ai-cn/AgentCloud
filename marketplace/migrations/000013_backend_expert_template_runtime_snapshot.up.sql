@@ -1,2 +1,0 @@
--- 000010 creates the immutable 1.0.0 catalog version with this runtime
--- snapshot. Keep this migration as a sequence marker without rewriting it.

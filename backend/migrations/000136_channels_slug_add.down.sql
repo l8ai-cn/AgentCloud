@@ -1,2 +1,0 @@
-ALTER TABLE channels DROP CONSTRAINT IF EXISTS channels_slug_format;
-ALTER TABLE channels DROP COLUMN IF EXISTS slug;

@@ -1,1 +1,0 @@
--- Intentionally empty: see 000127_add_e2e_echo_agent.down.sql.

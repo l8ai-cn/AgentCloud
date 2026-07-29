@@ -1,2 +1,0 @@
--- Catalog versions are immutable. Rolling back this sequence marker does not
--- rewrite the 1.0.0 version created by 000010.

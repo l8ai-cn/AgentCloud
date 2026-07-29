@@ -1,1 +1,0 @@
-DROP INDEX IF EXISTS marketplace.idx_marketplace_installations_single_active;

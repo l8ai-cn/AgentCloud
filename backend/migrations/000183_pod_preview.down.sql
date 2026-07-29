@@ -1,2 +1,0 @@
-ALTER TABLE pods DROP COLUMN IF EXISTS preview_path;
-ALTER TABLE pods DROP COLUMN IF EXISTS preview_port;

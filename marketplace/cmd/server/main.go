@@ -21,16 +21,6 @@ import (
 )
 
 func main() {
-	if len(os.Args) > 1 && os.Args[1] == "migrate" {
-		databaseURL := os.Getenv("MARKETPLACE_MIGRATION_DATABASE_URL")
-		if databaseURL == "" {
-			log.Fatal("MARKETPLACE_MIGRATION_DATABASE_URL is required")
-		}
-		if err := migrateUp(databaseURL); err != nil {
-			log.Fatalf("migrate marketplace database: %v", err)
-		}
-		return
-	}
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal(err)
