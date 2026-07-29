@@ -95,8 +95,10 @@ func ensureExpertCatalogVersion(
 	payload expertCatalogPayload,
 ) (int64, error) {
 	version := strconv.Itoa(release.Version) + ".0.0"
-	// Projection rebuild: same (catalog_item_id, version) may rewrite digest
-	// when the projection algorithm changes. The expert release remains SSOT.
+	// Catalog versions are immutable in the database. Catch-up sync must keep an
+	// already-published (catalog_item_id, version) row instead of rewriting its
+	// digest/manifest when the projection algorithm changes; a new expert release
+	// version is the only way to publish a new payload.
 	if err := tx.Exec(`
 INSERT INTO marketplace.marketplace_catalog_item_versions
   (catalog_item_id, version, source_revision, content_digest, manifest,
@@ -104,14 +106,7 @@ INSERT INTO marketplace.marketplace_catalog_item_versions
    created_by_platform_user_id)
 VALUES (?, ?, ?, ?, ?::jsonb, ?::jsonb, ?::jsonb,
   ?::jsonb, 'passed', ?)
-ON CONFLICT (catalog_item_id, version) DO UPDATE SET
-  source_revision = EXCLUDED.source_revision,
-  content_digest = EXCLUDED.content_digest,
-  manifest = EXCLUDED.manifest,
-  permissions = EXCLUDED.permissions,
-  compatibility = EXCLUDED.compatibility,
-  dependency_lock = EXCLUDED.dependency_lock,
-  validation_status = 'passed'
+ON CONFLICT (catalog_item_id, version) DO NOTHING
 `, catalogItemID, version, fmt.Sprintf("expert-release-%d", release.ReleaseID),
 		payload.ContentDigest, string(payload.Manifest), expertRequiredPermissions,
 		string(payload.Compatibility),
