@@ -1,4 +1,4 @@
-package postgres
+package catalogsync
 
 import (
 	"context"
@@ -95,6 +95,8 @@ func ensureExpertCatalogVersion(
 	payload expertCatalogPayload,
 ) (int64, error) {
 	version := strconv.Itoa(release.Version) + ".0.0"
+	// Projection rebuild: same (catalog_item_id, version) may rewrite digest
+	// when the projection algorithm changes. The expert release remains SSOT.
 	if err := tx.Exec(`
 INSERT INTO marketplace.marketplace_catalog_item_versions
   (catalog_item_id, version, source_revision, content_digest, manifest,
@@ -102,7 +104,14 @@ INSERT INTO marketplace.marketplace_catalog_item_versions
    created_by_platform_user_id)
 VALUES (?, ?, ?, ?, ?::jsonb, ?::jsonb, ?::jsonb,
   ?::jsonb, 'passed', ?)
-ON CONFLICT (catalog_item_id, version) DO NOTHING
+ON CONFLICT (catalog_item_id, version) DO UPDATE SET
+  source_revision = EXCLUDED.source_revision,
+  content_digest = EXCLUDED.content_digest,
+  manifest = EXCLUDED.manifest,
+  permissions = EXCLUDED.permissions,
+  compatibility = EXCLUDED.compatibility,
+  dependency_lock = EXCLUDED.dependency_lock,
+  validation_status = 'passed'
 `, catalogItemID, version, fmt.Sprintf("expert-release-%d", release.ReleaseID),
 		payload.ContentDigest, string(payload.Manifest), expertRequiredPermissions,
 		string(payload.Compatibility),
@@ -110,18 +119,17 @@ ON CONFLICT (catalog_item_id, version) DO NOTHING
 		return 0, err
 	}
 	var row struct {
-		ID            int64
-		ContentDigest string
+		ID int64
 	}
 	if err := tx.Raw(`
-SELECT id, content_digest
+SELECT id
 FROM marketplace.marketplace_catalog_item_versions
 WHERE catalog_item_id = ? AND version = ?
 `, catalogItemID, version).Scan(&row).Error; err != nil {
 		return 0, err
 	}
-	if row.ID == 0 || row.ContentDigest != payload.ContentDigest {
-		return 0, fmt.Errorf("expert catalog version conflicts with release %d", release.ReleaseID)
+	if row.ID == 0 {
+		return 0, fmt.Errorf("expert catalog version missing for release %d", release.ReleaseID)
 	}
 	if err := tx.Exec(`
 UPDATE marketplace.marketplace_catalog_items

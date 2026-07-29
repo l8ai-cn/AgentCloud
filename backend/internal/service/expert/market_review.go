@@ -60,6 +60,9 @@ func (s *Service) approveMarketRelease(
 	); err != nil {
 		return nil, err
 	}
+	if err := s.projectExpertCatalog(ctx); err != nil {
+		return nil, err
+	}
 	return s.market.GetReleaseByID(ctx, release.ID)
 }
 
@@ -160,7 +163,18 @@ func (s *Service) withdrawMarketRelease(
 	); err != nil {
 		return nil, err
 	}
+	if err := s.projectExpertCatalog(ctx); err != nil {
+		return nil, err
+	}
 	return s.market.GetReleaseByID(ctx, release.ID)
+}
+
+func (s *Service) projectExpertCatalog(ctx context.Context) error {
+	if s.catalogProjector == nil {
+		return nil
+	}
+	_, err := s.catalogProjector.Sync(ctx)
+	return err
 }
 
 func (s *Service) marketReleaseForReview(

@@ -11,6 +11,8 @@ import (
 	expertsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/expert"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/gitops"
 	skillsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/skill"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/crypto"
+	"github.com/l8ai-cn/agentcloud/marketplace/catalogsync"
 	"gorm.io/gorm"
 )
 
@@ -56,6 +58,7 @@ func newExpertAndSkillServices(
 		MarketWorkerSpecs: services.workerCreation,
 		MarketInstallLock: infra.NewExpertMarketInstallationLocker(db),
 		Market:            infra.NewExpertMarketRepository(db),
+		CatalogProjector:  catalogsync.NewExpertCatalogSynchronizer(db),
 		Skills:            skillCatalog,
 		MarketSkills:      skillCatalog,
 		Items:             itemsvc.NewService(db),
@@ -74,6 +77,7 @@ func newExpertAndSkillServices(
 			logger,
 		),
 		Packager: packager,
+		Secrets:  crypto.NewEncryptor(cfg.JWT.Secret),
 		Logger:   logger,
 	})
 	return expertService, skillService

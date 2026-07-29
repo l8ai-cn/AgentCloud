@@ -1,4 +1,4 @@
-package postgres
+package catalogsync
 
 import (
 	"crypto/sha256"
@@ -49,9 +49,10 @@ func buildExpertCatalogPayload(release publishedExpertRelease) (expertCatalogPay
 			release.ReleaseID,
 		)
 	}
+	// Manifest carries only provenance + the installable snapshot. Credits and
+	// locale were invented here with no upstream field and no consumers.
 	manifest, err := json.Marshal(struct {
-		InstallationCredits string `json:"installation_credits"`
-		SourceRelease       struct {
+		SourceRelease struct {
 			ApplicationID int64 `json:"application_id"`
 			ReleaseID     int64 `json:"release_id"`
 			Version       int   `json:"version"`
@@ -62,7 +63,6 @@ func buildExpertCatalogPayload(release publishedExpertRelease) (expertCatalogPay
 			WorkerSpec json.RawMessage `json:"worker_spec"`
 		} `json:"runtime_snapshot"`
 	}{
-		InstallationCredits: "20",
 		SourceRelease: struct {
 			ApplicationID int64 `json:"application_id"`
 			ReleaseID     int64 `json:"release_id"`
@@ -86,7 +86,6 @@ func buildExpertCatalogPayload(release publishedExpertRelease) (expertCatalogPay
 	}
 	compatibility, err := json.Marshal(map[string]any{
 		"agents": []string{expert.AgentSlug},
-		"locale": "zh-CN",
 	})
 	if err != nil {
 		return expertCatalogPayload{}, err

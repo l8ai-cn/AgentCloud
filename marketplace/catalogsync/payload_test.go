@@ -1,4 +1,4 @@
-package postgres
+package catalogsync
 
 import (
 	"encoding/json"
@@ -27,31 +27,21 @@ func TestBuildExpertCatalogPayloadEmbedsInstallableSnapshot(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, payload.ContentDigest, 64)
 	require.Equal(t, "video-studio", payload.AgentSlug)
-	require.JSONEq(t, `{"agents":["video-studio"],"locale":"zh-CN"}`,
-		string(payload.Compatibility))
+	require.JSONEq(t, `{"agents":["video-studio"]}`, string(payload.Compatibility))
 	require.JSONEq(t, `{"skills":["video-editing","video-qa"]}`,
 		string(payload.DependencyLock))
 
-	var manifest struct {
-		InstallationCredits string `json:"installation_credits"`
-		SourceRelease       struct {
-			ApplicationID int64 `json:"application_id"`
-			ReleaseID     int64 `json:"release_id"`
-			Version       int   `json:"version"`
-		} `json:"source_release"`
-		RuntimeSnapshot struct {
-			Version    int             `json:"version"`
-			Expert     json.RawMessage `json:"expert"`
-			WorkerSpec json.RawMessage `json:"worker_spec"`
-		} `json:"runtime_snapshot"`
-	}
+	var manifest map[string]any
 	require.NoError(t, json.Unmarshal(payload.Manifest, &manifest))
-	require.Equal(t, "20", manifest.InstallationCredits)
-	require.Equal(t, int64(3), manifest.SourceRelease.ApplicationID)
-	require.Equal(t, int64(7), manifest.SourceRelease.ReleaseID)
-	require.Equal(t, 2, manifest.SourceRelease.Version)
-	require.Equal(t, 1, manifest.RuntimeSnapshot.Version)
-	require.JSONEq(t, `{"version":1}`, string(manifest.RuntimeSnapshot.WorkerSpec))
+	_, hasCredits := manifest["installation_credits"]
+	require.False(t, hasCredits)
+	source := manifest["source_release"].(map[string]any)
+	require.Equal(t, float64(3), source["application_id"])
+	require.Equal(t, float64(7), source["release_id"])
+	require.Equal(t, float64(2), source["version"])
+	runtime := manifest["runtime_snapshot"].(map[string]any)
+	require.Equal(t, float64(1), runtime["version"])
+	require.JSONEq(t, `{"version":1}`, mustJSON(t, runtime["worker_spec"]))
 }
 
 func TestBuildExpertCatalogPayloadRejectsInvalidWorkerSpec(t *testing.T) {
@@ -62,4 +52,11 @@ func TestBuildExpertCatalogPayloadRejectsInvalidWorkerSpec(t *testing.T) {
 	})
 
 	require.EqualError(t, err, "expert release 8 has an invalid worker spec")
+}
+
+func mustJSON(t *testing.T, value any) string {
+	t.Helper()
+	raw, err := json.Marshal(value)
+	require.NoError(t, err)
+	return string(raw)
 }

@@ -3,25 +3,17 @@ package main
 import (
 	"context"
 	"log"
-	"time"
 
-	marketplacepostgres "github.com/l8ai-cn/agentcloud/marketplace/internal/infra/postgres"
+	"github.com/l8ai-cn/agentcloud/marketplace/catalogsync"
 )
 
-func runExpertCatalogSync(
+// Startup catch-up only. Ongoing projection is driven by the backend expert
+// publish/withdraw path; a 5s poll would reintroduce same-DB dual-write lag.
+func syncExpertCatalogOnce(
 	ctx context.Context,
-	syncer *marketplacepostgres.ExpertCatalogSynchronizer,
+	syncer *catalogsync.ExpertCatalogSynchronizer,
 ) {
-	ticker := time.NewTicker(5 * time.Second)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-			if _, err := syncer.Sync(ctx); err != nil {
-				log.Printf("sync published expert catalog: %v", err)
-			}
-		}
+	if _, err := syncer.Sync(ctx); err != nil {
+		log.Fatalf("sync published expert catalog: %v", err)
 	}
 }

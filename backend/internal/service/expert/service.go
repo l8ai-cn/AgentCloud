@@ -95,10 +95,17 @@ type Service struct {
 	marketInstallLock MarketInstallationLocker
 	market            expertmarket.Repository
 	marketSkills      MarketSkillLoader
+	catalogProjector  ExpertCatalogProjector
 	skills            SkillLoader
 	items             itemservice.PositionedAppender
 	gitops            gitops.Service
 	logger            *slog.Logger
+}
+
+// ExpertCatalogProjector projects published expert releases into the
+// marketplace storefront tables. Optional: nil skips projection (tests).
+type ExpertCatalogProjector interface {
+	Sync(ctx context.Context) (int, error)
 }
 
 type Deps struct {
@@ -112,6 +119,7 @@ type Deps struct {
 	MarketInstallLock MarketInstallationLocker
 	Market            expertmarket.Repository
 	MarketSkills      MarketSkillLoader
+	CatalogProjector  ExpertCatalogProjector
 	Skills            SkillLoader
 	Items             itemservice.PositionedAppender
 	// Gitops is the git-backing choke point (namespace am-experts). It may be
@@ -137,6 +145,7 @@ func NewService(deps Deps) *Service {
 		marketInstallLock: deps.MarketInstallLock,
 		market:            deps.Market,
 		marketSkills:      deps.MarketSkills,
+		catalogProjector:  deps.CatalogProjector,
 		skills:            deps.Skills,
 		items:             deps.Items,
 		gitops:            deps.Gitops,
