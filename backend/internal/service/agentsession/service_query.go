@@ -9,6 +9,7 @@ import (
 type ListOptions struct {
 	Limit           int
 	Project         string
+	Alias           string
 	IncludeArchived bool
 	PrincipalEmail  string
 }
@@ -30,6 +31,15 @@ func (s *Service) ListForUser(ctx context.Context, orgID, userID int64, opts Lis
 	}
 	if opts.Project != "" {
 		q = q.Where("project = ?", opts.Project)
+	}
+	// Alias identifies the worker, so it lives on the pod rather than the
+	// session. Scoping the subquery to orgID keeps the lookup inside the
+	// tenant even though pod_key is globally unique.
+	if opts.Alias != "" {
+		q = q.Where(
+			"pod_key IN (SELECT pod_key FROM pods WHERE organization_id = ? AND alias = ?)",
+			orgID, opts.Alias,
+		)
 	}
 	if !opts.IncludeArchived {
 		q = q.Where("archived = ?", false)

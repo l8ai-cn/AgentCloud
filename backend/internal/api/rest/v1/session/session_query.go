@@ -25,6 +25,7 @@ func (d *Deps) handleListSessions(c *gin.Context) {
 	rows, err := d.Sessions.ListForUser(c.Request.Context(), tenant.OrganizationID, tenant.UserID, sessionsvc.ListOptions{
 		Limit:           limit,
 		Project:         c.Query("project"),
+		Alias:           c.Query("alias"),
 		IncludeArchived: c.Query("include_archived") == "true",
 		PrincipalEmail:  d.viewerEmail(c),
 	})
