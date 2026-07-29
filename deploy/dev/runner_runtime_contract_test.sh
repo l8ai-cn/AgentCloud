@@ -50,7 +50,7 @@ grep -q "runner-cursor-cli" docker-compose.runners.yml
 grep -q "docker/agent-runtime/Dockerfile" docker-compose.runners.yml
 grep -q "target: runtime" docker-compose.runners.yml
 grep -q "COORDINATOR_RUNNER_DOCKER_COMPOSE_SERVICES" lib/host_services.sh
-grep -A20 "start_backend_host_lite()" lib/host_services_lite.sh \
+awk '/^start_backend_host_lite\(\)/,/^}/' lib/host_services_lite.sh \
   | grep -q 'export INTERNAL_API_SECRET='
 grep -q "case \"\${AGENT_RUNTIME}\"" runner-entrypoint.sh
 grep -q "claude-code|codex-cli|video-studio|cursor-cli|" runner-entrypoint.sh
