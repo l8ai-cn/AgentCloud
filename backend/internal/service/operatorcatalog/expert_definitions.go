@@ -39,6 +39,12 @@ func Experts() []ExpertDefinition {
 			ModelResourceID:    0,
 			ConfigOverrides:    map[string]any{},
 			ConfigDocumentRefs: map[string]string{"settings": "do-agent-settings"},
+			// The platform key is scoped to one teacher, so it is supplied per
+			// run by the caller instead of being pinned into the shared spec.
+			LaunchEnv: []LaunchEnvDeclaration{
+				{Name: "ZHIYONG_PLATFORM_API_KEY", Secret: true},
+				{Name: "ZHIYONG_COURSE_API_BASE_URL"},
+			},
 		},
 		{
 			Slug: "coding-lab-experiment", Name: "编码实验环境",

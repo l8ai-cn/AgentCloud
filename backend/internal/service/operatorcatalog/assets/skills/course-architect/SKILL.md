@@ -1,34 +1,70 @@
 ---
 name: course-architect
-description: Design a course blueprint from evidence and observable learner outcomes, including progression, lessons, tasks, deliverables, acceptance criteria, labs, practice, and slide requirements. Use before full lesson authoring.
+description: 课程大纲与结构设计。用于从参考资料、课程目标或岗位能力出发，设计课程名称、受众、学习目标、章节路径、每章任务数、课件/实验/测验清单、产出物和验收标准；需要课程设计方法论、反向设计、课程对齐、苏格拉底提问、通俗讲解、技术引用或配图规划时也使用；只负责课程设计和结构蓝图，不负责平台 API 发布、Gitea 推送或完整课件正文创作。
 ---
 
 # Course Architect
 
-Design structure before writing full lesson bodies. Apply backward design: learner
-evidence first, then tasks and teaching activities.
+用来设计课程结构，不写平台数据，不做发布。
 
-## Required Outputs
+## 适用场景
 
-Write:
+- 用户要求“课程大纲”“课程逻辑”“章节任务清单”“每章 3-6 个任务”“先排计划”。
+- 用户提供多个参考资料，需要梳理为课程路径。
+- 用户还没确认课程结构，不能直接写正文或发布。
 
-- `output/projects/<project-id>/architecture/course-architecture-plan.md`
-- one `architecture/chapter-XX-production-plan.md` per lesson
+## 输出顺序
 
-The course plan must include title, audience, prerequisites, final capability, source
-mapping, progression rationale, and quality risks.
+1. 方法论声明：采用 Backward Design、Constructive Alignment、Merrill 任务中心原则、Bloom 可观察目标、Socratic Questioning、Plain Language、UDL 和多媒体学习原则。
+2. 课程定位：课程名称、受众、先修要求、最终能力。
+3. 课程主线：为什么这样排序，前后章节如何递进。
+4. 章节表：每章标题、学习目标、主产物、参考资料映射。
+5. 任务表：每章 3-6 个课程任务，每个任务有可完成目标。
+6. 教学设计表：每章回答学生为什么学、学什么、怎么做、交什么、怎么验。
+7. 课件/实验/测验清单：每个任务拆到具体教学单元。
+8. 引导问题与讲解策略：每章列出关键苏格拉底问题和通俗解释策略。
+9. 技术引用与配图计划：列出参考位置、需要配图的章节、图示类型和 prompt 产出要求。
+10. 质量风险：哪些章节需要真实实验、题库、数据或模板补充。
 
-Each chapter plan must include:
+## 禁止事项
 
-- observable objective and main learner deliverable;
-- 3-6 distinct tasks with acceptance evidence;
-- why learn, what to learn, how to act, what to submit, how to verify;
-- chapter-specific questions, explanation strategy, failure cases, and citations;
-- lab, practice, and slide requirements when needed.
+- 不要把大纲当正文。
+- 不要直接生成整课 markdown 正文。
+- 不要调用课程 API 或 Gitea 发布。
+- 不要用“学生理解/教师讲解”作为任务目标；任务目标必须能被产物验证。
+- 不要只罗列参考资料名；必须说明资料具体用在哪个章节、哪个任务、哪个知识点。
+- 不要把配图当装饰；只有能降低理解成本的流程、架构、状态、对比和诊断才规划配图。
+- 不要跨章节复用同一组学习目标、苏格拉底问题、讲解策略、教学节奏或验收话术。每章必须根据知识难点、典型失败、学生动作和工程证据单独设计。
 
-Do not reuse generic objectives, questions, examples, or rubrics across chapters by
-changing only the title. Do not publish or call platform APIs.
+## 差异化质量门
 
-After approval, initialize the structured package with the course-builder CLI and add
-the approved lesson/task identifiers. The architecture files remain the design source;
-the course package is the machine-readable delivery contract.
+整课输出前必须逐章检查：
+
+- 学习目标使用本章特有的可观察动作和对象，不能只替换章节名称。
+- 苏格拉底问题必须指向本章的核心机制、错误假设和取舍证据。
+- 通俗讲解策略必须说明本章采用的具体类比、反例或演示，不得使用全课通用句。
+- 教学单元的活动时长和组织方式由任务复杂度决定，不得机械复制统一模板。
+- 相邻章节的主产物、失败诊断和验收证据必须体现能力递进。
+- 任意两章若出现三段以上近似相同的教学文本，视为不合格，必须重写后再交付。
+
+## 交付格式
+
+必须输出或写入：
+
+- `course-architecture-plan.md`
+- 每章 `chapter-XX-production-plan.md`
+
+每个章节计划必须包含：
+
+- 章节目标
+- 本章主产物
+- 任务清单
+- 每个任务的课件/实验/测验清单
+- 每个课件的讲解目标、学生动作、提交物、验收方式
+- 学生三问：为什么学、学什么、怎么做
+- 苏格拉底引导问题
+- 通俗讲解策略
+- 技术引用映射
+- 配图需求：图示类型、生成 prompt 要求、预期资产位置
+
+完成前抽查全部章节的学习目标、引导问题、讲解策略和教学单元；发现模板化重复时必须重写，不得仅报告风险。

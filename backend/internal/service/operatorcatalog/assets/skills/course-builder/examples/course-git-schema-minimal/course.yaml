@@ -1,0 +1,14 @@
+id: schema-example
+title: Course Git Schema Example
+type: practice
+column_id: example
+status: 1
+sort: 1
+default_language: zh-CN
+tags:
+  - schema
+question_bank_id: example-bank
+question_banks:
+  - id: example-bank
+    name: Example Bank
+    path: question-banks/example.yaml

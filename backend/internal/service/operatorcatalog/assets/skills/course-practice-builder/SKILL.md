@@ -1,27 +1,49 @@
 ---
 name: course-practice-builder
-description: Build objective-aligned practice, quizzes, answer explanations, knowledge-point mapping, scoring rules, and evidence-based assessment artifacts for a course task.
+description: 课程练习、题库与 quiz 构建。用于把课程知识点和任务目标拆成随堂练习、章节自检、项目验收题、题库题目和 quiz 关联方案，包括题型设计、答案解析、评分标准、知识点映射和后台题库绑定建议；不负责实验 runbook、普通课件正文、整课架构或平台发布。
 ---
 
 # Course Practice Builder
 
-Write practice assets under
-`output/projects/<project-id>/artifacts/practice/<practice-id>/`.
+把课程中的“会不会”变成可练、可测、可追踪的练习和题库。
 
-Required output:
+## 触发条件
 
-- `questions.json`: stable ids, type, stem, options when applicable, answer, rationale,
-  knowledge point, difficulty, and evidence target.
-- `rubric.md`: scoring and pass criteria.
-- `review.md`: ambiguity, coverage, and teacher-review findings.
+- 用户问“题库构建了吗”“quiz 是关联关系吗”“练习怎么做”。
+- 课程需要随堂练习、章节测验、自检题、项目验收题或题库导入。
+- 需要把知识点映射到题目、答案、解析和 quiz 关联。
 
-Cover concept understanding, application, diagnosis, and delivery evidence where
-appropriate. Every answer explanation states why the correct answer works and why
-plausible alternatives fail.
+## 练习类型
 
-Map the resulting quiz into `course-package.json` through a package subtask. Use one
-authoritative question source. Do not maintain conflicting inline questions, separate
-JSON, and question-id lists.
+- 随堂检查：1-3 题，验证刚讲完的概念边界。
+- 操作判断：根据日志、截图、配置判断是否正确。
+- 案例辨析：识别错误设计、安全风险、证据不足。
+- 章节自检：覆盖本章关键知识点和实验结果。
+- 项目验收题：结合交付物、rubric 和复盘报告。
 
-Do not claim platform question-bank creation unless a current teacher-scoped API call
-and readback were executed.
+## 构建流程
+
+1. 读取章节目标、任务目标和知识点清单。
+2. 为每个任务拆出练习目标：概念、操作、证据、风险、复盘。
+3. 选择题型：单选、多选、判断、填空、简答、案例题。
+4. 写题干、选项、标准答案、解析、考察知识点和难度。
+5. 生成 quiz 关联方案：题目归属、排序、分值、通过标准。
+6. 写入 `question_banks`、quiz subtask 或 `.quiz.json` 前读取 `../course-builder/references/course-git-schema.md`。同一 quiz 只能有一个题目权威源，禁止同时维护不一致的题目文件、内联 JSON 和题目 ID 列表。
+7. 修改 Course Git 清单后执行 `python3 skills/course-builder/scripts/validate_course_git_schema.py courses/<course-key>/course-git`。
+8. 输出题库导入建议；需要平台创建题库和绑定 quiz 时，先核对当前题库/考试 API，不再转交已废弃的 `course-management`。
+
+## 质量门
+
+- 每道题必须映射到明确知识点或任务产物。
+- 解析必须说明为什么正确、为什么错误，不能只给答案。
+- 至少包含一类“证据判断题”，让学生根据截图、日志、Trace 或报告判断。
+- 章节练习必须覆盖概念理解、操作流程、风险边界和交付验收。
+- 不允许只用泛泛问答替代真实练习。
+
+## 交付物
+
+- 练习设计表
+- 题库题目 JSON 或 markdown 草案
+- quiz 关联方案
+- 答案解析
+- 评分 rubric 或通过标准

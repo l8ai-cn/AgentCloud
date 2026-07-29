@@ -59,10 +59,11 @@ type publishExpertRequest struct {
 }
 
 type runExpertRequest struct {
-	Alias          *string `json:"alias"`
-	PromptOverride *string `json:"prompt_override"`
-	Cols           int32   `json:"cols"`
-	Rows           int32   `json:"rows"`
+	Alias          *string           `json:"alias"`
+	PromptOverride *string           `json:"prompt_override"`
+	Cols           int32             `json:"cols"`
+	Rows           int32             `json:"rows"`
+	Env            map[string]string `json:"env,omitempty"`
 }
 
 type installMarketApplicationRequest struct {

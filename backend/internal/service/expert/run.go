@@ -99,6 +99,7 @@ type RunExpertRequest struct {
 	PromptOverride *string
 	Cols           int32
 	Rows           int32
+	LaunchEnv      map[string]string
 }
 
 type RunExpertResult struct {
@@ -144,6 +145,7 @@ func (s *Service) Run(ctx context.Context, req *RunExpertRequest) (*RunExpertRes
 		Rows:                     req.Rows,
 		SessionProvision:         &sessionDomain.ProvisionSpec{},
 		PrepareSession:           prepareSession,
+		LaunchEnv:                req.LaunchEnv,
 	}
 	result, err := s.dispatch.CreatePod(ctx, orchReq)
 	if err != nil {

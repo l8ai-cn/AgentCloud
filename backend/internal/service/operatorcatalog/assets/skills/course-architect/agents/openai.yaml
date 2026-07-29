@@ -1,0 +1,4 @@
+interface:
+  display_name: "Course Architect"
+  short_description: "设计差异化、可验证的课程架构与章节生产计划"
+  default_prompt: "Use $course-architect to design a course architecture and chapter production plans with observable outcomes, source mapping, chapter-specific pedagogy, and verifiable student evidence."

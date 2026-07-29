@@ -1,0 +1,4 @@
+interface:
+  display_name: "Course Builder"
+  short_description: "研发饱满、可教可练可验收的课程正文"
+  default_prompt: "Use $course-builder to turn this chapter plan and references into rich, student-facing course materials with failure scenarios, plain-language teaching, worked examples, practice evidence, citations, and imagegen visuals where needed."

@@ -1,0 +1,59 @@
+id: task-01
+title: Read the Canonical Manifest
+type: lesson
+duration: 10
+status: 1
+sort: 1
+subtasks:
+  - id: subtask-01
+    title: Read the Schema
+    category: study
+    type: markdown
+    duration: 10
+    completed: false
+    status: 1
+    sort: 1
+    file: subtasks/schema.md
+    metadata: {}
+  - id: subtask-02
+    title: Check the Schema
+    category: practice
+    type: quiz
+    duration: 5
+    completed: false
+    status: 1
+    sort: 2
+    file: subtasks/schema.quiz.json
+    metadata:
+      questionIds:
+        - "1001"
+  - id: subtask-03
+    title: Open the Notebook Lab
+    category: practice
+    type: notebook
+    duration: 20
+    completed: false
+    status: 1
+    sort: 3
+    file: subtasks/notebook.lab.yml
+    metadata: {}
+  - id: subtask-04
+    title: View the MAIC Courseware
+    category: study
+    type: maic
+    duration: 10
+    completed: false
+    status: 1
+    sort: 4
+    iframe_src: https://maic.aiedulab.cn/classroom/example?embed=1&primary=0ea5e9
+    metadata: {}
+  - id: subtask-05
+    title: Read the Reference
+    category: study
+    type: document
+    duration: 5
+    completed: false
+    status: 1
+    sort: 5
+    file: resources/reference.txt
+    metadata: {}

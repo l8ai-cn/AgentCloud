@@ -15,7 +15,10 @@ const (
 	maxConfigFieldRunes = 128
 )
 
-var definitionHashPattern = regexp.MustCompile(`^[a-f0-9]{64}$`)
+var (
+	definitionHashPattern = regexp.MustCompile(`^[a-f0-9]{64}$`)
+	launchEnvNamePattern  = regexp.MustCompile(`^[A-Z][A-Z0-9_]*$`)
+)
 
 func NormalizeAndValidate(spec Spec) (Spec, error) {
 	normalized, err := Normalize(spec)
@@ -162,6 +165,23 @@ func validateTypeConfig(config TypeConfig) error {
 	case AutomationLevelInteractive, AutomationLevelAutoEdit, AutomationLevelAutonomous:
 	default:
 		return fmt.Errorf("invalid automation level %q", config.AutomationLevel)
+	}
+	return validateLaunchEnv(config.LaunchEnv)
+}
+
+func validateLaunchEnv(fields []LaunchEnvField) error {
+	seen := make(map[string]bool, len(fields))
+	for _, field := range fields {
+		if !launchEnvNamePattern.MatchString(field.Name) {
+			return fmt.Errorf(
+				"launch env name %q must be uppercase letters, digits and underscores",
+				field.Name,
+			)
+		}
+		if seen[field.Name] {
+			return fmt.Errorf("launch env %q is declared twice", field.Name)
+		}
+		seen[field.Name] = true
 	}
 	return nil
 }

@@ -108,6 +108,13 @@ func compileDeclarations(
 		}
 		declarations = append(declarations, &parser.KnowledgeDecl{Mounts: mounts})
 	}
+	for _, field := range spec.TypeConfig.LaunchEnv {
+		declarations = append(declarations, &parser.EnvDecl{
+			Name:     field.Name,
+			Source:   launchEnvSource(field),
+			Optional: true,
+		})
+	}
 	for _, name := range references.EnvBundleNames {
 		declarations = append(declarations, &parser.UseEnvBundleDecl{Name: name})
 	}
@@ -121,6 +128,13 @@ func compileDeclarations(
 		declarations = append(declarations, &parser.PromptDecl{Content: task})
 	}
 	return declarations
+}
+
+func launchEnvSource(field specdomain.LaunchEnvField) string {
+	if field.Secret {
+		return "secret"
+	}
+	return "text"
 }
 
 func compileStatements(workspace specdomain.Workspace) []parser.Statement {

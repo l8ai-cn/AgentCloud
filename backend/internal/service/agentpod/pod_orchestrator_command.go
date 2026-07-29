@@ -161,6 +161,18 @@ func (o *PodOrchestrator) buildPodCommand(
 		}
 		cmd.EnvVars["AGENTCLOUD_RESUME_EXTERNAL_SESSION"] = extID
 	}
+	if len(req.LaunchEnv) > 0 {
+		if cmd.EnvVars == nil {
+			cmd.EnvVars = map[string]string{}
+		}
+		if err := applyLaunchEnv(
+			cmd.EnvVars,
+			req.LaunchEnv,
+			req.preparedWorkerSpec,
+		); err != nil {
+			return nil, err
+		}
+	}
 	return cmd, nil
 }
 

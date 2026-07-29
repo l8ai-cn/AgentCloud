@@ -1,0 +1,62 @@
+lessons:
+  - id: lesson-01
+    title: Schema Basics
+    status: 1
+    sort: 1
+    path: lessons/lesson-01
+    tasks:
+      - id: task-01
+        title: Read the Canonical Manifest
+        type: lesson
+        duration: 10
+        status: 1
+        sort: 1
+        path: lessons/lesson-01/tasks/task-01
+        subtasks:
+          - id: subtask-01
+            title: Read the Schema
+            category: study
+            type: markdown
+            duration: 10
+            completed: false
+            status: 1
+            sort: 1
+            metadata: {}
+          - id: subtask-02
+            title: Check the Schema
+            category: practice
+            type: quiz
+            duration: 5
+            completed: false
+            status: 1
+            sort: 2
+            metadata:
+              questionIds:
+                - "1001"
+          - id: subtask-03
+            title: Open the Notebook Lab
+            category: practice
+            type: notebook
+            duration: 20
+            completed: false
+            status: 1
+            sort: 3
+            metadata: {}
+          - id: subtask-04
+            title: View the MAIC Courseware
+            category: study
+            type: maic
+            duration: 10
+            completed: false
+            status: 1
+            sort: 4
+            metadata: {}
+          - id: subtask-05
+            title: Read the Reference
+            category: study
+            type: document
+            duration: 5
+            completed: false
+            status: 1
+            sort: 5
+            metadata: {}

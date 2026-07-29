@@ -68,6 +68,10 @@ type OrchestrateCreatePodRequest struct {
 	LocalPath          string
 	QueueIfUnavailable bool
 	QueueTTL           time.Duration
+	// LaunchEnv carries per-run values the caller knows and the stored spec
+	// cannot, e.g. a teacher-scoped credential. Only names the worker spec
+	// declares in TypeConfig.LaunchEnv are accepted.
+	LaunchEnv map[string]string
 
 	preResolvedRepository     *gitprovider.Repository
 	preResolvedRepositorySlug string

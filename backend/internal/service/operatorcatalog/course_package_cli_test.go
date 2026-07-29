@@ -17,6 +17,7 @@ import (
 func TestCoursePackageCLIPublishesAndReadsBackStructuredCourse(t *testing.T) {
 	t.Helper()
 	var requests []string
+	published := false
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		require.Equal(t, "Bearer teacher-token", r.Header.Get("Authorization"))
 		requests = append(requests, r.Method+" "+r.URL.RequestURI())
@@ -46,8 +47,8 @@ func TestCoursePackageCLIPublishesAndReadsBackStructuredCourse(t *testing.T) {
 			require.Equal(t, "commit-init", body["git_source"].(map[string]any)["published_commit"])
 			writeCourseAPIResult(t, w, map[string]any{"id": "course-1"})
 		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-1/lessons":
-			writeCourseAPIResult(t, w, map[string]any{"id": "lesson-1"})
-		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-1/lessons/lesson-1/tasks":
+			writeCourseAPIResult(t, w, echoSubmittedName(t, r))
+		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-1/lessons/lesson-01/tasks":
 			body := readCourseAPIRequest(t, r)
 			require.Contains(t, body["content"], "任务契约")
 			require.Len(t, body["subtasks"], 1)
@@ -55,47 +56,21 @@ func TestCoursePackageCLIPublishesAndReadsBackStructuredCourse(t *testing.T) {
 			source := subtask["source"].(map[string]any)
 			require.Contains(t, source["md"], "任务契约")
 			require.NotContains(t, source, "path")
-			writeCourseAPIResult(t, w, map[string]any{"id": "task-1"})
+			writeCourseAPIResult(t, w, map[string]any{"id": body["name"]})
 		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-1/publish":
+			published = true
 			writeCourseAPIResult(t, w, map[string]any{
 				"course_id":        "course-1",
 				"published_commit": "commit-final",
 			})
 		case r.Method == http.MethodGet && r.URL.Path == "/courses/course-1":
-			writeCourseAPIResult(t, w, map[string]any{
-				"id": "course-1",
-				"git_source": map[string]any{
-					"repo_owner":       "course",
-					"repo_name":        "agent-course",
-					"published_commit": "commit-final",
-				},
-			})
+			writeCourseAPIResult(t, w, courseDetail("course-1", published))
+		case r.Method == http.MethodGet && r.URL.Path == "/courses/course-1/tasks":
+			writeCourseAPIResult(t, w, singleLessonSummary())
 		case r.Method == http.MethodGet && r.URL.Path == "/courses/course-1/outline":
 			require.Equal(t, "json", r.URL.Query().Get("format"))
 			require.Equal(t, "true", r.URL.Query().Get("include_content"))
-			writeCourseAPIResult(t, w, map[string]any{
-				"id": "course-1",
-				"lessons": []map[string]any{
-					{
-						"id": "lesson-1", "title": "从需求到任务契约",
-						"tasks": []map[string]any{
-							{
-								"id": "task-1", "title": "写出任务契约",
-								"content": "# 学习讲义\n\n写出可验收的任务契约。\n",
-								"subtasks": []map[string]any{
-									{
-										"id": "learning-file", "title": "学习讲义",
-										"type": "markdown",
-										"source": map[string]any{
-											"md": "# 学习讲义\n\n写出可验收的任务契约。\n",
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			})
+			writeCourseAPIResult(t, w, courseOutline("course-1", packagedLearningMarkdown))
 		default:
 			http.Error(w, fmt.Sprintf("unexpected request: %s %s", r.Method, r.URL.RequestURI()), http.StatusNotFound)
 		}
@@ -137,10 +112,14 @@ func TestCoursePackageCLIPublishesAndReadsBackStructuredCourse(t *testing.T) {
 		"POST /courses/git-source",
 		"POST /courses",
 		"POST /courses/course-1/lessons",
-		"POST /courses/course-1/lessons/lesson-1/tasks",
+		"POST /courses/course-1/lessons/lesson-01/tasks",
+		"GET /courses/course-1",
+		"GET /courses/course-1/outline?format=json&include_content=true",
+		"GET /courses/course-1/tasks",
 		"POST /courses/course-1/publish",
 		"GET /courses/course-1",
 		"GET /courses/course-1/outline?format=json&include_content=true",
+		"GET /courses/course-1/tasks",
 	}, requests)
 }
 
@@ -166,41 +145,20 @@ func TestCoursePackageCLIRejectsWrongMarkdownReadback(t *testing.T) {
 		case r.Method == http.MethodPost && r.URL.Path == "/courses":
 			writeCourseAPIResult(t, w, map[string]any{"id": "course-wrong-content"})
 		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-wrong-content/lessons":
-			writeCourseAPIResult(t, w, map[string]any{"id": "lesson-1"})
-		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-wrong-content/lessons/lesson-1/tasks":
-			writeCourseAPIResult(t, w, map[string]any{"id": "task-1"})
+			writeCourseAPIResult(t, w, echoSubmittedName(t, r))
+		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-wrong-content/lessons/lesson-01/tasks":
+			writeCourseAPIResult(t, w, echoSubmittedName(t, r))
 		case r.Method == http.MethodPost && r.URL.Path == "/courses/course-wrong-content/publish":
 			writeCourseAPIResult(t, w, map[string]any{"published_commit": "commit-final"})
 		case r.Method == http.MethodGet && r.URL.Path == "/courses/course-wrong-content":
-			writeCourseAPIResult(t, w, map[string]any{
-				"id": "course-wrong-content",
-				"git_source": map[string]any{
-					"published_commit": "commit-final",
-				},
-			})
+			writeCourseAPIResult(t, w, courseDetail("course-wrong-content", false))
+		case r.Method == http.MethodGet && r.URL.Path == "/courses/course-wrong-content/tasks":
+			writeCourseAPIResult(t, w, singleLessonSummary())
 		case r.Method == http.MethodGet && r.URL.Path == "/courses/course-wrong-content/outline":
-			writeCourseAPIResult(t, w, map[string]any{
-				"lessons": []map[string]any{
-					{
-						"title": "从需求到任务契约",
-						"tasks": []map[string]any{
-							{
-								"title":   "写出任务契约",
-								"content": "# 学习讲义\n\n写出可验收的任务契约。\n",
-								"subtasks": []map[string]any{
-									{
-										"title": "学习讲义",
-										"type":  "markdown",
-										"source": map[string]any{
-											"md": "# 错误内容\n\n这不是课程包中的学习讲义。\n",
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			})
+			writeCourseAPIResult(t, w, courseOutline(
+				"course-wrong-content",
+				"# 错误内容\n\n这不是课程包中的学习讲义。\n",
+			))
 		default:
 			http.Error(w, "unexpected request", http.StatusNotFound)
 		}
@@ -358,6 +316,89 @@ func writeCoursePackageFixture(t *testing.T, workspace string) string {
 	require.NoError(t, err)
 	require.NoError(t, os.WriteFile(packagePath, append(rawPackage, '\n'), 0o644))
 	return packagePath
+}
+
+const packagedLearningMarkdown = "# 学习讲义\n\n写出可验收的任务契约。\n"
+
+// courseOutline echoes every field writeCoursePackageFixture declares, because
+// the CLI treats any divergence between package and readback as a failed
+// publish. subtaskMarkdown is the only knob so a test can inject drift.
+func courseOutline(courseID string, subtaskMarkdown string) map[string]any {
+	return map[string]any{
+		"id": courseID,
+		"lessons": []map[string]any{
+			{
+				"id": "lesson-01", "title": "从需求到任务契约",
+				"status": 1, "sort": 1,
+				"tasks": []map[string]any{
+					{
+						"id": "task-01", "title": "写出任务契约",
+						"content": packagedLearningMarkdown,
+						"type":    "learning", "duration": 45,
+						"status": 1, "sort": 1,
+						"subtasks": []map[string]any{
+							{
+								"id": "learning-file", "title": "学习讲义",
+								"category": "study", "type": "markdown",
+								"duration": 10, "completed": false,
+								"status": 1, "sort": 1,
+								"source": map[string]any{"md": subtaskMarkdown},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+// courseDetail mirrors the draft/published split the CLI gates on: status 0
+// until publish, then status 1 with resolved_commit matching the publish
+// response so the readback poll converges.
+func courseDetail(courseID string, published bool) map[string]any {
+	detail := map[string]any{
+		"id":     courseID,
+		"status": 0,
+		"git_source": map[string]any{
+			"repo_owner":       "course",
+			"repo_name":        "agent-course",
+			"repo_ref":         "main",
+			"published_commit": "commit-init",
+		},
+		"resolved_commit": "commit-init",
+	}
+	if published {
+		detail["status"] = 1
+		detail["resolved_commit"] = "commit-final"
+		detail["git_source"].(map[string]any)["published_commit"] = "commit-final"
+	}
+	return detail
+}
+
+func singleLessonSummary() []map[string]any {
+	return []map[string]any{
+		{
+			"id": "lesson-01", "title": "从需求到任务契约", "description": "",
+			"tasks": []map[string]any{
+				{
+					"id": "task-01", "title": "写出任务契约",
+					"subtasks": []map[string]any{
+						{"id": "learning-file", "title": "学习讲义"},
+					},
+				},
+			},
+		},
+	}
+}
+
+// echoSubmittedName mirrors course-api: a caller-supplied `name` becomes the
+// manifest id verbatim, so the returned id is never a server-minted key.
+func echoSubmittedName(t *testing.T, r *http.Request) map[string]any {
+	t.Helper()
+	body := readCourseAPIRequest(t, r)
+	name, ok := body["name"].(string)
+	require.True(t, ok, "course-api callers must submit a stable name")
+	return map[string]any{"id": name}
 }
 
 func readCourseAPIRequest(t *testing.T, r *http.Request) map[string]any {

@@ -38,6 +38,7 @@ func Normalize(spec Spec) (Spec, error) {
 	}
 	normalized.TypeConfig.Values = values
 	normalized.TypeConfig.SecretRefs = cloneSecretReferences(spec.TypeConfig.SecretRefs)
+	normalized.TypeConfig.LaunchEnv = NormalizeLaunchEnv(spec.TypeConfig.LaunchEnv)
 
 	normalized.Workspace.RepositoryID = cloneInt64Pointer(spec.Workspace.RepositoryID)
 	normalized.Workspace.Branch = strings.TrimSpace(spec.Workspace.Branch)
@@ -93,6 +94,21 @@ func Normalize(spec Spec) (Spec, error) {
 	normalized.Metadata.Alias = strings.TrimSpace(spec.Metadata.Alias)
 	normalized.Metadata.SourceExpertID = cloneInt64Pointer(spec.Metadata.SourceExpertID)
 	return normalized, nil
+}
+
+func NormalizeLaunchEnv(fields []LaunchEnvField) []LaunchEnvField {
+	if len(fields) == 0 {
+		return nil
+	}
+	normalized := make([]LaunchEnvField, 0, len(fields))
+	for _, field := range fields {
+		field.Name = strings.TrimSpace(field.Name)
+		normalized = append(normalized, field)
+	}
+	sort.Slice(normalized, func(i, j int) bool {
+		return normalized[i].Name < normalized[j].Name
+	})
+	return normalized
 }
 
 func cloneJSONValues(values map[string]any) (map[string]any, error) {

@@ -62,6 +62,14 @@ type ExpertDefinition struct {
 	// ConfigDocumentRefs maps a config document the worker type requires to
 	// the bootstrap bundle name that supplies it.
 	ConfigDocumentRefs map[string]string
+	// LaunchEnv allowlists environment variables the RunExpert caller may
+	// supply per run, for values that are per-caller rather than per-partner.
+	LaunchEnv []LaunchEnvDeclaration
+}
+
+type LaunchEnvDeclaration struct {
+	Name   string
+	Secret bool
 }
 
 func Skills() ([]SkillDefinition, error) {

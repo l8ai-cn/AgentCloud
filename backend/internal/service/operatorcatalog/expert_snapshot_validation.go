@@ -99,7 +99,18 @@ func workerConfigMatchesCatalog(
 	return config.InteractionMode == resolved.InteractionMode &&
 		config.AutomationLevel == specdom.AutomationLevelAutoEdit &&
 		reflect.DeepEqual(config.SecretRefs, resolved.SecretRefs) &&
-		reflect.DeepEqual(config.Values, resolved.ConfigOverrides)
+		reflect.DeepEqual(config.Values, resolved.ConfigOverrides) &&
+		launchEnvMatchesCatalog(config.LaunchEnv, resolved.LaunchEnv)
+}
+
+// launchEnvMatchesCatalog compares against the normalized form because the
+// stored snapshot went through workerspec.Normalize while the catalog
+// declaration has not.
+func launchEnvMatchesCatalog(stored, declared []specdom.LaunchEnvField) bool {
+	return reflect.DeepEqual(
+		specdom.NormalizeLaunchEnv(stored),
+		specdom.NormalizeLaunchEnv(declared),
+	)
 }
 
 func (bootstrapper *Bootstrapper) rebuildExpertSnapshotForDefinition(

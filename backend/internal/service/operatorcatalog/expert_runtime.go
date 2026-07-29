@@ -17,6 +17,7 @@ type resolvedDefinition struct {
 	SecretRefs      map[string]specdomain.SecretReference
 	ConfigDocuments []specdomain.ConfigDocumentBinding
 	ConfigBundleIDs []int64
+	LaunchEnv       []specdomain.LaunchEnvField
 }
 
 func resolveDefinition(
@@ -44,7 +45,22 @@ func resolveDefinition(
 		SecretRefs:      secretRefs,
 		ConfigDocuments: documents,
 		ConfigBundleIDs: bundleIDs,
+		LaunchEnv:       definitionLaunchEnv(definition),
 	}, nil
+}
+
+func definitionLaunchEnv(definition ExpertDefinition) []specdomain.LaunchEnvField {
+	if len(definition.LaunchEnv) == 0 {
+		return nil
+	}
+	fields := make([]specdomain.LaunchEnvField, 0, len(definition.LaunchEnv))
+	for _, declaration := range definition.LaunchEnv {
+		fields = append(fields, specdomain.LaunchEnvField{
+			Name:   declaration.Name,
+			Secret: declaration.Secret,
+		})
+	}
+	return fields
 }
 
 func definitionRuntime(

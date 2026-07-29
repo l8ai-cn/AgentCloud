@@ -33,6 +33,7 @@ func (h *ExpertHandler) RunExpert(c *gin.Context) {
 			PromptOverride: request.PromptOverride,
 			Cols:           request.Cols,
 			Rows:           request.Rows,
+			LaunchEnv:      request.Env,
 		},
 	)
 	if err != nil {
@@ -59,6 +60,8 @@ func (h *ExpertHandler) runError(c *gin.Context, err error) {
 			apierr.EXPERT_REPUBLISH_REQUIRED,
 			"Expert must be republished from a valid WorkerSpec-backed Pod",
 		)
+	case errors.Is(err, agentpodSvc.ErrLaunchEnvUndeclared):
+		apierr.ValidationError(c, err.Error())
 	case errors.Is(err, expertSvc.ErrWorkerSpecSnapshotUnavailable),
 		errors.Is(err, agentpodSvc.ErrWorkerSpecSnapshotUnavailable):
 		apierr.ServiceUnavailable(

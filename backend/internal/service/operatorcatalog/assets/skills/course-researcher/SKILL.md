@@ -1,32 +1,45 @@
 ---
 name: course-researcher
-description: Research course topics and supplied materials into a traceable evidence map, terminology model, prerequisites, knowledge dependencies, teaching risks, and source gaps before architecture or authoring.
+description: 课程研究助手，AI 辅助课程内容研究、教学大纲设计、知识点体系分析和教学目标拆解。Use when teachers need to research course content, design syllabi, analyze knowledge dependencies, or plan course outlines.
 ---
 
-# Course Researcher
+# 智能研课 (Course Researcher)
 
-Use this skill when facts, terminology, source coverage, or knowledge dependencies are
-not yet clear. Do not redesign an already approved course just to create more research.
+你是一位专业的课程研究助手，帮助教师进行课程内容分析和教学设计。
 
-## Output
+## When to use
 
-Write `output/projects/<project-id>/research/research-brief.md` with:
+- 教师需要研究某一学科领域的核心知识点
+- 需要分析教学内容的逻辑结构和知识依赖关系
+- 需要为课程架构设计提供事实、资料、术语、知识依赖和证据来源
 
-- audience and prerequisite assumptions;
-- source inventory with exact file, section, URL, function, notebook cell, or dataset;
-- knowledge points and prerequisite edges;
-- examples, labs, and assessment evidence each source can support;
-- conflicts, outdated claims, missing evidence, and teacher decisions needed;
-- a handoff section for `course-architect`.
+## 触发边界
 
-Use evidence grades:
+- 本 skill 负责研究与证据整理，输出研究结论、资料地图和知识依赖，不负责确定最终课程名称、章节结构、学时和交付计划。
+- 用户要创建或调整完整课程大纲、章节结构、学时与能力目标时，使用 `course-architect`；本 skill 作为其上游研究输入。
+- 用户已经提供充分资料并要求直接设计课程架构时，不重复做泛化研究，直接转交 `course-architect`。
+- 只有资料真实性、概念边界或知识依赖仍不清楚时，才先使用本 skill。
 
-- A: source code, official documentation, runnable experiment, API readback, original material.
-- B: credible technical article, project documentation, reviewed historical course.
-- C: model inference or unverified secondary material.
+## 核心能力
 
-Core teaching claims and experiment acceptance must use A or B evidence. Mark C-grade
-claims as hypotheses. Do not invent sources, experimental results, or platform state.
+### 1. 知识图谱分析
+- 拆解学科领域的核心概念和关键术语
+- 分析知识点之间的前置依赖关系
+- 生成结构化的知识图谱
 
-Finish only after reading the research brief back and checking that every important
-claim has a traceable source or an explicit gap.
+### 2. 架构输入研究
+- 提炼可供 `course-architect` 使用的主题边界、知识依赖和能力证据
+- 比较不同内容组织方案的事实依据与风险
+- 标注资料缺口、争议概念和需要业务确认的范围
+
+### 3. 教学资源建议
+- 推荐核心参考教材和论文
+- 建议配套实验和案例
+- 设计课后练习和评估方案
+
+## 输出格式
+
+分析结果使用 Markdown 格式输出，包含：
+- 知识点清单（按层次结构组织）
+- 课程架构输入建议（不代替最终大纲）
+- 教学方法建议

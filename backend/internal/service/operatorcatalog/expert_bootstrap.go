@@ -172,6 +172,7 @@ func workerDraft(
 				SecretRefs:      resolved.SecretRefs,
 				InteractionMode: resolved.InteractionMode,
 				AutomationLevel: specdomain.AutomationLevelAutoEdit,
+				LaunchEnv:       resolved.LaunchEnv,
 			},
 			Workspace: specdomain.Workspace{
 				SkillIDs:               skillIDs,
