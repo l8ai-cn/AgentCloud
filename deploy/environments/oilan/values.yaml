@@ -1,7 +1,7 @@
 # Oilan runtime overlay for the shared AgentCloud base chart.
 # Namespace/secrets use agentcloud; Harbor image project stays agentsmesh for now.
 namespace: agentcloud
-imageTag: &releaseTag release-20260727
+imageTag: &releaseTag release-20260730
 image:
   repository: docker.cnb.cool/l8ai/doworker/backend
   tag: *releaseTag
