@@ -51,9 +51,8 @@ describe("fetchSessionByPodKey", () => {
       new Response("database unavailable", { status: 500 }),
     );
 
-    await expect(fetchSessionByPodKey("worker-pod")).rejects.toThrow(
-      "database unavailable",
-    );
+    const error = await fetchSessionByPodKey("worker-pod").catch((value) => value);
+    expect(error.serverMessage).toBe("database unavailable");
   });
 
   it("imports only with an authoritative ACP Worker plan", async () => {

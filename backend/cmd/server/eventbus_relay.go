@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/l8ai-cn/agentcloud/backend/internal/domain/agentpod"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/relay"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	runnerv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/runner/v1"
@@ -59,7 +60,7 @@ func refreshRunnerRelayToken(
 		return
 	}
 
-	if pod.Status != "running" && pod.Status != "initializing" && pod.Status != "disconnected" {
+	if !agentpod.IsPodStatusRelayConnectable(pod.Status) {
 		slog.Warn("pod is not active for relay token refresh",
 			"pod_key", data.PodKey,
 			"status", pod.Status,

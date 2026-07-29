@@ -8,6 +8,10 @@ import { getTicketState } from "@/lib/wasm-core";
 import * as ticketApi from "@/lib/api/facade/ticketConnect";
 import { readCurrentOrg } from "@/stores/auth";
 import {
+  getTicketPriorityDisplay,
+  getTicketStatusDisplay,
+} from "@/lib/ticket-display";
+import {
   ApplyTicketStatusEventRequestSchema, ApplyTicketDeletedEventRequestSchema,
   ReplaceCachedTicketsRequestSchema, InsertCreatedTicketRequestSchema,
   PatchCachedTicketRequestSchema, ReplaceBoardColumnsRequestSchema,
@@ -308,27 +312,8 @@ export function useFilteredTickets(): Ticket[] {
   }, [tick, search, selectedStatuses, selectedPriorities, selectedRepositoryIds]);
 }
 
-export const getStatusInfo = (status: TicketStatus) => {
-  const m: Record<TicketStatus, { label: string; color: string; bgColor: string }> = {
-    backlog: { label: "Backlog", color: "text-muted-foreground", bgColor: "bg-muted" },
-    todo: { label: "To Do", color: "text-info", bgColor: "bg-info-bg" },
-    in_progress: { label: "In Progress", color: "text-warning", bgColor: "bg-warning-bg" },
-    in_review: { label: "In Review", color: "text-primary", bgColor: "bg-accent" },
-    done: { label: "Done", color: "text-success", bgColor: "bg-success-bg" },
-  };
-  return m[status] || { label: status || "Unknown", color: "text-muted-foreground", bgColor: "bg-muted" };
-};
-
-export const getPriorityInfo = (priority: TicketPriority) => {
-  const m: Record<TicketPriority, { label: string; color: string; icon: string }> = {
-    none: { label: "None", color: "text-muted-foreground", icon: "minus" },
-    low: { label: "Low", color: "text-info", icon: "arrow-down" },
-    medium: { label: "Medium", color: "text-warning", icon: "arrow-right" },
-    high: { label: "High", color: "text-primary", icon: "arrow-up" },
-    urgent: { label: "Urgent", color: "text-danger", icon: "alert-triangle" },
-  };
-  return m[priority] || { label: priority || "None", color: "text-muted-foreground", icon: "minus" };
-};
+export const getStatusInfo = getTicketStatusDisplay;
+export const getPriorityInfo = getTicketPriorityDisplay;
 
 reconnectRegistry.register({
   name: "ticket:list",

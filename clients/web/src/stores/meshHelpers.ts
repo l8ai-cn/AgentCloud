@@ -1,35 +1,7 @@
 import { Play, Hourglass, Pause, type LucideIcon } from "lucide-react";
+import { getPodStatusDisplay } from "@/lib/pod-status-display";
 
-export const getPodStatusInfo = (status: string) => {
-  const statusMap: Record<string, { label: string; color: string; bgColor: string }> = {
-    initializing: {
-      label: "Initializing",
-      color: "text-info",
-      bgColor: "bg-info-bg",
-    },
-    running: {
-      label: "Running",
-      color: "text-success",
-      bgColor: "bg-success-bg",
-    },
-    paused: {
-      label: "Paused",
-      color: "text-warning",
-      bgColor: "bg-warning-bg",
-    },
-    terminated: {
-      label: "Terminated",
-      color: "text-muted-foreground",
-      bgColor: "bg-muted",
-    },
-    failed: {
-      label: "Failed",
-      color: "text-danger",
-      bgColor: "bg-danger-bg",
-    },
-  };
-  return statusMap[status] || statusMap.terminated;
-};
+export const getPodStatusInfo = getPodStatusDisplay;
 
 export const getAgentStatusInfo = (agentStatus: string): {
   label: string; color: string; dotColor: string; bgColor: string; icon: LucideIcon;
@@ -50,7 +22,13 @@ export const getAgentStatusInfo = (agentStatus: string): {
       dotColor: "bg-muted-foreground", bgColor: "bg-muted", icon: Pause,
     },
   };
-  return statusMap[agentStatus] || statusMap.idle;
+  return statusMap[agentStatus] || {
+    label: "Unknown",
+    color: "text-muted-foreground",
+    dotColor: "bg-muted-foreground",
+    bgColor: "bg-muted",
+    icon: Pause,
+  };
 };
 
 export const getBindingStatusInfo = (status: string) => {
@@ -60,5 +38,8 @@ export const getBindingStatusInfo = (status: string) => {
     revoked: { label: "Revoked", color: "stroke-danger" },
     expired: { label: "Expired", color: "stroke-muted-foreground" },
   };
-  return statusMap[status] || statusMap.active;
+  return statusMap[status] || {
+    label: "Unknown",
+    color: "stroke-muted-foreground",
+  };
 };

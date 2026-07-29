@@ -30,14 +30,15 @@ const NAMESPACE_PREFIX = "agent-cloud-auth";
 // Mirrors Rust state.rs::url_slug — keep in sync. Same algorithm runs in
 // e2e-playwright/fixtures/blockstore.fixture.ts (live cross-check).
 export function urlSlug(baseUrl: string): string {
-  try {
-    const u = new URL(baseUrl);
-    const port = u.port ? `_${u.port}` : "";
-    const raw = `${u.protocol.replace(":", "")}_${u.hostname.toLowerCase()}${port}`;
-    return raw.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
-  } catch {
-    return baseUrl.toLowerCase().replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
-  }
+  const trimmed = baseUrl.replace(/\/+$/, "");
+  const schemeIndex = trimmed.indexOf("://");
+  const scheme = schemeIndex >= 0 ? trimmed.slice(0, schemeIndex) : "";
+  const rest = schemeIndex >= 0 ? trimmed.slice(schemeIndex + 3) : trimmed;
+  const authority = rest.split(/[/?#]/, 1)[0] ?? rest;
+  const normalized = scheme
+    ? `${scheme.toLowerCase()}_${authority.toLowerCase()}`
+    : authority.toLowerCase();
+  return normalized.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
 }
 
 export function sessionStorageKey(baseUrl: string): string {

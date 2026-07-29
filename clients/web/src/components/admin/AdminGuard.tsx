@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { resolveIsSystemAdmin } from "@/hooks/useIsSystemAdmin";
-import { readCurrentOrg } from "@/stores/auth";
+import { readCurrentOrg, useAuthStore } from "@/stores/auth";
 import { CenteredSpinner } from "@/components/ui/spinner";
 
 // Sits inside the (dashboard) layout, so wasm + RequireAuth already guarantee
@@ -14,25 +14,30 @@ type Gate = "checking" | "allowed" | "denied";
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [gate, setGate] = useState<Gate>("checking");
+  const authTick = useAuthStore((state) => state._tick);
+  const [state, setState] = useState<{ authTick: number; gate: Gate }>({
+    authTick: -1,
+    gate: "checking",
+  });
 
   useEffect(() => {
     let cancelled = false;
     resolveIsSystemAdmin().then((isAdmin) => {
       if (cancelled) return;
       if (isAdmin) {
-        setGate("allowed");
+        setState({ authTick, gate: "allowed" });
         return;
       }
-      setGate("denied");
+      setState({ authTick, gate: "denied" });
       const slug = readCurrentOrg()?.slug;
       router.replace(slug ? `/${slug}` : "/");
     });
     return () => {
       cancelled = true;
     };
-  }, [router]);
+  }, [authTick, router]);
 
+  const gate = state.authTick === authTick ? state.gate : "checking";
   if (gate === "allowed") return <>{children}</>;
   if (gate === "checking") return <CenteredSpinner />;
   return null;

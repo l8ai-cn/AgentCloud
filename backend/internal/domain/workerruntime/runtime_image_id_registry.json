@@ -1,0 +1,19 @@
+{
+  "codex-cli": 1,
+  "claude-code": 2,
+  "gemini-cli": 3,
+  "video-studio": 4,
+  "do-agent": 5,
+  "pattern-designer": 6,
+  "seedance-expert": 7,
+  "minimax-cli": 8,
+  "openclaw": 9,
+  "aider": 10,
+  "cursor-cli": 11,
+  "grok-build": 12,
+  "hermes": 13,
+  "loopal": 14,
+  "opencode": 15,
+  "e2e-echo": 16,
+  "kimi-code": 17
+}

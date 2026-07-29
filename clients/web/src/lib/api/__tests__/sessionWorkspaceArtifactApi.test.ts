@@ -47,13 +47,11 @@ describe("session artifact API", () => {
       "https://api.example.test/v1/sessions/session-1/artifacts/content?" +
         "artifact_id=video-1&digest=sha256%3Aabc&" +
         "representation_id=playable&revision=3",
-      {
-        headers: {
-          Authorization: "Bearer test-token",
-          "X-Organization-Slug": "dev-org",
-        },
-      },
+      expect.anything(),
     );
+    const headers = new Headers(vi.mocked(globalThis.fetch).mock.calls[0][1]?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer test-token");
+    expect(headers.get("X-Organization-Slug")).toBe("dev-org");
   });
 
   it.each([
@@ -94,15 +92,14 @@ describe("session artifact API", () => {
       new Response(null, { status: 403 }),
     );
 
-    await expect(
-      loadSessionArtifactRepresentation({
-        artifactId: "video-1",
-        digest: "sha256:abc",
-        representationId: "playable",
-        resourceId: "session-file:file_12345678",
-        revision: 3n,
-        sessionId: "session-1",
-      }),
-    ).rejects.toThrow("Artifact request failed (403)");
+    const error = await loadSessionArtifactRepresentation({
+      artifactId: "video-1",
+      digest: "sha256:abc",
+      representationId: "playable",
+      resourceId: "session-file:file_12345678",
+      revision: 3n,
+      sessionId: "session-1",
+    }).catch((value) => value);
+    expect(error.status).toBe(403);
   });
 });

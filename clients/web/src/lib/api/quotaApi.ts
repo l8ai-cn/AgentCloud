@@ -1,6 +1,8 @@
 import { getApiBaseUrl } from "@/lib/env";
-import { getAuthManager } from "@/lib/wasm-core";
-import { readCurrentOrg } from "@/stores/auth";
+import {
+  authenticatedOrganizationFetch,
+  readJsonResponse,
+} from "./authenticatedRequest";
 
 export type VirtualKey = {
   id: number;
@@ -40,28 +42,13 @@ export type QuotaReport = {
   quotas: ScopeUsage[];
 };
 
-function headers(): HeadersInit | null {
-  const token = getAuthManager().get_token();
-  const org = readCurrentOrg()?.slug;
-  if (!token || !org) return null;
-  return {
-    Authorization: `Bearer ${token}`,
-    "X-Organization-Slug": org,
-    "Content-Type": "application/json",
-  };
-}
-
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
-  const h = headers();
-  if (!h) throw new Error("not authenticated");
   const base = getApiBaseUrl().replace(/\/$/, "");
-  const res = await fetch(`${base}/v1${path}`, { ...init, headers: h });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(body || `request failed: ${res.status}`);
-  }
-  if (res.status === 204) return undefined as T;
-  return res.json() as Promise<T>;
+  const response = await authenticatedOrganizationFetch(
+    `${base}/v1${path}`,
+    init,
+  );
+  return readJsonResponse<T>(response);
 }
 
 export async function listVirtualKeys(): Promise<VirtualKey[]> {

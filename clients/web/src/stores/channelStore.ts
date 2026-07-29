@@ -43,7 +43,6 @@ function dispatchInsertChannel(channel: Channel) {
 interface ChannelState {
   _tick: number; loading: boolean; channelLoading: boolean;
   error: string | null; selectedChannelId: number | null; searchQuery: string; showArchived: boolean;
-  currentChannel: Channel | null;
   setSelectedChannelId: (id: number | null) => void; setSearchQuery: (q: string) => void; setShowArchived: (s: boolean) => void;
   fetchChannels: (f?: { includeArchived?: boolean }) => Promise<void>; fetchChannel: (id: number) => Promise<void>;
   createChannel: (d: {
@@ -64,7 +63,6 @@ interface ChannelState {
 export const useChannelStore = create<ChannelState>((set, get) => ({
   _tick: 0, loading: false, channelLoading: false,
   error: null, selectedChannelId: null, searchQuery: "", showArchived: false,
-  currentChannel: null,
 
   setSelectedChannelId: (id) => {
     set({ selectedChannelId: id });
@@ -208,7 +206,6 @@ export const useChannelStore = create<ChannelState>((set, get) => ({
 
   setCurrentChannel: (channel) => {
     svc().set_current_channel(channel ? BigInt(channel.id) : null);
-    set({ currentChannel: channel });
     bump();
   },
 

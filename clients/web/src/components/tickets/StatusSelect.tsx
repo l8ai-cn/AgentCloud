@@ -4,9 +4,6 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { TicketStatus } from "@/stores/ticket";
 import {
-  Circle,
-  CircleDot,
-  CircleDashed,
   Loader2,
   CheckCircle2,
   ChevronDown,
@@ -18,6 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import {
+  getTicketStatusDisplay,
+  TICKET_STATUS_ORDER,
+} from "@/lib/ticket-display";
 
 interface StatusSelectProps {
   value: TicketStatus;
@@ -26,52 +27,6 @@ interface StatusSelectProps {
   showLabel?: boolean;
   size?: "sm" | "md" | "lg";
 }
-
-const statusConfig: Record<TicketStatus, {
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  bgColor: string;
-  label: string;
-}> = {
-  backlog: {
-    icon: CircleDashed,
-    color: "text-muted-foreground",
-    bgColor: "bg-muted",
-    label: "Backlog",
-  },
-  todo: {
-    icon: Circle,
-    color: "text-info",
-    bgColor: "bg-info-bg",
-    label: "To Do",
-  },
-  in_progress: {
-    icon: CircleDot,
-    color: "text-warning",
-    bgColor: "bg-warning-bg",
-    label: "In Progress",
-  },
-  in_review: {
-    icon: Loader2,
-    color: "text-primary",
-    bgColor: "bg-accent",
-    label: "In Review",
-  },
-  done: {
-    icon: CheckCircle2,
-    color: "text-success",
-    bgColor: "bg-success-bg",
-    label: "Done",
-  },
-};
-
-const statusOrder: TicketStatus[] = [
-  "backlog",
-  "todo",
-  "in_progress",
-  "in_review",
-  "done",
-];
 
 const sizeClasses = {
   sm: "h-6 text-xs",
@@ -96,7 +51,7 @@ export function StatusSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const currentConfig = statusConfig[value] || statusConfig.backlog;
+  const currentConfig = getTicketStatusDisplay(value);
   const StatusIcon = currentConfig.icon;
 
   const handleSelect = useCallback(async (status: TicketStatus) => {
@@ -138,8 +93,8 @@ export function StatusSelect({
         <ChevronDown className={cn("h-3 w-3 text-muted-foreground", !showLabel && "ml-0.5")} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-48">
-        {statusOrder.map((status) => {
-          const config = statusConfig[status];
+        {TICKET_STATUS_ORDER.map((status) => {
+          const config = getTicketStatusDisplay(status);
           const Icon = config.icon;
           const isSelected = status === value;
 

@@ -4,10 +4,7 @@ import { useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { TicketPriority } from "@/stores/ticket";
 import {
-  Minus,
   ChevronDown as ChevronDownIcon,
-  ChevronUp,
-  AlertTriangle,
   Loader2,
   Check,
 } from "lucide-react";
@@ -18,6 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import {
+  getTicketPriorityDisplay,
+  TICKET_PRIORITY_ORDER,
+} from "@/lib/ticket-display";
 
 interface PrioritySelectProps {
   value: TicketPriority;
@@ -27,51 +28,7 @@ interface PrioritySelectProps {
   size?: "sm" | "md" | "lg";
 }
 
-const priorityConfig: Record<TicketPriority, {
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  label: string;
-  shortLabel: string;
-}> = {
-  none: {
-    icon: Minus,
-    color: "text-muted-foreground",
-    label: "No Priority",
-    shortLabel: "None",
-  },
-  low: {
-    icon: ChevronDownIcon,
-    color: "text-success",
-    label: "Low Priority",
-    shortLabel: "Low",
-  },
-  medium: {
-    icon: Minus,
-    color: "text-warning",
-    label: "Medium Priority",
-    shortLabel: "Medium",
-  },
-  high: {
-    icon: ChevronUp,
-    color: "text-primary",
-    label: "High Priority",
-    shortLabel: "High",
-  },
-  urgent: {
-    icon: AlertTriangle,
-    color: "text-danger",
-    label: "Urgent",
-    shortLabel: "Urgent",
-  },
-};
-
-const priorityOrder: TicketPriority[] = [
-  "urgent",
-  "high",
-  "medium",
-  "low",
-  "none",
-];
+const priorityOrder = [...TICKET_PRIORITY_ORDER].reverse();
 
 const sizeClasses = {
   sm: "h-6 text-xs",
@@ -96,7 +53,7 @@ export function PrioritySelect({
   const [isOpen, setIsOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const currentConfig = priorityConfig[value] || priorityConfig.none;
+  const currentConfig = getTicketPriorityDisplay(value);
   const PriorityIcon = currentConfig.icon;
 
   const handleSelect = useCallback(async (priority: TicketPriority) => {
@@ -139,7 +96,7 @@ export function PrioritySelect({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-44">
         {priorityOrder.map((priority) => {
-          const config = priorityConfig[priority];
+          const config = getTicketPriorityDisplay(priority);
           const Icon = config.icon;
           const isSelected = priority === value;
 

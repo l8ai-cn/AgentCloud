@@ -80,11 +80,15 @@ export function getLastMessage(channelId: number): ChannelLastMessage | null {
 export function useCurrentChannel(): Channel | null {
   const tick = useChannelStore((s) => s._tick);
   return useMemo(() => {
-    const bytes = svc().current_channel_bytes();
-    if (bytes.length === 0) return null;
-    const c = fromBinary(InsertChannelRequestSchema, bytes).channel;
-    return c ? channelToCache(c) : null;
+    return readCurrentChannel();
   }, [tick]);
+}
+
+export function readCurrentChannel(): Channel | null {
+  const bytes = svc().current_channel_bytes();
+  if (bytes.length === 0) return null;
+  const c = fromBinary(InsertChannelRequestSchema, bytes).channel;
+  return c ? channelToCache(c) : null;
 }
 
 /** Members of a given channel. Rust ChannelService caches the list per channel

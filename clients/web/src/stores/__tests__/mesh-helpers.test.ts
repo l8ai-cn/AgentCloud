@@ -32,15 +32,16 @@ describe("Helper Functions", () => {
       expect(info.color).toBe("text-muted-foreground");
     });
 
-    it("should return correct info for failed status", () => {
-      const info = getPodStatusInfo("failed");
-      expect(info.label).toBe("Failed");
+    it("should return correct info for error status", () => {
+      const info = getPodStatusInfo("error");
+      expect(info.label).toBe("Error");
       expect(info.color).toBe("text-danger");
     });
 
-    it("should return terminated info for unknown status", () => {
+    it("should return explicit unknown info for unknown status", () => {
       const info = getPodStatusInfo("unknown");
-      expect(info).toEqual(getPodStatusInfo("terminated"));
+      expect(info.label).toBe("Unknown");
+      expect(info).not.toEqual(getPodStatusInfo("terminated"));
     });
   });
 
@@ -72,10 +73,10 @@ describe("Helper Functions", () => {
       expect(info.icon).toBeDefined();
     });
 
-    it("should return idle info as fallback for unknown status", () => {
+    it("should return explicit unknown info for unknown status", () => {
       const info = getAgentStatusInfo("unknown-status");
-      const idleInfo = getAgentStatusInfo("idle");
-      expect(info).toEqual(idleInfo);
+      expect(info.label).toBe("Unknown");
+      expect(info).not.toEqual(getAgentStatusInfo("idle"));
     });
   });
 
@@ -104,9 +105,10 @@ describe("Helper Functions", () => {
       expect(info.color).toBe("stroke-muted-foreground");
     });
 
-    it("should return active info for unknown status", () => {
+    it("should return explicit unknown info for unknown status", () => {
       const info = getBindingStatusInfo("unknown");
-      expect(info).toEqual(getBindingStatusInfo("active"));
+      expect(info.label).toBe("Unknown");
+      expect(info).not.toEqual(getBindingStatusInfo("active"));
     });
   });
 });

@@ -3,17 +3,14 @@
 import React from "react";
 import {
   CircleDashed,
-  Circle,
-  CircleDot,
-  Timer,
-  CheckCircle2,
   Minus,
-  ChevronDown,
-  ChevronUp,
-  AlertTriangle,
 } from "lucide-react";
 import type { TicketStatus, TicketPriority } from "@/lib/viewModels/ticket";
 import { cn } from "@/lib/utils";
+import {
+  getTicketPriorityDisplay,
+  getTicketStatusDisplay,
+} from "@/lib/ticket-display";
 
 type IconSize = "xs" | "sm" | "md" | "lg";
 
@@ -30,25 +27,10 @@ interface StatusIconProps {
   className?: string;
 }
 
-const statusIconMap: Record<TicketStatus, React.ComponentType<{ className?: string }>> = {
-  backlog: CircleDashed,
-  todo: Circle,
-  in_progress: Timer,
-  in_review: CircleDot,
-  done: CheckCircle2,
-};
-
-const statusColorMap: Record<TicketStatus, string> = {
-  backlog: "text-muted-foreground",
-  todo: "text-info",
-  in_progress: "text-warning",
-  in_review: "text-primary",
-  done: "text-success",
-};
-
 export function StatusIcon({ status, size = "sm", className }: StatusIconProps) {
-  const IconComponent = statusIconMap[status] || CircleDashed;
-  const colorClass = statusColorMap[status] || statusColorMap.backlog;
+  const display = getTicketStatusDisplay(status);
+  const IconComponent = display?.icon ?? CircleDashed;
+  const colorClass = display?.color ?? "text-muted-foreground";
 
   return (
     <IconComponent
@@ -67,25 +49,10 @@ interface PriorityIconProps {
   className?: string;
 }
 
-const priorityIconMap: Record<TicketPriority, React.ComponentType<{ className?: string }>> = {
-  none: Minus,
-  low: ChevronDown,
-  medium: Minus,
-  high: ChevronUp,
-  urgent: AlertTriangle,
-};
-
-const priorityColorMap: Record<TicketPriority, string> = {
-  none: "text-muted-foreground",
-  low: "text-info",
-  medium: "text-warning",
-  high: "text-primary",
-  urgent: "text-danger",
-};
-
 export function PriorityIcon({ priority, size = "sm", className }: PriorityIconProps) {
-  const IconComponent = priorityIconMap[priority] || Minus;
-  const colorClass = priorityColorMap[priority] || priorityColorMap.none;
+  const display = getTicketPriorityDisplay(priority);
+  const IconComponent = display?.icon ?? Minus;
+  const colorClass = display?.color ?? "text-muted-foreground";
 
   return (
     <IconComponent
@@ -109,22 +76,6 @@ export interface PriorityInfo {
 
 type TranslateFn = (key: string) => string;
 
-const statusFallbackLabels: Record<TicketStatus, string> = {
-  backlog: "Backlog",
-  todo: "To Do",
-  in_progress: "In Progress",
-  in_review: "In Review",
-  done: "Done",
-};
-
-const statusBgColorMap: Record<TicketStatus, string> = {
-  backlog: "bg-muted",
-  todo: "bg-info-bg",
-  in_progress: "bg-warning-bg",
-  in_review: "bg-accent",
-  done: "bg-success-bg",
-};
-
 export function getStatusDisplayInfo(status: TicketStatus, sizeOrT?: IconSize | TranslateFn, maybeSize?: IconSize): StatusInfo {
   let size: IconSize = "sm";
   let t: TranslateFn | undefined;
@@ -136,23 +87,16 @@ export function getStatusDisplayInfo(status: TicketStatus, sizeOrT?: IconSize | 
     size = sizeOrT;
   }
 
-  const label = t ? t(`tickets.status.${status}`) : (statusFallbackLabels[status] || status);
+  const display = getTicketStatusDisplay(status);
+  const label = t ? t(`tickets.status.${status}`) : display.label;
 
   return {
     label,
-    color: statusColorMap[status] || statusColorMap.backlog,
-    bgColor: statusBgColorMap[status] || statusBgColorMap.backlog,
+    color: display.color,
+    bgColor: display.bgColor,
     icon: <StatusIcon status={status} size={size} />,
   };
 }
-
-const priorityFallbackLabels: Record<TicketPriority, string> = {
-  none: "None",
-  low: "Low",
-  medium: "Medium",
-  high: "High",
-  urgent: "Urgent",
-};
 
 export function getPriorityDisplayInfo(priority: TicketPriority, sizeOrT?: IconSize | TranslateFn, maybeSize?: IconSize): PriorityInfo {
   let size: IconSize = "sm";
@@ -165,13 +109,12 @@ export function getPriorityDisplayInfo(priority: TicketPriority, sizeOrT?: IconS
     size = sizeOrT;
   }
 
-  const label = t ? t(`tickets.priority.${priority}`) : (priorityFallbackLabels[priority] || priority);
+  const display = getTicketPriorityDisplay(priority);
+  const label = t ? t(`tickets.priority.${priority}`) : display.label;
 
   return {
     label,
-    color: priorityColorMap[priority] || priorityColorMap.none,
+    color: display.color,
     icon: <PriorityIcon priority={priority} size={size} />,
   };
 }
-
-export { statusColorMap, priorityColorMap };

@@ -5,6 +5,7 @@ import { buildLocalRuntimeCatalog } from "./generate-local-worker-runtime-catalo
 const codexDigest = "sha256:e66f3e1990dd7828a9ee8dfc3685a155df55e3ff243a39eaaf6971925c7bee35";
 const videoDigest = "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd";
 const geminiDigest = "sha256:c24d6da11c46954cd617b21ff33581f9821dc07a8506378c7ac7e305c4ad7cab";
+const kimiDigest = "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc";
 const minimaxDigest = "sha256:1111111111111111111111111111111111111111111111111111111111111111";
 const openclawDigest = "sha256:2222222222222222222222222222222222222222222222222222222222222222";
 const doAgentDigest = "sha256:3333333333333333333333333333333333333333333333333333333333333333";
@@ -22,6 +23,7 @@ test("builds an explicit local catalog from every verified local runtime", () =>
     runtimeImages: [
       ["codex-cli", "agentcloud-main-runner-codex-cli:latest"],
       ["gemini-cli", "agentcloud-main-runner-gemini-cli:latest"],
+      ["kimi-code", "agentcloud-main-runner-kimi-code:latest"],
       ["minimax-cli", "agentcloud-main-runner-minimax-cli:latest"],
       ["openclaw", "agentcloud-main-runner-openclaw:latest"],
       ["do-agent", "agentcloud-main-runner-do-agent:latest"],
@@ -30,6 +32,7 @@ test("builds an explicit local catalog from every verified local runtime", () =>
     inspectImage: (image) => ({
       "agentcloud-main-runner-codex-cli:latest": codexDigest,
       "agentcloud-main-runner-gemini-cli:latest": geminiDigest,
+      "agentcloud-main-runner-kimi-code:latest": kimiDigest,
       "agentcloud-main-runner-minimax-cli:latest": minimaxDigest,
       "agentcloud-main-runner-openclaw:latest": openclawDigest,
       "agentcloud-main-runner-do-agent:latest": doAgentDigest,
@@ -37,15 +40,22 @@ test("builds an explicit local catalog from every verified local runtime", () =>
     })[image],
   });
 
-  assert.equal(catalog.images.length, 6);
+  assert.equal(catalog.images.length, 9);
+  assert.deepEqual(
+    catalog.images.map((image) => image.id),
+    [1, 6, 3, 17, 8, 9, 5, 7, 16],
+  );
   assert.deepEqual(
     catalog.images.map((image) => image.worker_type_slugs),
     [
-      ["codex-cli", "pattern-designer"],
+      ["codex-cli"],
+      ["pattern-designer"],
       ["gemini-cli"],
+      ["kimi-code"],
       ["minimax-cli"],
       ["openclaw"],
-      ["do-agent", "seedance-expert"],
+      ["do-agent"],
+      ["seedance-expert"],
       ["e2e-echo"],
     ],
   );
@@ -53,9 +63,12 @@ test("builds an explicit local catalog from every verified local runtime", () =>
     catalog.images.map((image) => image.reference),
     [
       `docker-daemon://agentcloud-main-runner-codex-cli:latest@${codexDigest}`,
+      `docker-daemon://agentcloud-main-runner-codex-cli:latest@${codexDigest}`,
       `docker-daemon://agentcloud-main-runner-gemini-cli:latest@${geminiDigest}`,
+      `docker-daemon://agentcloud-main-runner-kimi-code:latest@${kimiDigest}`,
       `docker-daemon://agentcloud-main-runner-minimax-cli:latest@${minimaxDigest}`,
       `docker-daemon://agentcloud-main-runner-openclaw:latest@${openclawDigest}`,
+      `docker-daemon://agentcloud-main-runner-do-agent:latest@${doAgentDigest}`,
       `docker-daemon://agentcloud-main-runner-do-agent:latest@${doAgentDigest}`,
       `docker-daemon://agentcloud-main-runner-e2e-echo:latest@${e2eEchoDigest}`,
     ],
@@ -66,7 +79,7 @@ test("builds an explicit local catalog from every verified local runtime", () =>
 test("supports every formal Worker runtime in the local catalog", () => {
   const runtimeImages = [
     "aider", "claude-code", "codex-cli", "cursor-cli", "do-agent", "gemini-cli",
-    "e2e-echo", "grok-build", "hermes", "loopal", "minimax-cli", "openclaw",
+    "e2e-echo", "grok-build", "hermes", "kimi-code", "loopal", "minimax-cli", "openclaw",
     "opencode", "video-studio",
   ].map((slug) => [slug, `agentcloud-main-runner-${slug}:latest`]);
   const digests = {
@@ -78,6 +91,7 @@ test("supports every formal Worker runtime in the local catalog", () => {
     "agentcloud-main-runner-do-agent:latest": doAgentDigest,
     "agentcloud-main-runner-e2e-echo:latest": e2eEchoDigest,
     "agentcloud-main-runner-gemini-cli:latest": geminiDigest,
+    "agentcloud-main-runner-kimi-code:latest": kimiDigest,
     "agentcloud-main-runner-grok-build:latest": grokDigest,
     "agentcloud-main-runner-hermes:latest": hermesDigest,
     "agentcloud-main-runner-loopal:latest": loopalDigest,
@@ -95,12 +109,20 @@ test("supports every formal Worker runtime in the local catalog", () => {
     catalog.images.flatMap((image) => image.worker_type_slugs).sort(),
     [
       "aider", "claude-code", "codex-cli", "cursor-cli", "do-agent", "e2e-echo",
-      "gemini-cli", "grok-build", "hermes", "loopal", "minimax-cli", "openclaw",
+      "gemini-cli", "grok-build", "hermes", "kimi-code", "loopal", "minimax-cli", "openclaw",
       "opencode", "pattern-designer", "seedance-expert", "video-studio",
     ],
   );
   assert.match(catalog.revision, /^local-dev-[a-f0-9]{64}$/);
   assert.ok(catalog.revision.length <= 128);
+  assert.equal(
+    catalog.images.find((image) => image.worker_type_slugs[0] === "claude-code").id,
+    2,
+  );
+  assert.equal(
+    catalog.images.find((image) => image.worker_type_slugs[0] === "video-studio").id,
+    4,
+  );
 });
 
 test("returns no catalog when no requested local runtime has an immutable image ID", () => {

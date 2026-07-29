@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { getPodStatusDisplay } from "@/lib/pod-status-display";
 import type { ChannelPodSummary } from "@/hooks/useChannelPods";
 
 interface ChannelRailPodItemProps {
@@ -34,10 +35,7 @@ export function ChannelRailPodItem({ pod, dimmed }: ChannelRailPodItemProps) {
 }
 
 function statusColorClass(status: string): string {
-  if (status === "running") return "bg-success";
-  if (status === "initializing") return "bg-warning";
-  if (status === "error" || status === "failed") return "bg-danger";
-  return "bg-muted-foreground/50";
+  return getPodStatusDisplay(status).dotColor;
 }
 
 function PodAvatar({ letter, status }: { letter: string; status: string }) {

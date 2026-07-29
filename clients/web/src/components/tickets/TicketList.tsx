@@ -4,28 +4,16 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useCurrentOrg, useAuthStore } from "@/stores/auth";
 import { Ticket } from "@/stores/ticket";
+import {
+  getTicketPriorityDisplay,
+  getTicketStatusDisplay,
+} from "@/lib/ticket-display";
 
 interface TicketListProps {
   tickets: Ticket[];
   loading?: boolean;
   onTicketClick?: (ticket: Ticket) => void;
 }
-
-const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
-  backlog: { label: "Backlog", color: "text-muted-foreground", bg: "bg-muted" },
-  todo: { label: "To Do", color: "text-info", bg: "bg-info-bg" },
-  in_progress: { label: "In Progress", color: "text-warning", bg: "bg-warning-bg" },
-  in_review: { label: "In Review", color: "text-primary", bg: "bg-accent" },
-  done: { label: "Done", color: "text-success", bg: "bg-success-bg" },
-};
-
-const priorityConfig: Record<string, { icon: string; color: string; label: string }> = {
-  none: { icon: "—", color: "text-muted-foreground", label: "None" },
-  low: { icon: "↓", color: "text-success", label: "Low" },
-  medium: { icon: "→", color: "text-warning", label: "Medium" },
-  high: { icon: "↑", color: "text-primary", label: "High" },
-  urgent: { icon: "⚡", color: "text-danger", label: "Urgent" },
-};
 
 export function TicketList({ tickets, loading, onTicketClick }: TicketListProps) {
   const t = useTranslations();
@@ -82,8 +70,9 @@ export function TicketList({ tickets, loading, onTicketClick }: TicketListProps)
         </thead>
         <tbody className="text-sm space-y-1">
           {tickets.map((ticket) => {
-            const statusStyle = statusConfig[ticket.status] || statusConfig.backlog;
-            const priorityStyle = priorityConfig[ticket.priority] || priorityConfig.none;
+            const statusStyle = getTicketStatusDisplay(ticket.status);
+            const priorityStyle = getTicketPriorityDisplay(ticket.priority);
+            const PriorityIcon = priorityStyle.icon;
 
             return (
               <tr
@@ -122,7 +111,7 @@ export function TicketList({ tickets, loading, onTicketClick }: TicketListProps)
 
                 <td className="py-3">
                   <span
-                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${statusStyle.bg} ${statusStyle.color}`}
+                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${statusStyle.bgColor} ${statusStyle.color}`}
                   >
                     {t(`tickets.status.${ticket.status}`)}
                   </span>
@@ -133,7 +122,7 @@ export function TicketList({ tickets, loading, onTicketClick }: TicketListProps)
                     className={`inline-flex items-center gap-1 ${priorityStyle.color}`}
                     title={t(`tickets.priority.${ticket.priority}`)}
                   >
-                    {priorityStyle.icon}
+                    <PriorityIcon className="h-3.5 w-3.5" />
                     <span className="text-xs">{t(`tickets.priority.${ticket.priority}`)}</span>
                   </span>
                 </td>

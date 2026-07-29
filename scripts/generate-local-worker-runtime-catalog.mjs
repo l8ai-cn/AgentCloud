@@ -4,82 +4,34 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
+const modulePath = fileURLToPath(import.meta.url);
+const stableRuntimeImageIDs = JSON.parse(fs.readFileSync(
+  path.join(
+    path.dirname(modulePath),
+    "../backend/internal/domain/workerruntime/runtime_image_id_registry.json",
+  ),
+  "utf8",
+));
+
 const localRuntimeMetadata = {
-  "codex-cli": {
-    id: 1,
-    slug: "codex-cli-local",
-    name: "Codex CLI (local development)",
-    workerTypeSlugs: ["codex-cli", "pattern-designer"],
-  },
-  "video-studio": {
-    id: 14,
-    slug: "video-studio-local",
-    name: "Video Studio (local development)",
-  },
-  "gemini-cli": {
-    id: 2,
-    slug: "gemini-cli-local",
-    name: "Gemini CLI (local development)",
-  },
-  "minimax-cli": {
-    id: 4,
-    slug: "minimax-cli-local",
-    name: "MiniMax CLI (local development)",
-  },
-  openclaw: {
-    id: 5,
-    slug: "openclaw-local",
-    name: "OpenClaw (local development)",
-  },
-  "do-agent": {
-    id: 3,
-    slug: "do-agent-local",
-    name: "DoAgent (local development)",
-    workerTypeSlugs: ["do-agent", "seedance-expert"],
-  },
-  "e2e-echo": {
-    id: 13,
-    slug: "e2e-echo-local",
-    name: "E2E Echo (local development)",
-  },
-  aider: {
-    id: 6,
-    slug: "aider-local",
-    name: "Aider (local development)",
-  },
-  "claude-code": {
-    id: 7,
-    slug: "claude-code-local",
-    name: "Claude Code (local development)",
-  },
-  "cursor-cli": {
-    id: 8,
-    slug: "cursor-cli-local",
-    name: "Cursor CLI (local development)",
-  },
-  "grok-build": {
-    id: 9,
-    slug: "grok-build-local",
-    name: "Grok Build (local development)",
-  },
-  hermes: {
-    id: 10,
-    slug: "hermes-local",
-    name: "Hermes (local development)",
-  },
-  loopal: {
-    id: 11,
-    slug: "loopal-local",
-    name: "Loopal (local development)",
-  },
-  opencode: {
-    id: 12,
-    slug: "opencode-local",
-    name: "OpenCode (local development)",
-  },
+  "codex-cli": { slug: "codex-cli-local", name: "Codex CLI (local development)" },
+  "video-studio": { slug: "video-studio-local", name: "Video Studio (local development)" },
+  "gemini-cli": { slug: "gemini-cli-local", name: "Gemini CLI (local development)" },
+  "kimi-code": { slug: "kimi-code-local", name: "Kimi Code (local development)" },
+  "minimax-cli": { slug: "minimax-cli-local", name: "MiniMax CLI (local development)" },
+  openclaw: { slug: "openclaw-local", name: "OpenClaw (local development)" },
+  "do-agent": { slug: "do-agent-local", name: "DoAgent (local development)" },
+  "e2e-echo": { slug: "e2e-echo-local", name: "E2E Echo (local development)" },
+  aider: { slug: "aider-local", name: "Aider (local development)" },
+  "claude-code": { slug: "claude-code-local", name: "Claude Code (local development)" },
+  "cursor-cli": { slug: "cursor-cli-local", name: "Cursor CLI (local development)" },
+  "grok-build": { slug: "grok-build-local", name: "Grok Build (local development)" },
+  hermes: { slug: "hermes-local", name: "Hermes (local development)" },
+  loopal: { slug: "loopal-local", name: "Loopal (local development)" },
+  opencode: { slug: "opencode-local", name: "OpenCode (local development)" },
 };
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] === modulePath) {
   main(process.argv.slice(2));
 }
 
@@ -91,13 +43,33 @@ export function buildLocalRuntimeCatalog({ runtimeImages, inspectImage }) {
     }
     const digest = inspectImage(image);
     if (!isDigest(digest)) return [];
-    return [{
+    const entries = [{
       ...metadata,
+      id: runtimeImageID(workerTypeSlug),
       reference: `docker-daemon://${image}@${digest}`,
       digest,
-      worker_type_slugs: metadata.workerTypeSlugs ?? [workerTypeSlug],
+      worker_type_slugs: [workerTypeSlug],
       enabled: true,
     }];
+    if (workerTypeSlug === "codex-cli") {
+      entries.push({
+        ...entries[0],
+        id: runtimeImageID("pattern-designer"),
+        slug: "pattern-designer-local",
+        name: "Pattern Designer (local development)",
+        worker_type_slugs: ["pattern-designer"],
+      });
+    }
+    if (workerTypeSlug === "do-agent") {
+      entries.push({
+        ...entries[0],
+        id: runtimeImageID("seedance-expert"),
+        slug: "seedance-expert-local",
+        name: "Seedance Expert (local development)",
+        worker_type_slugs: ["seedance-expert"],
+      });
+    }
+    return entries;
   });
 
   if (images.length === 0) return undefined;
@@ -106,6 +78,14 @@ export function buildLocalRuntimeCatalog({ runtimeImages, inspectImage }) {
     revision: localCatalogRevision(images),
     images,
   };
+}
+
+function runtimeImageID(workerTypeSlug) {
+  const id = stableRuntimeImageIDs[workerTypeSlug];
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    throw new Error(`missing stable Worker runtime image ID: ${workerTypeSlug}`);
+  }
+  return id;
 }
 
 function localCatalogRevision(images) {

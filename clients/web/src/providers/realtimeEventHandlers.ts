@@ -3,6 +3,7 @@ import { useRunnerStore } from "@/stores/runner";
 import { getTicketState, getPodState, parseWasmAny } from "@/lib/wasm-core";
 import { useTicketStore } from "@/stores/ticket";
 import { useChannelStore, useChannelMessageStore } from "@/stores/channel";
+import { readCurrentChannel } from "@/stores/channelSelectors";
 import { readCurrentUser } from "@/stores/auth";
 import type { PodData } from "@/lib/api/facade/pod";
 import {
@@ -44,7 +45,7 @@ export function handleChannelEvent(event: RealtimeEvent, channelDebounceRef?: De
       const chState = useChannelStore.getState();
       if (currentUserId != null && userId === currentUserId) {
         chState.fetchChannels?.({ includeArchived: true });
-      } else if (chState.currentChannel?.id === channelId && channelDebounceRef) {
+      } else if (readCurrentChannel()?.id === channelId && channelDebounceRef) {
         if (channelDebounceRef.current) clearTimeout(channelDebounceRef.current);
         channelDebounceRef.current = setTimeout(() => {
           channelDebounceRef.current = null;

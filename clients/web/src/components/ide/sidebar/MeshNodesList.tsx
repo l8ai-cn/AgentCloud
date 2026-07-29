@@ -4,6 +4,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { getPodDisplayName } from "@/lib/pod-display-name";
 import { MeshNode, getPodStatusInfo } from "@/stores/mesh";
+import { isPodRelayConnectable } from "@/lib/pod-status";
 import { Button } from "@/components/ui/button";
 import {
   Users,
@@ -81,7 +82,7 @@ export function MeshNodesList({
                     )}
                     onClick={() => onNodeClick(node)}
                   >
-                    <span className={cn("w-2 h-2 rounded-full flex-shrink-0", statusInfo.bgColor)} />
+                    <span className={cn("w-2 h-2 rounded-full flex-shrink-0", statusInfo.dotColor)} />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm truncate">{getPodDisplayName(node)}</p>
                       {node.model && (
@@ -89,7 +90,7 @@ export function MeshNodesList({
                       )}
                     </div>
                     {/* Open terminal button */}
-                    {(node.status === "running" || node.status === "initializing") && (
+                    {isPodRelayConnectable(node.status) && (
                       <Button
                         size="sm"
                         variant="ghost"

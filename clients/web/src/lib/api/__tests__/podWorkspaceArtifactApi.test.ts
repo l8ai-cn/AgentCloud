@@ -63,11 +63,13 @@ describe("podWorkspaceArtifactApi", () => {
     ]);
     expect(globalThis.fetch).toHaveBeenCalledWith(
       "/api/v1/orgs/dev-org/pods/worker-1/resources/workspace/changes",
-      {
+      expect.objectContaining({
         cache: "no-store",
-        headers: { Authorization: "Bearer test-token" },
-      },
+      }),
     );
+    const headers = new Headers(vi.mocked(globalThis.fetch).mock.calls[0][1]?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer test-token");
+    expect(headers.get("X-Organization-Slug")).toBe("dev-org");
   });
 
   it("loads a binary Worker artifact without resolving a session", async () => {
@@ -92,11 +94,13 @@ describe("podWorkspaceArtifactApi", () => {
     expect(blob.size).toBe(3);
     expect(globalThis.fetch).toHaveBeenCalledWith(
       "/api/v1/orgs/dev-org/pods/worker-1/resources/workspace/filesystem/output/demo%20clip.mp4",
-      {
+      expect.objectContaining({
         cache: "no-store",
-        headers: { Authorization: "Bearer test-token" },
-      },
+      }),
     );
+    const headers = new Headers(vi.mocked(globalThis.fetch).mock.calls[0][1]?.headers);
+    expect(headers.get("Authorization")).toBe("Bearer test-token");
+    expect(headers.get("X-Organization-Slug")).toBe("dev-org");
   });
 
   it("rejects truncated Worker artifact content", async () => {

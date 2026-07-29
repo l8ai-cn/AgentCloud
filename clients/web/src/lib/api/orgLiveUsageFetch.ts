@@ -1,6 +1,8 @@
 import { getApiBaseUrl } from "@/lib/env";
-import { getAuthManager } from "@/lib/wasm-core";
-import { readCurrentOrg } from "@/stores/auth";
+import {
+  authenticatedOrganizationFetch,
+  readJsonResponse,
+} from "./authenticatedRequest";
 
 export type OrgLiveModelUsage = {
   model: string;
@@ -18,17 +20,10 @@ export type OrgLiveUsageSummary = {
 };
 
 export async function fetchOrgLiveUsageSummary(): Promise<OrgLiveUsageSummary | null> {
-  const token = getAuthManager().get_token();
-  const org = readCurrentOrg()?.slug;
-  if (!token || !org) return null;
-
   const base = getApiBaseUrl().replace(/\/$/, "");
-  const res = await fetch(`${base}/v1/org/usage/summary`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "X-Organization-Slug": org,
-    },
-  });
-  if (!res.ok) return null;
-  return res.json() as Promise<OrgLiveUsageSummary>;
+  const response = await authenticatedOrganizationFetch(
+    `${base}/v1/org/usage/summary`,
+  );
+  if (response.status === 204) return null;
+  return readJsonResponse<OrgLiveUsageSummary>(response);
 }

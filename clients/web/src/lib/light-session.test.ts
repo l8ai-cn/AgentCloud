@@ -27,9 +27,14 @@ describe("urlSlug", () => {
     expect(urlSlug(long).length).toBeLessThanOrEqual(64);
   });
 
-  it("falls back gracefully on garbage input", () => {
-    const slug = urlSlug("not a url");
-    expect(slug).toMatch(/^[a-z0-9_]+$/);
+  it("matches Rust authority parsing for non-URL input", () => {
+    expect(urlSlug("not a url/path")).toBe("not_a_url");
+  });
+
+  it("preserves authority details exactly like Rust", () => {
+    expect(urlSlug("HTTP://User@LOCALHOST:10007/path")).toBe(
+      "http_user_localhost_10007",
+    );
   });
 });
 
