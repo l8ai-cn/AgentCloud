@@ -6,9 +6,9 @@ image:
   repository: docker.cnb.cool/l8ai/doworker/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260727-lc-partner
-  web: oilan-20260727-lc-partner
-  relay: oilan-20260727-lc-partner
+  backend: oilan-20260730-amp-bearer
+  web: oilan-20260730-amp-bearer
+  relay: oilan-20260730-amp-bearer
 rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
