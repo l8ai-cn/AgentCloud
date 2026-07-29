@@ -50,7 +50,7 @@ The dev pipeline automatically:
 1. Generates `.env` with worktree-isolated ports (3 host service ports added: BACKEND_HTTP_PORT / BACKEND_GRPC_PORT / RELAY_HTTP_PORT)
 2. Generates traefik dynamic configs that route `host.docker.internal:<host-port>`
 3. Starts the docker infra stack
-4. Runs migrations via the `migrate/migrate` oneshot service (no backend container needed)
+4. Applies `backend/schema/schema.sql` when the database is empty (no backend container needed)
 5. Launches `air` for backend / relay / runner in the background, with isolated `$HOME` for the runner so its `~/.claude/*` writes don't touch your real configs
 6. Runs `pnpm run build:wasm` if needed, then starts plain `next dev` for web and web-admin
 
@@ -196,32 +196,22 @@ pnpm run build:wasm      # from repo root — builds wasm package for web
 
 **加新依赖**：编辑对应 crate 的 `Cargo.toml`，然后 `cargo test` / `pnpm run build:wasm` 验证。
 
-### Database Migrations
+### Database Schema
 
-Migrations are located in `backend/migrations/` using golang-migrate format.
+数据库是 schema 的 SSOT，仓库不保存迁移脚本，也没有可执行的迁移入口。
+结构变更只能通过明确授权、留审计的 DoSql 任务直接作用于目标库。
 
-**Development** (via Docker):
-```bash
-./deploy/dev/dev.sh      # automatically runs all migrations
-```
+`backend/schema/` 下两个文件：
 
-**Production** (via backend container):
-```bash
-# Inside the backend container, golang-migrate is pre-installed
-migrate -path /app/migrations -database "postgres://user:pass@host:5432/db?sslmode=disable" up
-migrate -path /app/migrations -database "postgres://user:pass@host:5432/db?sslmode=disable" down 1
-migrate -path /app/migrations -database "postgres://user:pass@host:5432/db?sslmode=disable" version
-```
+- `SCHEMA_VERSION` — 代码期望的 schema 版本，Oilan 发布闸门的唯一版本锚点
+- `schema.sql` — 权威库的整体快照，**只**用于给全新的空库建 schema
 
-**Create new migration**:
-```bash
-# Install golang-migrate locally
-brew install golang-migrate
+**Development**: `./deploy/dev/dev.sh` 在库为空时自动应用 `schema.sql`；
+库里已有表就跳过，不做任何增量对齐。
 
-# Create migration files
-migrate create -ext sql -dir backend/migrations -seq add_new_feature
-# This creates: 000024_add_new_feature.up.sql and 000024_add_new_feature.down.sql
-```
+**变更 schema**: 走授权的 DoSql 任务 → 递增 `SCHEMA_VERSION` → 重新导出
+`schema.sql`。禁止手改 `schema.sql`，也禁止把它当迁移链追加使用。
+完整流程与导出命令见 `backend/schema/README.md`。
 
 ## Architecture
 
@@ -295,7 +285,7 @@ backend/
 │   ├── crypto/           # Encryption utilities
 │   ├── i18n/             # Internationalization
 │   └── audit/            # Audit logging
-└── migrations/           # SQL migrations
+└── schema/               # Schema version anchor + snapshot
 ```
 
 ## Web Structure
@@ -462,7 +452,7 @@ Or use an existing admin to grant privileges via the Admin Console UI.
 - helper 内部走 `slugkit.GenerateUnique(seed, dbExistsCheck)`，带 collision retry
 
 ### 新增 identifier 字段 checklist
-1. migration 加 column + `CHECK (col ~ '^[a-z0-9]+(-[a-z0-9]+)*$' AND char_length(col) BETWEEN 2 AND 100)`
+1. 通过授权的 DoSql 任务加 column + `CHECK (col ~ '^[a-z0-9]+(-[a-z0-9]+)*$' AND char_length(col) BETWEEN 2 AND 100)`
 2. domain model 字段类型用 `slugkit.Slug`（新代码） 或 `string`（兼容老代码）
 3. 加 `BeforeSave` hook 调 `slugkit.ValidateIdentifier("<table>.<col>", value)`
 4. service 包加 `*Registry` helper 封装 `slugkit.GenerateUnique`

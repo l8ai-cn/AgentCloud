@@ -3,6 +3,7 @@
 #
 # After docker compose up, this module:
 #   - waits for postgres + gitea readiness
+#   - provisions the schema on an empty database
 #   - seeds users + LemonSqueezy variant ids
 #   - registers the runner SSH key with Gitea
 #   - writes ~/.ssh/config so host-side `git@gitea:...` resolves
@@ -23,6 +24,32 @@ wait_for_service() {
         sleep 2
     done
     return 1
+}
+
+# 全新空库用 backend/schema/schema.sql 建 schema——那是权威库的整体快照。
+# 已有表的库一律不碰：结构变更只通过 DoSql 直连目标库，本地不做增量对齐，
+# 免得开发库和权威库之间出现第二条演进路径。
+provision_schema() {
+    local pg_container="$1"
+
+    local table_count
+    table_count=$(docker exec "$pg_container" psql -U agentcloud -d agentcloud -t -A -c \
+        "SELECT count(*) FROM information_schema.tables
+         WHERE table_schema IN ('public','marketplace') AND table_type='BASE TABLE'" \
+        2>/dev/null | tr -d ' ')
+
+    if [[ "${table_count:-0}" -gt 0 ]]; then
+        info "数据库已有 ${table_count} 张表，跳过 schema provisioning"
+        return 0
+    fi
+
+    info "空库：应用 backend/schema/schema.sql..."
+    if ! docker exec -i "$pg_container" psql -q -v ON_ERROR_STOP=1 \
+        -U agentcloud -d agentcloud < "$SCHEMA_FILE"; then
+        error "schema provisioning 失败 — 数据库处于半建状态，请清空后重试"
+        return 1
+    fi
+    success "schema provisioning 完成"
 }
 
 init_seed() {
