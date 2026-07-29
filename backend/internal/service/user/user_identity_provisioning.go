@@ -48,6 +48,7 @@ func (s *Service) getOrCreateByExternalIdentityOnce(ctx context.Context, id Exte
 			return nil, false, err
 		}
 		s.promoteEmailVerified(ctx, u, id)
+		s.syncExternalProfile(ctx, u, id)
 		return u, false, nil
 	}
 
@@ -88,6 +89,7 @@ func (s *Service) resolveIdentityUser(ctx context.Context, id ExternalIdentity, 
 		if err == nil {
 			if existing.IsEmailVerified || id.EmailVerified {
 				s.promoteEmailVerified(ctx, existing, id)
+				s.syncExternalProfile(ctx, existing, id)
 				return existing, false, nil
 			}
 			emailTaken = true

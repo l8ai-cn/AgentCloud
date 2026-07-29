@@ -36,7 +36,7 @@ func ValidateID(id string) error {
 		return ErrInvalidID
 	}
 	for _, r := range id {
-		if !(r >= 'a' && r <= 'z') && !(r >= '0' && r <= '9') && r != '-' {
+		if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
 			return ErrInvalidID
 		}
 	}
