@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: marketplace
+                name: backend
                 port:
                   number: 8080
 ---

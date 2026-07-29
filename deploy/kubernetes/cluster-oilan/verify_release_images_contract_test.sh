@@ -14,7 +14,7 @@ printf 'images:\n  - name: %s/gitea\n    digest: %s\n' \
   "${GITEA_REGISTRY}" "${GITEA_DIGEST}" > "${LOCK}"
 
 {
-  for image in backend marketplace relay web web-admin; do
+  for image in backend relay web web-admin; do
     printf '        image: %s/%s@%s\n' "${REGISTRY}" "${image}" "${DIGEST}"
   done
   printf '      - image: %s/mobile@%s\n' "${REGISTRY}" "${DIGEST}"

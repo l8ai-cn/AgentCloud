@@ -26,9 +26,6 @@ case " $* " in
       if [[ "${args[index + 1]}" == *"get deploy backend -o jsonpath"* ]]; then
         printf '1\n'
       fi
-      if [[ "${args[index + 1]}" == *"get deploy marketplace -o jsonpath"* ]]; then
-        printf '1\n'
-      fi
       if [[ "${args[index + 1]}" == *"get deploy/gitea -o jsonpath="*".spec.replicas"* ]]; then
         printf '1\n'
       fi
@@ -117,7 +114,7 @@ require_command 'kubectl kustomize . > /tmp/agentcloud-release.yaml'
 require_command 'kubectl apply -f generated-secrets'
 require_command 'rm -f generated-secrets/*.yaml'
 require_command "name='repo.aiedulab.cn:8443/library/gitea'"
-require_command 'scale deploy/backend deploy/marketplace --replicas=0'
+require_command 'scale deploy/backend --replicas=0'
 require_command 'scale deploy/gitea --replicas=0'
 require_command 'wait --for=delete pod -l app=gitea'
 require_command '15-gitea-backup-pod.yaml | kubectl apply -f -'
@@ -132,7 +129,7 @@ require_command 'rollout status deploy/gitea --timeout=300s'
 require_command 'bash bootstrap_internal_gitea.sh agentcloud'
 require_command 'kubectl apply -f 02-configmap.yaml -f 30-backend-rbac.yaml'
 require_command 'wait --for=delete pod -l app=backend'
-require_command 'wait --for=delete pod -l app=marketplace'
+require_command 'delete deploy/marketplace svc/marketplace --ignore-not-found'
 require_command '10-postgres.yaml | kubectl apply -f -'
 require_command '11-redis.yaml | kubectl apply -f -'
 require_command '12-minio.yaml | kubectl apply -f -'
@@ -150,7 +147,7 @@ require_command '13-minio-setup-job.yaml | kubectl apply -f -'
 require_command '23-worker-definition-sync-job.yaml | kubectl apply -f -'
 
 render_line="$(line_number 'kubectl kustomize . > /tmp/agentcloud-release.yaml')"
-stop_line="$(line_number 'scale deploy/backend deploy/marketplace --replicas=0')"
+stop_line="$(line_number 'scale deploy/backend --replicas=0')"
 gitea_stop_line="$(line_number 'scale deploy/gitea --replicas=0')"
 gitea_wait_line="$(line_number 'wait --for=delete pod -l app=gitea')"
 gitea_backup_pod_line="$(line_number '15-gitea-backup-pod.yaml | kubectl apply -f -')"
@@ -189,7 +186,7 @@ sync_line="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f 
 }
 
 ! grep -A12 -F 'initContainers:' "$ROOT/30-backend.yaml" | grep -F 'name: migrate' >/dev/null
-! grep -F 'name: migrate' "$ROOT/38-marketplace.yaml" >/dev/null
+! test -e "$ROOT/38-marketplace.yaml"
 ! grep -F '20-migrate-job.yaml' "$LOG" >/dev/null
 ! grep -F 'job/migrate' "$LOG" >/dev/null
 ! grep -F 'job/seed' "$LOG" >/dev/null

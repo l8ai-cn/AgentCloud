@@ -64,8 +64,7 @@ done
 app="${SEC}/agentcloud-secrets.yaml"
 test "$(secret_value "$app" DB_PASSWORD)" = contract-db
 test "$(secret_value "$app" STORAGE_SECRET_KEY)" = contract-minio
-test "$(secret_value "$app" MARKETPLACE_DATABASE_URL)" = \
-  'postgres://agentcloud:contract-db@postgres:5432/agentcloud?sslmode=disable'
+test "$(secret_value "$app" INTERNAL_API_SECRET)" != ""
 
 secret_value "${SEC}/agentcloud-pki-ca.yaml" ca.crt >"${TMP}/ca.crt"
 cmp "${GEN}/ca.crt" "${TMP}/ca.crt"

@@ -40,8 +40,6 @@ jobs:
         include:
           - service: backend
             file: backend/Dockerfile
-          - service: marketplace
-            file: marketplace/Dockerfile
           - service: relay
             file: relay/Dockerfile
           - service: web
@@ -116,7 +114,7 @@ jobs:
         run: |
           set -euo pipefail
           entries="$(mktemp)"
-          for service in backend marketplace relay web; do
+          for service in backend relay web; do
             digest="$(cat "digests/${service}.txt")"
             jq -nc \
               --arg service "${service}" \

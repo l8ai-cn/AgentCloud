@@ -21,7 +21,6 @@ resources:
   - 32-web.yaml
   - 33-web-admin.yaml
   - 34-runner-e2e-echo.yaml
-  - 38-marketplace.yaml
   - 42-mobile.yaml
   - 40-ingress.yaml
   - 41-marketplace-ingress.yaml

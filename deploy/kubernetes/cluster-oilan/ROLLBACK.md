@@ -6,7 +6,7 @@
 
 ```bash
 doops -session <rollback-session> exec --target gw-oilan-node --cmd \
-  'kubectl -n agentcloud scale deploy/backend deploy/marketplace --replicas=0 &&
+  'kubectl -n agentcloud scale deploy/backend --replicas=0 &&
    kubectl -n agentcloud wait --for=delete pod -l app=backend --timeout=180s &&
    kubectl -n agentcloud wait --for=delete pod -l app=marketplace --timeout=180s'
 ```

@@ -182,7 +182,7 @@ validate the existing `agentcloud` Secret.
 | `30-backend*` | backend Deployment/Service + SA/RBAC (kubectl via init container) |
 | `31/32/33/42-*` | relay / web / web-admin / mobile |
 | `34/35-runner-*` | standing runner pods |
-| `38-marketplace` | Marketplace API Deployment/Service |
+| _(removed)_ | Marketplace API is mounted on backend (`/api/marketplace/v1`) |
 | `release/kustomization` | immutable platform image digests |
 | `40-ingress` | dowork / admin / relay / tunnel ingress |
 | `41-marketplace-ingress` | market API + UI redirect → `agents.l8ai.cn/marketplace` |

@@ -20,11 +20,24 @@ type Dependencies struct {
 	Applications  consumerapi.OrganizationApplicationsReader
 }
 
-func NewRouter(deps Dependencies) *gin.Engine {
+func MountAPI(router gin.IRouter, deps Dependencies) {
 	if deps.Ready == nil || deps.Storefront == nil || deps.Identity == nil ||
 		deps.Installations == nil || deps.Applications == nil {
 		panic("marketplace router dependencies are required")
 	}
+	publicapi.NewHandler(deps.Storefront).RegisterRoutes(
+		router.Group("/api/marketplace/v1"),
+	)
+	console := router.Group("/api/marketplace/v1/console")
+	console.Use(actorapi.Middleware(deps.Identity))
+	consoleapi.NewSessionHandler().RegisterRoutes(console)
+	consumer := router.Group("/api/marketplace/v1")
+	consumer.Use(actorapi.Middleware(deps.Identity))
+	consumerapi.NewInstallationHandler(deps.Installations).RegisterRoutes(consumer)
+	consumerapi.NewOrganizationApplicationsHandler(deps.Applications).RegisterRoutes(consumer)
+}
+
+func NewRouter(deps Dependencies) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.GET("/health/live", func(c *gin.Context) {
@@ -42,15 +55,6 @@ func NewRouter(deps Dependencies) *gin.Engine {
 		}
 		c.JSON(http.StatusOK, gin.H{"status": "ready"})
 	})
-	publicapi.NewHandler(deps.Storefront).RegisterRoutes(
-		router.Group("/api/marketplace/v1"),
-	)
-	console := router.Group("/api/marketplace/v1/console")
-	console.Use(actorapi.Middleware(deps.Identity))
-	consoleapi.NewSessionHandler().RegisterRoutes(console)
-	consumer := router.Group("/api/marketplace/v1")
-	consumer.Use(actorapi.Middleware(deps.Identity))
-	consumerapi.NewInstallationHandler(deps.Installations).RegisterRoutes(consumer)
-	consumerapi.NewOrganizationApplicationsHandler(deps.Applications).RegisterRoutes(consumer)
+	MountAPI(router, deps)
 	return router
 }

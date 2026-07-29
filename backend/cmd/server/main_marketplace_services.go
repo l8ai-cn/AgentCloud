@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"log"
 	"log/slog"
 
 	v1 "github.com/l8ai-cn/agentcloud/backend/internal/api/rest/v1"
@@ -34,6 +36,16 @@ func wireExpertAndSkillServices(
 	apiServices.Expert = expertService
 	apiServices.Skill = skillService
 	apiServices.WorkerSpecs = services.workerSpecs
+	syncPublishedExpertCatalogOnce(db)
+}
+
+func syncPublishedExpertCatalogOnce(db *gorm.DB) {
+	if _, err := catalogsync.NewExpertCatalogSynchronizer(db).Sync(
+		context.Background(),
+	); err != nil {
+		log.Fatalf("sync published expert catalog: %v", err)
+	}
+	slog.Info("Published expert catalog catch-up sync completed")
 }
 
 func newExpertAndSkillServices(

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 release_platform_images() {
-  printf '%s\n' backend marketplace relay web web-admin mobile
+  printf '%s\n' backend relay web web-admin mobile
 }
 
 release_runtime_images() {

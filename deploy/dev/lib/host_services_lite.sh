@@ -216,37 +216,6 @@ start_backend_host_lite() {
     success "Backend 已就绪 (air, host :${BACKEND_HTTP_PORT}, gRPC :${BACKEND_GRPC_PORT})"
 }
 
-start_marketplace_host_lite() {
-    source "$ENV_FILE"
-    local repo_root="$SCRIPT_DIR/../.."
-    mkdir -p "$(_runtime_dir)/marketplace"
-
-    export MARKETPLACE_DATABASE_URL="postgres://agentcloud:${POSTGRES_PASSWORD:-agentcloud_dev}@localhost:${POSTGRES_PORT}/agentcloud?sslmode=disable"
-    export MARKETPLACE_HTTP_ADDRESS=":${MARKETPLACE_HTTP_PORT}"
-    export MARKETPLACE_IDENTITY_ISSUER="http://${PRIMARY_DOMAIN}"
-    export MARKETPLACE_IDENTITY_AUDIENCE="marketplace-api"
-    export MARKETPLACE_IDENTITY_JWKS_URL="http://${PRIMARY_DOMAIN}/.well-known/jwks.json"
-    export MARKETPLACE_RUNTIME_BRIDGE_URL="http://localhost:${BACKEND_HTTP_PORT}/api/internal/marketplace/installations"
-    export INTERNAL_API_SECRET="${INTERNAL_API_SECRET:-dev-internal-secret}"
-
-    info "预编译 Marketplace..."
-    (cd "$repo_root" && go build -o "$(_runtime_dir)/marketplace/air/main" ./marketplace/cmd/server) || {
-        error "Marketplace go build 失败"
-        return 1
-    }
-
-    _reap_port "$MARKETPLACE_HTTP_PORT" "marketplace"
-    local log_file="$(_runtime_dir)/marketplace/marketplace.log"
-    _launch_air marketplace "deploy/dev/air/marketplace.toml" "$log_file" || return 1
-
-    if ! _wait_http "http://localhost:${MARKETPLACE_HTTP_PORT}/health/ready" marketplace 60; then
-        error "Marketplace 启动失败，查看日志: $log_file"
-        tail -80 "$log_file" >&2 || true
-        return 1
-    fi
-    success "Marketplace 已就绪 (air, host :${MARKETPLACE_HTTP_PORT})"
-}
-
 start_relay_host_lite() {
     source "$ENV_FILE"
     local repo_root="$SCRIPT_DIR/../.."
@@ -292,9 +261,7 @@ start_relay_host_lite() {
 
 stop_host_services_lite_extra() {
     pkill -f "deploy/dev/runtime/backend/air/main" 2>/dev/null || true
-    pkill -f "deploy/dev/runtime/marketplace/air/main" 2>/dev/null || true
     pkill -f "deploy/dev/runtime/relay/air/main" 2>/dev/null || true
     pkill -f "air -c deploy/dev/air/backend.toml" 2>/dev/null || true
-    pkill -f "air -c deploy/dev/air/marketplace.toml" 2>/dev/null || true
     pkill -f "air -c deploy/dev/air/relay.toml" 2>/dev/null || true
 }

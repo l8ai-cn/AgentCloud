@@ -25,9 +25,6 @@ case " $* " in
       if [[ "${args[index + 1]}" == *"get deploy backend -o jsonpath"* ]]; then
         printf '1\n'
       fi
-      if [[ "${args[index + 1]}" == *"get deploy marketplace -o jsonpath"* ]]; then
-        printf '1\n'
-      fi
       if [[ "${args[index + 1]}" == *"get deploy/gitea -o jsonpath="*".spec.replicas"* ]]; then
         printf '1\n'
       fi

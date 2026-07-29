@@ -26,7 +26,6 @@ WORKTREE_NAME="traefik-contract"
 BACKEND_HTTP_PORT=11015
 BACKEND_GRPC_PORT=11016
 RELAY_HTTP_PORT=11017
-MARKETPLACE_HTTP_PORT=11022
 source lib/config_gen.sh
 generate_traefik_config
 
@@ -41,5 +40,8 @@ if (!rule.includes("!HostRegexp(`^[a-z0-9-]+\\.preview\\.localhost$`)")) {
 }
 if (!rule.includes("PathPrefix(`/api`)")) {
   throw new Error("backend-api rule lost API prefix");
+}
+if (config?.http?.routers?.["marketplace-api"]) {
+  throw new Error("marketplace-api router must be removed; traffic goes to backend");
 }
 NODE

@@ -142,13 +142,10 @@ generate_cluster_secrets() {
   ACCESS_TOKEN_KEY_ID="oilan-$(printf '%s' "${public_digest}" | awk '{print substr($2,1,16)}')"
   # shellcheck disable=SC1090
   source "${GEN}/env"
-  MARKETPLACE_DATABASE_URL="postgres://agentcloud:${DB_PASSWORD}@postgres:5432/agentcloud?sslmode=disable"
-
   write_encoded_secret_manifest "${SEC}/agentcloud-secrets.yaml" agentcloud-secrets Opaque \
     DB_PASSWORD "$(encode_secret_value "${DB_PASSWORD}")" \
     JWT_SECRET "$(encode_secret_value "${JWT_SECRET}")" \
     ACCESS_TOKEN_KEY_ID "$(encode_secret_value "${ACCESS_TOKEN_KEY_ID}")" \
-    MARKETPLACE_DATABASE_URL "$(encode_secret_value "${MARKETPLACE_DATABASE_URL}")" \
     INTERNAL_API_SECRET "$(encode_secret_value "${INTERNAL_API_SECRET}")" \
     MINIO_ROOT_PASSWORD "$(encode_secret_value "${MINIO_ROOT_PASSWORD}")" \
     STORAGE_SECRET_KEY "$(encode_secret_value "${MINIO_ROOT_PASSWORD}")"

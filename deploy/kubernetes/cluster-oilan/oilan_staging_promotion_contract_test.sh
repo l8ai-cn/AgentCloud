@@ -26,9 +26,8 @@ jq -n --arg commit "${COMMIT}" '
     platform: "linux/amd64",
     images: {
       backend: image("backend"; "1"),
-      marketplace: image("marketplace"; "2"),
-      relay: image("relay"; "3"),
-      web: image("web"; "4")
+      relay: image("relay"; "2"),
+      web: image("web"; "3")
     }
   }
 ' > "${MANIFEST}"
@@ -72,9 +71,8 @@ platform_manifest_digest() {
   fi
   case "${service}" in
     backend) digit=1 ;;
-    marketplace) digit=2 ;;
-    relay) digit=3 ;;
-    web) digit=4 ;;
+    relay) digit=2 ;;
+    web) digit=3 ;;
     *) return 1 ;;
   esac
   printf 'sha256:'
@@ -128,9 +126,9 @@ main "${MANIFEST}"
 
 grep -Fxq 'project' "${LOG}"
 grep -Fxq 'token repo.aiedulab.cn:8443 120' "${LOG}"
-[[ "$(grep -c '^tag ' "${LOG}")" == "4" ]]
-[[ "$(grep -c '^push ' "${LOG}")" == "4" ]]
-[[ "$(grep -c '^promote ' "${LOG}")" == "4" ]]
+[[ "$(grep -c '^tag ' "${LOG}")" == "3" ]]
+[[ "$(grep -c '^push ' "${LOG}")" == "3" ]]
+[[ "$(grep -c '^promote ' "${LOG}")" == "3" ]]
 grep -Fq "tag docker.io/l8ai/doworker-oilan-backend:sha-${COMMIT}@sha256:" "${LOG}"
 grep -Fxq 'source-metadata' "${LOG}"
 grep -A1 -Fq "name: ${PROJ}/backend" "${RELEASE_LOCK}"

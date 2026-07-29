@@ -157,7 +157,6 @@ main() {
     # complete their mTLS handshakes — runner containers connect via
     # traefik:9443, traefik passthroughs to host backend.
     start_backend_host
-    start_marketplace_host
     start_relay_host
 
     if runners_k8s_enabled; then

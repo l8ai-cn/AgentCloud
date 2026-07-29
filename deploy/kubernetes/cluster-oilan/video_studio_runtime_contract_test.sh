@@ -52,10 +52,11 @@ push_video_expert="$(
     capture && /^}/ { exit }
   ' "$PUSH_IMAGES"
 )"
-for image in backend marketplace web web-admin; do
+for image in backend web web-admin; do
   grep -Fq "docker_push" <<< "$push_video_expert"
   grep -Fq "$image" <<< "$push_video_expert"
 done
+! grep -Fq "marketplace/Dockerfile" <<< "$push_video_expert"
 ! grep -Fq "marketplace-web" <<< "$push_video_expert"
 ! grep -Fq "mobile" <<< "$push_video_expert"
 grep -Fq 'harbor-image-publishing.sh' "$PUSH_IMAGES"

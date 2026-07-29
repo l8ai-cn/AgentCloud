@@ -340,8 +340,6 @@ jobs:
         include:
           - service: backend
             file: backend/Dockerfile
-          - service: marketplace
-            file: marketplace/Dockerfile
           - service: runner
             file: runner/Dockerfile
           - service: relay
