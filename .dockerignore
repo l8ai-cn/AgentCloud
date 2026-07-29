@@ -13,6 +13,5 @@ deploy/dev/.env
 *.log
 .superpowers/
 docs/
-clients/web-user/
 **/*_test.go
 **/.DS_Store
