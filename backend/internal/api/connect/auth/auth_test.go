@@ -55,22 +55,14 @@ func TestLogin_EmptyPassword_InvalidArgument(t *testing.T) {
 	assert.Equal(t, connect.CodeInvalidArgument, connectCodeOf(t, err))
 }
 
-func TestRegister_EmptyEmail_InvalidArgument(t *testing.T) {
-	srv := &Server{}
-	_, err := srv.Register(context.Background(),
-		connect.NewRequest(&authv1.RegisterRequest{Username: "u", Password: "12345678"}))
-	require.Error(t, err)
-	assert.Equal(t, connect.CodeInvalidArgument, connectCodeOf(t, err))
-}
-
-func TestRegister_ShortPassword_InvalidArgument(t *testing.T) {
+func TestRegister_Disabled(t *testing.T) {
 	srv := &Server{}
 	_, err := srv.Register(context.Background(),
 		connect.NewRequest(&authv1.RegisterRequest{
-			Email: "a@b.com", Username: "user", Password: "short",
+			Email: "a@b.com", Username: "user", Password: "12345678",
 		}))
 	require.Error(t, err)
-	assert.Equal(t, connect.CodeInvalidArgument, connectCodeOf(t, err))
+	assert.Equal(t, connect.CodeFailedPrecondition, connectCodeOf(t, err))
 }
 
 func TestRefreshToken_EmptyToken_InvalidArgument(t *testing.T) {

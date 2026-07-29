@@ -119,7 +119,7 @@ function UnauthenticatedPrompt({
       <p className="text-sm text-center text-muted-foreground">
         {t("noAccount")}{" "}
         <Link
-          href={`/register?redirect=/runners/authorize?key=${authKey}`}
+          href={`/login?redirect=/runners/authorize?key=${authKey}`}
           className="text-primary hover:underline"
         >
           {t("signUp")}

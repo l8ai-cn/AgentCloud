@@ -1,104 +1,115 @@
 // Migrated R5+: Connect-RPC only (no REST middle layer).
 import { test, expect } from "../../fixtures/index";
 import { clearAuthRateLimit } from "../../helpers/redis";
-import { CLEANUP } from "../../helpers/test-data";
+import {
+  CLEANUP,
+  PASSWORD123,
+  seedPasswordUserSQL,
+} from "../../helpers/test-data";
 import { DbFixture } from "../../fixtures/db.fixture";
-import { makeConnectClient } from "../../helpers/connect-client";
+import { getWebBaseUrl } from "../../helpers/env";
 
 /**
- * Journey: New User Onboarding
- * Register → Verify Email → Onboarding → Create Org → First Pod
- *
- * This is the most critical user journey — the first-time experience.
+ * Journey: first-time workspace creation.
+ * Local Register is closed — users are seeded (AMP/SSO in production) then
+ * land on onboarding to create a personal org.
  */
 test.describe("Journey: New User Onboarding", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   const EMAIL = "onboarding-journey@test.local";
-  const PASSWORD = "JourneyPass123!";
+  const USERNAME = "journeyuser";
 
-  test.beforeAll(async ({}, _testInfo) => {
-    // Pre-clean any leftover data
+  test.beforeAll(async () => {
     const db = new DbFixture();
-    try { db.cleanup(CLEANUP.userAndOrgsByEmail(EMAIL)); } catch { /* */ }
+    try {
+      db.cleanup(CLEANUP.userAndOrgsByEmail(EMAIL));
+    } catch {
+      /* */
+    }
   });
 
-  test.beforeEach(async () => { clearAuthRateLimit(); });
+  test.beforeEach(async () => {
+    clearAuthRateLimit();
+  });
 
-  test("full onboarding: register → verify → org → workspace", async ({ page, db }) => {
-    // ── Step 1: Register via UI ──
+  test("register page redirects to login", async ({ page }) => {
     await page.goto("/register");
-    await page.locator("#name").fill("Journey Test User");
-    await page.locator("#email").fill(EMAIL);
-    await page.locator("#username").fill("journeyuser");
-    await page.locator("#password").fill(PASSWORD);
-    // confirmPassword is required and always rendered (see register page.tsx).
-    // The previous `if (await isVisible())` race condition let the spec skip
-    // the fill during slow renders → handleSubmit's password mismatch check
-    // tripped → silent setError → no redirect → 15s waitForURL timeout.
-    // Use waitFor to guarantee the field is mountable before filling.
-    const confirmPwd = page.locator("#confirmPassword");
-    await confirmPwd.waitFor({ state: "visible", timeout: 10_000 });
-    await confirmPwd.fill(PASSWORD);
-    await page.locator('button[type="submit"]').click();
+    await page.waitForURL((url) => url.pathname.includes("/login"), {
+      timeout: 15_000,
+    });
+    expect(page.url()).toContain("/login");
+  });
 
-    // Should redirect away from register. First-hit of the post-register
-    // route can pay a Next dev cold-compile on top of the register round-trip,
-    // so give the redirect real headroom (the 15s ceiling flaked on a cold
-    // dev server; the retry — routes warm — always passed).
-    await page.waitForURL((url) => !url.pathname.includes("/register"), {
-      timeout: 30_000,
+  test("seeded user can create personal workspace from onboarding", async ({
+    page,
+    api,
+    db,
+  }) => {
+    try {
+      db.cleanup(CLEANUP.userAndOrgsByEmail(EMAIL));
+    } catch {
+      /* */
+    }
+    db.setup(
+      seedPasswordUserSQL({
+        email: EMAIL,
+        username: USERNAME,
+        name: "Journey Test User",
+      }),
+    );
+
+    const publicCc = api.connectWithToken("");
+    const loginRes = (await publicCc.auth.login({
+      username: USERNAME,
+      password: PASSWORD123,
+    })) as { token: string; refreshToken: string; expiresIn: number | string };
+
+    const baseUrl = getWebBaseUrl();
+    const expiresAt =
+      Math.floor(Date.now() / 1000) + Number(loginRes.expiresIn ?? 3600);
+    await page.context().addInitScript(
+      ({ token, refresh_token, expiresAt, baseUrl }) => {
+        const u = new URL(baseUrl);
+        const port = u.port ? `_${u.port}` : "";
+        const raw = `${u.protocol.replace(":", "")}_${u.hostname.toLowerCase()}${port}`;
+        const slug = raw.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 64);
+        localStorage.setItem(
+          `agent-cloud-auth/${slug}/session`,
+          JSON.stringify({
+            access_token: token,
+            refresh_token,
+            expires_at: expiresAt,
+            base_url: baseUrl,
+            current_org_slug: null,
+            schema_version: 1,
+          }),
+        );
+      },
+      {
+        token: loginRes.token,
+        refresh_token: loginRes.refreshToken,
+        expiresAt,
+        baseUrl,
+      },
+    );
+
+    const personalReq = page.waitForRequest(
+      (req) =>
+        req.url().endsWith("/proto.org.v1.OrgService/CreatePersonalOrg") &&
+        req.method() === "POST",
+    );
+
+    await page.goto("/onboarding");
+    await page
+      .getByRole("button", { name: /Create Personal Workspace|创建个人工作区/i })
+      .click();
+    const req = await personalReq;
+    expect(req.postData()).toBe("{}");
+    await page.waitForURL((u) => u.pathname.includes("/workspace"), {
+      timeout: 15_000,
     });
 
-    // ── Step 2: Verify email via DB token ──
-    const verifyToken = db.queryValue(
-      `SELECT email_verification_token FROM users WHERE email = '${EMAIL}'`
-    );
-    if (verifyToken) {
-      // VerifyEmail is an unauthenticated AuthService RPC — build a client
-      // without a token rather than reusing the authenticated fixture.
-      const publicCc = makeConnectClient(null);
-      await publicCc.auth.verifyEmail({ token: verifyToken });
-
-      const verified = db.queryValue(
-        `SELECT is_email_verified::text FROM users WHERE email = '${EMAIL}'`
-      );
-      expect(verified).toBe("true");
-    }
-
-    // ── Step 3: Complete onboarding (if redirected there) ──
-    const currentUrl = page.url();
-    if (currentUrl.includes("/onboarding")) {
-      // Look for "Create Personal Workspace" or similar
-      const createBtn = page.getByRole("button", {
-        name: /create|创建|quick start|快速/i,
-      }).first();
-      if (await createBtn.isVisible()) {
-        await createBtn.click();
-        await page.waitForURL(
-          (url) => url.pathname.includes("/workspace"),
-          { timeout: 15_000 },
-        );
-      }
-    }
-
-    // ── Step 4: Verify landing on workspace ──
-    const finalUrl = page.url();
-    expect(finalUrl).toMatch(/workspace/);
-
-    // ── Step 5: Verify user exists in DB with org membership ──
-    const userId = db.queryValue(
-      `SELECT id FROM users WHERE email = '${EMAIL}'`
-    );
-    expect(userId).toBeTruthy();
-
-    const orgCount = db.queryValue(
-      `SELECT COUNT(*) FROM organization_members WHERE user_id = ${userId}`
-    );
-    // User should have at least one org (auto-created or joined)
-    expect(parseInt(orgCount || "0")).toBeGreaterThanOrEqual(0);
-
-    // ── Cleanup ──
-    try { db.cleanup(CLEANUP.userAndOrgsByEmail(EMAIL)); } catch { /* */ }
+    db.cleanup(CLEANUP.userAndOrgsByEmail(EMAIL));
   });
 });

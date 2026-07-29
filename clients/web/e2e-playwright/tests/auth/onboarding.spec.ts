@@ -1,5 +1,5 @@
 import { test, expect } from "../../fixtures/index";
-import { CLEANUP, uniqueEmail } from "../../helpers/test-data";
+import { CLEANUP, PASSWORD123, seedPasswordUserSQL, uniqueEmail } from "../../helpers/test-data";
 import { clearAuthRateLimit } from "../../helpers/redis";
 import { getWebBaseUrl } from "../../helpers/env";
 
@@ -22,11 +22,9 @@ test.describe("Auth · onboarding personal workspace", () => {
     const username = `onboarduser${Date.now()}`;
     try { db.cleanup(CLEANUP.userAndOrgsByEmail(email)); } catch { /* noop */ }
 
-    const ccAnon = api.connectWithToken("");
-    const regRes = await ccAnon.auth.register({
-      email, username, password: "TestPass123!", name: "Onboard E2E",
-    }) as { token: string };
-    expect(regRes.token).toBeTruthy();
+    db.setup(seedPasswordUserSQL({ email, username, name: "Onboard E2E" }));
+    const token = await api.loginAs(username, PASSWORD123);
+    expect(token).toBeTruthy();
 
     // Critical: caller sends NO slug, server derives. This is the
     // post-fix contract — kudin.private regression cannot reoccur because
@@ -35,7 +33,7 @@ test.describe("Auth · onboarding personal workspace", () => {
     //
     // Wire shape: proto returns the Organization message directly (no
     // {organization: ...} wrapper) per proto/org/v1/org.proto conventions.
-    const cc = api.connectWithToken(regRes.token);
+    const cc = api.connectWithToken(token);
     const createRes = await cc.org.createPersonalOrg({}) as { slug: string };
     expect(createRes.slug).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/);
     expect(createRes.slug.endsWith("-workspace")).toBe(true);
@@ -53,13 +51,14 @@ test.describe("Auth · onboarding personal workspace", () => {
     const username = `uionboarduser${Date.now()}`;
     try { db.cleanup(CLEANUP.userAndOrgsByEmail(email)); } catch { /* noop */ }
 
+    db.setup(seedPasswordUserSQL({ email, username, name: "UI Onboard" }));
     const ccAnon = api.connectWithToken("");
-    const regRes = await ccAnon.auth.register({
-      email, username, password: "TestPass123!", name: "UI Onboard",
+    const loginRes = await ccAnon.auth.login({
+      username, password: PASSWORD123,
     }) as { token: string; refreshToken: string; expiresIn: number | string };
-    const token = regRes.token;
-    const refresh_token = regRes.refreshToken;
-    const expires_in = Number(regRes.expiresIn ?? 3600);
+    const token = loginRes.token;
+    const refresh_token = loginRes.refreshToken;
+    const expires_in = Number(loginRes.expiresIn ?? 3600);
 
     // Mirror global.setup.ts: inject PersistedSession blob so the wasm
     // bootstrap is happy when /onboarding loads.

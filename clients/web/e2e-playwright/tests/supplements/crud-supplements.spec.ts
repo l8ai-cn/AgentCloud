@@ -1,6 +1,6 @@
 import { test, expect } from "../../fixtures/index";
 import { clearAuthRateLimit } from "../../helpers/redis";
-import { CLEANUP } from "../../helpers/test-data";
+import { CLEANUP, PASSWORD123, seedPasswordUserSQL } from "../../helpers/test-data";
 import { TEST_ORG_SLUG } from "../../helpers/env";
 import { createE2EEchoPod } from "../../helpers/e2e-worker-spec";
 
@@ -65,11 +65,10 @@ test.describe("CRUD Supplements", () => {
     const email = "role-change-e2e@test.local";
     try { db.cleanup(CLEANUP.userByEmail(email)); } catch { /* */ }
 
-    // REST /api/v1/auth/register is dead; use Connect AuthService/Register.
+    db.setup(seedPasswordUserSQL({
+      email, username: "rolechangee2e", name: "Role Change",
+    }));
     const cc = await api.connect();
-    await cc.auth.register({
-      email, username: "rolechangee2e", password: "TestPass123!", name: "Role Change",
-    });
 
     const orgId = db.queryValue(
       `SELECT id FROM organizations WHERE slug = '${TEST_ORG_SLUG}'`
@@ -117,11 +116,10 @@ test.describe("CRUD Supplements", () => {
     try { db.cleanup(CLEANUP.userByEmail(email)); } catch { /* */ }
     try { db.cleanup(`DELETE FROM invitations WHERE email = '${email}'`); } catch { /* */ }
 
-    // Register invitee via Connect (REST /api/v1/auth/register is dead).
+    db.setup(seedPasswordUserSQL({
+      email, username: "inviteaccepte2e", name: "Invite Accept",
+    }));
     const adminClient = await api.connect();
-    await adminClient.auth.register({
-      email, username: "inviteaccepte2e", password: "TestPass123!", name: "Invite Accept",
-    });
 
     // Create invitation via Connect InvitationService/CreateInvitation.
     const inv = await adminClient.invitation.createInvitation({
@@ -135,7 +133,7 @@ test.describe("CRUD Supplements", () => {
     expect(token, "invitation must have been persisted with a token").toBeTruthy();
 
     // Accept as invitee via UserInvitationService/AcceptInvitation.
-    const inviteeToken = await api.loginAs("inviteaccepte2e", "TestPass123!");
+    const inviteeToken = await api.loginAs("inviteaccepte2e", PASSWORD123);
     const inviteeClient = api.connectWithToken(inviteeToken);
     await inviteeClient.userInvitation.acceptInvitation({ token: String(token) });
 

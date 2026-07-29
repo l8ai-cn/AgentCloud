@@ -69,7 +69,7 @@ export function AuthCallbackScreen({ status, errorMessage }: AuthCallbackScreenP
           <Link href="/login">
             <Button className="w-full">{t("auth.sso.tryAgain")}</Button>
           </Link>
-          <Link href="/register">
+          <Link href="/login">
             <Button variant="outline" className="w-full">{t("auth.sso.createAccount")}</Button>
           </Link>
         </div>

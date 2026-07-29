@@ -24,7 +24,8 @@ var (
 	ErrInvalidState        = errors.New("invalid OAuth state")
 	ErrTokenRevoked        = errors.New("token has been revoked")
 	ErrInvalidRefreshToken = errors.New("invalid refresh token")
-	ErrSSOEnforced         = errors.New("SSO login is required for this domain")
+	ErrSSOEnforced             = errors.New("SSO login is required for this domain")
+	ErrRegistrationDisabled    = errors.New("local registration is disabled")
 )
 
 const (

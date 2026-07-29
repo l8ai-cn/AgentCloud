@@ -96,7 +96,7 @@ export function LightAuthButtons({
         </Button>
       </Link>
       {showRegister && (
-        <Link href="/register" onClick={onClick}>
+        <Link href="/login" onClick={onClick}>
           <Button
             size={size}
             className="bg-primary text-primary-foreground hover:bg-primary/90"

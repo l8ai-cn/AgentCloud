@@ -112,23 +112,10 @@ export function LocalLoginForm() {
     }
   };
 
-  const redirectParam = searchParams.get("redirect");
-  const registerHref = redirectParam
-    ? `/register?redirect=${encodeURIComponent(redirectParam)}`
-    : "/register";
-
   return (
     <AuthShell
       title={t("auth.loginPage.title")}
       subtitle={t("auth.loginPage.subtitle")}
-      footer={
-        <>
-          {t("auth.loginPage.dontHaveAccount")}{" "}
-          <Link href={registerHref} className="auth-link">
-            {t("auth.loginPage.signUp")}
-          </Link>
-        </>
-      }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {preferredAuthUrl && <PreferredSsoEntry authUrl={preferredAuthUrl} />}

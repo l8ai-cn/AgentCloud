@@ -70,7 +70,7 @@ export function WorkforceHero() {
             </button>
           </div>
           <Link
-            href="/register"
+            href="/login"
             className="mt-4 inline-block font-headline text-xs font-bold uppercase tracking-[0.16em] text-[var(--azure-text-muted)] underline decoration-[var(--azure-outline)] underline-offset-8 transition-colors hover:text-[var(--azure-mint)]"
           >
             {t('landing.workforce.hero.startFree')}

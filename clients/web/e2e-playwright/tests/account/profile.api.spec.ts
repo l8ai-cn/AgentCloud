@@ -1,7 +1,7 @@
 // Migrated R5+: Connect-RPC only (no REST middle layer).
 import { test, expect } from "../../fixtures/index";
 import { TEST_USER } from "../../helpers/env";
-import { CLEANUP } from "../../helpers/test-data";
+import { CLEANUP, PASSWORD123, seedPasswordUserSQL } from "../../helpers/test-data";
 
 test.describe("User Profile API", () => {
   /**
@@ -24,18 +24,12 @@ test.describe("User Profile API", () => {
    */
   test("update user name", async ({ api, db }) => {
     const email = "profile-e2e@test.local";
-    const password = "TestPass123!";
     db.cleanup(CLEANUP.userByEmail(email));
+    db.setup(seedPasswordUserSQL({
+      email, username: "profilee2e", name: "Original Name",
+    }));
 
-    const publicCc = api.connectWithToken("");
-    await publicCc.auth.register({
-      email,
-      username: "profilee2e",
-      password,
-      name: "Original Name",
-    });
-
-    await api.loginAs("profilee2e", password);
+    await api.loginAs("profilee2e", PASSWORD123);
     const cc = await api.connect();
     const updated = await cc.user.updateMe({ name: "Updated Name E2E" }) as { name: string };
     expect(updated.name).toBe("Updated Name E2E");
@@ -48,25 +42,19 @@ test.describe("User Profile API", () => {
    */
   test("change password with correct current password", async ({ api, db }) => {
     const email = "pwchange-e2e@test.local";
-    const password = "TestPass123!";
     db.cleanup(CLEANUP.userByEmail(email));
+    db.setup(seedPasswordUserSQL({
+      email, username: "pwchangee2e", name: "PW Change User",
+    }));
 
-    const publicCc = api.connectWithToken("");
-    await publicCc.auth.register({
-      email,
-      username: "pwchangee2e",
-      password,
-      name: "PW Change User",
-    });
-
-    await api.loginAs("pwchangee2e", password);
+    await api.loginAs("pwchangee2e", PASSWORD123);
     const cc = await api.connect();
     await cc.user.changePassword({
-      currentPassword: password,
+      currentPassword: PASSWORD123,
       newPassword: "NewPassword456!",
     });
 
-    // Verify login with new password
+    const publicCc = api.connectWithToken("");
     const loginRes = await publicCc.auth.login({
       username: "pwchangee2e",
       password: "NewPassword456!",

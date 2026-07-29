@@ -20,48 +20,32 @@
 //   * Boundary takes effect on the very next request, not stale until re-login
 import { test, expect } from "../../fixtures/index";
 import { TEST_USER, TEST_ORG_SLUG } from "../../helpers/env";
-import { uniqueEmail, CLEANUP } from "../../helpers/test-data";
+import { uniqueEmail, CLEANUP, PASSWORD123, seedPasswordUserSQL } from "../../helpers/test-data";
 
 test.describe("Cascade: org role revoke → admin ops denied immediately", () => {
   test("admin → member demotion blocks the very next inviteMember call", async ({ api, db }) => {
     const targetEmail = uniqueEmail("role-revoke");
-    const targetPassword = "RoleRevokeTest123!";
+    const targetPassword = PASSWORD123;
     const probe1Email = uniqueEmail("probe1");
     const probe2Email = uniqueEmail("probe2");
-    const probe1Password = "ProbePass123!";
-    const probe2Password = "ProbePass123!";
+    const targetUsername = `rolerev${Date.now()}`.slice(0, 18);
+    const probe1Username = `probe1${Date.now()}`.slice(0, 18);
+    const probe2Username = `probe2${Date.now()}`.slice(0, 18);
 
     db.cleanup(CLEANUP.userByEmail(targetEmail));
     db.cleanup(CLEANUP.userByEmail(probe1Email));
     db.cleanup(CLEANUP.userByEmail(probe2Email));
 
-    const publicCc = api.connectWithToken("");
-
-    // Register the user that will be promoted-then-demoted.
-    await publicCc.auth.register({
-      email: targetEmail,
-      username: `rolerev${Date.now()}`.slice(0, 18),
-      password: targetPassword,
-      name: "Role Revoke Target",
-    });
-
-    // Register two probe users; X will try to invite probe1 (as admin: should
-    // succeed) and probe2 (after demotion: should fail). Pre-registering them
-    // means the email→user lookup in InviteMember resolves; otherwise the
-    // handler returns CodeNotFound and we can't distinguish that from
-    // PermissionDenied.
-    await publicCc.auth.register({
-      email: probe1Email,
-      username: `probe1${Date.now()}`.slice(0, 18),
-      password: probe1Password,
-      name: "Probe 1",
-    });
-    await publicCc.auth.register({
-      email: probe2Email,
-      username: `probe2${Date.now()}`.slice(0, 18),
-      password: probe2Password,
-      name: "Probe 2",
-    });
+    // Local Register RPC is closed — seed verified password users via DB.
+    db.setup(seedPasswordUserSQL({
+      email: targetEmail, username: targetUsername, name: "Role Revoke Target",
+    }));
+    db.setup(seedPasswordUserSQL({
+      email: probe1Email, username: probe1Username, name: "Probe 1",
+    }));
+    db.setup(seedPasswordUserSQL({
+      email: probe2Email, username: probe2Username, name: "Probe 2",
+    }));
 
     // dev owns dev-org — use it to drive the role-change flow.
     await api.login();

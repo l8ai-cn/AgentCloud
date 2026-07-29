@@ -9,15 +9,17 @@ import (
 	orgDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/organization"
 )
 
-// SyncFederatedMember ensures membership and sets role from the IdP.
-// Empty role means "roles omitted by IdP": ensure membership without demoting.
-// Non-empty role is authoritative so AMP demotions still apply.
+// SyncFederatedMember ensures membership and projects the IdP's role onto it.
+// The IdP is authoritative for in-org roles, so the asserted role always wins —
+// including demotions. Callers must resolve the floor role themselves; an empty
+// role would mean "no opinion", which this authority model does not have.
 func (s *Service) SyncFederatedMember(ctx context.Context, orgID, userID int64, role string) error {
 	if orgID <= 0 || userID <= 0 {
 		return fmt.Errorf("organization and user are required")
 	}
-	if strings.TrimSpace(role) == "" {
-		return s.EnsureMember(ctx, orgID, userID, orgDomain.RoleMember)
+	role = strings.TrimSpace(role)
+	if role == "" {
+		return fmt.Errorf("federated member role is required")
 	}
 	if _, err := s.repo.GetByID(ctx, orgID); err != nil {
 		return fmt.Errorf("organization %d not found: %w", orgID, err)

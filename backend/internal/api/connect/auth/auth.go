@@ -1,10 +1,8 @@
 // Package authconnect hosts Connect-RPC handlers for the auth domain —
-// public (login/register/refresh/oauth/verify/password-reset) entry points
-// plus authenticated session control (logout). Mirrors REST handlers in
-// backend/internal/api/rest/v1/auth*.go but exposes the data plane via
-// Connect (binary protobuf wire, conventions §2.5). REST stays mounted in
-// parallel; the migration runs dual-track until all 26 services have
-// flipped.
+// public (login/refresh/oauth/verify/password-reset) entry points plus
+// authenticated session control (logout). Register remains mounted only to
+// return FailedPrecondition: local signup is closed; identity comes from
+// AMP/SSO.
 //
 // SENSITIVE: AuthService is user-scoped + PUBLIC per conventions §3.5
 // exception #1 — the auth interceptor must NOT be applied to these RPCs.

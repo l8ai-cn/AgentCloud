@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"strings"
 
-	domainUser "github.com/l8ai-cn/agentcloud/backend/internal/domain/user"
 	userService "github.com/l8ai-cn/agentcloud/backend/internal/service/user"
 )
 
@@ -53,45 +52,8 @@ func (s *Service) Login(ctx context.Context, identifier, password string) (*Logi
 	}, nil
 }
 
-func (s *Service) Register(ctx context.Context, req *RegisterRequest) (*LoginResult, error) {
-	if err := domainUser.ValidateUsername(req.Username); err != nil {
-		return nil, err
-	}
-
-	if s.ssoChecker != nil && strings.Contains(req.Email, "@") {
-		allowed, err := s.ssoChecker.IsPasswordLoginAllowed(ctx, req.Email, false)
-		if err == nil && !allowed {
-			return nil, ErrSSOEnforced
-		}
-	}
-
-	u, err := s.userService.Create(ctx, &userService.CreateRequest{
-		Email:    req.Email,
-		Username: req.Username,
-		Name:     req.Name,
-		Password: req.Password,
-	})
-	if err != nil {
-		if errors.Is(err, userService.ErrEmailAlreadyExists) {
-			return nil, ErrEmailExists
-		}
-		if errors.Is(err, userService.ErrUsernameExists) {
-			return nil, ErrUsernameExists
-		}
-		return nil, err
-	}
-
-	tokens, err := s.GenerateTokenPair(u, 0, "")
-	if err != nil {
-		return nil, err
-	}
-
-	slog.InfoContext(ctx, "user registered", "user_id", u.ID, "email", req.Email)
-
-	return &LoginResult{
-		User:         u,
-		Token:        tokens.AccessToken,
-		RefreshToken: tokens.RefreshToken,
-		ExpiresIn:    int64(s.config.JWTExpiration.Seconds()),
-	}, nil
+// Register is permanently closed. Identity is provisioned through AMP / SSO;
+// local password signup must not create a second account authority.
+func (s *Service) Register(context.Context, *RegisterRequest) (*LoginResult, error) {
+	return nil, ErrRegistrationDisabled
 }

@@ -37,6 +37,30 @@ export const CLEANUP = {
 export const HASH_PASSWORD123 =
   "$2a$10$N9qo8uLOickgx2ZMRZoMye.LrFO1VD3cWjvdCMEBzO4Y6bO7zE6.2";
 
+/** Plaintext that matches HASH_PASSWORD123 — use for login after DB seed. */
+export const PASSWORD123 = "password123";
+
+/** Insert a verified local password user. Local Register RPC is closed. */
+export function seedPasswordUserSQL(opts: {
+  email: string;
+  username: string;
+  name?: string;
+}): string {
+  const name = (opts.name ?? opts.username).replace(/'/g, "''");
+  const email = opts.email.replace(/'/g, "''");
+  const username = opts.username.replace(/'/g, "''");
+  return `
+    INSERT INTO users (email, username, password_hash, name, is_email_verified, created_at, updated_at)
+    VALUES ('${email}', '${username}', '${HASH_PASSWORD123}', '${name}', true, NOW(), NOW())
+    ON CONFLICT (email) DO UPDATE SET
+      username = EXCLUDED.username,
+      password_hash = EXCLUDED.password_hash,
+      name = EXCLUDED.name,
+      is_email_verified = true,
+      updated_at = NOW()
+  `.trim();
+}
+
 /** Password hash for 'AdminAb123456' (bcrypt, matches dev seed data). */
 export const HASH_DEV_PASSWORD =
   "$2a$10$k4P3AdDi0j4XT1VeDt4YuOFcxfj2uDbm8N9Tj7fCK0Gk/PY3Gz1WC";

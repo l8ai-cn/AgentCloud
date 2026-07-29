@@ -23,7 +23,7 @@ export function FinalCTA() {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-            <Link href="/register" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[var(--expert-ink)] px-5 text-sm font-semibold text-white">
+            <Link href="/login" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-[var(--expert-ink)] px-5 text-sm font-semibold text-white">
               {t("landing.workforce.expertHome.cta.primary")}
               <ArrowRight className="h-4 w-4" />
             </Link>

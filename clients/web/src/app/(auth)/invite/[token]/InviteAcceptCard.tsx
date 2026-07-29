@@ -60,7 +60,7 @@ export function InviteAcceptCard({
           </Link>
           <p className="text-sm text-center text-muted-foreground">
             {t("auth.invitePage.noAccount")}{" "}
-            <Link href={`/register?redirect=/invite/${token}`} className="auth-link">
+            <Link href={`/login?redirect=/invite/${token}`} className="auth-link">
               {t("auth.invitePage.signUp")}
             </Link>
           </p>

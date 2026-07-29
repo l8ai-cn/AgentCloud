@@ -118,7 +118,7 @@ function VerifyEmailContent() {
         </Button>
         <p className="text-sm text-center text-muted-foreground">
           {t("auth.verifyEmailPage.wrongEmail")}{" "}
-          <Link href="/register" className="auth-link">
+          <Link href="/login" className="auth-link">
             {t("auth.verifyEmailPage.signUpDifferent")}
           </Link>
         </p>

@@ -120,36 +120,17 @@ func TestAuth_TokenGeneration(t *testing.T) {
 	assert.Equal(t, "test-issuer", claims.Issuer)
 }
 
-func TestAuth_RegisterSuccess(t *testing.T) {
+func TestAuth_RegisterDisabled(t *testing.T) {
 	authSvc, _ := newTestAuthService(t)
 	ctx := context.Background()
 
-	result, err := authSvc.Register(ctx, &RegisterRequest{
+	_, err := authSvc.Register(ctx, &RegisterRequest{
 		Email:    "newuser@example.com",
 		Username: "newuser",
 		Password: "securePass1",
 		Name:     "New User",
 	})
-	require.NoError(t, err)
-	require.NotNil(t, result)
-
-	assert.Equal(t, "newuser@example.com", result.User.Email)
-	assert.NotEmpty(t, result.Token)
-	assert.NotEmpty(t, result.RefreshToken)
-}
-
-func TestAuth_RegisterDuplicateEmail(t *testing.T) {
-	authSvc, userSvc := newTestAuthService(t)
-	ctx := context.Background()
-
-	createTestUser(t, userSvc, "dup@example.com", "pass")
-
-	_, err := authSvc.Register(ctx, &RegisterRequest{
-		Email:    "dup@example.com",
-		Username: "other",
-		Password: "pass",
-	})
-	assert.ErrorIs(t, err, ErrEmailExists)
+	assert.ErrorIs(t, err, ErrRegistrationDisabled)
 }
 
 func TestAuth_ValidateTokenExpired(t *testing.T) {

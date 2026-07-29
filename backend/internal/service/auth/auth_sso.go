@@ -107,15 +107,10 @@ func (s *Service) bindFederatedOrganization(
 		return 0, nil
 	}
 
-	role := ""
-	if len(req.IdPRoles) == 0 {
-		// Empty roles are common before AMP catalog assignment. Never demote.
-		slog.WarnContext(ctx, "federated login omitted IdP roles; preserving membership role",
-			"provider", req.ProviderName, "user_id", userID,
-			"org_id", orgID, "idp_tenant_id", req.IdPTenantID)
-	} else {
-		role = ampauthz.MapIdPRoles(req.IdPRoles)
-	}
+	// AMP owns in-org roles: its assertion is projected on every login, so a
+	// principal whose grants were revoked falls back to the floor role rather
+	// than keeping whatever the previous login recorded.
+	role := ampauthz.MapIdPRoles(req.IdPRoles)
 	if err := s.orgBinder.SyncFederatedMember(ctx, orgID, userID, role); err != nil {
 		slog.ErrorContext(ctx, "failed to sync federated organization membership",
 			"provider", req.ProviderName, "user_id", userID,

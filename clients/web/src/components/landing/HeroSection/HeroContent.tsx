@@ -31,7 +31,7 @@ export function HeroContent({ t, onWatchDemo }: HeroContentProps) {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <Link href="/register" className="w-full sm:w-auto">
+        <Link href="/login" className="w-full sm:w-auto">
           <button className="w-full sm:w-auto px-10 py-4 azure-gradient-bg azure-cta-glow rounded-full font-headline text-xs sm:text-sm font-black uppercase tracking-[0.18em] transition-all transform hover:-translate-y-0.5">
             {t("landing.hero.getStartedFree")}
           </button>

@@ -147,7 +147,7 @@ export function SolutionDomains({ showIntro = true }: { showIntro?: boolean }) {
                   </div>
                 </div>
                 <Link
-                  href="/register"
+                  href="/login"
                   className="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-[var(--expert-paper-accent)]"
                 >
                   {item.action}

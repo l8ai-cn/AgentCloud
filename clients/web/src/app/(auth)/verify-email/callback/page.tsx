@@ -75,7 +75,7 @@ function VerifyEmailCallbackContent() {
             {t("auth.verifyEmailCallbackPage.signIn")}
           </Button>
         </Link>
-        <Link href="/register">
+        <Link href="/login">
           <Button variant="outline" className="w-full">
             {t("auth.verifyEmailCallbackPage.signUpAgain")}
           </Button>

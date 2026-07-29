@@ -26,7 +26,25 @@ func TestSyncFederatedMember_UpdatesRole(t *testing.T) {
 	assert.Equal(t, orgDomain.RoleAdmin, role)
 }
 
-func TestSyncFederatedMember_EmptyRolePreservesExisting(t *testing.T) {
+// AMP is authoritative: a floor-role assertion demotes a previously elevated member.
+func TestSyncFederatedMember_DemotesToAssertedRole(t *testing.T) {
+	svc, addUser := newTestOrgService(t)
+	ctx := context.Background()
+
+	ownerID := addUser("owner@example.com", "owner")
+	org, err := svc.Create(ctx, ownerID, &CreateRequest{Name: "Fed Demote", Slug: "fed-demote"})
+	require.NoError(t, err)
+
+	adminID := addUser("admin@example.com", "admin")
+	require.NoError(t, svc.AddMember(ctx, org.ID, adminID, orgDomain.RoleAdmin))
+	require.NoError(t, svc.SyncFederatedMember(ctx, org.ID, adminID, orgDomain.RoleMember))
+
+	role, err := svc.GetMemberRole(ctx, org.ID, adminID)
+	require.NoError(t, err)
+	assert.Equal(t, orgDomain.RoleMember, role)
+}
+
+func TestSyncFederatedMember_EmptyRoleRejected(t *testing.T) {
 	svc, addUser := newTestOrgService(t)
 	ctx := context.Background()
 
@@ -36,7 +54,7 @@ func TestSyncFederatedMember_EmptyRolePreservesExisting(t *testing.T) {
 
 	adminID := addUser("admin@example.com", "admin")
 	require.NoError(t, svc.AddMember(ctx, org.ID, adminID, orgDomain.RoleAdmin))
-	require.NoError(t, svc.SyncFederatedMember(ctx, org.ID, adminID, ""))
+	require.Error(t, svc.SyncFederatedMember(ctx, org.ID, adminID, ""))
 
 	role, err := svc.GetMemberRole(ctx, org.ID, adminID)
 	require.NoError(t, err)

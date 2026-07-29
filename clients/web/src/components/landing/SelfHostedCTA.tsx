@@ -71,7 +71,7 @@ export function SelfHostedCTA() {
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground/70">
                   {t("landing.selfHosted.saasNote")}{" "}
-                  <Link href="/register" className="text-primary underline hover:text-primary/80 transition-colors font-medium">
+                  <Link href="/login" className="text-primary underline hover:text-primary/80 transition-colors font-medium">
                     {t("landing.selfHosted.saasRegister")}
                   </Link>
                 </p>
