@@ -3,7 +3,10 @@
 --
 -- 这个文件是数据库的投影，不是变更来源。结构变更只通过 DoSql 直接作用于目标库，
 -- 然后重新导出覆盖本文件；禁止手改本文件，也禁止把它当迁移链使用。
--- 唯一用途：给全新的 dev/CI 空库建 schema。导出命令见 backend/schema/README.md。
+-- 唯一用途：给全新的 dev/CI 空库建 schema。导出命令见 backend/schema/README.md.
+--
+-- 2026-07-30: dropped organization_agents, organization_agent_configs, ssh_keys,
+-- schema_migrations, marketplace_schema_migrations; dropped git_providers.ssh_key_id.
 --
 
 --
@@ -2669,8 +2672,7 @@ CREATE TABLE public.git_providers (
     is_default boolean DEFAULT false NOT NULL,
     is_active boolean DEFAULT true NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    ssh_key_id bigint
+    updated_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -3716,82 +3718,6 @@ CREATE SEQUENCE public.orchestration_worker_launches_id_seq
 --
 
 ALTER SEQUENCE public.orchestration_worker_launches_id_seq OWNED BY public.orchestration_worker_launches.id;
-
-
---
--- Name: organization_agent_configs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.organization_agent_configs (
-    id bigint NOT NULL,
-    organization_id bigint NOT NULL,
-    config_values jsonb DEFAULT '{}'::jsonb NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    agent_slug character varying(100)
-);
-
-
---
--- Name: TABLE organization_agent_configs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON TABLE public.organization_agent_configs IS 'Organization-level default agent configurations. Pod creation can override these defaults.';
-
-
---
--- Name: organization_agent_configs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.organization_agent_configs_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: organization_agent_configs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.organization_agent_configs_id_seq OWNED BY public.organization_agent_configs.id;
-
-
---
--- Name: organization_agents; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.organization_agents (
-    id bigint NOT NULL,
-    organization_id bigint NOT NULL,
-    is_enabled boolean DEFAULT true NOT NULL,
-    is_default boolean DEFAULT false NOT NULL,
-    credentials_encrypted jsonb,
-    custom_launch_args text,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    agent_slug character varying(100)
-);
-
-
---
--- Name: organization_agents_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.organization_agents_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: organization_agents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.organization_agents_id_seq OWNED BY public.organization_agents.id;
 
 
 --
@@ -4892,41 +4818,6 @@ CREATE TABLE public.session_read_states (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT session_read_states_session_id_check CHECK ((((session_id)::text ~ '^conv_[a-z0-9]+$'::text) AND ((char_length((session_id)::text) >= 8) AND (char_length((session_id)::text) <= 100))))
 );
-
-
---
--- Name: ssh_keys; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ssh_keys (
-    id bigint NOT NULL,
-    organization_id bigint NOT NULL,
-    name character varying(100) NOT NULL,
-    public_key text NOT NULL,
-    private_key_encrypted text NOT NULL,
-    fingerprint character varying(255) NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: ssh_keys_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.ssh_keys_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ssh_keys_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.ssh_keys_id_seq OWNED BY public.ssh_keys.id;
 
 
 --
@@ -6621,20 +6512,6 @@ ALTER TABLE ONLY public.orchestration_worker_launches ALTER COLUMN id SET DEFAUL
 
 
 --
--- Name: organization_agent_configs id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agent_configs ALTER COLUMN id SET DEFAULT nextval('public.organization_agent_configs_id_seq'::regclass);
-
-
---
--- Name: organization_agents id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agents ALTER COLUMN id SET DEFAULT nextval('public.organization_agents_id_seq'::regclass);
-
-
---
 -- Name: organization_members id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6786,13 +6663,6 @@ ALTER TABLE ONLY public.runners ALTER COLUMN id SET DEFAULT nextval('public.runn
 --
 
 ALTER TABLE ONLY public.skills ALTER COLUMN id SET DEFAULT nextval('public.authored_skills_id_seq'::regclass);
-
-
---
--- Name: ssh_keys id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ssh_keys ALTER COLUMN id SET DEFAULT nextval('public.ssh_keys_id_seq'::regclass);
 
 
 --
@@ -8225,22 +8095,6 @@ ALTER TABLE ONLY public.orchestration_worker_launches
 
 
 --
--- Name: organization_agent_configs organization_agent_configs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agent_configs
-    ADD CONSTRAINT organization_agent_configs_pkey PRIMARY KEY (id);
-
-
---
--- Name: organization_agents organization_agents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agents
-    ADD CONSTRAINT organization_agents_pkey PRIMARY KEY (id);
-
-
---
 -- Name: organization_members organization_members_organization_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8622,30 +8476,6 @@ ALTER TABLE ONLY public.session_permissions
 
 ALTER TABLE ONLY public.session_read_states
     ADD CONSTRAINT session_read_states_pkey PRIMARY KEY (user_id, session_id);
-
-
---
--- Name: ssh_keys ssh_keys_organization_id_fingerprint_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ssh_keys
-    ADD CONSTRAINT ssh_keys_organization_id_fingerprint_key UNIQUE (organization_id, fingerprint);
-
-
---
--- Name: ssh_keys ssh_keys_organization_id_name_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ssh_keys
-    ADD CONSTRAINT ssh_keys_organization_id_name_key UNIQUE (organization_id, name);
-
-
---
--- Name: ssh_keys ssh_keys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ssh_keys
-    ADD CONSTRAINT ssh_keys_pkey PRIMARY KEY (id);
 
 
 --
@@ -9905,20 +9735,6 @@ CREATE INDEX idx_orchestration_worker_launches_pending ON public.orchestration_w
 
 
 --
--- Name: idx_org_agent_configs_org; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_org_agent_configs_org ON public.organization_agent_configs USING btree (organization_id);
-
-
---
--- Name: idx_org_agents_org; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_org_agents_org ON public.organization_agents USING btree (organization_id);
-
-
---
 -- Name: idx_org_members_org; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -10588,13 +10404,6 @@ CREATE INDEX idx_skills_org_updated ON public.skills USING btree (organization_i
 --
 
 CREATE INDEX idx_skills_tags ON public.skills USING gin (tags);
-
-
---
--- Name: idx_ssh_keys_org; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_ssh_keys_org ON public.ssh_keys USING btree (organization_id);
 
 
 --
@@ -11466,20 +11275,6 @@ CREATE TRIGGER update_knowledge_bases_updated_at BEFORE UPDATE ON public.knowled
 
 
 --
--- Name: organization_agent_configs update_organization_agent_configs_updated_at; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_organization_agent_configs_updated_at BEFORE UPDATE ON public.organization_agent_configs FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
--- Name: organization_agents update_organization_agents_updated_at; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_organization_agents_updated_at BEFORE UPDATE ON public.organization_agents FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
 -- Name: organizations update_organizations_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -11519,13 +11314,6 @@ CREATE TRIGGER update_repositories_updated_at BEFORE UPDATE ON public.repositori
 --
 
 CREATE TRIGGER update_runners_updated_at BEFORE UPDATE ON public.runners FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
-
---
--- Name: ssh_keys update_ssh_keys_updated_at; Type: TRIGGER; Schema: public; Owner: -
---
-
-CREATE TRIGGER update_ssh_keys_updated_at BEFORE UPDATE ON public.ssh_keys FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 
 --
@@ -12325,14 +12113,6 @@ ALTER TABLE ONLY public.git_providers
 
 
 --
--- Name: git_providers git_providers_ssh_key_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.git_providers
-    ADD CONSTRAINT git_providers_ssh_key_id_fkey FOREIGN KEY (ssh_key_id) REFERENCES public.ssh_keys(id) ON DELETE SET NULL;
-
-
---
 -- Name: goal_loops goal_loops_created_by_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -12738,38 +12518,6 @@ ALTER TABLE ONLY public.orchestration_worker_launches
 
 ALTER TABLE ONLY public.orchestration_worker_launches
     ADD CONSTRAINT orchestration_worker_launches_snapshot_fkey FOREIGN KEY (organization_id, worker_spec_snapshot_id) REFERENCES public.worker_spec_snapshots(organization_id, id) ON DELETE RESTRICT;
-
-
---
--- Name: organization_agent_configs organization_agent_configs_agent_slug_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agent_configs
-    ADD CONSTRAINT organization_agent_configs_agent_slug_fkey FOREIGN KEY (agent_slug) REFERENCES public.agents(slug);
-
-
---
--- Name: organization_agent_configs organization_agent_configs_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agent_configs
-    ADD CONSTRAINT organization_agent_configs_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
-
-
---
--- Name: organization_agents organization_agents_agent_slug_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agents
-    ADD CONSTRAINT organization_agents_agent_slug_fkey FOREIGN KEY (agent_slug) REFERENCES public.agents(slug);
-
-
---
--- Name: organization_agents organization_agents_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.organization_agents
-    ADD CONSTRAINT organization_agents_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 
 
 --
@@ -13242,14 +12990,6 @@ ALTER TABLE ONLY public.session_permissions
 
 ALTER TABLE ONLY public.session_read_states
     ADD CONSTRAINT session_read_states_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: ssh_keys ssh_keys_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ssh_keys
-    ADD CONSTRAINT ssh_keys_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 
 
 --
