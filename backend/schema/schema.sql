@@ -4855,7 +4855,8 @@ CREATE TABLE public.sso_configs (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     default_organization_id bigint,
-    oidc_authorize_extra_params text
+    oidc_authorize_extra_params text,
+    amp_bearer_app_codes jsonb DEFAULT '[]'::jsonb NOT NULL
 );
 
 
@@ -10404,6 +10405,13 @@ CREATE INDEX idx_skills_org_updated ON public.skills USING btree (organization_i
 --
 
 CREATE INDEX idx_skills_tags ON public.skills USING gin (tags);
+
+
+--
+-- Name: idx_sso_configs_amp_bearer; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sso_configs_amp_bearer ON public.sso_configs USING btree (protocol, is_enabled) WHERE (jsonb_array_length(amp_bearer_app_codes) > 0);
 
 
 --

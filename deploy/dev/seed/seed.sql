@@ -686,4 +686,16 @@ BEGIN
 
     RAISE NOTICE '  - Workflow: nightly-dependency-audit';
 
+    -- =========================================================================
+    -- 11. MCP marketplace templates (from retired 000060 seed)
+    -- =========================================================================
+    INSERT INTO mcp_market_items (slug, name, description, icon, transport_type, command, default_args, env_var_schema, category) VALUES
+    ('jira', 'Jira', 'Connect to Jira for issue tracking and project management', 'jira', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-jira"]'::jsonb, '[{"name": "JIRA_URL", "label": "Jira URL", "required": true, "placeholder": "https://your-domain.atlassian.net"}, {"name": "JIRA_EMAIL", "label": "Email", "required": true}, {"name": "JIRA_API_TOKEN", "label": "API Token", "required": true, "sensitive": true}]'::jsonb, 'productivity'),
+    ('postgres', 'PostgreSQL', 'Query and manage PostgreSQL databases', 'database', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-postgres"]'::jsonb, '[{"name": "DATABASE_URL", "label": "Database URL", "required": true, "sensitive": true, "placeholder": "postgresql://user:pass@host:5432/db"}]'::jsonb, 'database'),
+    ('slack', 'Slack', 'Send and read messages in Slack channels', 'slack', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-slack"]'::jsonb, '[{"name": "SLACK_BOT_TOKEN", "label": "Bot Token", "required": true, "sensitive": true}, {"name": "SLACK_TEAM_ID", "label": "Team ID", "required": true}]'::jsonb, 'communication'),
+    ('github', 'GitHub', 'Interact with GitHub repositories, issues, and pull requests', 'github', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-github"]'::jsonb, '[{"name": "GITHUB_TOKEN", "label": "Personal Access Token", "required": true, "sensitive": true}]'::jsonb, 'development'),
+    ('filesystem', 'Filesystem', 'Read and write files on the local filesystem', 'folder', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-filesystem", "/workspace"]'::jsonb, '[]'::jsonb, 'utility'),
+    ('memory', 'Memory', 'Persistent memory storage for context across sessions', 'brain', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-memory"]'::jsonb, '[]'::jsonb, 'utility')
+    ON CONFLICT (slug) DO NOTHING;
+
 END $$;

@@ -16,7 +16,6 @@ test.describe("Login Flow", () => {
     await expect(loginPage.usernameInput).toBeVisible();
     await expect(loginPage.passwordInput).toBeVisible();
     await expect(loginPage.submitButton).toBeVisible();
-    await expect(loginPage.registerLink).toBeVisible();
   });
 
   test("successful login redirects to workspace", async ({ page }) => {

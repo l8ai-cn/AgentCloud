@@ -71,7 +71,7 @@ test.describe("E2: authenticated user is redirected away from (auth) pages", () 
 
   test.beforeEach(async () => { clearAuthRateLimit(); });
 
-  for (const path of ["/login", "/register", "/forgot-password"]) {
+  for (const path of ["/login", "/forgot-password"]) {
     test(`authenticated user visiting ${path} is redirected to dashboard`, async ({
       page,
       api,
@@ -84,6 +84,23 @@ test.describe("E2: authenticated user is redirected away from (auth) pages", () 
       expect(page.url()).toContain(`/${TEST_ORG_SLUG}`);
     });
   }
+
+  // Closed local registration: /register always bounces to /login first, then
+  // the authenticated login guard continues to the org dashboard.
+  test("authenticated user visiting /register is redirected to dashboard", async ({
+    page,
+    api,
+  }) => {
+    const tokens = await api.login();
+    await seedLightSession(page, tokens);
+
+    await page.goto("/register");
+    await page.waitForURL(
+      (url) => !["/register", "/login"].includes(url.pathname),
+      { timeout: 15_000 },
+    );
+    expect(page.url()).toContain(`/${TEST_ORG_SLUG}`);
+  });
 });
 
 test.describe("E3: anonymous user is bounced to /login with ?redirect=", () => {

@@ -35,7 +35,7 @@ export const CLEANUP = {
 
 /** Password hash for 'password123' (bcrypt, used in test user inserts). */
 export const HASH_PASSWORD123 =
-  "$2a$10$N9qo8uLOickgx2ZMRZoMye.LrFO1VD3cWjvdCMEBzO4Y6bO7zE6.2";
+  "$2a$10$moG8vXzlCj2cegPB4yPlkenKD8ztwo6Vfh7mIAR8nVMToxG5Ai5Bm";
 
 /** Plaintext that matches HASH_PASSWORD123 — use for login after DB seed. */
 export const PASSWORD123 = "password123";
