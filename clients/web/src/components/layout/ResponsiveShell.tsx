@@ -37,7 +37,7 @@ export function ResponsiveShell({
   if (isMobile) {
     return (
       <MobileShell
-        title={mobileTitle}
+        title={mobileTitle ?? (pathname.startsWith("/admin") ? "Admin" : undefined)}
         headerActions={mobileHeaderActions}
         hideTabBar={hideMobileTabBar || shouldHideMobileTabBar(pathname)}
       >

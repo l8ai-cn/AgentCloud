@@ -36,6 +36,7 @@ export function ActivityBar({ className }: ActivityBarProps) {
   const t = useTranslations();
   const totalChannelUnread = useTotalUnreadCount();
   const isSystemAdmin = useIsSystemAdmin();
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
 
   const getActivityRoute = (activity: ActivityType): string => {
     switch (activity) {
@@ -100,7 +101,7 @@ export function ActivityBar({ className }: ActivityBarProps) {
 
         <nav className="flex-1 flex flex-col items-stretch py-2 gap-1 px-2">
           {mainActivities.map((activity, idx) => {
-            const isActive = activeActivity === activity.id;
+            const isActive = !isAdminRoute && activeActivity === activity.id;
             const showBadge = activity.id === "channels" && totalChannelUnread > 0;
             const prev = mainActivities[idx - 1];
             const showDivider = prev && prev.group !== activity.group;
@@ -132,8 +133,13 @@ export function ActivityBar({ className }: ActivityBarProps) {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="/admin/audit-logs"
-                  className="motion-interactive pressable w-full h-9 px-2.5 flex items-center gap-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-surface-muted"
+                  href="/admin"
+                  className={cn(
+                    "motion-interactive pressable relative flex h-9 w-full items-center gap-2 rounded-lg px-2.5",
+                    isAdminRoute
+                      ? "bg-surface-raised text-foreground shadow-[var(--shadow-soft)] ring-1 ring-border/45 before:absolute before:bottom-2 before:left-0 before:top-2 before:w-0.5 before:rounded-full before:bg-primary"
+                      : "text-muted-foreground hover:bg-surface-muted hover:text-foreground",
+                  )}
                 >
                   <ShieldCheck className="w-4 h-4 shrink-0" />
                   <span className="text-xs leading-tight font-medium truncate">
@@ -153,7 +159,7 @@ export function ActivityBar({ className }: ActivityBarProps) {
           )}
 
           {bottomActivities.map((activity) => {
-            const isActive = activeActivity === activity.id;
+            const isActive = !isAdminRoute && activeActivity === activity.id;
 
             return (
               <ActivityBarLink

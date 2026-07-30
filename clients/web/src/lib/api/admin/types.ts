@@ -1,13 +1,46 @@
-// Admin-scoped call-site shapes (snake_case). Kept in clients/web so admin
-// pages don't depend on the web-admin package during the merge. Only the
-// audit-log surface is migrated in Phase 3 Step 1; add more as pages move.
-
 export interface AdminPaginated<T> {
   data: T[];
   total: number;
   page: number;
   page_size: number;
   total_pages: number;
+}
+
+export interface DashboardStats {
+  total_users: number;
+  active_users: number;
+  total_organizations: number;
+  total_runners: number;
+  online_runners: number;
+  total_pods: number;
+  active_pods: number;
+  total_subscriptions: number;
+  active_subscriptions: number;
+  new_users_today: number;
+  new_users_this_week: number;
+  new_users_this_month: number;
+}
+
+export interface AdminUser {
+  id: number;
+  email: string;
+  username: string;
+  name: string | null;
+  avatar_url: string | null;
+  is_active: boolean;
+  is_system_admin: boolean;
+  is_email_verified: boolean;
+  last_login_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AdminUserListParams {
+  search?: string;
+  is_active?: boolean;
+  is_admin?: boolean;
+  page?: number;
+  page_size?: number;
 }
 
 export interface AuditLog {

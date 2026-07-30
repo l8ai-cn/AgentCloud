@@ -34,7 +34,11 @@ export function resolveActivityFromPathname(pathname: string): ActivityType | nu
 }
 
 export function pathnameHidesIdeSidebar(pathname: string): boolean {
-  if (pathname.startsWith("/settings") || pathname.startsWith("/support")) {
+  if (
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/support")
+  ) {
     return true;
   }
   return pathSegments(pathname).some((segment) => STANDALONE_ROUTE_SEGMENTS.has(segment));

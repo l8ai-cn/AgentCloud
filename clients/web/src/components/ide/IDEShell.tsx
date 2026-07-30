@@ -39,6 +39,7 @@ export function IDEShell({
   const pathname = usePathname();
   const noSidebar = hideIdeSidebar(pathname);
   const noChrome = hideIdeChrome(pathname);
+  const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const bottomPanelOpen = useIDEStore((state) => state.bottomPanelOpen);
   const activeActivity = useIDEStore((state) => state.activeActivity);
   const routeActivity = resolveActivityFromPathname(pathname);
@@ -115,13 +116,13 @@ export function IDEShell({
         <main
           className={cn(
             "flex-1 overflow-auto",
-            activeActivity === "workspace" && bottomPanelOpen ? "" : "pb-8"
+            activeActivity === "workspace" && bottomPanelOpen && !isAdminRoute ? "" : "pb-8"
           )}
         >
           {children}
         </main>
 
-        {activeActivity === "workspace" && <BottomPanel />}
+        {activeActivity === "workspace" && !isAdminRoute && <BottomPanel />}
       </div>
 
       <CommandPalette

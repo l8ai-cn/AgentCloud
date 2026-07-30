@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { RefreshCw } from "lucide-react";
+import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PageHeader } from "@/components/ui/page-header";
 import { listAuditLogs } from "@/lib/api/admin/auditLogs";
 import type { AdminPaginated, AuditLog } from "@/lib/api/admin/types";
+import { getErrorMessage } from "@/lib/utils";
 import { AuditLogRow } from "./AuditLogRow";
 
 const FILTERS: { label: string; value?: string }[] = [
@@ -17,28 +21,60 @@ const FILTERS: { label: string; value?: string }[] = [
 export default function AuditLogsPage() {
   const [page, setPage] = useState(1);
   const [targetType, setTargetType] = useState<string | undefined>();
-  const [data, setData] = useState<AdminPaginated<AuditLog> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [revision, setRevision] = useState(0);
+  const requestKey = `${targetType ?? "all"}\u0000${page}\u0000${revision}`;
+  const [result, setResult] = useState<{
+    key: string;
+    data: AdminPaginated<AuditLog> | null;
+    error: string | null;
+  }>({ key: "", data: null, error: null });
+  const isLoading = result.key !== requestKey;
+  const data = result.data;
+  const error = result.key === requestKey ? result.error : null;
 
   useEffect(() => {
     let cancelled = false;
     listAuditLogs({ page, page_size: 50, target_type: targetType })
       .then((result) => {
         if (!cancelled) {
-          setData(result);
-          setIsLoading(false);
+          setResult({ key: requestKey, data: result, error: null });
         }
       })
-      .catch(() => {
-        if (!cancelled) setIsLoading(false);
+      .catch((loadError) => {
+        if (!cancelled) {
+          setResult((current) => ({
+            key: requestKey,
+            data: current.data,
+            error: getErrorMessage(loadError, "Failed to load audit logs."),
+          }));
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, [page, targetType]);
+  }, [page, requestKey, targetType]);
 
   return (
     <div className="space-y-4">
+      <PageHeader
+        className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
+        title="Audit logs"
+        subtitle="Review system administrator actions across protected resources."
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setRevision((value) => value + 1)}
+            loading={isLoading}
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
+          </Button>
+        }
+      />
+
+      {error && <AlertMessage type="error" message={error} />}
+
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
           <Button

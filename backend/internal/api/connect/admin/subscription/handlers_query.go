@@ -2,11 +2,13 @@ package subscriptionadminconnect
 
 import (
 	"context"
+	"errors"
 
 	"connectrpc.com/connect"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/api/connect/interceptors"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/admin"
+	billingservice "github.com/l8ai-cn/agentcloud/backend/internal/service/billing"
 	billingv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/billing/v1"
 )
 
@@ -20,16 +22,19 @@ func (s *Server) GetSubscription(
 
 	orgID := req.Msg.GetOrgId()
 	sub, err := s.billingSvc.GetSubscription(ctx, orgID)
-	if err != nil {
+	if err != nil && !errors.Is(err, billingservice.ErrSubscriptionNotFound) {
 		return nil, mapServiceError(err)
 	}
-
-	seatUsage, _ := s.billingSvc.GetSeatUsage(ctx, orgID)
 
 	logAdminAction(ctx, s.adminSvc, adminUser.ID,
 		admin.AuditActionSubView, admin.TargetTypeSubscription, orgID,
 		nil, nil, req.Peer().Addr, req.Header().Get("User-Agent"))
 
+	if sub == nil {
+		return connect.NewResponse(&billingv1.AdminSubscription{}), nil
+	}
+
+	seatUsage, _ := s.billingSvc.GetSeatUsage(ctx, orgID)
 	return connect.NewResponse(toProtoAdminSubscription(sub, seatUsage)), nil
 }
 

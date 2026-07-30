@@ -2,10 +2,10 @@
 
 import React from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useIDEStore, type ActivityType } from "@/stores/ide";
-import { useCurrentOrg, useAuthStore } from "@/stores/auth";
+import { useCurrentOrg } from "@/stores/auth";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Menu, PanelRight } from "lucide-react";
@@ -23,6 +23,7 @@ export function MobileHeader({ className, title, actions }: MobileHeaderProps) {
   const setMobileSidebarOpen = useIDEStore((s) => s.setMobileSidebarOpen);
   const currentOrg = useCurrentOrg();
   const params = useParams();
+  const pathname = usePathname();
   const t = useTranslations();
   const orgSlug = currentOrg?.slug || (params.org as string) || "";
 
@@ -50,6 +51,7 @@ export function MobileHeader({ className, title, actions }: MobileHeaderProps) {
   };
 
   const displayTitle = title || getActivityTitle(activeActivity);
+  const titleHref = pathname.startsWith("/admin") ? "/admin" : `/${orgSlug}/workspace`;
 
   return (
     <header
@@ -69,7 +71,7 @@ export function MobileHeader({ className, title, actions }: MobileHeaderProps) {
       </Button>
 
       {/* Logo and title */}
-      <Link href={`/${orgSlug}/workspace`} className="flex items-center gap-2 flex-1 min-w-0">
+      <Link href={titleHref} className="flex items-center gap-2 flex-1 min-w-0">
         <div className="w-7 h-7 rounded-lg overflow-hidden flex-shrink-0">
           <Logo />
         </div>
