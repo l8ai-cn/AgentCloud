@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "worker_slug": "gemini-cli",
-  "runtime_catalog_revision": "runtime-catalog-2026-07-13-release-gated",
+  "runtime_catalog_revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
   "image_reference": "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
   "image_digest": "sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
   "status": "not_found",

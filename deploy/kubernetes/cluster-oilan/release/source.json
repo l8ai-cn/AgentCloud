@@ -1,13 +1,12 @@
 {
   "branch": "main",
-  "commit": "1ddf60d4a38d80b48a03cd95051c30ac43010be2",
+  "commit": "98ded38baf20b1cc72a8c3066b12400d26470b02",
   "images": {
-    "backend": "1ddf60d4a38d80b48a03cd95051c30ac43010be2",
-    "marketplace": "1ddf60d4a38d80b48a03cd95051c30ac43010be2",
-    "relay": "1ddf60d4a38d80b48a03cd95051c30ac43010be2",
-    "web": "1ddf60d4a38d80b48a03cd95051c30ac43010be2",
-    "web-admin": "4d360b8329b92b0acbad2794f499c891abdecc07",
-    "mobile": "4d360b8329b92b0acbad2794f499c891abdecc07",
+    "backend": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
+    "relay": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
+    "web": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
+    "web-admin": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
+    "mobile": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
     "runner-do-agent": "61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d",
     "runner-video-studio": "61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d"
   }

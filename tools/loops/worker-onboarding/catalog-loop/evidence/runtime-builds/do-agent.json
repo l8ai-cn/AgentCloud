@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "worker_slug": "do-agent",
-  "validated_at": "2026-07-12T19:01:34Z",
-  "image": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
-  "image_id": "sha256:7963f37ef3d07c949c595f18fb96ea3ac4c75d04748a901acc2adbae4ad755ff",
+  "validated_at": "2026-07-30T03:39:58+08:00",
+  "image": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
+  "image_id": "sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
   "platform": "linux/amd64",
   "build_command": "FORCE_REBUILD=1 BUILD_RETRIES=1 bash docker/agent-runtime/build.sh do-agent",
   "smoke_command": "docker run --rm --platform linux/amd64 --entrypoint sh agent-cloud/runner-do-agent:latest -lc '<checks>'",
