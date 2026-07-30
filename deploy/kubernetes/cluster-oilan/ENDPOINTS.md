@@ -12,7 +12,7 @@
 - Marketplace API: https://market.l8ai.cn/api/marketplace/v1
   (also on agents/dowork under `/api/marketplace/v1`)
 - Organization marketplace: https://agents.l8ai.cn/<org>/marketplace
-- Admin console: https://admin.l8ai.cn (separate host, no `/admin` basePath)
+- Admin console: https://agents.l8ai.cn/admin
 - Object storage (presigned URLs): https://minio.dowork.l8ai.cn
 - Test account: `admin@agentcloud.local / Ab123456`
 
@@ -23,8 +23,7 @@ secrets/ingress use `agentcloud-*`. `agents.l8ai.cn` ingress (+ relay + tunnel +
 AMP `/login`) is owned by `deploy/helm/agentcloud`.
 
 DNS for `agents.l8ai.cn`, `dowork.l8ai.cn`, `market.l8ai.cn`, `mobile.l8ai.cn`,
-`admin.l8ai.cn`, `*.l8ai.cn`, and `minio.dowork.l8ai.cn` must point at the
-Oilan node.
+`*.l8ai.cn`, and `minio.dowork.l8ai.cn` must point at the Oilan node.
 
 Each Pod preview uses `<pod-key>.l8ai.cn`, covered by the existing
 `l8ai-wildcard-tls` Secret. Relay accepts `/preview` only when the request Host

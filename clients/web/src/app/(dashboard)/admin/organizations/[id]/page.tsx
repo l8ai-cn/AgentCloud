@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { deleteOrganization } from "@/lib/api/admin/organizations";
 import { getErrorMessage } from "@/lib/utils";
 import { OrganizationMembers } from "./OrganizationMembers";
+import { OrganizationRunners } from "./OrganizationRunners";
 import { SubscriptionPanel } from "./SubscriptionPanel";
 import { useOrganizationDetail } from "./useOrganizationDetail";
 
@@ -104,6 +105,7 @@ export default function OrganizationDetailPage({
       </section>
 
       <SubscriptionPanel orgId={orgId} />
+      <OrganizationRunners orgId={orgId} />
       <OrganizationMembers members={members} />
 
       <ConfirmDialog

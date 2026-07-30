@@ -75,15 +75,6 @@ clients/web/e2e-playwright/node_modules/
 clients/web/e2e-playwright/test-results/
 clients/web/e2e-playwright/playwright-report/
 
-# Web-Admin (Next.js)
-clients/web-admin/node_modules/
-clients/web-admin/.next/
-clients/web-admin/out/
-clients/web-admin/build/
-clients/web-admin/coverage/
-clients/web-admin/next-env.d.ts
-clients/web-admin/*.tsbuildinfo
-
 # Desktop (Electron)
 clients/desktop/node_modules/
 clients/desktop/out/
@@ -182,7 +173,6 @@ images/postgres.tar
 images/redis.tar
 images/relay.tar
 images/traefik.tar
-images/web-admin.tar
 images/web.tar
 runner/agentcloud-runner
 agentcloud-onpremise-v1.0.0.tar.gz

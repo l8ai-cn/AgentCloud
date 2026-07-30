@@ -19,26 +19,45 @@ import {
 import { getErrorMessage } from "@/lib/utils";
 import { ExpertReleaseDetail } from "./ExpertReleaseDetail";
 import { ExpertReleaseList } from "./ExpertReleaseList";
+import { ExpertReleasePagination } from "./ExpertReleasePagination";
 
 const statuses: ExpertReleaseStatus[] = ["pending", "published", "rejected", "withdrawn"];
+const PAGE_SIZE = 20;
 
 export default function ExpertMarketPage() {
   const [status, setStatus] = useState<ExpertReleaseStatus>("pending");
+  const [offset, setOffset] = useState(0);
   const [revision, setRevision] = useState(0);
-  const [data, setData] = useState<{ releases: ExpertRelease[]; total: number } | null>(null);
+  const [data, setData] = useState<{
+    releases: ExpertRelease[];
+    total: number;
+    limit: number;
+    offset: number;
+  } | null>(null);
   const [selected, setSelected] = useState<ExpertRelease | null>(null);
   const [reason, setReason] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [pendingAction, setPendingAction] = useState<"approve" | "reject" | null>(null);
   const reload = useCallback(() => setRevision((value) => value + 1), []);
 
   useEffect(() => {
     const controller = new AbortController();
-    listExpertReleases(status)
+    setLoading(true);
+    listExpertReleases(status, PAGE_SIZE, offset)
       .then((result) => {
         if (!controller.signal.aborted) {
-          setData({ releases: result.data, total: result.total });
+          if (result.data.length === 0 && offset > 0 && result.total <= offset) {
+            setOffset(Math.max(0, offset - PAGE_SIZE));
+            return;
+          }
+          setData({
+            releases: result.data,
+            total: result.total,
+            limit: result.limit,
+            offset: result.offset,
+          });
           setError(null);
         }
       })
@@ -46,9 +65,12 @@ export default function ExpertMarketPage() {
         if (!controller.signal.aborted) {
           setError(getErrorMessage(loadError, "Failed to load expert releases."));
         }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [revision, status]);
+  }, [offset, revision, status]);
 
   const act = async () => {
     if (!selected || !pendingAction) return;
@@ -86,6 +108,7 @@ export default function ExpertMarketPage() {
             variant={status === item ? "secondary" : "ghost"}
             onClick={() => {
               setStatus(item);
+              setOffset(0);
               setData(null);
               setSelected(null);
               setReason("");
@@ -99,7 +122,7 @@ export default function ExpertMarketPage() {
       <p className="text-sm text-muted-foreground">{data?.total ?? 0} releases</p>
       <ExpertReleaseList
         releases={data?.releases ?? []}
-        loading={data === null && !error}
+        loading={loading && data === null && !error}
         onSelect={async (id) => {
           try {
             setSelected(await getExpertRelease(id));
@@ -108,6 +131,14 @@ export default function ExpertMarketPage() {
             toast.error(getErrorMessage(detailError, "Failed to load release."));
           }
         }}
+      />
+      <ExpertReleasePagination
+        total={data?.total ?? 0}
+        limit={data?.limit ?? PAGE_SIZE}
+        offset={data?.offset ?? offset}
+        loading={loading}
+        onPrevious={() => setOffset((value) => Math.max(0, value - PAGE_SIZE))}
+        onNext={() => setOffset((value) => value + PAGE_SIZE)}
       />
       {selected && (
         <ExpertReleaseDetail

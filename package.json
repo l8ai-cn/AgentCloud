@@ -27,13 +27,7 @@
     "mobile:test": "pnpm --filter @agent-cloud/mobile test",
     "mobile:build": "pnpm --filter @agent-cloud/mobile build",
     "mobile:check": "pnpm run mobile:lint && pnpm run mobile:typecheck && pnpm run mobile:test",
-    "web-admin:lint": "cd clients/web-admin && ../../node_modules/.bin/eslint --no-warn-ignored --no-error-on-unmatched-pattern .",
-    "web-admin:typecheck": "pnpm exec tsc --noEmit -p clients/web-admin/tsconfig.json",
-    "web-admin:test": "cd clients/web-admin && VITEST=true NODE_OPTIONS='--experimental-require-module' ../../node_modules/.bin/vitest run --config vitest.config.ts --reporter=default --no-color --passWithNoTests",
-    "web-admin:dev": "cd clients/web-admin && node ../../node_modules/next/dist/bin/next dev --turbopack",
-    "web-admin:build": "cd clients/web-admin && STANDALONE=1 node ../../node_modules/next/dist/bin/next build --webpack",
-    "web-admin:check": "pnpm run web-admin:lint && pnpm run web-admin:typecheck && pnpm run web-admin:test",
-    "check:web": "pnpm run web:check && pnpm run web-admin:check"
+    "check:web": "pnpm run web:check"
   },
   "dependencies": {
     "@blocknote/core": "^0.47.3",

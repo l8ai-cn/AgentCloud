@@ -11,6 +11,18 @@ grep -q 'bash "${SCRIPT_DIR}/push-runner-images.sh" do-agent' "$SCRIPT"
 grep -q 'release_source_guard.sh' "$SCRIPT"
 grep -q 'release_require_pushed_clean_tree' "$SCRIPT"
 grep -q 'release_write_source_metadata' "harbor-image-publishing.sh"
+if grep -Fq 'clients/web-admin' "$SCRIPT"; then
+  echo "retired web-admin image is still built" >&2
+  exit 1
+fi
+if grep -Fq 'web-admin' "harbor-image-publishing.sh"; then
+  echo "retired web-admin digest is still published" >&2
+  exit 1
+fi
+if grep -Fq 'web-admin' "release_image_provenance.sh"; then
+  echo "retired web-admin image is still provenance-gated" >&2
+  exit 1
+fi
 grep -q 'harbor-manifest-digest.sh' "harbor-image-publishing.sh"
 grep -q 'harbor-infra-mirror.sh' "$SCRIPT"
 grep -q 'harbor_require_upload_token_expiration "${REG}" 120' "$SCRIPT"

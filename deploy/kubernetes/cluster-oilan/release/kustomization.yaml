@@ -9,8 +9,6 @@ images:
     digest: sha256:10071a95e4aee52cfa978a2c62cc9dd69fe971e4e8149a80f120ec4efb393de0
   - name: repo.aiedulab.cn:8443/agentcloud/web
     digest: sha256:58acc5df26f5c69578c32ace9b711f90882e7026602f5c64d06c8db03121282a
-  - name: repo.aiedulab.cn:8443/agentcloud/web-admin
-    digest: sha256:dcae428936bb8e43b10b13f6512fa486bf7071867fe7e6c81f99b565c18d0be5
   - name: repo.aiedulab.cn:8443/agentcloud/mobile
     digest: sha256:f6e5597cbc89f5a3df232404a141ba3e99d9c23505cc211561ed515123f5f7ad
   - name: repo.aiedulab.cn:8443/agentcloud/pgvector

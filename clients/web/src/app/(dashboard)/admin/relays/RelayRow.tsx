@@ -1,6 +1,7 @@
 "use client";
 
-import { Radio, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { Eye, Radio, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -43,17 +44,28 @@ export function RelayRow({
         <p>{relay.connections}/{relay.capacity} connections · {relay.avg_latency_ms} ms</p>
         <p>CPU {relay.cpu_usage.toFixed(1)}% · Memory {relay.memory_usage.toFixed(1)}%</p>
       </div>
-      <Button
-        variant="ghost"
-        size="icon"
-        disabled={busy}
-        aria-label={`Unregister ${relay.id}`}
-        title="Force unregister relay"
-        className="text-destructive hover:text-destructive"
-        onClick={onUnregister}
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
+      <div className="flex items-center justify-end gap-1">
+        <Button asChild variant="ghost" size="icon">
+          <Link
+            href={`/admin/relays/${encodeURIComponent(relay.id)}`}
+            aria-label={`View ${relay.id} details`}
+            title="View relay details"
+          >
+            <Eye className="h-4 w-4" />
+          </Link>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={busy}
+          aria-label={`Unregister ${relay.id}`}
+          title="Force unregister relay"
+          className="text-destructive hover:text-destructive"
+          onClick={onUnregister}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 }

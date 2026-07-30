@@ -1,5 +1,5 @@
 # Local development stack — infrastructure only.
-# Application services (backend / relay / runner / web / web-admin) run on the
+# Application services (backend / relay / runner / web) run on the
 # host via air + next (see deploy/dev/lib/host_services.sh).
 
 services:

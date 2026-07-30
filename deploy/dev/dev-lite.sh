@@ -7,7 +7,7 @@
 #   - backend / relay: air + go build（~几十 MB，改 .go 秒级重编译）
 #   - runner: go cross-compile（一次性）
 #   - runner 容器: Coordinator 按需创建（不预起 12 个）
-#   - 前端: 仅 web 主站（跳过 web-admin）
+#   - 前端: web 主站
 #   - 前端: plain next dev + pnpm build:wasm
 #
 # 用法:

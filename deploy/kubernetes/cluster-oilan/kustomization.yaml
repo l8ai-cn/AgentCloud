@@ -19,7 +19,6 @@ resources:
   - 30-backend.yaml
   - 31-relay.yaml
   - 32-web.yaml
-  - 33-web-admin.yaml
   - 34-runner-e2e-echo.yaml
   - 42-mobile.yaml
   - 40-ingress.yaml

@@ -20,7 +20,7 @@
 //   - service/sso/types.go {Create,Update}ConfigRequest — write surface
 //     (includes write-only secrets: oidc_client_secret, saml_idp_cert,
 //     saml_idp_metadata_xml, ldap_bind_password — see SENSITIVE DATA)
-//   - clients/web-admin/src/lib/api/sso.ts SSOConfig / Create / Update
+//   - clients/web/src/lib/api/admin/ssoTypes.ts SSOConfig / Create / Update
 //
 // SENSITIVE DATA: CreateSSOConfigRequest + UpdateSSOConfigRequest carry
 // write-only secrets (oidc_client_secret, saml_idp_cert,

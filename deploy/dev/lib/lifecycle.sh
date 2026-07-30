@@ -184,14 +184,12 @@ clean() {
         source "$ENV_FILE"
     fi
     local web_port="${WEB_PORT:-3000}"
-    local web_admin_port="${WEB_ADMIN_PORT:-3001}"
 
     info "停止 host-side 服务 (air)..."
     stop_host_services
     success "host-side 服务已停止"
 
     _stop_setsid web
-    _stop_setsid web-admin
 
     if lsof -i :"$web_port" &>/dev/null; then
         info "停止前端服务 (端口: $web_port)..."
@@ -199,14 +197,7 @@ clean() {
         success "前端服务已停止"
     fi
 
-    if lsof -i :"$web_admin_port" &>/dev/null; then
-        info "停止 Admin Console (端口: $web_admin_port)..."
-        lsof -ti :"$web_admin_port" | xargs kill -9 2>/dev/null || true
-        success "Admin Console 已停止"
-    fi
-
     rm -f "$SCRIPT_DIR/web.log"
-    rm -f "$SCRIPT_DIR/web-admin.log"
     rm -rf "$(_runtime_dir)"
 
     teardown_runners_k8s
@@ -231,7 +222,7 @@ show_result() {
     echo "=========================================="
     echo ""
     echo "  前端:       http://localhost:$WEB_PORT"
-    echo "  Admin:      http://localhost:$WEB_ADMIN_PORT"
+    echo "  Admin:      http://localhost:$WEB_PORT/admin"
     echo "  API:        http://localhost:$HTTP_PORT/api  (→ host backend :$BACKEND_HTTP_PORT)"
     echo "  Marketplace:http://localhost:$HTTP_PORT/api/marketplace  (→ host backend)"
     echo "  Relay:      ws://localhost:$HTTP_PORT/relay  (→ host relay :$RELAY_HTTP_PORT)"
@@ -275,7 +266,7 @@ show_result() {
 # with pnpm-lock.yaml (md5 fingerprint), reinstalls otherwise. Returns
 # non-zero on install failure so callers can decide fail-vs-skip.
 _install_root_deps_if_needed() {
-    local context="$1"            # human label for logs ("前端依赖" / "Admin Console 依赖")
+    local context="$1"
     local stale_cache_dir="$2"    # .next/cache to wipe on reinstall
     local root_dir="$SCRIPT_DIR/../.."
     local lockfile="$root_dir/pnpm-lock.yaml"
@@ -298,25 +289,17 @@ _install_root_deps_if_needed() {
     success "${context} 安装完成"
 }
 
-# Common pre-flight for both Next.js dev servers: clear stale lockfile +
-# port squatters. Returns 1 if the port is held by something we can't
-# safely kick (i.e., not our own stale Next.js process).
+# Clear stale Next.js state and port squatters before starting the frontend.
 _prepare_next_port() {
-    local label="$1"      # "前端" / "Admin Console"
-    local web_dir="$2"    # absolute path to clients/web or web-admin
+    local label="$1"
+    local web_dir="$2"
     local web_port="$3"
     local stale_lock=false
 
     local lock_file="$web_dir/.next/dev/lock"
     if [[ -f "$lock_file" ]]; then
         warn "检测到残留的 ${label}锁文件，清理中..."
-        # Only kill `next dev` process for the web frontend — admin keeps
-        # using the lsof fallback because both frontends share the same
-        # `next dev` process name and we don't want one cleanup to kill
-        # the other.
-        if [[ "$label" == "前端" ]]; then
-            pkill -f "next dev" 2>/dev/null || true
-        fi
+        pkill -f "next dev" 2>/dev/null || true
         lsof -ti :"$web_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
         sleep 1
         rm -f "$lock_file"
@@ -336,11 +319,7 @@ _prepare_next_port() {
             else
                 warn "重启 ${label}：释放端口 $web_port..."
             fi
-            if [[ "$label" == "前端" ]]; then
-                _stop_setsid web
-            elif [[ "$label" == "Admin Console" ]]; then
-                _stop_setsid web-admin
-            fi
+            _stop_setsid web
             lsof -ti :"$web_port" 2>/dev/null | xargs kill -9 2>/dev/null || true
             sleep 1
             rm -f "$web_dir/.next/dev/lock"
@@ -410,50 +389,6 @@ start_frontend() {
     done
 
     warn "前端服务启动中，请稍后访问 http://localhost:$web_port"
-    echo "  查看日志: tail -f $log_file"
-}
-
-
-start_admin_frontend() {
-    source "$ENV_FILE"
-    local web_admin_dir="$SCRIPT_DIR/../../clients/web-admin"
-    local web_admin_port="${WEB_ADMIN_PORT:-3001}"
-    local root_dir="$SCRIPT_DIR/../.."
-
-    _prepare_next_port "Admin Console" "$web_admin_dir" "$web_admin_port" || {
-        warn "Admin Console (端口 $web_admin_port) 未能启动 — 端口被占用"
-        return 1
-    }
-
-    if ! command -v pnpm &>/dev/null; then
-        error "未找到 pnpm，无法启动 Admin Console"
-        return 1
-    fi
-
-    _install_root_deps_if_needed "Admin Console 依赖" "$web_admin_dir/.next/cache" || return 1
-
-    local log_file="$SCRIPT_DIR/web-admin.log"
-    info "启动 Admin Console (端口: $web_admin_port, plain next)..."
-    local saved_dir="$PWD"
-    cd "$web_admin_dir"
-    # web-admin's next.config rewrites use PRIMARY_DOMAIN to compute the
-    # backend URL (its fallback is the prod-only localhost:10000, which
-    # never matches a worktree). Pin it to traefik so /api/* proxies.
-    PRIMARY_DOMAIN="localhost:$HTTP_PORT" \
-        _launch_setsid web-admin "$log_file" \
-        node ../../node_modules/next/dist/bin/next dev --turbopack --port "$web_admin_port"
-    cd "$saved_dir"
-
-    local max_wait=60
-    for ((i=1; i<=max_wait; i++)); do
-        if curl -s "http://localhost:$web_admin_port" &>/dev/null; then
-            success "Admin Console 已启动 (http://localhost:$web_admin_port)"
-            return 0
-        fi
-        sleep 1
-    done
-
-    warn "Admin Console 启动中，请稍后访问 http://localhost:$web_admin_port"
     echo "  查看日志: tail -f $log_file"
 }
 

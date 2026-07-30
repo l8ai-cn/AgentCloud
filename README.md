@@ -95,8 +95,7 @@ Agent Cloud separates the **control plane** from the **data plane**: orchestrati
 | Component | Role |
 |-----------|------|
 | **Rust Core** | Business-logic SSOT — shared crates compiled to WASM for web. One cache, one set of services. |
-| **Web** | Next.js console — terminal, Kanban, real-time mesh topology |
-| **Web-Admin** | Internal admin console — user/org/runner management, audit logs |
+| **Web** | Next.js console — terminal, Kanban, real-time mesh topology, and `/admin` system management gated by `is_system_admin` |
 
 ## Getting Started
 
@@ -163,7 +162,7 @@ This starts the full stack: PostgreSQL, Redis, MinIO, Backend, Relay, Traefik, a
 |---------|-----|
 | Web Console | http://localhost:10007 |
 | API | http://localhost:10000/api |
-| Admin Console | http://localhost:10011 |
+| Admin Console | http://localhost:10007/admin (`is_system_admin` required) |
 
 **Test Accounts:**
 
@@ -201,7 +200,6 @@ Docker images are published to Docker Hub on every push to `main`:
 ```
 agentcloud/backend:sha-xxxxxxx
 agentcloud/web:sha-xxxxxxx
-agentcloud/web-admin:sha-xxxxxxx
 agentcloud/relay:sha-xxxxxxx
 ```
 
@@ -268,8 +266,7 @@ AgentCloud/
 ├── agentfile/        # AgentFile DSL
 ├── clients/
 │   ├── core/         # Rust business-logic SSOT (WASM)
-│   ├── web/          # Next.js console
-│   └── web-admin/    # Admin console (Next.js)
+│   └── web/          # Next.js console, including /admin
 ├── proto/            # Protocol Buffers definitions
 ├── packages/         # Shared TS packages (service-runtime, …)
 ├── deploy/

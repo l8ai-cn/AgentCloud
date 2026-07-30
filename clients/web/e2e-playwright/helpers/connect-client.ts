@@ -6,9 +6,8 @@
 //
 //     const cc = makeConnectClient(token);
 //     const { items } = await cc.channel.listChannels({ orgSlug: "dev-org" });
-// Modeled after web-admin/src/lib/connect/transport.ts. Binary wire
-// (application/proto) — same as the production clients use, so this
-// suite asserts on what real users hit.
+// Uses the binary application/proto wire shape from the production
+// clients, so this suite asserts on what real users hit.
 import {
   create,
   toBinary,

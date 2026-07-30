@@ -45,14 +45,14 @@ describe("admin runners API", () => {
       totalPages: 3,
     });
 
-    const result = await listRunners({ search: "node", page: 2, page_size: 20 });
+    const result = await listRunners({ search: "node", org_id: 3, page: 2, page_size: 20 });
 
     expect(callAdminConnect).toHaveBeenCalledWith(
       "proto.admin.v1.AdminService",
       "ListRunners",
       expect.anything(),
       expect.anything(),
-      expect.objectContaining({ search: "node", page: 2, pageSize: 20 }),
+      expect.objectContaining({ search: "node", orgId: 3n, page: 2, pageSize: 20 }),
     );
     expect(result).toMatchObject({
       total: 1,

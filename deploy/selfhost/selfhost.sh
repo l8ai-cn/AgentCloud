@@ -82,7 +82,7 @@ cd "${SCRIPT_DIR}"
 # =============================================================================
 if [ "${CLEAN}" = true ]; then
     warn "Stopping services and removing all data..."
-    docker compose down -v 2>/dev/null || true
+    docker compose down -v --remove-orphans 2>/dev/null || true
     rm -rf "${SSL_DIR}" "${ENV_FILE}"
     success "Cleanup complete."
     exit 0
@@ -270,7 +270,7 @@ fi
 info "[4/6] Pulling images and starting services..."
 
 docker compose pull --quiet
-docker compose up -d
+docker compose up -d --remove-orphans
 
 info "Waiting for backend to be ready..."
 TIMEOUT=120
@@ -317,6 +317,7 @@ echo -e "  ${GREEN}Installation Complete!${NC}"
 echo "=============================================="
 echo ""
 echo "  Web Console:   http://${SERVER_HOST}:${HTTP_PORT}"
+echo "  Admin:         http://${SERVER_HOST}:${HTTP_PORT}/admin"
 echo "  MinIO Console: http://${SERVER_HOST}:9001"
 echo ""
 echo "  Admin Account:"
@@ -335,6 +336,6 @@ echo ""
 echo "  Useful commands:"
 echo "    docker compose logs -f       # View logs"
 echo "    docker compose ps            # Service status"
-echo "    docker compose down          # Stop services"
+echo "    docker compose down --remove-orphans  # Stop services"
 echo "    ./selfhost.sh --clean        # Remove everything"
 echo ""

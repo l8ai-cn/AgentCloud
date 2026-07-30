@@ -1,8 +1,8 @@
 // SSOService — public SSO discovery + LDAP authentication for the
 // login page. The OIDC/SAML browser-redirect flows stay on REST (they
 // terminate in `Location:` redirects, not protobuf bodies — Connect's
-// unary contract cannot model that) and so do the org-admin SSO config
-// CRUD endpoints (web-admin owns them; not consumed by getSSOService()).
+// unary contract cannot model that). Platform-admin SSO config CRUD is
+// exposed separately by SSOAdminService and consumed by clients/web/admin.
 //
 // Migrated from REST handlers in
 //   backend/internal/api/rest/v1/auth_sso.go        (Discover)

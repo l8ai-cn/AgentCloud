@@ -6,8 +6,7 @@
 
 | 组件 | 目标角色 | 本轮关系 |
 |------|----------|----------|
-| **web** | 主控制台 + 终端用户产品面（逐步吸收 web-admin） | P1 PersistedSession 语义对齐 |
-| **web-admin** | 内部管理（过渡） | 记录并入 web 的 TODO，本轮不迁移 |
+| **web** | 主控制台 + 终端用户产品面 + `/admin` 系统管理 | P1 PersistedSession 语义对齐 |
 | **mobile** | 移动端（未来） | Phase 4 文档化 |
 | **relay** | 独立 Gateway 隧道（演进） | 终端数据面已分离，控制面继续走 gRPC |
 | **backend** | API + 编排 SSOT | P0 启动顺序、P1 pending drainer |
@@ -40,11 +39,12 @@
 
 ---
 
-## Phase 3 — 前端整合（架构，下轮）
+## Phase 3 — 前端整合（架构）
 
 **目标**：减少重复前端，统一 wasm 边界。
 
-- web-admin 路由/Connect handler 逐步迁入 `clients/web`（`/admin` 已存在 basePath）
+- [x] 系统管理路由与 Connect handler 已迁入 `clients/web` 的 `/admin`，
+  统一使用主站会话并以 `is_system_admin` 授权
 - [x] `clients/web-user` 已删除（2026-07-29）：工作台收敛到 `packages/agent-ui`，
   `clients/web` 同时承担控制台与终端用户入口（含 `/iframe` 嵌入）
 - Expert 状态最终迁入 Rust（依赖 Phase 2 #5 会话契约）

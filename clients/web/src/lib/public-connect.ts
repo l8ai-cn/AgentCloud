@@ -1,6 +1,5 @@
-// Plain-fetch Connect-RPC client for marketing pages. Mirrors the
-// web-admin transport (clients/web-admin/src/lib/connect/transport.ts):
-// no wasm, no @/lib/wasm-core import — only @bufbuild/protobuf + fetch.
+// Plain-fetch Connect-RPC client for marketing pages: no wasm, no
+// @/lib/wasm-core import — only @bufbuild/protobuf + fetch.
 //
 // Why a separate transport: the dashboard / auth / popout layouts mount
 // WasmProvider and call Connect through the wasm bridge (binary in/out via

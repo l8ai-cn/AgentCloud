@@ -42,7 +42,7 @@ cp .env.template .env
 # Edit .env and fill in the configuration
 
 # 4. Start services
-docker compose up -d
+docker compose up -d --remove-orphans
 
 # 5. Run database migrations
 docker compose exec backend migrate -path /app/migrations \
@@ -104,7 +104,6 @@ deploy/onpremise/
 ├── images/                 # Docker images (for offline deployment)
 │   ├── backend.tar
 │   ├── web.tar
-│   ├── web-admin.tar
 │   ├── relay.tar
 │   ├── postgres.tar
 │   ├── redis.tar
@@ -131,13 +130,13 @@ docker compose logs -f web          # Web only
 docker compose restart backend
 
 # Stop services
-docker compose down
+docker compose down --remove-orphans
 
 # Stop and remove all data
-docker compose down -v
+docker compose down -v --remove-orphans
 
 # Restart after config changes
-docker compose up -d
+docker compose up -d --remove-orphans
 ```
 
 ## Data Backup
@@ -156,7 +155,7 @@ docker compose exec -T postgres psql -U agentcloud -d agentcloud < backup.sql
 
 ```bash
 # Stop services
-docker compose down
+docker compose down --remove-orphans
 
 # Backup volumes
 docker run --rm -v agentcloud_postgres_data:/data -v $(pwd):/backup alpine \
@@ -166,7 +165,7 @@ docker run --rm -v agentcloud_minio_data:/data -v $(pwd):/backup alpine \
     tar czf /backup/minio_backup.tar.gz -C /data .
 
 # Start services
-docker compose up -d
+docker compose up -d --remove-orphans
 ```
 
 ## Troubleshooting
@@ -218,7 +217,7 @@ docker compose logs postgres
 ./scripts/load-images.sh
 
 # 3. Recreate containers
-docker compose up -d
+docker compose up -d --remove-orphans
 
 # 4. Run migrations (if needed)
 docker compose exec backend migrate -path /app/migrations \

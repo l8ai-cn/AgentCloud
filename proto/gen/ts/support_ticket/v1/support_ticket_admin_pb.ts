@@ -12,11 +12,8 @@
 // Per conventions §3.5 exception #2, admin requests do NOT carry org_slug
 // — tenant is the whole platform, implied by the admin interceptor.
 //
-// File-upload REPLY paths (multipart POST on Reply) stay on REST during
-// the dual-track window — Connect-RPC has no multipart story. The Connect
-// Reply RPC therefore covers JSON-only replies (no attachments); the REST
-// /reply endpoint stays available for the upload case until the web-admin
-// renderer is updated to a separate presigned-upload flow.
+// Reply is text-only. Connect-RPC has no multipart story, and the admin
+// surface does not expose an attachment-upload contract.
 //
 // Standalone: no proto import of support_ticket.proto. The same SupportTicket*
 // message types are not re-used as-is — the admin GET response carries
@@ -472,10 +469,7 @@ export const AdminListSupportTicketMessagesResponseSchema: GenMessage<AdminListS
   messageDesc(file_support_ticket_v1_support_ticket_admin, 11);
 
 /**
- * AdminReplySupportTicketRequest covers the JSON-only path. Multipart
- * attachment uploads stay on REST for now — handler returns the new
- * message without attachments. The web-admin renderer falls back to the
- * REST /reply endpoint when files are attached.
+ * AdminReplySupportTicketRequest covers the supported text-only reply path.
  *
  * @generated from message proto.support_ticket.v1.AdminReplySupportTicketRequest
  */

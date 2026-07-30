@@ -17,8 +17,3 @@ updates:
     directory: /clients/web
     schedule:
       interval: weekly
-
-  - package-ecosystem: npm
-    directory: /clients/web-admin
-    schedule:
-      interval: weekly

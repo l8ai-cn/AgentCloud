@@ -1,8 +1,7 @@
 // Direct Connect-RPC transport for the admin service. clients/web routes
 // most RPCs through the wasm bridge, but proto.admin.v1.AdminService has no
 // wasm binding — so admin pages talk to the backend Connect handlers over a
-// plain binary fetch, same wire shape as web-admin's transport. The JWT comes
-// from the wasm AuthManager (SSOT) rather than a Zustand token field.
+// plain binary fetch. The JWT comes from the wasm AuthManager (SSOT).
 import {
   create,
   toBinary,

@@ -28,6 +28,8 @@ const relay = {
   lastHeartbeat: "2026-07-30T00:00:00Z",
   healthy: true,
   avgLatencyMs: 18,
+  latitude: 40.7128,
+  longitude: -74.006,
 };
 
 describe("admin relays API", () => {
@@ -44,6 +46,8 @@ describe("admin relays API", () => {
         id: "relay-1",
         cpu_usage: 15,
         avg_latency_ms: 18,
+        latitude: 40.7128,
+        longitude: -74.006,
       })],
     });
   });
@@ -66,6 +70,26 @@ describe("admin relays API", () => {
     callAdminConnect.mockResolvedValue({});
 
     await expect(getRelay("missing")).rejects.toThrow("Relay not found");
+  });
+
+  it("maps the complete relay detail response", async () => {
+    callAdminConnect.mockResolvedValue({ relay });
+
+    await expect(getRelay("relay-1")).resolves.toEqual({
+      id: "relay-1",
+      url: "wss://relay.example.com",
+      region: "us-east",
+      capacity: 100,
+      connections: 12,
+      cpu_usage: 15,
+      memory_usage: 24,
+      last_heartbeat: "2026-07-30T00:00:00Z",
+      healthy: true,
+      avg_latency_ms: 18,
+      latitude: 40.7128,
+      longitude: -74.006,
+    });
+    expect(callAdminConnect.mock.calls[0][4]).toEqual({ id: "relay-1" });
   });
 
   it("unregisters the exact relay id", async () => {

@@ -135,6 +135,12 @@ sync_worker_definitions() {
   dexec "kubectl -n ${NS} wait --for=condition=complete job/worker-definition-sync --timeout=300s"
 }
 
+retire_web_admin() {
+  echo "==> retire standalone web-admin resources"
+  dexec "kubectl -n ${NS} delete deployment/web-admin service/web-admin ingress/agentcloud-admin --ignore-not-found=true"
+  dexec "set -eu; for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin; do if kubectl -n ${NS} get \"\${resource}\" >/dev/null 2>&1; then echo \"retired resource still exists: \${resource}\" >&2; exit 1; fi; done"
+}
+
 # Refuse to create a ghost stack in an empty namespace. Live oilan data lives
 # under whatever namespace currently holds postgres-data; after the
 # agentsmesh→agentcloud migration that is agentcloud. Override only when you
@@ -172,6 +178,8 @@ apply_all() {
   echo "==> apply workloads after DoSql-audited database gate"
   dexec "kubectl apply -f /tmp/agentcloud-release.yaml"
   dexec "kubectl -n ${NS} rollout status deploy/backend --timeout=300s"
+  dexec "kubectl -n ${NS} rollout status deploy/web --timeout=300s"
+  retire_web_admin
   mark_application_writes_restored
   echo "==> minio bucket + worker definition sync"
   dexec "kubectl -n ${NS} delete job minio-setup worker-definition-sync --ignore-not-found"
@@ -182,7 +190,7 @@ apply_all() {
 
 status() {
   echo "==> rollout status"
-  for d in gitea backend relay web web-admin mobile runner-e2e-echo; do
+  for d in gitea backend relay web mobile runner-e2e-echo; do
     dexec "kubectl -n ${NS} rollout status deploy/${d} --timeout=240s"
   done
   local preview_probe=release-preview-probe

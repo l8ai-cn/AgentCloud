@@ -11,20 +11,19 @@ Server-side (Go):
 
 Client-side:
 - **Rust Core** (`clients/core/`): **Business-logic SSOT.** Rust crates compiled to WASM for Web. Owns the authoritative cache, DTOs, and services — auth, blockstore, channels, tickets, mesh, autopilot. Front-ends are thin views over it. **Modify state in Rust, not in Zustand.**
-- **Web** (`clients/web/`): Next.js (App Router + TS + Tailwind). Loads `agentcloud-wasm` at boot; UI state mirrors Rust selectors via `_tick` triggers.
-- **Web-Admin** (`clients/web-admin/`): Next.js admin console mounted at `/admin`. Internal-only — gated on `is_system_admin`.
+- **Web** (`clients/web/`): Next.js (App Router + TS + Tailwind). Loads `agentcloud-wasm` for authenticated routes; UI state mirrors Rust selectors via `_tick` triggers. System administration lives under `/admin` and is gated on `is_system_admin`.
 
 ## Development Environment
 
 Go services (backend / runner / relay) run on the host via `air` hot-reload.
-Next.js apps (web / web-admin) run via plain `next dev`. Docker only hosts
+The Next.js Web app runs via plain `next dev`. Docker only hosts
 stateful infrastructure (PostgreSQL, Redis, MinIO, Traefik, Jaeger, Gitea,
 OTel collector, Adminer). Wasm is built with `pnpm run build:wasm` when needed.
 
 ### Quick Start
 
 ```bash
-./deploy/dev/dev.sh                  # docker infra + host backend/relay/runner + host web/web-admin
+./deploy/dev/dev.sh                  # docker infra + host backend/relay/runner + host web
 ./deploy/dev/dev.sh --clean          # stop everything, drop docker volumes, clear runtime/
 ./deploy/dev/dev.sh --reset-runners  # only restart host runner+relay (backend stays up)
 ./deploy/dev/dev.sh --rebuild-runner # rebuild runner binary + restart containers
@@ -52,14 +51,14 @@ The dev pipeline automatically:
 3. Starts the docker infra stack
 4. Applies `backend/schema/schema.sql` when the database is empty (no backend container needed)
 5. Launches `air` for backend / relay / runner in the background, with isolated `$HOME` for the runner so its `~/.claude/*` writes don't touch your real configs
-6. Runs `pnpm run build:wasm` if needed, then starts plain `next dev` for web and web-admin
+6. Runs `pnpm run build:wasm` if needed, then starts plain `next dev` for Web
 
 ### Services & Ports (offset 0 / main worktree)
 
 | Service | URL | Notes |
 |---------|-----|-------|
 | **Frontend** | http://localhost:10007 | `next dev` (host) |
-| **Admin Console** | http://localhost:10011 | `next dev` (host) |
+| **Admin Console** | http://localhost:10007/admin | Main Web route; requires `is_system_admin` |
 | **API** | http://localhost:10000/api | traefik → host backend :10015 |
 | **Relay** | ws://localhost:10000/relay | traefik → host relay :10017 |
 | **gRPC mTLS** | grpcs://localhost:10001 | traefik passthrough → host backend :10016 |
@@ -90,7 +89,7 @@ docker compose logs -f postgres                  # docker infra
 
 ### Hot Reload
 
-- **Frontend (web / web-admin)**: Next.js dev server fast refresh
+- **Frontend (web)**: Next.js dev server fast refresh
 - **Go services (backend / runner / relay)**: `air` watches `.go` changes and rebuilds incrementally
 
 ## Build Commands (for CI/testing outside Docker)
@@ -118,12 +117,11 @@ docker build -f backend/Dockerfile .
 docker build -f relay/Dockerfile .
 docker build -f runner/Dockerfile .
 docker build -f clients/web/Dockerfile .
-docker build -f clients/web-admin/Dockerfile .
 ```
 
 ### Web (Next.js)
 
-所有前端的依赖（web / web-admin）统一放在根 `package.json`：
+Web 前端依赖统一放在根 `package.json`：
 
 ```bash
 pnpm install                 # Install at repo root (one-shot)
@@ -132,9 +130,6 @@ pnpm run web:lint            # ESLint
 pnpm run web:typecheck       # tsc --noEmit
 pnpm run web:test            # Vitest
 pnpm run web:build           # Production Next.js build
-pnpm run web-admin:lint
-pnpm run web-admin:typecheck
-pnpm run web-admin:build
 
 # Dev server (also started by ./deploy/dev/dev.sh)
 (cd clients/web && node ../../node_modules/next/dist/bin/next dev --turbopack)
@@ -148,7 +143,7 @@ pnpm run web-admin:build
 | Layout | wasm | 路由 |
 |---|---|---|
 | `app/layout.tsx` (root) | ❌ | 全站基底，无 wasm |
-| `app/(dashboard)/layout.tsx` | ✅ | `(dashboard)/[org]/**`、`/settings`、`/support` |
+| `app/(dashboard)/layout.tsx` | ✅ | `(dashboard)/[org]/**`、`/admin/**`、`/settings`、`/support` |
 | `app/(auth)/layout.tsx` | ✅ | `/login`、`/register`、OAuth callback、verify-email、invite、onboarding、runners |
 | `app/popout/layout.tsx` | ✅ | `/popout/terminal/[podKey]` |
 | 其它营销/文档 (`/`、`/docs`、`/about`、`/blog`、`/changelog`、`/demo`、`/enterprise`、`/privacy`、`/terms`、`/mock-checkout` 等) | ❌ | 通过 `lib/light-session.ts` 直读 localStorage 判 auth；公开 API 走 `lib/public-api.ts` 的 fetch |
@@ -294,7 +289,7 @@ backend/
 clients/web/src/
 ├── app/                  # Next.js App Router
 │   ├── (auth)/           # Auth pages (login, register)
-│   ├── (dashboard)/      # Dashboard pages
+│   ├── (dashboard)/      # User dashboard and protected /admin pages
 │   └── api/              # API routes
 ├── components/           # React components
 ├── lib/                  # Utilities, API clients
@@ -302,28 +297,6 @@ clients/web/src/
 ├── hooks/                # Custom React hooks
 ├── messages/             # i18n translations (next-intl)
 └── providers/            # Context providers
-```
-
-## Web-Admin Structure (Admin Console)
-
-```
-clients/web-admin/src/
-├── app/                  # Next.js App Router (basePath: /admin)
-│   ├── login/            # GitLab SSO login page
-│   ├── auth/callback/    # OAuth callback handler
-│   └── (dashboard)/      # Dashboard pages (protected)
-│       ├── users/        # User management
-│       ├── organizations/ # Organization management
-│       ├── runners/      # Runner management
-│       └── audit-logs/   # Audit log viewer
-├── components/
-│   ├── ui/               # Shadcn-style UI components
-│   └── layout/           # Sidebar, Header
-├── lib/
-│   ├── api/              # Admin API client
-│   └── utils.ts          # Utility functions
-└── stores/
-    └── auth.ts           # Zustand auth store (persist to localStorage)
 ```
 
 ## Runner Structure
@@ -388,7 +361,9 @@ runner/
 
 ## Admin Console
 
-The Admin Console (`web-admin`) is an internal management interface for system administrators.
+The Admin Console is the `/admin` route group in `clients/web`. It uses the
+main Web session and design system as the internal management interface for
+system administrators.
 
 ### Access Control
 
@@ -406,10 +381,10 @@ The Admin Console (`web-admin`) is an internal management interface for system a
 
 ### Configuration
 
-Admin Console is enabled by default. All components use unified domain configuration:
+Admin Console is enabled by default. Components use unified domain configuration:
 
 ```bash
-# All components use the same two variables (Backend, Relay, Web, Web-Admin)
+# Backend, Relay, and Web use the same domain variables
 PRIMARY_DOMAIN=localhost:10000                  # Primary domain for all URLs
 USE_HTTPS=false                                 # Use HTTPS/WSS protocols
 

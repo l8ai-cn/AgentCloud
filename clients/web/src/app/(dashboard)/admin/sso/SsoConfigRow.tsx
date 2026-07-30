@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  CircleCheck,
+  CircleX,
   FlaskConical,
   LoaderCircle,
   Pencil,
@@ -13,20 +15,23 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { SSOConfig } from "@/lib/api/admin/sso";
-import type { SSOAction } from "./useSSOConfigs";
+import type { SSOAction, SSOTestState } from "./useSSOConfigs";
 
 export function SsoConfigRow({
   config,
   mutationKey,
+  testResult,
   onEdit,
   onAction,
 }: {
   config: SSOConfig;
   mutationKey: string | null;
+  testResult?: SSOTestState;
   onEdit: (config: SSOConfig) => void;
   onAction: (config: SSOConfig, action: SSOAction) => void;
 }) {
-  const rowBusy = mutationKey?.endsWith(`:${config.id}`) ?? false;
+  const rowBusy = mutationKey !== null;
+  const testing = mutationKey === `test:${config.id}`;
   return (
     <div className="grid gap-3 border-b border-border px-4 py-3 last:border-b-0 lg:grid-cols-[minmax(0,2fr)_minmax(12rem,1fr)_auto] lg:items-center">
       <div className="min-w-0">
@@ -52,14 +57,21 @@ export function SsoConfigRow({
             : "No default organization"}
         </p>
         <p>Updated {new Date(config.updated_at).toLocaleString()}</p>
+        {testResult && (
+          <p
+            role={testResult.status === "error" ? "alert" : "status"}
+            className={testResult.status === "success" ? "text-success" : "text-destructive"}
+          >
+            {testResult.message}
+          </p>
+        )}
       </div>
       <div className="flex items-center justify-end gap-1">
-        <ActionButton
-          label={`Test ${config.name}`}
-          title="Test connection"
-          busy={mutationKey === `test:${config.id}`}
+        <TestButton
+          configName={config.name}
+          testing={testing}
+          result={testResult}
           disabled={rowBusy}
-          icon={<FlaskConical className="h-4 w-4" />}
           onClick={() => onAction(config, "test")}
         />
         <ActionButton
@@ -88,6 +100,43 @@ export function SsoConfigRow({
         />
       </div>
     </div>
+  );
+}
+
+function TestButton({
+  configName,
+  testing,
+  result,
+  disabled,
+  onClick,
+}: {
+  configName: string;
+  testing: boolean;
+  result?: SSOTestState;
+  disabled: boolean;
+  onClick: () => void;
+}) {
+  const content = testing
+    ? { icon: <LoaderCircle className="h-4 w-4 animate-spin" />, label: "Testing" }
+    : result?.status === "success"
+      ? { icon: <CircleCheck className="h-4 w-4 text-success" />, label: "Passed" }
+      : result?.status === "error"
+        ? { icon: <CircleX className="h-4 w-4 text-destructive" />, label: "Failed" }
+        : { icon: <FlaskConical className="h-4 w-4" />, label: "Test" };
+
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      aria-label={`Test ${configName}`}
+      title="Test connection"
+      disabled={disabled}
+      className="min-w-[5.5rem] gap-1.5"
+      onClick={onClick}
+    >
+      {content.icon}
+      {content.label}
+    </Button>
   );
 }
 

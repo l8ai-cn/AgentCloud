@@ -13,7 +13,7 @@ image_references() {
   ' "${rendered}"
 }
 
-for image in backend relay web web-admin mobile pgvector redis minio kubectl; do
+for image in backend relay web mobile pgvector redis minio kubectl; do
   references="$(image_references | awk -v prefix="${registry}/${image}@" \
     'index($1, prefix) == 1 { print $1 }')"
   [[ -n "${references}" ]] || {

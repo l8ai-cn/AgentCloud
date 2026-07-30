@@ -1,7 +1,7 @@
 # Agent Cloud on doops-oilan
 
 Deploys the full platform (backend, Marketplace API, Marketplace Storefront,
-relay, web, web-admin, mobile + Postgres/Redis/MinIO)
+relay, web, mobile + Postgres/Redis/MinIO)
 to the single-node `doops-oilan` k3s cluster (`gpu-ampere01`, amd64) via DoOps,
 with all images served from the in-cluster Harbor
 (`repo.aiedulab.cn:8443/agentcloud/*`, node-local so pulls are effectively free).
@@ -180,7 +180,7 @@ validate the existing `agentcloud` Secret.
 | `10/11/12-*` `13-minio-setup-job` | Postgres / Redis / MinIO + bucket and temporary artifact TTL |
 | `21-seed-configmap` | seed SQL source material for the audited DoSql change plan |
 | `30-backend*` | backend Deployment/Service + SA/RBAC (kubectl via init container) |
-| `31/32/33/42-*` | relay / web / web-admin / mobile |
+| `31/32/42-*` | relay / web / mobile |
 | `34/35-runner-*` | standing runner pods |
 | _(removed)_ | Marketplace API is mounted on backend (`/api/marketplace/v1`) |
 | `release/kustomization` | immutable platform image digests |

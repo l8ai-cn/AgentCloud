@@ -107,8 +107,8 @@ unchanged_release_digests() {
   awk -v project="${PROJ}" '
     $1 == "-" && $2 == "name:" {
       name=$3
-      keep=name == project "/web-admin" || name == project "/mobile" ||
-        name == project "/pgvector" || name == project "/redis" ||
+      keep=name == project "/mobile" || name == project "/pgvector" ||
+        name == project "/redis" ||
         name == project "/minio" || name == project "/mc" ||
         name == project "/kubectl"
       next

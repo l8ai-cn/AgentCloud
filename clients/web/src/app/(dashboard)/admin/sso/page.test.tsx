@@ -6,6 +6,7 @@ const createSSOConfig = vi.fn();
 const updateSSOConfig = vi.fn();
 const deleteSSOConfig = vi.fn();
 const testSSOConnection = vi.fn();
+const toastSuccess = vi.fn();
 const toastError = vi.fn();
 
 vi.mock("@/lib/api/admin/sso", () => ({
@@ -20,7 +21,7 @@ vi.mock("@/lib/api/admin/sso", () => ({
 
 vi.mock("sonner", () => ({
   toast: {
-    success: vi.fn(),
+    success: (...args: unknown[]) => toastSuccess(...args),
     error: (...args: unknown[]) => toastError(...args),
   },
 }));
@@ -57,6 +58,7 @@ describe("AdminSSOPage", () => {
     updateSSOConfig.mockReset();
     deleteSSOConfig.mockReset();
     testSSOConnection.mockReset();
+    toastSuccess.mockReset();
     toastError.mockReset();
     listSSOConfigs.mockResolvedValue(response);
     createSSOConfig.mockResolvedValue(config);
@@ -152,7 +154,30 @@ describe("AdminSSOPage", () => {
     await waitFor(() => expect(deleteSSOConfig).toHaveBeenCalledWith(7));
   });
 
-  it("surfaces a failed connection test", async () => {
+  it("prevents duplicate connection tests and shows the successful row result", async () => {
+    let resolveTest: (result: { success: boolean; message: string }) => void = () => {};
+    testSSOConnection.mockImplementation(() => new Promise((resolve) => {
+      resolveTest = resolve;
+    }));
+    render(<AdminSSOPage />);
+    await screen.findByText("Example SSO");
+
+    const testButton = screen.getByLabelText("Test Example SSO");
+    fireEvent.click(testButton);
+    fireEvent.click(testButton);
+
+    expect(testSSOConnection).toHaveBeenCalledTimes(1);
+    expect(testButton).toBeDisabled();
+    expect(testButton).toHaveTextContent("Testing");
+
+    resolveTest({ success: true, message: "Connected" });
+
+    expect(await screen.findByRole("status")).toHaveTextContent("Connected");
+    expect(testButton).toHaveTextContent("Passed");
+    expect(toastSuccess).toHaveBeenCalledWith("Connected");
+  });
+
+  it("surfaces a failed connection test in the affected row", async () => {
     testSSOConnection.mockResolvedValue({
       success: false,
       error: "TLS handshake failed",
@@ -162,6 +187,21 @@ describe("AdminSSOPage", () => {
 
     fireEvent.click(screen.getByLabelText("Test Example SSO"));
 
+    expect(await screen.findByRole("alert")).toHaveTextContent("TLS handshake failed");
+    expect(screen.getByLabelText("Test Example SSO")).toHaveTextContent("Failed");
     await waitFor(() => expect(toastError).toHaveBeenCalledWith("TLS handshake failed"));
+  });
+
+  it("shows transport errors without leaving an unhandled test mutation", async () => {
+    testSSOConnection.mockRejectedValue(new Error("request timed out"));
+    render(<AdminSSOPage />);
+    await screen.findByText("Example SSO");
+
+    const testButton = screen.getByLabelText("Test Example SSO");
+    fireEvent.click(testButton);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("request timed out");
+    expect(testButton).toBeEnabled();
+    expect(testButton).toHaveTextContent("Failed");
   });
 });

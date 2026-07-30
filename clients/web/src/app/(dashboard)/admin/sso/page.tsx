@@ -130,6 +130,7 @@ export default function AdminSSOPage() {
         loading={sso.loading}
         searchActive={Boolean(search || protocol)}
         mutationKey={sso.mutationKey}
+        testResults={sso.testResults}
         onEdit={(config) => {
           setEditing(config);
           setFormOpen(true);

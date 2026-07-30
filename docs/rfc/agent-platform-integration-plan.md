@@ -4,11 +4,11 @@
 > 前置调研：Omnigent clone（/private/tmp/omnigent_explain，HEAD 3124850）
 > 结论前提：Agent Cloud 是唯一控制面 SSOT；Omnigent 只吸收契约与机制，不引入其 Python 控制面。
 
-## 0. 双前端架构
+## 0. 前端架构
 
 | 前端 | 路径 | 角色 | 技术栈 |
 |------|------|------|--------|
-| 管理面 | `clients/web` + `clients/web-admin` | 组织、Runner、配额、审计、高级配置 | Next.js + Rust WASM |
+| 管理面 | `clients/web`（含 `/admin`） | 组织、Runner、配额、审计、高级配置；系统管理路由要求 `is_system_admin` | Next.js + Rust WASM |
 | 用户工作台 | `clients/web-user` | 终端用户直接跑 agent、聊天、协作 | Vite + React（源自 Omnigent `web/`） |
 
 `clients/web-user` 已从 Omnigent 摘出（Apache-2.0，见 `clients/web-user/THIRD_PARTY.md`），后续通过 **Session API**（`backend/internal/api/rest/v1/session`）对接 Agent Cloud Backend，不再依赖 Omnigent Server。
@@ -19,7 +19,7 @@
 |----|------|------|
 | 业务 SSOT | **Rust → WASM** | 现有 `clients/core`：auth、cache、DTO（管理面 web 继续用） |
 | 控制面 / 执行面 | **Go** | Backend、Runner、AgentFile、Policy、Usage（平台机制落这里） |
-| 管理面 UI | **TypeScript / Next.js** | `clients/web`、`clients/web-admin` |
+| 管理面 UI | **TypeScript / Next.js** | `clients/web`（含 `/admin`） |
 | 用户工作台 UI | **TypeScript / Vite** | `clients/web-user`（Omnigent 前端改造） |
 
 Omnigent 的 Python 代码**不迁移**；只迁移前端 UI 与机制契约（capability、policy、usage 事件模型）。
@@ -148,7 +148,8 @@ resume 只有 claude/codex 在各自 AgentFile 手写；vendor session id 无统
    simple/advanced 两档。
 2. 高级用户：Agent 配置、Repo、Knowledge、Permission 表单化
    （由 ResolveConfigSchema + Workstream A capability 驱动，不暴露 DSL）。
-3. 管理员：Runner/Relay/Quota/Audit 保持在 admin console 与 org settings。
+3. 管理员：系统级 Runner/Relay/Quota/Audit 位于 `clients/web` 的 `/admin`，
+   组织级管理保留在 org settings。
 4. DoAgent 作为默认推荐 agent 出现在任务入口第一位。
 
 ## 7. 明确不做

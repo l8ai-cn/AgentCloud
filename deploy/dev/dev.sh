@@ -10,7 +10,7 @@
 #
 # 一键启动开发环境：
 #   ./dev.sh                # docker infra + host backend/relay + frontend
-#   ./dev.sh --frontends      # 仅重启 web + web-admin
+#   ./dev.sh --frontends      # 仅重启 web
 #   ./dev.sh --coordinator-runners # 平台托管：Coordinator 按需起 runner
 #   ./dev.sh --runners-k8s       # runner 部署到本地 K8s 集群 (Docker Desktop)
 #   ./dev.sh --rebuild-runner   # 重 build runner binary + 重启 runner 容器
@@ -70,7 +70,6 @@ main() {
             [[ -f "$ENV_FILE" ]] || { error "缺少 $ENV_FILE，请先运行 ./dev.sh"; exit 1; }
             source "$ENV_FILE"
             generate_web_env
-            generate_web_admin_env
             export DEV_FORCE_FRONTEND=1
             print_banner
             require_unshadowed_loopback_port || exit 1
@@ -113,7 +112,6 @@ main() {
     check_dev_doctor
     generate_traefik_config
     generate_web_env
-    generate_web_admin_env
     generate_runner_ssh_key
     require_unshadowed_loopback_port || exit 1
     prepare_local_worker_runtime_catalog

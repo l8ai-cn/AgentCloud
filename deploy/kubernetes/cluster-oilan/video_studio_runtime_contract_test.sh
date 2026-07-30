@@ -52,7 +52,7 @@ push_video_expert="$(
     capture && /^}/ { exit }
   ' "$PUSH_IMAGES"
 )"
-for image in backend web web-admin; do
+for image in backend web; do
   grep -Fq "docker_push" <<< "$push_video_expert"
   grep -Fq "$image" <<< "$push_video_expert"
 done
@@ -204,13 +204,9 @@ if RUNTIME_OBSERVED_AT="$OBSERVED_AT" \
 fi
 [[ "$FIXTURE_HASHES" == "$(find "$FIXTURE_ROOT" -type f -print0 | sort -z | xargs -0 shasum -a 256)" ]]
 
-for dockerfile in \
-  clients/web/Dockerfile \
-  clients/web-admin/Dockerfile; do
-  corepack_line="$(grep -n 'corepack prepare' "${ROOT}/${dockerfile}" | cut -d: -f1)"
-  registry_line="$(grep -n 'COREPACK_NPM_REGISTRY' "${ROOT}/${dockerfile}" | cut -d: -f1)"
-  [[ -n "$registry_line" && "$registry_line" -lt "$corepack_line" ]]
-done
+corepack_line="$(grep -n 'corepack prepare' "${ROOT}/clients/web/Dockerfile" | cut -d: -f1)"
+registry_line="$(grep -n 'COREPACK_NPM_REGISTRY' "${ROOT}/clients/web/Dockerfile" | cut -d: -f1)"
+[[ -n "$registry_line" && "$registry_line" -lt "$corepack_line" ]]
 
 grep -Fq 'wasm-pack/releases/download/v0.13.1' "$ROOT/clients/web/Dockerfile"
 grep -Fq 'wasm-bindgen/releases/download/0.2.105' "$ROOT/clients/web/Dockerfile"

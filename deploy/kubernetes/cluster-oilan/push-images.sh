@@ -3,10 +3,10 @@
 # on doops-114-k8s pull from repo.aiedulab.cn:8443/agentcloud/* (fast, node-local).
 #
 #   ./push-images.sh all        # platform + infra + runners
-#   ./push-images.sh platform   # backend/relay/web/web-admin/mobile
+#   ./push-images.sh platform   # backend/relay/web/mobile
 #   ./push-images.sh mobile-access # backend/relay/mobile only
 #   ./push-images.sh marketplace-core # backend/web
-#   ./push-images.sh video-expert # backend/web/web-admin
+#   ./push-images.sh video-expert # backend/web
 #   ./push-images.sh web        # rebuild Web and retain other current digests
 #   ./push-images.sh infra      # postgres/redis/minio/mc/kubectl mirrors
 #   ./push-images.sh runners    # agent-runtime images (claude/codex/video/gemini/grok/openclaw/hermes/e2e-echo)
@@ -25,7 +25,6 @@ PLATFORM="${PLATFORM:-linux/amd64}"
 PLATFORM_DIGEST_BACKEND=""
 PLATFORM_DIGEST_RELAY=""
 PLATFORM_DIGEST_WEB=""
-PLATFORM_DIGEST_WEB_ADMIN=""
 PLATFORM_DIGEST_MOBILE=""
 PLATFORM_DIGEST_PGVECTOR=""
 PLATFORM_DIGEST_REDIS=""
@@ -44,7 +43,6 @@ push_platform() {
   docker_push backend/Dockerfile backend
   docker_push relay/Dockerfile relay
   docker_push clients/web/Dockerfile web
-  docker_push clients/web-admin/Dockerfile web-admin
   docker_push clients/mobile-lovable/Dockerfile mobile
   write_platform_release
 }
@@ -58,7 +56,6 @@ push_marketplace_core() {
 push_video_expert() {
   docker_push backend/Dockerfile backend
   docker_push clients/web/Dockerfile web
-  docker_push clients/web-admin/Dockerfile web-admin
   write_platform_release
 }
 

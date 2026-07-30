@@ -136,6 +136,9 @@ require_command '12-minio.yaml | kubectl apply -f -'
 require_command 'kubectl -n agentcloud rollout status deploy/postgres --timeout=300s'
 require_command 'kubectl apply -f /tmp/agentcloud-release.yaml'
 require_command 'kubectl -n agentcloud rollout status deploy/backend --timeout=300s'
+require_command 'kubectl -n agentcloud rollout status deploy/web --timeout=300s'
+require_command 'kubectl -n agentcloud delete deployment/web-admin service/web-admin ingress/agentcloud-admin --ignore-not-found=true'
+require_command 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin'
 require_command "https://health-preview.l8ai.cn/"
 require_command "--write-out '%{remote_ip}'"
 require_command 'test -n "${reference_ip}"'
@@ -161,6 +164,9 @@ prereq_line="$(line_number 'kubectl apply -f 02-configmap.yaml -f 30-backend-rba
 postgres_line="$(line_number '10-postgres.yaml | kubectl apply -f -')"
 workload_line="$(line_number 'kubectl apply -f /tmp/agentcloud-release.yaml')"
 backend_line="$(line_number 'rollout status deploy/backend')"
+web_line="$(line_number 'rollout status deploy/web --timeout=300s')"
+retire_line="$(line_number 'delete deployment/web-admin service/web-admin ingress/agentcloud-admin')"
+retire_verify_line="$(line_number 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin')"
 minio_line="$(line_number '13-minio-setup-job.yaml | kubectl apply -f -')"
 sync_line="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f -')"
 
@@ -178,7 +184,10 @@ sync_line="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f 
   prereq_line < postgres_line &&
   postgres_line < workload_line &&
   workload_line < backend_line &&
-  backend_line < minio_line &&
+  backend_line < web_line &&
+  web_line < retire_line &&
+  retire_line < retire_verify_line &&
+  retire_verify_line < minio_line &&
   minio_line < sync_line &&
   backend_line < sync_line )) || {
   printf 'full deployment command order is invalid\n' >&2
@@ -190,6 +199,7 @@ sync_line="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f 
 ! grep -F '20-migrate-job.yaml' "$LOG" >/dev/null
 ! grep -F 'job/migrate' "$LOG" >/dev/null
 ! grep -F 'job/seed' "$LOG" >/dev/null
+! grep -F 'rollout status deploy/web-admin' "$LOG" >/dev/null
 ! grep -F 'psql --username' "$LOG" >/dev/null
 ! grep -F '/app/server migrate up' "$LOG" >/dev/null
 grep -F 'workspace-artifacts/' "$ROOT/13-minio-setup-job.yaml" >/dev/null
@@ -212,3 +222,9 @@ probe_command="$(grep -F 'https://release-preview-probe.l8ai.cn/preview/release-
 ! grep -Fq -- '--insecure' <<<"$probe_command"
 grep -F 'release_require_pushed_clean_tree' "$ROOT/deploy.sh" >/dev/null
 grep -F 'clean -session ses-contract' "$LOG" >/dev/null
+! test -e "$ROOT/33-web-admin.yaml"
+! grep -F '33-web-admin.yaml' "$ROOT/kustomization.yaml" >/dev/null
+! grep -F 'name: agentcloud-admin' "$ROOT/40-ingress.yaml" >/dev/null
+! grep -F 'name: web-admin' "$ROOT/40-ingress.yaml" >/dev/null
+! grep -F 'agentcloud/web-admin' "$ROOT/release/kustomization.yaml" >/dev/null
+! jq -e '.images | has("web-admin")' "$ROOT/release/source.json" >/dev/null

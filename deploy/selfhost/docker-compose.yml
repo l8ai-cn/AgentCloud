@@ -9,7 +9,7 @@
 #
 # Manual Start:
 #   cp .env.example .env  # Edit .env first
-#   docker compose up -d
+#   docker compose up -d --remove-orphans
 #
 # =============================================================================
 
@@ -131,8 +131,8 @@ services:
       - ADMIN_ENABLED=true
       # Docker Desktop can inject HTTP_PROXY into containers. Keep Compose
       # service-to-service traffic on the internal network.
-      - NO_PROXY=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
-      - no_proxy=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
+      - NO_PROXY=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
+      - no_proxy=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
     volumes:
       - ./ssl:/app/ssl:ro
     healthcheck:
@@ -158,30 +158,8 @@ services:
       - USE_HTTPS=false
       - POSTHOG_KEY=${POSTHOG_KEY:-}
       - POSTHOG_HOST=${POSTHOG_HOST:-}
-      - NO_PROXY=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
-      - no_proxy=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
-    healthcheck:
-      test: ["CMD", "/nodejs/bin/node", "/app/healthcheck.mjs"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-
-  # ===========================================================================
-  # Web Admin Console
-  # ===========================================================================
-  web-admin:
-    image: l8ai/doworker-web-admin:${VERSION:-latest}
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-    environment:
-      - NODE_ENV=production
-      - PRIMARY_DOMAIN=${PRIMARY_DOMAIN}
-      - USE_HTTPS=false
-      - NO_PROXY=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
-      - no_proxy=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
+      - NO_PROXY=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
+      - no_proxy=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
     healthcheck:
       test: ["CMD", "/nodejs/bin/node", "/app/healthcheck.mjs"]
       interval: 30s
@@ -215,8 +193,8 @@ services:
       - ALLOWED_ORIGINS=${RELAY_ALLOWED_ORIGINS:-}
       - SESSION_KEEP_ALIVE_DURATION=30s
       - DEBUG=false
-      - NO_PROXY=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
-      - no_proxy=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
+      - NO_PROXY=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
+      - no_proxy=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
     healthcheck:
       test: ["CMD", "wget", "--proxy=off", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8090/health"]
       interval: 30s
@@ -235,8 +213,8 @@ services:
       - PREVIEW_HOST_REGEX=${PREVIEW_HOST_REGEX}
       # Docker Desktop can inject HTTP_PROXY into containers. Traefik must talk
       # to Compose services directly on the internal network.
-      - NO_PROXY=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
-      - no_proxy=localhost,127.0.0.1,backend,web,web-admin,relay,minio,postgres,redis,traefik
+      - NO_PROXY=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
+      - no_proxy=localhost,127.0.0.1,backend,web,relay,minio,postgres,redis,traefik
     volumes:
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro

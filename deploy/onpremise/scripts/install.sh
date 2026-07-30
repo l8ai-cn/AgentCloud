@@ -171,7 +171,7 @@ cd "${DEPLOY_DIR}"
 # =============================================================================
 if [ "${CLEAN}" = true ]; then
     echo "[Step 0/7] Cleaning up existing deployment..."
-    docker compose down -v 2>/dev/null || true
+    docker compose down -v --remove-orphans 2>/dev/null || true
     rm -rf ssl .env
     echo "  Cleaned."
     echo ""
@@ -299,7 +299,7 @@ echo ""
 # Step 5: Start Services
 # =============================================================================
 echo "[Step 5/7] Starting services..."
-docker compose up -d
+docker compose up -d --remove-orphans
 
 echo "  Waiting for services to become healthy..."
 sleep 10
@@ -357,7 +357,7 @@ echo "=============================================="
 echo ""
 echo "Access URLs:"
 echo "  Frontend:      http://${SERVER_IP}:${HTTP_PORT}"
-echo "  Admin Console: http://${SERVER_IP}:3001"
+echo "  Admin:         http://${SERVER_IP}:${HTTP_PORT}/admin"
 echo "  MinIO Console: http://${SERVER_IP}:9001"
 echo ""
 echo "Admin Account:"
@@ -371,7 +371,7 @@ echo "  agent-cloud-runner run"
 echo ""
 echo "Useful Commands:"
 echo "  View logs:    docker compose logs -f"
-echo "  Stop:         docker compose down"
-echo "  Start:        docker compose up -d"
-echo "  Clean:        docker compose down -v"
+echo "  Stop:         docker compose down --remove-orphans"
+echo "  Start:        docker compose up -d --remove-orphans"
+echo "  Clean:        docker compose down -v --remove-orphans"
 echo ""

@@ -9,10 +9,8 @@
 // backend/internal/api/connect/support_ticket/ — separate auth surface,
 // so keep the packages split to prevent transport-level drift.
 //
-// File-upload note: the Reply RPC handles JSON-only replies. Multipart
-// attachment uploads stay on the REST /reply endpoint during the dual-track
-// window — Connect-RPC has no multipart story. The web-admin renderer is
-// expected to fall back to REST when files are attached.
+// Reply is text-only. Connect-RPC has no multipart story, and the admin
+// surface does not expose an attachment-upload contract.
 package supportticketadminconnect
 
 import (

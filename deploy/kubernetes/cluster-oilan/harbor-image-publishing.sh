@@ -81,7 +81,6 @@ docker_push() {
     backend) PLATFORM_DIGEST_BACKEND="${digest}" ;;
     relay) PLATFORM_DIGEST_RELAY="${digest}" ;;
     web) PLATFORM_DIGEST_WEB="${digest}" ;;
-    web-admin) PLATFORM_DIGEST_WEB_ADMIN="${digest}" ;;
     mobile) PLATFORM_DIGEST_MOBILE="${digest}" ;;
   esac
 }
@@ -110,7 +109,6 @@ write_platform_release() {
   ensure_release_digest PLATFORM_DIGEST_BACKEND backend
   ensure_release_digest PLATFORM_DIGEST_RELAY relay
   ensure_release_digest PLATFORM_DIGEST_WEB web
-  ensure_release_digest PLATFORM_DIGEST_WEB_ADMIN web-admin
   ensure_release_digest PLATFORM_DIGEST_MOBILE mobile
   ensure_release_digest PLATFORM_DIGEST_PGVECTOR pgvector
   ensure_release_digest PLATFORM_DIGEST_REDIS redis
@@ -131,8 +129,6 @@ images:
     digest: ${PLATFORM_DIGEST_RELAY}
   - name: ${PROJ}/web
     digest: ${PLATFORM_DIGEST_WEB}
-  - name: ${PROJ}/web-admin
-    digest: ${PLATFORM_DIGEST_WEB_ADMIN}
   - name: ${PROJ}/mobile
     digest: ${PLATFORM_DIGEST_MOBILE}
   - name: ${PROJ}/pgvector

@@ -94,7 +94,7 @@ openssl ecparam -name prime256v1 -genkey -noout -out ssl/server.key
 
 # 3. Pull and start services
 docker compose pull
-docker compose up -d
+docker compose up -d --remove-orphans
 
 # 4. Run migrations
 docker compose exec -T backend migrate -path /app/migrations \
@@ -130,7 +130,7 @@ docker compose logs -f backend      # Backend only
 docker compose restart backend
 
 # Stop all services
-docker compose down
+docker compose down --remove-orphans
 
 # Stop and remove all data
 ./selfhost.sh --clean
@@ -143,7 +143,7 @@ docker compose down
 docker compose pull
 
 # Recreate containers
-docker compose up -d
+docker compose up -d --remove-orphans
 
 # Run new migrations (if any)
 docker compose exec -T backend migrate -path /app/migrations \
@@ -165,7 +165,7 @@ docker compose exec -T postgres psql -U agentcloud -d agentcloud < backup.sql
 ### All Data (PostgreSQL + MinIO)
 
 ```bash
-docker compose down
+docker compose down --remove-orphans
 
 docker run --rm -v agentcloud_postgres_data:/data -v $(pwd):/backup alpine \
   tar czf /backup/postgres_backup.tar.gz -C /data .
@@ -173,7 +173,7 @@ docker run --rm -v agentcloud_postgres_data:/data -v $(pwd):/backup alpine \
 docker run --rm -v agentcloud_minio_data:/data -v $(pwd):/backup alpine \
   tar czf /backup/minio_backup.tar.gz -C /data .
 
-docker compose up -d
+docker compose up -d --remove-orphans
 ```
 
 ## Firewall

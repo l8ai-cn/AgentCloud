@@ -3,7 +3,7 @@ import { KeyRound } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { SSOConfig } from "@/lib/api/admin/sso";
 import { SsoConfigRow } from "./SsoConfigRow";
-import type { SSOAction } from "./useSSOConfigs";
+import type { SSOAction, SSOTestState } from "./useSSOConfigs";
 
 export function SsoConfigList({
   configs,
@@ -11,6 +11,7 @@ export function SsoConfigList({
   loading,
   searchActive,
   mutationKey,
+  testResults,
   onEdit,
   onAction,
 }: {
@@ -19,6 +20,7 @@ export function SsoConfigList({
   loading: boolean;
   searchActive: boolean;
   mutationKey: string | null;
+  testResults: Record<number, SSOTestState>;
   onEdit: (config: SSOConfig) => void;
   onAction: (config: SSOConfig, action: SSOAction) => void;
 }) {
@@ -40,6 +42,7 @@ export function SsoConfigList({
             key={config.id}
             config={config}
             mutationKey={mutationKey}
+            testResult={testResults[config.id]}
             onEdit={onEdit}
             onAction={onAction}
           />

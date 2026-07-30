@@ -152,27 +152,41 @@ describe("admin SSO API", () => {
     callAdminConnect
       .mockResolvedValueOnce(protoConfig({ isEnabled: true }))
       .mockResolvedValueOnce(protoConfig({ isEnabled: false }))
-      .mockResolvedValueOnce({ success: false, error: "TLS handshake failed" })
       .mockResolvedValueOnce({});
 
     await enableSSOConfig(7);
     await disableSSOConfig(7);
-    await expect(testSSOConnection(7)).resolves.toEqual({
-      success: false,
-      message: undefined,
-      error: "TLS handshake failed",
-    });
     await deleteSSOConfig(7);
 
     expect(callAdminConnect.mock.calls.map((call) => call[1])).toEqual([
       "EnableSSOConfig",
       "DisableSSOConfig",
-      "TestSSOConnection",
       "DeleteSSOConfig",
     ]);
     for (const call of callAdminConnect.mock.calls) {
       expect(call[4]).toEqual({ id: 7n });
     }
+  });
+
+  it("maps the TestSSOConnection result without treating success=false as an RPC error", async () => {
+    callAdminConnect.mockResolvedValue({
+      success: false,
+      message: "Identity provider reached",
+      error: "TLS handshake failed",
+    });
+
+    await expect(testSSOConnection(7)).resolves.toEqual({
+      success: false,
+      message: "Identity provider reached",
+      error: "TLS handshake failed",
+    });
+    expect(callAdminConnect).toHaveBeenCalledWith(
+      "proto.sso.v1.SSOAdminService",
+      "TestSSOConnection",
+      expect.anything(),
+      expect.anything(),
+      { id: 7n },
+    );
   });
 
   it("rejects unknown protocol values instead of casting them", async () => {

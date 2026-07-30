@@ -25,6 +25,8 @@ export interface AdminRelay {
   last_heartbeat: string;
   healthy: boolean;
   avg_latency_ms: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface AdminRelayStats {
@@ -45,6 +47,8 @@ function fromProto(relay: ProtoRelay): AdminRelay {
     last_heartbeat: relay.lastHeartbeat,
     healthy: relay.healthy,
     avg_latency_ms: relay.avgLatencyMs,
+    latitude: relay.latitude,
+    longitude: relay.longitude,
   };
 }
 

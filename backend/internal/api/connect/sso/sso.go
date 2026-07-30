@@ -8,10 +8,9 @@
 //
 // The OIDC/SAML browser-redirect endpoints (auth_sso_oidc.go,
 // auth_sso_saml.go) stay on REST permanently — Connect's unary contract
-// cannot return `Location:` redirects. The admin SSO config CRUD
-// endpoints (admin/sso.go) are out of scope here; web-admin owns them
-// and they are not consumed by the user-facing `getSSOService()` wasm
-// bridge.
+// cannot return `Location:` redirects. Platform-admin SSO config CRUD
+// belongs to the separate SSOAdminService consumed by clients/web/admin,
+// not the user-facing `getSSOService()` wasm bridge.
 //
 // SENSITIVE: SSOService is user-scoped + PUBLIC per conventions §3.5
 // exception #1 — the auth interceptor must NOT be applied. Users who

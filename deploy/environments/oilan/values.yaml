@@ -6,8 +6,8 @@ image:
   repository: docker.cnb.cool/l8ai/doworker/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260730-amp-bearer-v2
-  web: oilan-20260730-amp-bearer-v2
+  backend: oilan-20260730-admin-consolidation
+  web: oilan-20260730-admin-consolidation
   relay: oilan-20260730-amp-bearer-v2
 rolloutTokenDomain: agentcloud.l8ai.cn
 
