@@ -13,8 +13,11 @@ test.describe("System administration UI", () => {
 
     await page.goto("/admin/organizations");
     await page.getByRole("link", { name: "Open Dev Organization" }).click();
-    await expect(page.getByRole("heading", { name: /^Runners \(/ })).toBeVisible();
-    await expect(page.getByText("dev-runner", { exact: true }).first()).toBeVisible();
+    const runnerSection = page
+      .getByRole("heading", { name: /^Runners \([1-9]\d*\)$/ })
+      .locator("xpath=ancestor::section");
+    await expect(runnerSection).toBeVisible();
+    await expect(runnerSection.locator("details").first()).toBeVisible();
 
     await page.goto("/admin/relays");
     await page.getByRole("link", { name: /^View .+ details$/ }).first().click();
