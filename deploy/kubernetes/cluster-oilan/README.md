@@ -96,12 +96,10 @@ Commit it with the generated digest locks and runtime evidence.
 
 `deploy.sh` defaults to `gw-oilan-node`. `push-images.sh` subsets: `platform` |
 `marketplace-core` | `video-expert` | `video-runtime` | `web` | `infra` | `runners`.
-`video-expert` rebuilds Backend, Marketplace API, Marketplace Web, Core Web,
-and Web Admin while retaining the current Relay digest. `video-runtime` builds
-and pushes only the Video Studio runner image. `marketplace-core` rebuilds
-Backend, Marketplace API, Marketplace Web, and Core Web while pinning the current
-Relay/Web-Admin registry digests. `web` rebuilds only Core Web and retains all
-other digests.
+`video-expert` rebuilds Backend and Web while retaining the current Relay
+digest. `video-runtime` builds and pushes only the Video Studio runner image.
+`marketplace-core` rebuilds Backend and Web while pinning the current Relay
+digest. `web` rebuilds only Web and retains all other digests.
 
 For the mobile Worker access path, do not run the full reconcile when unrelated
 workloads are newer in the cluster. Build the three affected images, pin their
