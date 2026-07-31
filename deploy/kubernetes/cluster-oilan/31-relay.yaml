@@ -17,7 +17,7 @@ spec:
         - name: agentcloud-regcred
       containers:
         - name: relay
-          image: repo.aiedulab.cn:8443/agentcloud/relay@sha256:c9ba960b7fd6f9d6456dc52c549cbbaf7f939b9d599c8d6e71600995db177d93
+          image: repo.aiedulab.cn:8443/agentcloud/relay@sha256:c96b9d8a52dd20c379416f457c15e68e852af5dba399184b855bf94a43874139
           imagePullPolicy: Always
           ports:
             - containerPort: 8090
