@@ -68,6 +68,35 @@ func TestCompilerOmitsEmptyOptionalDeclarations(t *testing.T) {
 	assert.Equal(t, "MODE acp\nPROMPT \"Run checks.\"\n", layer)
 }
 
+func TestCompilerKeepsLaunchEnvOutOfAgentfileLayer(t *testing.T) {
+	fixture := newWorkspaceFixture()
+	compiler := newCompiler(newWorkspaceResolver(fixture.deps()))
+	spec := validCompiledWorkerSpec()
+	spec.TypeConfig.Values = map[string]any{}
+	spec.TypeConfig.SecretRefs = map[string]specdomain.SecretReference{}
+	spec.TypeConfig.LaunchEnv = []specdomain.LaunchEnvField{
+		{Name: "ZHIYONG_PLATFORM_API_KEY", Secret: true},
+		{Name: "ZHIYONG_COURSE_API_BASE_URL"},
+	}
+	spec.Workspace = specdomain.Workspace{
+		SkillIDs:        []int64{},
+		KnowledgeMounts: []specdomain.KnowledgeMount{},
+		EnvBundleIDs:    []specdomain.RuntimeEnvBundleID{},
+		InitialTask:     "Publish course.",
+	}
+
+	layer, err := compiler.Compile(
+		context.Background(),
+		specservice.Scope{OrgID: 77, UserID: 7},
+		spec,
+	)
+
+	require.NoError(t, err)
+	assert.Equal(t, "MODE acp\nPROMPT \"Publish course.\"\n", layer)
+	assert.NotContains(t, layer, "ENV ")
+	assert.Len(t, spec.TypeConfig.LaunchEnv, 2)
+}
+
 func validCompiledWorkerSpec() specdomain.Spec {
 	return specdomain.NewV1(
 		specdomain.Runtime{
