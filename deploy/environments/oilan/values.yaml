@@ -1,14 +1,15 @@
 # Oilan runtime overlay for the shared AgentCloud base chart.
-# Namespace/secrets use agentcloud; Harbor image project stays agentsmesh for now.
+# Cluster pull secret only covers Harbor, so oilan pulls synced CNB builds
+# from repo.aiedulab.cn:8443/agentcloud after crane/CNB→Harbor sync.
 namespace: agentcloud
 imageTag: &releaseTag release-20260730
 image:
-  repository: docker.cnb.cool/l8ai/doworker/backend
+  repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260730-admin-consolidation
-  web: oilan-20260730-admin-consolidation
-  relay: oilan-20260730-amp-bearer-v2
+  backend: oilan-20260801-cnb-launchenv
+  web: oilan-20260801-cnb-launchenv
+  relay: oilan-20260801-cnb-launchenv
 rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
@@ -18,7 +19,7 @@ backend:
   replicas: 1
   image:
     name: backend
-    repository: docker.cnb.cool/l8ai/doworker/backend
+    repository: repo.aiedulab.cn:8443/agentcloud/backend
   serviceAccountName: agentcloud-backend
   configMapName: agentcloud-config
   secrets:
@@ -36,7 +37,7 @@ web:
   replicas: 1
   image:
     name: web
-    repository: docker.cnb.cool/l8ai/doworker/web
+    repository: repo.aiedulab.cn:8443/agentcloud/web
   primaryDomain: agents.l8ai.cn
   useHttps: "true"
   strategy:
@@ -49,7 +50,7 @@ relay:
   replicas: 1
   image:
     name: relay
-    repository: docker.cnb.cool/l8ai/doworker/relay
+    repository: repo.aiedulab.cn:8443/agentcloud/relay
   configMapName: agentcloud-config
   secretsName: agentcloud-secrets
   strategy:
@@ -57,10 +58,3 @@ relay:
     rollingUpdate:
       maxSurge: 0
       maxUnavailable: 1
-
-ingress:
-  enabled: true
-  agents:
-    enabled: true
-    host: agents.l8ai.cn
-    loginAmp: true

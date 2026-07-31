@@ -1,10 +1,10 @@
 {
   "branch": "main",
-  "commit": "98ded38baf20b1cc72a8c3066b12400d26470b02",
+  "commit": "94a647b234e93cc63647d91c64c9c6a3b70a15e1",
   "images": {
-    "backend": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
-    "relay": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
-    "web": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
+    "backend": "94a647b234e93cc63647d91c64c9c6a3b70a15e1",
+    "relay": "94a647b234e93cc63647d91c64c9c6a3b70a15e1",
+    "web": "94a647b234e93cc63647d91c64c9c6a3b70a15e1",
     "mobile": "a2af43d1691f9b6830ab29f375fe4b9b98a2e902",
     "runner-do-agent": "61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d",
     "runner-video-studio": "61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d"
