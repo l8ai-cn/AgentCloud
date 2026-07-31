@@ -58,3 +58,10 @@ relay:
     rollingUpdate:
       maxSurge: 0
       maxUnavailable: 1
+
+ingress:
+  enabled: true
+  agents:
+    enabled: true
+    host: agents.l8ai.cn
+    loginAmp: true
