@@ -1,11 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Eye } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { ExpertRelease } from "@/lib/api/admin/expertMarket";
+import { expertReleaseStatusLabelKeys } from "./expertReleaseStatusLabels";
 
 export function ExpertReleaseList({
   releases,
@@ -16,6 +18,7 @@ export function ExpertReleaseList({
   loading: boolean;
   onSelect: (id: number) => void;
 }) {
+  const t = useTranslations("admin");
   if (loading) {
     return (
       <div className="space-y-1 rounded-md border border-border p-4">
@@ -26,7 +29,7 @@ export function ExpertReleaseList({
     );
   }
   if (!releases.length) {
-    return <EmptyState size="compact" title="No releases in this state" />;
+    return <EmptyState size="compact" title={t("expertMarket.emptyTitle")} />;
   }
   return (
     <section className="overflow-hidden rounded-md border border-border bg-surface-raised">
@@ -38,20 +41,22 @@ export function ExpertReleaseList({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <p className="truncate text-sm font-medium">{release.name}</p>
-              <Badge variant="outline">v{release.version}</Badge>
+              <Badge variant="outline">
+                {t("expertMarket.versionLabel", { version: String(release.version) })}
+              </Badge>
               <Badge variant={release.status === "pending" ? "warning" : "secondary"}>
-                {release.status}
+                {t(expertReleaseStatusLabelKeys[release.status])}
               </Badge>
             </div>
             <p className="truncate text-xs text-muted-foreground">{release.summary}</p>
           </div>
           <div className="text-xs text-muted-foreground">
             <p>{release.application_slug}</p>
-            <p>{release.category || "Uncategorized"}</p>
+            <p>{release.category || t("expertMarket.uncategorized")}</p>
           </div>
           <Button variant="ghost" size="sm" onClick={() => onSelect(release.id)}>
             <Eye className="mr-2 h-4 w-4" />
-            Review
+            {t("expertMarket.review")}
           </Button>
         </div>
       ))}

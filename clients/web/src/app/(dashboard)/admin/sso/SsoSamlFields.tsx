@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,11 +16,12 @@ export function SsoSamlFields({
   isEdit: boolean;
   disabled: boolean;
 }) {
-  const secretHint = isEdit ? "Leave blank to keep the current value." : undefined;
+  const t = useTranslations("admin");
+  const secretHint = isEdit ? t("sso.saml.secretHint") : undefined;
   return (
     <fieldset className="space-y-4 rounded-md border border-border p-4">
-      <legend className="px-2 text-sm font-semibold">SAML settings</legend>
-      <FormField label="IdP metadata URL" htmlFor="saml-metadata-url">
+      <legend className="px-2 text-sm font-semibold">{t("sso.saml.legend")}</legend>
+      <FormField label={t("sso.saml.metadataUrl")} htmlFor="saml-metadata-url">
         <Input
           id="saml-metadata-url"
           type="url"
@@ -29,7 +32,7 @@ export function SsoSamlFields({
         />
       </FormField>
       <FormField
-        label="IdP metadata XML"
+        label={t("sso.saml.metadataXml")}
         htmlFor="saml-metadata-xml"
         hint={secretHint}
       >
@@ -42,7 +45,7 @@ export function SsoSamlFields({
           disabled={disabled}
         />
       </FormField>
-      <FormField label="IdP SSO URL" htmlFor="saml-sso-url">
+      <FormField label={t("sso.saml.ssoUrl")} htmlFor="saml-sso-url">
         <Input
           id="saml-sso-url"
           type="url"
@@ -52,7 +55,7 @@ export function SsoSamlFields({
           disabled={disabled}
         />
       </FormField>
-      <FormField label="IdP certificate" htmlFor="saml-certificate" hint={secretHint}>
+      <FormField label={t("sso.saml.certificate")} htmlFor="saml-certificate" hint={secretHint}>
         <Textarea
           id="saml-certificate"
           value={form.saml_idp_cert}
@@ -63,7 +66,7 @@ export function SsoSamlFields({
         />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="SP entity ID" htmlFor="saml-entity-id">
+        <FormField label={t("sso.saml.spEntityId")} htmlFor="saml-entity-id">
           <Input
             id="saml-entity-id"
             value={form.saml_sp_entity_id}
@@ -71,7 +74,7 @@ export function SsoSamlFields({
             disabled={disabled}
           />
         </FormField>
-        <FormField label="NameID format" htmlFor="saml-name-id-format">
+        <FormField label={t("sso.saml.nameIdFormat")} htmlFor="saml-name-id-format">
           <Input
             id="saml-name-id-format"
             value={form.saml_name_id_format}

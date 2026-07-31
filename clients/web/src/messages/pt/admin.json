@@ -1,0 +1,748 @@
+{
+  "admin": {
+    "auditLogs": {
+      "byActor": "por {actor}",
+      "cardTitle": "Logs de auditoria ({count})",
+      "empty": "Nenhum log de auditoria",
+      "filters": {
+        "all": "Todos"
+      },
+      "fromIp": "de {ip}",
+      "loadError": "Falha ao carregar os logs de auditoria.",
+      "subtitle": "Revise as ações dos administradores do sistema sobre os recursos protegidos."
+    },
+    "common": {
+      "cancel": "Cancelar",
+      "close": "Fechar",
+      "confirm": "Confirmar",
+      "delete": "Excluir",
+      "disable": "Desativar",
+      "disabled": "Desativado",
+      "edit": "Editar",
+      "enable": "Ativar",
+      "enabled": "Ativado",
+      "loading": "Carregando...",
+      "never": "Nunca",
+      "next": "Próxima",
+      "no": "Não",
+      "pageOf": "Página {page} de {total}",
+      "previous": "Anterior",
+      "refresh": "Atualizar",
+      "save": "Salvar",
+      "tryDifferentSearch": "Tente outra pesquisa.",
+      "unknownError": "Algo deu errado.",
+      "yes": "Sim"
+    },
+    "expertMarket": {
+      "actionFailed": "A ação de revisão falhou.",
+      "approve": "Aprovar",
+      "approveConfirmDescription": "A versão ficará disponível no mercado de especialistas.",
+      "approveConfirmTitle": "Aprovar esta versão?",
+      "approveRelease": "Aprovar versão",
+      "approved": "Versão aprovada.",
+      "emptyTitle": "Nenhuma versão neste estado",
+      "expertSnapshot": "Snapshot do especialista",
+      "loadDetailFailed": "Falha ao carregar a versão.",
+      "loadFailed": "Falha ao carregar as versões de especialistas.",
+      "nextPage": "Próxima página",
+      "previousPage": "Página anterior",
+      "reject": "Rejeitar",
+      "rejectConfirmTitle": "Rejeitar esta versão?",
+      "rejectRelease": "Rejeitar versão",
+      "rejected": "Versão rejeitada.",
+      "rejectionAriaLabel": "Motivo da rejeição",
+      "rejectionPlaceholder": "Motivo da rejeição",
+      "rejectionReason": "Rejeição: {reason}",
+      "releaseCount": "{count} versões",
+      "review": "Revisar",
+      "showingRange": "Exibindo {first}-{last} de {total}",
+      "skillDependencies": "Dependências de skills",
+      "status": {
+        "pending": "pendente",
+        "published": "publicada",
+        "rejected": "rejeitada",
+        "withdrawn": "retirada"
+      },
+      "subtitle": "Revise os snapshots de especialistas publicáveis e suas dependências de execução.",
+      "title": "Mercado de especialistas",
+      "uncategorized": "Sem categoria",
+      "versionLabel": "v{version}",
+      "workerSpec": "Especificação do worker"
+    },
+    "nav": {
+      "auditLogs": "Logs de auditoria",
+      "expertReview": "Revisão de especialistas",
+      "label": "Administração do sistema",
+      "organizations": "Organizações",
+      "overview": "Visão geral",
+      "promoCodes": "Códigos promocionais",
+      "relays": "Relays",
+      "runners": "Runners",
+      "sso": "SSO",
+      "support": "Suporte",
+      "users": "Usuários"
+    },
+    "organizations": {
+      "backToList": "Voltar para organizações",
+      "count": "{count, number} organizações",
+      "createdOn": "Criada em {date}",
+      "deleteAria": "Excluir {name}",
+      "deleteConfirm": "Excluir organização",
+      "deleteDescription": "{name} e os recursos pertencentes ao seu tenant serão excluídos permanentemente.",
+      "deleteError": "Falha ao excluir a organização.",
+      "deleteSuccess": "Organização excluída.",
+      "deleteTitle": "Excluir esta organização?",
+      "detailLoadError": "Falha ao carregar a organização.",
+      "emptyDescription": "Ainda não existe nenhuma organização de tenant.",
+      "emptyTitle": "Nenhuma organização encontrada",
+      "invalidId": "Identificador de organização inválido.",
+      "loadError": "Falha ao carregar as organizações.",
+      "memberFallbackName": "Usuário #{id}",
+      "memberJoined": "Entrou em {date}",
+      "membersEmptyDescription": "Esta organização não possui registros de associação ativos.",
+      "membersEmptyTitle": "Nenhum membro",
+      "membersHeading": "Membros ({count})",
+      "noSubscription": "sem assinatura",
+      "notFound": "Organização não encontrada.",
+      "openAria": "Abrir {name}",
+      "runnerAgents": "Agentes disponíveis",
+      "runnerDescription": "Descrição",
+      "runnerLastHeartbeat": "Último heartbeat {time}",
+      "runnerManagement": "Gerenciamento de Runners",
+      "runnerNoAgents": "Nenhum reportado",
+      "runnerNoDescription": "Sem descrição",
+      "runnerNoHeartbeat": "Nenhum heartbeat registrado",
+      "runnerPods": "{current}/{max} pods",
+      "runnerRegistered": "Registrado",
+      "runnerVersionAndPods": "v{version} · {current}/{max} pods",
+      "runnersEmptyDescription": "Esta organização não possui runners registrados.",
+      "runnersEmptyTitle": "Nenhum runner",
+      "runnersHeading": "Runners ({count})",
+      "runnersLoadError": "Falha ao carregar os runners da organização.",
+      "runnersLoadingAria": "Carregando runners",
+      "runnersRetry": "Tentar novamente",
+      "searchPlaceholder": "Pesquisar organizações",
+      "stats": {
+        "created": "Criada",
+        "members": "Membros",
+        "subscription": "Assinatura"
+      },
+      "subscriptionNone": "nenhuma",
+      "subtitle": "Inspecione a associação do tenant, as assinaturas, as cotas e a capacidade de execução."
+    },
+    "overview": {
+      "loadError": "Falha ao carregar as estatísticas do sistema.",
+      "stats": {
+        "activePods": "Pods ativos",
+        "activePodsDetail": "{count, number} no total",
+        "organizationsDetail": "{count, number} assinaturas ativas",
+        "runnersDetail": "{count, number} online",
+        "usersDetail": "{count, number} ativos"
+      },
+      "subtitle": "Status operacional de contas, organizações e capacidade de execução.",
+      "userGrowth": {
+        "last7Days": "Últimos 7 dias",
+        "lastMonth": "Último mês",
+        "title": "Crescimento de usuários",
+        "today": "Hoje"
+      }
+    },
+    "promoCodes": {
+      "action": {
+        "activate": "Ativar",
+        "deactivate": "Desativar"
+      },
+      "confirm": {
+        "activate": {
+          "description": "As organizações elegíveis poderão resgatá-lo imediatamente. Alvo: {code}",
+          "title": "Ativar este código promocional?"
+        },
+        "deactivate": {
+          "description": "Novos resgates serão interrompidos até que o código seja ativado novamente. Alvo: {code}",
+          "title": "Desativar este código promocional?"
+        },
+        "delete": {
+          "description": "A exclusão é permanente e o backend rejeita códigos com resgates. Alvo: {code}",
+          "title": "Excluir este código promocional?"
+        },
+        "deleteConfirmText": "Excluir código"
+      },
+      "count": "{count} códigos promocionais",
+      "create": {
+        "submit": "Criar código promocional",
+        "subtitle": "Emita uma extensão de plano de assinatura com limites de uso e de tempo explícitos.",
+        "title": "Criar código promocional"
+      },
+      "createCode": "Criar código",
+      "createdAt": "Criado em {date}",
+      "detail": {
+        "backToList": "Voltar para códigos promocionais",
+        "confirm": {
+          "activate": "{code} aceitará novos resgates.",
+          "deactivate": "{code} deixará de aceitar novos resgates.",
+          "delete": "{code} será excluído permanentemente. O backend rejeita a exclusão se houver resgates."
+        },
+        "deleteBlocked": "Códigos com resgates não podem ser excluídos",
+        "deleteTitle": "Excluir código promocional"
+      },
+      "durationMonths": "{count, plural, one {# mês} other {# meses}}",
+      "edit": {
+        "description": "Código, tipo, plano, duração e horário de início são imutáveis no backend.",
+        "expiresAtHint": "Limpe o valor para remover a expiração.",
+        "heading": "Configurações editáveis",
+        "maxUsesHint": "Em branco, o limite atual permanece inalterado; a API não pode redefinir um limite finito para ilimitado.",
+        "submit": "Salvar alterações"
+      },
+      "empty": {
+        "description": "Crie o primeiro código promocional para uma campanha de assinatura.",
+        "searching": "Tente alterar a pesquisa ou os filtros.",
+        "title": "Nenhum código promocional encontrado"
+      },
+      "endsAt": "Termina em {date}",
+      "error": {
+        "actionFailed": "A atualização do código promocional falhou.",
+        "create": "Falha ao criar o código promocional.",
+        "invalidId": "Identificador de código promocional inválido.",
+        "load": "Falha ao carregar os códigos promocionais.",
+        "loadDetail": "Falha ao carregar o código promocional.",
+        "loadRedemptions": "Falha ao carregar os resgates.",
+        "notFound": "Código promocional não encontrado.",
+        "unableToCreate": "Não foi possível criar o código promocional.",
+        "unableToUpdate": "Não foi possível atualizar o código promocional.",
+        "update": "Falha ao atualizar o código promocional."
+      },
+      "expiresAt": "Expira em {date}",
+      "filters": {
+        "allPlans": "Todos os planos",
+        "allStatuses": "Todos os status",
+        "allTypes": "Todos os tipos",
+        "planLabel": "Filtrar por plano",
+        "searchLabel": "Pesquisar códigos promocionais",
+        "searchPlaceholder": "Pesquisar código ou nome",
+        "selectedPlanEnterprise": "enterprise",
+        "selectedPlanPro": "pro",
+        "statusLabel": "Filtrar por status",
+        "typeLabel": "Filtrar por tipo"
+      },
+      "form": {
+        "code": "Código",
+        "codeHint": "Armazenado em maiúsculas; máximo de 50 caracteres.",
+        "description": "Descrição",
+        "duration": "Duração (meses)",
+        "expiresAt": "Expira em",
+        "expiresAtCreateHint": "Deixe em branco para não expirar.",
+        "maxUses": "Limite total de usos",
+        "maxUsesCreateHint": "Deixe em branco para ilimitado.",
+        "name": "Nome",
+        "plan": "Plano",
+        "planAriaLabel": "Plano de assinatura",
+        "startsAt": "Começa em",
+        "startsAtHint": "Deixe em branco para começar imediatamente.",
+        "type": "Tipo",
+        "typeAriaLabel": "Tipo de código promocional",
+        "usesPerOrg": "Usos por organização"
+      },
+      "plan": {
+        "enterprise": "Enterprise",
+        "pro": "Pro"
+      },
+      "redemptions": {
+        "count": "{count} usos registrados",
+        "durationMonths": "{count} meses",
+        "empty": {
+          "description": "Este código promocional não foi resgatado.",
+          "title": "Nenhum resgate"
+        },
+        "organizationFallback": "Organização #{id}",
+        "title": "Resgates",
+        "userFallback": "Usuário #{id}",
+        "usernameUnavailable": "Nome de usuário indisponível"
+      },
+      "row": {
+        "actionsFor": "Ações para {code}",
+        "viewAndEdit": "Ver e editar"
+      },
+      "status": {
+        "active": "Ativo",
+        "exhausted": "Esgotado",
+        "expired": "Expirado",
+        "inactive": "Inativo"
+      },
+      "subtitle": "Crie e controle os códigos de acesso a assinaturas em toda a plataforma.",
+      "summary": {
+        "expires": "Expira",
+        "offer": "Oferta",
+        "offerValue": "{count, plural, one {# mês} other {# meses}} de {plan}",
+        "starts": "Começa",
+        "usage": "Uso",
+        "usagePerOrg": "{count} por organização"
+      },
+      "toast": {
+        "activated": "Código promocional ativado.",
+        "created": "Código promocional criado.",
+        "deactivated": "Código promocional desativado.",
+        "deleted": "Código promocional excluído.",
+        "updated": "Código promocional atualizado."
+      },
+      "type": {
+        "campaign": "Campanha",
+        "internal": "Interno",
+        "media": "Mídia",
+        "partner": "Parceiro",
+        "referral": "Indicação"
+      },
+      "updatedAt": "Atualizado em {date}",
+      "usage": {
+        "limited": "{used} / {limit}",
+        "unlimited": "{used} / ilimitado"
+      },
+      "validation": {
+        "durationPositive": "A duração deve ser um número inteiro positivo.",
+        "expirationAfterStart": "A expiração deve ser posterior ao horário de início.",
+        "maxUsesPositive": "O número máximo de usos deve ser um número inteiro positivo.",
+        "usesPerOrgPositive": "Os usos por organização devem ser um número inteiro positivo."
+      }
+    },
+    "relays": {
+      "detail": {
+        "averageLatency": "Latência média",
+        "backToRelays": "Voltar para Relays",
+        "capacityAndHealth": "Capacidade e saúde",
+        "connection": "Conexão",
+        "connections": "Conexões",
+        "connectionsUsage": "{connections} / {capacity} ({load}%)",
+        "cpuUsage": "Uso de CPU",
+        "forceUnregister": "Forçar cancelamento do registro",
+        "lastHeartbeat": "Último heartbeat",
+        "latitude": "Latitude",
+        "loadFailed": "Falha ao carregar o Relay.",
+        "location": "Localização",
+        "longitude": "Longitude",
+        "memoryUsage": "Uso de memória",
+        "milliseconds": "{value} ms",
+        "notReported": "Não reportado",
+        "percent": "{value}%",
+        "region": "Região",
+        "relayId": "ID do Relay",
+        "retry": "Tentar novamente",
+        "status": "Status",
+        "subtitle": "Dados de registro e saúde em tempo real reportados pelo backend.",
+        "title": "Detalhes do Relay",
+        "unavailable": "Este Relay está indisponível ou já teve o registro cancelado.",
+        "url": "URL"
+      },
+      "empty": {
+        "description": "Os serviços de Relay conectados aparecerão aqui.",
+        "title": "Nenhum Relay registrado"
+      },
+      "healthy": "Saudável",
+      "loadFailed": "Falha ao carregar os Relays.",
+      "row": {
+        "load": "{connections}/{capacity} conexões · {latency} ms",
+        "resources": "CPU {cpu}% · Memória {memory}%"
+      },
+      "stats": {
+        "connections": "Conexões",
+        "healthy": "Saudáveis",
+        "registered": "Registrados"
+      },
+      "subtitle": "Monitore a capacidade do plano de dados e remova registros de Relay obsoletos.",
+      "unhealthy": "Não saudável",
+      "unregister": {
+        "confirm": "Cancelar registro do Relay",
+        "detailDescription": "{id} será removido da lista de Relays do backend. As conexões existentes podem ser interrompidas.",
+        "failed": "Falha ao cancelar o registro do Relay.",
+        "listDescription": "{id} possui {connections} conexões ativas. O backend não oferece migração de sessões.",
+        "success": "Registro do Relay cancelado.",
+        "title": "Forçar o cancelamento do registro deste Relay?"
+      },
+      "unregisterRelay": "Cancelar registro de {name}",
+      "unregisterRelayTitle": "Forçar cancelamento do registro do Relay",
+      "viewDetails": "Ver detalhes de {name}",
+      "viewDetailsTitle": "Ver detalhes do Relay"
+    },
+    "runners": {
+      "actions": {
+        "delete": "Excluir {nodeId}",
+        "deleteTitle": "Excluir Runner",
+        "disable": "Desativar {nodeId}",
+        "disableTitle": "Desativar Runner",
+        "enable": "Ativar {nodeId}",
+        "enableTitle": "Ativar Runner"
+      },
+      "agentCount": "{count} agentes",
+      "confirm": {
+        "delete": {
+          "description": "Isso remove permanentemente o registro do runner e não pode ser desfeito. Alvo: {nodeId}",
+          "title": "Excluir este runner?"
+        },
+        "disable": {
+          "description": "O runner permanece conectado, mas não receberá mais novos pods. Alvo: {nodeId}",
+          "title": "Desativar este runner?"
+        },
+        "enable": {
+          "description": "O runner volta a estar apto a receber novos pods. Alvo: {nodeId}",
+          "title": "Ativar este runner?"
+        }
+      },
+      "count": "{count} runners",
+      "empty": {
+        "description": "Ainda não há runners registrados.",
+        "title": "Nenhum runner encontrado"
+      },
+      "lastHeartbeat": "Último heartbeat {time}",
+      "loadFailed": "Falha ao carregar os runners.",
+      "noHeartbeat": "Nenhum heartbeat registrado",
+      "orgFallback": "Org #{id}",
+      "podsUsage": "{current}/{max} pods",
+      "registeredOn": "Registrado em {date}",
+      "searchLabel": "Pesquisar runners",
+      "searchPlaceholder": "Pesquisar por ID do nó, descrição ou organização",
+      "subtitle": "Inspecione os runners auto-hospedados de todas as organizações e controle sua disponibilidade.",
+      "toast": {
+        "deleted": "Runner excluído.",
+        "disabled": "Runner desativado.",
+        "enabled": "Runner ativado."
+      },
+      "updateFailed": "A atualização do runner falhou.",
+      "version": "v{version}"
+    },
+    "sso": {
+      "allProtocols": "Todos os protocolos",
+      "configurationCount": "{count} configurações",
+      "confirm": {
+        "deleteDescription": "Isso remove permanentemente a configuração do provedor e não pode ser desfeito. Alvo: {domain}",
+        "deleteTitle": "Excluir esta configuração de SSO?",
+        "disableDescription": "Novos logins por meio deste provedor de identidade serão interrompidos. Alvo: {domain}",
+        "disableTitle": "Desativar esta configuração de SSO?",
+        "enableDescription": "Usuários com o domínio correspondente poderão usar este provedor de identidade. Alvo: {domain}",
+        "enableTitle": "Ativar esta configuração de SSO?"
+      },
+      "create": "Criar",
+      "defaultOrganization": "Org padrão #{id}",
+      "emptyDescription": "Crie uma configuração para habilitar o login por domínio.",
+      "emptyFiltered": "Tente outra pesquisa ou filtro de protocolo.",
+      "emptyTitle": "Nenhuma configuração de SSO encontrada",
+      "enforced": "Obrigatório",
+      "filterProtocolAria": "Filtrar por protocolo",
+      "form": {
+        "createDescription": "Configure um provedor de identidade por domínio para o login na plataforma.",
+        "createTitle": "Criar configuração de SSO",
+        "defaultOrganizationHint": "Os usuários federados entram nesta organização ao fazer login.",
+        "defaultOrganizationId": "ID da organização padrão",
+        "displayName": "Nome de exibição",
+        "displayNamePlaceholder": "SSO da empresa",
+        "domain": "Domínio",
+        "domainPlaceholder": "example.com",
+        "editDescription": "Domínio e protocolo são imutáveis. Segredos em branco mantêm seus valores atuais.",
+        "editTitle": "Editar configuração de SSO",
+        "enabledHint": "Permite que esta configuração gerencie o login.",
+        "enforceSso": "Exigir SSO",
+        "enforceSsoHint": "Obriga os usuários correspondentes a fazer login por meio deste provedor.",
+        "protocol": "Protocolo",
+        "protocolAria": "Protocolo de SSO",
+        "saveFailed": "Falha ao salvar a configuração de SSO.",
+        "submitCreate": "Criar configuração",
+        "submitSave": "Salvar alterações"
+      },
+      "ldap": {
+        "baseDn": "DN base",
+        "bindDn": "DN de bind",
+        "bindPassword": "Senha de bind",
+        "bindPasswordHint": "Deixe em branco para manter a senha atual.",
+        "emailAttribute": "Atributo de e-mail",
+        "host": "Host",
+        "legend": "Configurações de LDAP",
+        "nameAttribute": "Atributo de nome",
+        "port": "Porta",
+        "useTls": "Usar TLS",
+        "useTlsHint": "Estabelece a conexão LDAP com STARTTLS.",
+        "userFilter": "Filtro de usuários",
+        "usernameAttribute": "Atributo de nome de usuário"
+      },
+      "listLoadingAria": "Carregando configurações de SSO",
+      "noDefaultOrganization": "Nenhuma organização padrão",
+      "oidc": {
+        "ampBearerCodes": "Códigos de aplicação bearer do AMP",
+        "ampBearerCodesHint": "Array JSON com os códigos de aplicação autorizados a delegar acesso bearer.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "clientSecretHint": "Deixe em branco para manter o secret atual.",
+        "extraParams": "Parâmetros extras de autorização",
+        "extraParamsHint": "Objeto JSON enviado ao endpoint de autorização.",
+        "issuerUrl": "URL do issuer",
+        "legend": "Configurações de OIDC",
+        "scopes": "Scopes"
+      },
+      "row": {
+        "deleteAria": "Excluir {name}",
+        "deleteTitle": "Excluir configuração",
+        "disableAria": "Desativar {name}",
+        "disableTitle": "Desativar configuração",
+        "editAria": "Editar {name}",
+        "editTitle": "Editar configuração",
+        "enableAria": "Ativar {name}",
+        "enableTitle": "Ativar configuração"
+      },
+      "saml": {
+        "certificate": "Certificado do IdP",
+        "legend": "Configurações de SAML",
+        "metadataUrl": "URL de metadados do IdP",
+        "metadataXml": "XML de metadados do IdP",
+        "nameIdFormat": "Formato do NameID",
+        "secretHint": "Deixe em branco para manter o valor atual.",
+        "spEntityId": "Entity ID do SP",
+        "ssoUrl": "URL de SSO do IdP"
+      },
+      "searchAria": "Pesquisar configurações de SSO",
+      "searchPlaceholder": "Pesquisar por domínio ou nome de exibição",
+      "subtitle": "Configure provedores de identidade OIDC, SAML e LDAP por domínio.",
+      "test": {
+        "buttonAria": "Testar {name}",
+        "buttonTitle": "Testar conexão",
+        "failed": "Falhou",
+        "idle": "Testar",
+        "passed": "Aprovada",
+        "testing": "Testando"
+      },
+      "title": "Login único",
+      "toast": {
+        "createFailed": "Falha ao criar a configuração de SSO.",
+        "created": "Configuração de SSO criada.",
+        "deleteFailed": "Falha ao excluir a configuração de SSO.",
+        "deleted": "Configuração de SSO excluída.",
+        "disableFailed": "Falha ao desativar a configuração de SSO.",
+        "disabled": "Configuração de SSO desativada.",
+        "enableFailed": "Falha ao ativar a configuração de SSO.",
+        "enabled": "Configuração de SSO ativada.",
+        "loadFailed": "Falha ao carregar as configurações de SSO.",
+        "testActionFailed": "Falha ao testar a configuração de SSO.",
+        "testFailed": "O teste de conexão falhou.",
+        "testPassed": "O teste de conexão foi aprovado.",
+        "updateFailed": "Falha ao atualizar a configuração de SSO.",
+        "updated": "Configuração de SSO atualizada."
+      },
+      "updatedAt": "Atualizado em {timestamp}",
+      "validation": {
+        "domainAndNameRequired": "Domínio e nome de exibição são obrigatórios.",
+        "invalidAmpBearerCodes": "Os códigos de aplicação bearer do AMP devem ser um array JSON.",
+        "invalidDomain": "Informe um domínio válido, como example.com.",
+        "invalidExtraParams": "Os parâmetros extras de autorização devem ser um objeto JSON.",
+        "invalidLdapPort": "A porta LDAP deve estar entre 1 e 65535.",
+        "invalidOrganizationId": "O ID da organização padrão deve ser um número inteiro positivo.",
+        "ldapRequired": "O host e o DN base do LDAP são obrigatórios.",
+        "oidcRequired": "A URL do issuer OIDC e o client ID são obrigatórios.",
+        "samlSourceRequired": "Informe a URL de metadados, o XML de metadados ou uma URL de SSO com certificado."
+      }
+    },
+    "subscription": {
+      "autoRenew": "Renovação automática",
+      "autoRenewDisabled": "Renovação automática desativada.",
+      "autoRenewEnabled": "Renovação automática ativada.",
+      "autoRenewHint": "Renovar ao final do período atual.",
+      "billing": "Faturamento",
+      "billingCycleAria": "Ciclo de faturamento",
+      "cancelDescription": "Cancelar esta assinatura e interromper as renovações futuras.",
+      "cancelSuccess": "Assinatura cancelada.",
+      "cancelTitle": "Cancelar a assinatura?",
+      "changeCycleDescription": "Alterar o faturamento para {cycle}.",
+      "changeCycleTitle": "Alterar o ciclo de faturamento?",
+      "changePlanDescription": "Alterar o plano para {plan}.",
+      "changePlanTitle": "Alterar o plano de assinatura?",
+      "changeSeatsDescription": "Definir esta assinatura com {seats} assentos.",
+      "changeSeatsTitle": "Alterar a quantidade de assentos?",
+      "createButton": "Criar assinatura",
+      "createDescription": "Criar uma assinatura {plan} ativa por {months} mês(es).",
+      "createSuccess": "Assinatura criada.",
+      "createTitle": "Criar a assinatura?",
+      "customQuotas": "Cotas personalizadas",
+      "cycleMonthly": "Mensal",
+      "cycleUpdated": "Ciclo de faturamento atualizado.",
+      "cycleYearly": "Anual",
+      "freeze": "Congelar",
+      "freezeDescription": "A execução e o acesso pago podem ficar restritos.",
+      "freezeSuccess": "Assinatura congelada.",
+      "freezeTitle": "Congelar a assinatura?",
+      "lifecycle": "Ciclo de vida",
+      "loadError": "Falha ao carregar a assinatura.",
+      "monthsAria": "Meses de assinatura",
+      "newPlanAria": "Novo plano de assinatura",
+      "noRecord": "Esta organização não possui registro de assinatura.",
+      "periodRange": "{start} a {end}",
+      "planAndSeats": "Plano e assentos",
+      "planAria": "Plano de assinatura",
+      "planUpdated": "Plano de assinatura atualizado.",
+      "quotaBadge": "{resource}: {value}",
+      "quotaDescription": "Substituir {resource} por {limit}.",
+      "quotaLimitAria": "Limite da cota",
+      "quotaLimitPlaceholder": "-1 = ilimitado",
+      "quotaResourceAria": "Recurso da cota",
+      "quotaTitle": "Definir uma cota personalizada?",
+      "quotaUpdated": "Cota personalizada atualizada.",
+      "renew": "Renovar",
+      "renewDescription": "Estender o período atual em {months} mês(es).",
+      "renewSuccess": "Assinatura renovada.",
+      "renewTitle": "Renovar a assinatura?",
+      "renewalMonthsAria": "Meses de renovação",
+      "seatCountAria": "Quantidade de assentos",
+      "seatUsage": "{used} em uso, {available} disponíveis",
+      "seatsUpdated": "Quantidade de assentos atualizada.",
+      "selectPlan": "Selecionar plano",
+      "setOverride": "Aplicar substituição",
+      "setSeats": "Definir assentos",
+      "title": "Assinatura",
+      "unfreeze": "Descongelar",
+      "unfreezeDescription": "Restaurar a assinatura para o serviço ativo.",
+      "unfreezeSuccess": "Assinatura descongelada.",
+      "unfreezeTitle": "Descongelar a assinatura?",
+      "unlimited": "ilimitado",
+      "updateError": "A atualização da assinatura falhou."
+    },
+    "support": {
+      "adminBadge": "Administrador",
+      "adminRef": "Administrador #{id}",
+      "allCategories": "Todas as categorias",
+      "allPriorities": "Todas as prioridades",
+      "allStatuses": "Todos os status",
+      "assignConfirmDescription": "Você se tornará o administrador do sistema responsável.",
+      "assignConfirmTitle": "Atribuir este ticket a você?",
+      "assignFailed": "Falha ao atribuir o ticket.",
+      "assignToMe": "Atribuir a mim",
+      "assigned": "Ticket atribuído a você.",
+      "attachmentMeta": "{type} · {size}",
+      "category": {
+        "account": "Conta",
+        "bug": "Bug",
+        "featureRequest": "Solicitação de recurso",
+        "other": "Outro",
+        "usageQuestion": "Dúvida de uso"
+      },
+      "changeStatus": "Alterar status",
+      "changeStatusAriaLabel": "Alterar o status do ticket",
+      "conversation": "Conversa",
+      "createdAt": "Criado em {time}",
+      "detailSubtitle": "Ticket #{id} · Usuário #{userId}",
+      "detailTitle": "Ticket de suporte",
+      "detailUnavailable": "Os detalhes do ticket estão indisponíveis.",
+      "downloadFailed": "Falha ao baixar o anexo.",
+      "emptyDescription": "Nenhum usuário enviou tickets de suporte.",
+      "emptyFiltered": "Tente remover um ou mais filtros.",
+      "emptyTitle": "Nenhum ticket de suporte encontrado",
+      "fields": {
+        "assignment": "Atribuição",
+        "category": "Categoria",
+        "priority": "Prioridade",
+        "status": "Status",
+        "updated": "Atualizado"
+      },
+      "filterByCategory": "Filtrar por categoria",
+      "filterByPriority": "Filtrar por prioridade",
+      "filterByStatus": "Filtrar por status",
+      "invalidId": "O ID do ticket de suporte é inválido.",
+      "loadDetailFailed": "Falha ao carregar o ticket de suporte.",
+      "loadFailed": "Falha ao carregar os tickets de suporte.",
+      "loadingDetail": "Carregando os detalhes do ticket",
+      "noMessagesDescription": "Este ticket não contém mensagens de conversa.",
+      "noMessagesTitle": "Nenhuma mensagem",
+      "priority": {
+        "high": "Alta",
+        "low": "Baixa",
+        "medium": "Média"
+      },
+      "replyAriaLabel": "Resposta do administrador",
+      "replyFailed": "Falha ao enviar a resposta.",
+      "replyPlaceholder": "Escreva uma resposta de administrador",
+      "replySent": "Resposta enviada.",
+      "resolvedAt": "Resolvido em {time}",
+      "searchAriaLabel": "Pesquisar tickets de suporte",
+      "searchPlaceholder": "Pesquisar títulos de tickets",
+      "sendReply": "Enviar resposta",
+      "stats": {
+        "inProgress": "Em andamento",
+        "open": "Abertos",
+        "resolved": "Resolvidos",
+        "total": "Total"
+      },
+      "status": {
+        "closed": "Fechado",
+        "inProgress": "Em andamento",
+        "open": "Aberto",
+        "resolved": "Resolvido"
+      },
+      "statusConfirmDescription": "Mover este ticket para {status}?",
+      "statusConfirmTitle": "Alterar o status do ticket?",
+      "statusUpdateFailed": "Falha ao atualizar o status do ticket.",
+      "statusUpdated": "Status do ticket atualizado.",
+      "subtitle": "Revise as solicitações de suporte da plataforma e responda como administrador do sistema.",
+      "ticketCount": "{count} tickets",
+      "ticketMeta": "#{id} · Usuário #{userId}",
+      "title": "Tickets de suporte",
+      "unassigned": "Não atribuído",
+      "userRef": "Usuário #{id}"
+    },
+    "title": "Administração do sistema",
+    "users": {
+      "actionsFor": "Ações para {email}",
+      "badge": {
+        "emailUnverified": "E-mail não verificado",
+        "systemAdmin": "Administrador do sistema"
+      },
+      "confirm": {
+        "disable": {
+          "description": "O usuário ficará impedido de fazer login até que a conta seja ativada novamente.",
+          "title": "Desativar esta conta?"
+        },
+        "enable": {
+          "description": "O usuário poderá fazer login novamente.",
+          "title": "Ativar esta conta?"
+        },
+        "grantAdmin": {
+          "description": "Este usuário poderá gerenciar todas as contas e organizações da plataforma.",
+          "title": "Conceder acesso de administrador do sistema?"
+        },
+        "revokeAdmin": {
+          "description": "O usuário perderá imediatamente o acesso à administração do sistema.",
+          "title": "Revogar o acesso de administrador do sistema?"
+        },
+        "unverifyEmail": {
+          "description": "A conta voltará ao estado de e-mail não verificado.",
+          "title": "Remover a verificação de e-mail?"
+        },
+        "verifyEmail": {
+          "description": "Use somente após confirmar a propriedade de forma independente.",
+          "title": "Marcar o e-mail como verificado?"
+        }
+      },
+      "confirmTarget": "Alvo: {email}",
+      "count": "{count} usuários",
+      "emptyDescription": "Ainda não existe nenhuma conta de usuário.",
+      "emptyTitle": "Nenhum usuário encontrado",
+      "errors": {
+        "action": "A atualização do usuário falhou.",
+        "load": "Falha ao carregar os usuários."
+      },
+      "joined": "Entrou em {date}",
+      "lastLogin": "Último login {datetime}",
+      "menu": {
+        "disableAccount": "Desativar a conta",
+        "enableAccount": "Ativar a conta",
+        "grantAdmin": "Conceder acesso de administrador",
+        "revokeAdmin": "Revogar o acesso de administrador",
+        "unverifyEmail": "Remover a verificação de e-mail",
+        "verifyEmail": "Verificar o e-mail"
+      },
+      "neverSignedIn": "Nunca fez login",
+      "searchLabel": "Pesquisar usuários",
+      "searchPlaceholder": "Pesquisar por e-mail, nome de usuário ou nome",
+      "subtitle": "Gerencie o acesso às contas, a verificação de e-mail e os privilégios de administrador do sistema.",
+      "toast": {
+        "adminGranted": "Acesso de administrador do sistema concedido.",
+        "adminRevoked": "Acesso de administrador do sistema revogado.",
+        "disabled": "Usuário desativado.",
+        "emailUnverified": "Verificação de e-mail removida.",
+        "emailVerified": "E-mail marcado como verificado.",
+        "enabled": "Usuário ativado."
+      }
+    }
+  }
+}

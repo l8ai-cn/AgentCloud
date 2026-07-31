@@ -13,6 +13,7 @@ import docsMessages from "@/messages/en/docs.json";
 import contentMessages from "@/messages/en/content.json";
 import resourceOrchestrationMessages from "@/messages/en/resource-orchestration.json";
 import changelogEntriesMessages from "@/messages/en/changelog-entries.json";
+import adminMessages from "@/messages/en/admin.json";
 
 const mockTranslations = {
   ...commonMessages,
@@ -27,6 +28,7 @@ const mockTranslations = {
   ...contentMessages,
   ...resourceOrchestrationMessages,
   ...changelogEntriesMessages,
+  ...adminMessages,
 };
 
 function AllProviders({ children }: { children: ReactNode }) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Snowflake, Play, RefreshCw, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -21,27 +22,28 @@ export function SubscriptionLifecycleControls({
   onCancel: () => void;
   onRenew: (months: number) => void;
 }) {
+  const t = useTranslations("admin");
   const [months, setMonths] = useState("1");
 
   return (
     <div className="space-y-3 border-t border-border pt-4">
-      <h3 className="text-sm font-semibold">Lifecycle</h3>
+      <h3 className="text-sm font-semibold">{t("subscription.lifecycle")}</h3>
       <div className="flex flex-wrap gap-2">
         {status === "frozen" ? (
           <Button variant="outline" size="sm" disabled={busy} onClick={onUnfreeze}>
             <Play className="mr-2 h-4 w-4" />
-            Unfreeze
+            {t("subscription.unfreeze")}
           </Button>
         ) : (
           <Button variant="outline" size="sm" disabled={busy} onClick={onFreeze}>
             <Snowflake className="mr-2 h-4 w-4" />
-            Freeze
+            {t("subscription.freeze")}
           </Button>
         )}
         {status !== "canceled" && (
           <Button variant="destructive" size="sm" disabled={busy} onClick={onCancel}>
             <XCircle className="mr-2 h-4 w-4" />
-            Cancel
+            {t("common.cancel")}
           </Button>
         )}
         <div className="flex items-center gap-2">
@@ -52,7 +54,7 @@ export function SubscriptionLifecycleControls({
             max={120}
             value={months}
             onChange={(event) => setMonths(event.target.value)}
-            aria-label="Renewal months"
+            aria-label={t("subscription.renewalMonthsAria")}
           />
           <Button
             variant="outline"
@@ -61,7 +63,7 @@ export function SubscriptionLifecycleControls({
             onClick={() => onRenew(Number(months))}
           >
             <RefreshCw className="mr-2 h-4 w-4" />
-            Renew
+            {t("subscription.renew")}
           </Button>
         </div>
       </div>

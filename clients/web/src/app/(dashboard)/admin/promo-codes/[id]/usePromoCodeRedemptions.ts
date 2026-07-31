@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { listPromoCodeRedemptions } from "@/lib/api/admin/promo";
 import type {
@@ -10,6 +11,7 @@ import type {
 import { getErrorMessage } from "@/lib/utils";
 
 export function usePromoCodeRedemptions(id: number, page: number) {
+  const t = useTranslations("admin");
   const requestKey = `${id}:${page}`;
   const [result, setResult] = useState<{
     key: string;
@@ -31,12 +33,12 @@ export function usePromoCodeRedemptions(id: number, page: number) {
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(error, "Failed to load redemptions."),
+            error: getErrorMessage(error, t("promoCodes.error.loadRedemptions")),
           }));
         }
       });
     return () => controller.abort();
-  }, [id, page, requestKey]);
+  }, [id, page, requestKey, t]);
 
   return {
     data: result.data,

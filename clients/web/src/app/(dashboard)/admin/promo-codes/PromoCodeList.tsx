@@ -1,4 +1,5 @@
 import { TicketPercent } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { EmptyState } from "@/components/ui/empty-state";
 import type { AdminPromoCode } from "@/lib/api/admin/promoTypes";
@@ -20,6 +21,8 @@ export function PromoCodeList({
   busyId,
   onAction,
 }: PromoCodeListProps) {
+  const t = useTranslations("admin");
+
   if (loading && codes.length === 0) {
     return (
       <div className="space-y-1 p-4">
@@ -38,11 +41,11 @@ export function PromoCodeList({
       <EmptyState
         size="compact"
         icon={<TicketPercent className="h-5 w-5" />}
-        title="No promo codes found"
+        title={t("promoCodes.empty.title")}
         description={
           searching
-            ? "Try changing the search or filters."
-            : "Create the first promo code for a subscription campaign."
+            ? t("promoCodes.empty.searching")
+            : t("promoCodes.empty.description")
         }
       />
     );

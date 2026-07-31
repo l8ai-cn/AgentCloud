@@ -35,7 +35,11 @@ export function FormField({
         )}
       >
         {label}
-        {required && <span className="text-destructive ml-1">*</span>}
+        {required && (
+          <span aria-hidden="true" className="text-destructive ml-1">
+            *
+          </span>
+        )}
       </Label>
       {children}
       {error && (

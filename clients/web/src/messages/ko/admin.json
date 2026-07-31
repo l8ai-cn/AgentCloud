@@ -1,0 +1,748 @@
+{
+  "admin": {
+    "auditLogs": {
+      "byActor": "실행자 {actor}",
+      "cardTitle": "감사 로그 ({count})",
+      "empty": "감사 로그가 없습니다",
+      "filters": {
+        "all": "전체"
+      },
+      "fromIp": "출처 {ip}",
+      "loadError": "감사 로그를 불러오지 못했습니다.",
+      "subtitle": "보호된 리소스에 대한 시스템 관리자 작업을 확인합니다."
+    },
+    "common": {
+      "cancel": "취소",
+      "close": "닫기",
+      "confirm": "확인",
+      "delete": "삭제",
+      "disable": "비활성화",
+      "disabled": "비활성화됨",
+      "edit": "편집",
+      "enable": "활성화",
+      "enabled": "활성화됨",
+      "loading": "불러오는 중...",
+      "never": "없음",
+      "next": "다음",
+      "no": "아니요",
+      "pageOf": "{page} / {total} 페이지",
+      "previous": "이전",
+      "refresh": "새로 고침",
+      "save": "저장",
+      "tryDifferentSearch": "다른 검색어로 시도해 보세요.",
+      "unknownError": "문제가 발생했습니다.",
+      "yes": "예"
+    },
+    "expertMarket": {
+      "actionFailed": "검토 작업에 실패했습니다.",
+      "approve": "승인",
+      "approveConfirmDescription": "이 릴리스가 전문가 마켓에 게시됩니다.",
+      "approveConfirmTitle": "이 릴리스를 승인하시겠습니까?",
+      "approveRelease": "릴리스 승인",
+      "approved": "릴리스가 승인되었습니다.",
+      "emptyTitle": "이 상태의 릴리스가 없습니다",
+      "expertSnapshot": "전문가 스냅샷",
+      "loadDetailFailed": "릴리스를 불러오지 못했습니다.",
+      "loadFailed": "전문가 릴리스를 불러오지 못했습니다.",
+      "nextPage": "다음 페이지",
+      "previousPage": "이전 페이지",
+      "reject": "반려",
+      "rejectConfirmTitle": "이 릴리스를 반려하시겠습니까?",
+      "rejectRelease": "릴리스 반려",
+      "rejected": "릴리스가 반려되었습니다.",
+      "rejectionAriaLabel": "반려 사유",
+      "rejectionPlaceholder": "반려 사유",
+      "rejectionReason": "반려 사유: {reason}",
+      "releaseCount": "릴리스 {count}건",
+      "review": "검토",
+      "showingRange": "전체 {total}건 중 {first}-{last}건 표시",
+      "skillDependencies": "Skill 의존성",
+      "status": {
+        "pending": "검토 대기",
+        "published": "게시됨",
+        "rejected": "반려됨",
+        "withdrawn": "철회됨"
+      },
+      "subtitle": "게시 가능한 전문가 스냅샷과 해당 런타임 의존성을 검토합니다.",
+      "title": "전문가 마켓",
+      "uncategorized": "미분류",
+      "versionLabel": "v{version}",
+      "workerSpec": "Worker 명세"
+    },
+    "nav": {
+      "auditLogs": "감사 로그",
+      "expertReview": "전문가 검토",
+      "label": "시스템 관리",
+      "organizations": "조직",
+      "overview": "개요",
+      "promoCodes": "프로모션 코드",
+      "relays": "Relay",
+      "runners": "Runner",
+      "sso": "SSO",
+      "support": "지원",
+      "users": "사용자"
+    },
+    "organizations": {
+      "backToList": "조직 목록으로 돌아가기",
+      "count": "조직 {count, number}개",
+      "createdOn": "생성일 {date}",
+      "deleteAria": "{name} 삭제",
+      "deleteConfirm": "조직 삭제",
+      "deleteDescription": "{name} 및 해당 테넌트 소유 리소스가 영구적으로 삭제됩니다.",
+      "deleteError": "조직을 삭제하지 못했습니다.",
+      "deleteSuccess": "조직이 삭제되었습니다.",
+      "deleteTitle": "이 조직을 삭제하시겠습니까?",
+      "detailLoadError": "조직 정보를 불러오지 못했습니다.",
+      "emptyDescription": "아직 테넌트 조직이 없습니다.",
+      "emptyTitle": "조직을 찾을 수 없습니다",
+      "invalidId": "조직 식별자가 올바르지 않습니다.",
+      "loadError": "조직 목록을 불러오지 못했습니다.",
+      "memberFallbackName": "사용자 #{id}",
+      "memberJoined": "가입일 {date}",
+      "membersEmptyDescription": "이 조직에는 유효한 멤버 기록이 없습니다.",
+      "membersEmptyTitle": "멤버 없음",
+      "membersHeading": "멤버 ({count})",
+      "noSubscription": "구독 없음",
+      "notFound": "조직을 찾을 수 없습니다.",
+      "openAria": "{name} 열기",
+      "runnerAgents": "사용 가능한 Agent",
+      "runnerDescription": "설명",
+      "runnerLastHeartbeat": "마지막 하트비트 {time}",
+      "runnerManagement": "Runner 관리",
+      "runnerNoAgents": "보고되지 않음",
+      "runnerNoDescription": "설명 없음",
+      "runnerNoHeartbeat": "하트비트 기록 없음",
+      "runnerPods": "Pod {current}/{max}",
+      "runnerRegistered": "등록일",
+      "runnerVersionAndPods": "v{version} · Pod {current}/{max}",
+      "runnersEmptyDescription": "이 조직에는 등록된 Runner가 없습니다.",
+      "runnersEmptyTitle": "Runner 없음",
+      "runnersHeading": "Runner ({count})",
+      "runnersLoadError": "조직의 Runner를 불러오지 못했습니다.",
+      "runnersLoadingAria": "Runner 불러오는 중",
+      "runnersRetry": "다시 시도",
+      "searchPlaceholder": "조직 검색",
+      "stats": {
+        "created": "생성일",
+        "members": "멤버",
+        "subscription": "구독"
+      },
+      "subscriptionNone": "없음",
+      "subtitle": "테넌트 멤버, 구독, 할당량, 실행 용량을 확인합니다."
+    },
+    "overview": {
+      "loadError": "시스템 통계를 불러오지 못했습니다.",
+      "stats": {
+        "activePods": "활성 Pod",
+        "activePodsDetail": "총 {count, number}개",
+        "organizationsDetail": "유효한 구독 {count, number}건",
+        "runnersDetail": "{count, number}개 온라인",
+        "usersDetail": "{count, number}명 활성"
+      },
+      "subtitle": "계정, 조직, 실행 용량의 전반적인 운영 상태.",
+      "userGrowth": {
+        "last7Days": "최근 7일",
+        "lastMonth": "최근 1개월",
+        "title": "사용자 증가",
+        "today": "오늘"
+      }
+    },
+    "promoCodes": {
+      "action": {
+        "activate": "활성화",
+        "deactivate": "비활성화"
+      },
+      "confirm": {
+        "activate": {
+          "description": "대상 조직이 즉시 사용할 수 있게 됩니다. 대상: {code}",
+          "title": "이 프로모션 코드를 활성화하시겠습니까?"
+        },
+        "deactivate": {
+          "description": "다시 활성화할 때까지 신규 사용이 중단됩니다. 대상: {code}",
+          "title": "이 프로모션 코드를 비활성화하시겠습니까?"
+        },
+        "delete": {
+          "description": "삭제는 되돌릴 수 없으며, 사용 기록이 있는 코드는 백엔드에서 삭제가 거부됩니다. 대상: {code}",
+          "title": "이 프로모션 코드를 삭제하시겠습니까?"
+        },
+        "deleteConfirmText": "코드 삭제"
+      },
+      "count": "프로모션 코드 {count}개",
+      "create": {
+        "submit": "프로모션 코드 생성",
+        "subtitle": "사용 횟수와 기간 제한을 명시한 구독 플랜 연장 혜택을 발급합니다.",
+        "title": "프로모션 코드 생성"
+      },
+      "createCode": "코드 생성",
+      "createdAt": "생성일 {date}",
+      "detail": {
+        "backToList": "프로모션 코드 목록으로 돌아가기",
+        "confirm": {
+          "activate": "{code}에서 신규 사용을 받기 시작합니다.",
+          "deactivate": "{code}에서 신규 사용 접수를 중단합니다.",
+          "delete": "{code}을(를) 영구적으로 삭제합니다. 사용 기록이 있으면 백엔드에서 삭제가 거부됩니다."
+        },
+        "deleteBlocked": "사용 기록이 있는 코드는 삭제할 수 없습니다",
+        "deleteTitle": "프로모션 코드 삭제"
+      },
+      "durationMonths": "{count, plural, other {#개월}}",
+      "edit": {
+        "description": "코드, 유형, 플랜, 기간, 시작 시각은 백엔드에서 변경할 수 없습니다.",
+        "expiresAtHint": "값을 비우면 만료 설정이 해제됩니다.",
+        "heading": "편집 가능한 설정",
+        "maxUsesHint": "비워 두면 현재 한도가 유지되며, API로는 유한 한도를 무제한으로 되돌릴 수 없습니다.",
+        "submit": "변경 사항 저장"
+      },
+      "empty": {
+        "description": "구독 캠페인을 위한 첫 프로모션 코드를 생성하세요.",
+        "searching": "검색어 또는 필터를 변경해 보세요.",
+        "title": "프로모션 코드를 찾을 수 없습니다"
+      },
+      "endsAt": "종료일 {date}",
+      "error": {
+        "actionFailed": "프로모션 코드 업데이트에 실패했습니다.",
+        "create": "프로모션 코드를 생성하지 못했습니다.",
+        "invalidId": "프로모션 코드 식별자가 올바르지 않습니다.",
+        "load": "프로모션 코드 목록을 불러오지 못했습니다.",
+        "loadDetail": "프로모션 코드를 불러오지 못했습니다.",
+        "loadRedemptions": "사용 기록을 불러오지 못했습니다.",
+        "notFound": "프로모션 코드를 찾을 수 없습니다.",
+        "unableToCreate": "프로모션 코드를 생성할 수 없습니다.",
+        "unableToUpdate": "프로모션 코드를 업데이트할 수 없습니다.",
+        "update": "프로모션 코드를 업데이트하지 못했습니다."
+      },
+      "expiresAt": "만료일 {date}",
+      "filters": {
+        "allPlans": "전체 플랜",
+        "allStatuses": "전체 상태",
+        "allTypes": "전체 유형",
+        "planLabel": "플랜으로 필터링",
+        "searchLabel": "프로모션 코드 검색",
+        "searchPlaceholder": "코드 또는 이름 검색",
+        "selectedPlanEnterprise": "엔터프라이즈",
+        "selectedPlanPro": "프로",
+        "statusLabel": "상태로 필터링",
+        "typeLabel": "유형으로 필터링"
+      },
+      "form": {
+        "code": "코드",
+        "codeHint": "대문자로 저장되며 최대 50자입니다.",
+        "description": "설명",
+        "duration": "기간(개월)",
+        "expiresAt": "만료 시각",
+        "expiresAtCreateHint": "비워 두면 만료되지 않습니다.",
+        "maxUses": "총 사용 한도",
+        "maxUsesCreateHint": "비워 두면 무제한입니다.",
+        "name": "이름",
+        "plan": "플랜",
+        "planAriaLabel": "구독 플랜",
+        "startsAt": "시작 시각",
+        "startsAtHint": "비워 두면 즉시 시작합니다.",
+        "type": "유형",
+        "typeAriaLabel": "프로모션 코드 유형",
+        "usesPerOrg": "조직별 사용 횟수"
+      },
+      "plan": {
+        "enterprise": "엔터프라이즈",
+        "pro": "프로"
+      },
+      "redemptions": {
+        "count": "사용 기록 {count}건",
+        "durationMonths": "{count}개월",
+        "empty": {
+          "description": "이 프로모션 코드는 아직 사용되지 않았습니다.",
+          "title": "사용 기록 없음"
+        },
+        "organizationFallback": "조직 #{id}",
+        "title": "사용 기록",
+        "userFallback": "사용자 #{id}",
+        "usernameUnavailable": "사용자 이름을 확인할 수 없음"
+      },
+      "row": {
+        "actionsFor": "{code} 작업",
+        "viewAndEdit": "보기 및 편집"
+      },
+      "status": {
+        "active": "활성",
+        "exhausted": "한도 소진",
+        "expired": "만료됨",
+        "inactive": "비활성"
+      },
+      "subtitle": "플랫폼 전체의 구독 액세스 코드를 생성하고 관리합니다.",
+      "summary": {
+        "expires": "만료",
+        "offer": "혜택",
+        "offerValue": "{plan} {count, plural, other {#개월}}",
+        "starts": "시작",
+        "usage": "사용 현황",
+        "usagePerOrg": "조직별 {count}회"
+      },
+      "toast": {
+        "activated": "프로모션 코드가 활성화되었습니다.",
+        "created": "프로모션 코드가 생성되었습니다.",
+        "deactivated": "프로모션 코드가 비활성화되었습니다.",
+        "deleted": "프로모션 코드가 삭제되었습니다.",
+        "updated": "프로모션 코드가 업데이트되었습니다."
+      },
+      "type": {
+        "campaign": "캠페인",
+        "internal": "내부",
+        "media": "미디어",
+        "partner": "파트너",
+        "referral": "추천"
+      },
+      "updatedAt": "업데이트 {date}",
+      "usage": {
+        "limited": "{used} / {limit}",
+        "unlimited": "{used} / 무제한"
+      },
+      "validation": {
+        "durationPositive": "기간은 양의 정수여야 합니다.",
+        "expirationAfterStart": "만료 시각은 시작 시각보다 뒤여야 합니다.",
+        "maxUsesPositive": "최대 사용 횟수는 양의 정수여야 합니다.",
+        "usesPerOrgPositive": "조직별 사용 횟수는 양의 정수여야 합니다."
+      }
+    },
+    "relays": {
+      "detail": {
+        "averageLatency": "평균 지연 시간",
+        "backToRelays": "Relay 목록으로 돌아가기",
+        "capacityAndHealth": "용량 및 상태",
+        "connection": "연결",
+        "connections": "연결 수",
+        "connectionsUsage": "{connections} / {capacity} ({load}%)",
+        "cpuUsage": "CPU 사용률",
+        "forceUnregister": "강제 등록 해제",
+        "lastHeartbeat": "마지막 하트비트",
+        "latitude": "위도",
+        "loadFailed": "Relay를 불러오지 못했습니다.",
+        "location": "위치",
+        "longitude": "경도",
+        "memoryUsage": "메모리 사용률",
+        "milliseconds": "{value} ms",
+        "notReported": "보고되지 않음",
+        "percent": "{value}%",
+        "region": "리전",
+        "relayId": "Relay ID",
+        "retry": "다시 시도",
+        "status": "상태",
+        "subtitle": "백엔드가 보고한 실시간 등록 정보 및 상태 데이터.",
+        "title": "Relay 상세",
+        "unavailable": "이 Relay는 사용할 수 없거나 이미 등록 해제되었습니다.",
+        "url": "URL"
+      },
+      "empty": {
+        "description": "연결된 Relay 서비스가 여기에 표시됩니다.",
+        "title": "등록된 Relay가 없습니다"
+      },
+      "healthy": "정상",
+      "loadFailed": "Relay 목록을 불러오지 못했습니다.",
+      "row": {
+        "load": "{connections}/{capacity} 연결 · {latency} ms",
+        "resources": "CPU {cpu}% · 메모리 {memory}%"
+      },
+      "stats": {
+        "connections": "연결 수",
+        "healthy": "정상",
+        "registered": "등록됨"
+      },
+      "subtitle": "데이터 플레인 용량을 모니터링하고 오래된 Relay 등록을 제거합니다.",
+      "unhealthy": "비정상",
+      "unregister": {
+        "confirm": "Relay 등록 해제",
+        "detailDescription": "{id}이(가) 백엔드 Relay 목록에서 제거됩니다. 기존 연결이 중단될 수 있습니다.",
+        "failed": "Relay 등록을 해제하지 못했습니다.",
+        "listDescription": "{id}에는 현재 활성 연결이 {connections}개 있습니다. 백엔드는 세션 마이그레이션을 제공하지 않습니다.",
+        "success": "Relay 등록이 해제되었습니다.",
+        "title": "이 Relay를 강제로 등록 해제하시겠습니까?"
+      },
+      "unregisterRelay": "{name} 등록 해제",
+      "unregisterRelayTitle": "Relay 강제 등록 해제",
+      "viewDetails": "{name} 상세 보기",
+      "viewDetailsTitle": "Relay 상세 보기"
+    },
+    "runners": {
+      "actions": {
+        "delete": "{nodeId} 삭제",
+        "deleteTitle": "Runner 삭제",
+        "disable": "{nodeId} 비활성화",
+        "disableTitle": "Runner 비활성화",
+        "enable": "{nodeId} 활성화",
+        "enableTitle": "Runner 활성화"
+      },
+      "agentCount": "Agent {count}개",
+      "confirm": {
+        "delete": {
+          "description": "Runner 등록 정보가 영구적으로 삭제되며 되돌릴 수 없습니다. 대상: {nodeId}",
+          "title": "이 Runner를 삭제하시겠습니까?"
+        },
+        "disable": {
+          "description": "Runner는 연결을 유지하지만 새 Pod를 더 이상 받지 않습니다. 대상: {nodeId}",
+          "title": "이 Runner를 비활성화하시겠습니까?"
+        },
+        "enable": {
+          "description": "Runner가 다시 새 Pod를 받을 수 있게 됩니다. 대상: {nodeId}",
+          "title": "이 Runner를 활성화하시겠습니까?"
+        }
+      },
+      "count": "Runner {count}개",
+      "empty": {
+        "description": "등록된 Runner가 아직 없습니다.",
+        "title": "Runner를 찾을 수 없습니다"
+      },
+      "lastHeartbeat": "마지막 하트비트 {time}",
+      "loadFailed": "Runner 목록을 불러오지 못했습니다.",
+      "noHeartbeat": "하트비트 기록 없음",
+      "orgFallback": "조직 #{id}",
+      "podsUsage": "Pod {current}/{max}",
+      "registeredOn": "등록일 {date}",
+      "searchLabel": "Runner 검색",
+      "searchPlaceholder": "노드 ID, 설명 또는 조직으로 검색",
+      "subtitle": "모든 조직의 자체 호스팅 Runner를 확인하고 사용 가능 여부를 제어합니다.",
+      "toast": {
+        "deleted": "Runner가 삭제되었습니다.",
+        "disabled": "Runner가 비활성화되었습니다.",
+        "enabled": "Runner가 활성화되었습니다."
+      },
+      "updateFailed": "Runner 업데이트에 실패했습니다.",
+      "version": "v{version}"
+    },
+    "sso": {
+      "allProtocols": "전체 프로토콜",
+      "configurationCount": "구성 {count}건",
+      "confirm": {
+        "deleteDescription": "공급자 구성이 영구적으로 삭제되며 되돌릴 수 없습니다. 대상: {domain}",
+        "deleteTitle": "이 SSO 구성을 삭제하시겠습니까?",
+        "disableDescription": "이 ID 공급자를 통한 신규 로그인이 중단됩니다. 대상: {domain}",
+        "disableTitle": "이 SSO 구성을 비활성화하시겠습니까?",
+        "enableDescription": "도메인이 일치하는 사용자가 이 ID 공급자를 사용할 수 있습니다. 대상: {domain}",
+        "enableTitle": "이 SSO 구성을 활성화하시겠습니까?"
+      },
+      "create": "새로 만들기",
+      "defaultOrganization": "기본 조직 #{id}",
+      "emptyDescription": "구성을 만들어 도메인별 로그인을 활성화하세요.",
+      "emptyFiltered": "다른 검색어나 프로토콜 필터를 시도해 보세요.",
+      "emptyTitle": "SSO 구성을 찾을 수 없습니다",
+      "enforced": "강제 적용됨",
+      "filterProtocolAria": "프로토콜로 필터링",
+      "form": {
+        "createDescription": "플랫폼 로그인을 위한 도메인별 ID 공급자를 구성합니다.",
+        "createTitle": "SSO 구성 만들기",
+        "defaultOrganizationHint": "페더레이션 사용자는 로그인 시 이 조직에 참여합니다.",
+        "defaultOrganizationId": "기본 조직 ID",
+        "displayName": "표시 이름",
+        "displayNamePlaceholder": "회사 SSO",
+        "domain": "도메인",
+        "domainPlaceholder": "example.com",
+        "editDescription": "도메인과 프로토콜은 변경할 수 없습니다. 시크릿을 비워 두면 현재 값이 유지됩니다.",
+        "editTitle": "SSO 구성 편집",
+        "enabledHint": "이 구성이 로그인을 처리하도록 허용합니다.",
+        "enforceSso": "SSO 강제",
+        "enforceSsoHint": "대상 사용자가 이 공급자를 통해서만 로그인하도록 요구합니다.",
+        "protocol": "프로토콜",
+        "protocolAria": "SSO 프로토콜",
+        "saveFailed": "SSO 구성을 저장하지 못했습니다.",
+        "submitCreate": "구성 만들기",
+        "submitSave": "변경 사항 저장"
+      },
+      "ldap": {
+        "baseDn": "Base DN",
+        "bindDn": "Bind DN",
+        "bindPassword": "Bind 비밀번호",
+        "bindPasswordHint": "비워 두면 현재 비밀번호가 유지됩니다.",
+        "emailAttribute": "이메일 속성",
+        "host": "호스트",
+        "legend": "LDAP 설정",
+        "nameAttribute": "이름 속성",
+        "port": "포트",
+        "useTls": "TLS 사용",
+        "useTlsHint": "STARTTLS로 LDAP 연결을 수립합니다.",
+        "userFilter": "사용자 필터",
+        "usernameAttribute": "사용자 이름 속성"
+      },
+      "listLoadingAria": "SSO 구성 불러오는 중",
+      "noDefaultOrganization": "기본 조직 없음",
+      "oidc": {
+        "ampBearerCodes": "AMP Bearer 애플리케이션 코드",
+        "ampBearerCodesHint": "Bearer 액세스 위임을 허용할 애플리케이션 코드의 JSON 배열.",
+        "clientId": "Client ID",
+        "clientSecret": "Client Secret",
+        "clientSecretHint": "비워 두면 현재 Client Secret이 유지됩니다.",
+        "extraParams": "인가 추가 파라미터",
+        "extraParamsHint": "인가 엔드포인트로 전달되는 JSON 객체.",
+        "issuerUrl": "Issuer URL",
+        "legend": "OIDC 설정",
+        "scopes": "Scopes"
+      },
+      "row": {
+        "deleteAria": "{name} 삭제",
+        "deleteTitle": "구성 삭제",
+        "disableAria": "{name} 비활성화",
+        "disableTitle": "구성 비활성화",
+        "editAria": "{name} 편집",
+        "editTitle": "구성 편집",
+        "enableAria": "{name} 활성화",
+        "enableTitle": "구성 활성화"
+      },
+      "saml": {
+        "certificate": "IdP 인증서",
+        "legend": "SAML 설정",
+        "metadataUrl": "IdP 메타데이터 URL",
+        "metadataXml": "IdP 메타데이터 XML",
+        "nameIdFormat": "NameID 형식",
+        "secretHint": "비워 두면 현재 값이 유지됩니다.",
+        "spEntityId": "SP Entity ID",
+        "ssoUrl": "IdP SSO URL"
+      },
+      "searchAria": "SSO 구성 검색",
+      "searchPlaceholder": "도메인 또는 표시 이름으로 검색",
+      "subtitle": "도메인별 OIDC, SAML, LDAP ID 공급자를 구성합니다.",
+      "test": {
+        "buttonAria": "{name} 테스트",
+        "buttonTitle": "연결 테스트",
+        "failed": "실패",
+        "idle": "테스트",
+        "passed": "성공",
+        "testing": "테스트 중"
+      },
+      "title": "싱글 사인온",
+      "toast": {
+        "createFailed": "SSO 구성을 만들지 못했습니다.",
+        "created": "SSO 구성이 생성되었습니다.",
+        "deleteFailed": "SSO 구성을 삭제하지 못했습니다.",
+        "deleted": "SSO 구성이 삭제되었습니다.",
+        "disableFailed": "SSO 구성을 비활성화하지 못했습니다.",
+        "disabled": "SSO 구성이 비활성화되었습니다.",
+        "enableFailed": "SSO 구성을 활성화하지 못했습니다.",
+        "enabled": "SSO 구성이 활성화되었습니다.",
+        "loadFailed": "SSO 구성을 불러오지 못했습니다.",
+        "testActionFailed": "SSO 구성을 테스트하지 못했습니다.",
+        "testFailed": "연결 테스트에 실패했습니다.",
+        "testPassed": "연결 테스트에 성공했습니다.",
+        "updateFailed": "SSO 구성을 업데이트하지 못했습니다.",
+        "updated": "SSO 구성이 업데이트되었습니다."
+      },
+      "updatedAt": "업데이트 {timestamp}",
+      "validation": {
+        "domainAndNameRequired": "도메인과 표시 이름은 필수입니다.",
+        "invalidAmpBearerCodes": "AMP Bearer 애플리케이션 코드는 JSON 배열이어야 합니다.",
+        "invalidDomain": "example.com과 같은 유효한 도메인을 입력하세요.",
+        "invalidExtraParams": "인가 추가 파라미터는 JSON 객체여야 합니다.",
+        "invalidLdapPort": "LDAP 포트는 1에서 65535 사이여야 합니다.",
+        "invalidOrganizationId": "기본 조직 ID는 양의 정수여야 합니다.",
+        "ldapRequired": "LDAP 호스트와 Base DN은 필수입니다.",
+        "oidcRequired": "OIDC Issuer URL과 Client ID는 필수입니다.",
+        "samlSourceRequired": "메타데이터 URL, 메타데이터 XML 또는 인증서가 포함된 SSO URL을 입력하세요."
+      }
+    },
+    "subscription": {
+      "autoRenew": "자동 갱신",
+      "autoRenewDisabled": "자동 갱신이 해제되었습니다.",
+      "autoRenewEnabled": "자동 갱신이 설정되었습니다.",
+      "autoRenewHint": "현재 기간이 끝나면 갱신합니다.",
+      "billing": "결제",
+      "billingCycleAria": "결제 주기",
+      "cancelDescription": "이 구독을 취소하고 이후 갱신을 중단합니다.",
+      "cancelSuccess": "구독이 취소되었습니다.",
+      "cancelTitle": "구독을 취소하시겠습니까?",
+      "changeCycleDescription": "결제 주기를 {cycle}(으)로 변경합니다.",
+      "changeCycleTitle": "결제 주기를 변경하시겠습니까?",
+      "changePlanDescription": "플랜을 {plan}(으)로 변경합니다.",
+      "changePlanTitle": "구독 플랜을 변경하시겠습니까?",
+      "changeSeatsDescription": "이 구독의 시트 수를 {seats}(으)로 설정합니다.",
+      "changeSeatsTitle": "시트 수를 변경하시겠습니까?",
+      "createButton": "구독 생성",
+      "createDescription": "{months}개월 동안 유효한 {plan} 구독을 생성합니다.",
+      "createSuccess": "구독이 생성되었습니다.",
+      "createTitle": "구독을 생성하시겠습니까?",
+      "customQuotas": "사용자 지정 할당량",
+      "cycleMonthly": "월간",
+      "cycleUpdated": "결제 주기가 업데이트되었습니다.",
+      "cycleYearly": "연간",
+      "freeze": "동결",
+      "freezeDescription": "실행 및 유료 기능 이용이 제한될 수 있습니다.",
+      "freezeSuccess": "구독이 동결되었습니다.",
+      "freezeTitle": "구독을 동결하시겠습니까?",
+      "lifecycle": "수명 주기",
+      "loadError": "구독 정보를 불러오지 못했습니다.",
+      "monthsAria": "구독 개월 수",
+      "newPlanAria": "새 구독 플랜",
+      "noRecord": "이 조직에는 구독 기록이 없습니다.",
+      "periodRange": "{start} ~ {end}",
+      "planAndSeats": "플랜 및 시트",
+      "planAria": "구독 플랜",
+      "planUpdated": "구독 플랜이 업데이트되었습니다.",
+      "quotaBadge": "{resource}: {value}",
+      "quotaDescription": "{resource}을(를) {limit}(으)로 재정의합니다.",
+      "quotaLimitAria": "할당량 한도",
+      "quotaLimitPlaceholder": "-1 = 무제한",
+      "quotaResourceAria": "할당량 리소스",
+      "quotaTitle": "사용자 지정 할당량을 설정하시겠습니까?",
+      "quotaUpdated": "사용자 지정 할당량이 업데이트되었습니다.",
+      "renew": "갱신",
+      "renewDescription": "현재 기간을 {months}개월 연장합니다.",
+      "renewSuccess": "구독이 갱신되었습니다.",
+      "renewTitle": "구독을 갱신하시겠습니까?",
+      "renewalMonthsAria": "갱신 개월 수",
+      "seatCountAria": "시트 수",
+      "seatUsage": "{used}개 사용 중, {available}개 사용 가능",
+      "seatsUpdated": "시트 수가 업데이트되었습니다.",
+      "selectPlan": "플랜 선택",
+      "setOverride": "재정의 값 설정",
+      "setSeats": "시트 수 설정",
+      "title": "구독",
+      "unfreeze": "동결 해제",
+      "unfreezeDescription": "구독을 정상 서비스 상태로 복원합니다.",
+      "unfreezeSuccess": "구독 동결이 해제되었습니다.",
+      "unfreezeTitle": "구독 동결을 해제하시겠습니까?",
+      "unlimited": "무제한",
+      "updateError": "구독 업데이트에 실패했습니다."
+    },
+    "support": {
+      "adminBadge": "관리자",
+      "adminRef": "관리자 #{id}",
+      "allCategories": "전체 분류",
+      "allPriorities": "전체 우선순위",
+      "allStatuses": "전체 상태",
+      "assignConfirmDescription": "귀하가 담당 시스템 관리자가 됩니다.",
+      "assignConfirmTitle": "이 티켓을 나에게 할당하시겠습니까?",
+      "assignFailed": "티켓을 할당하지 못했습니다.",
+      "assignToMe": "나에게 할당",
+      "assigned": "티켓이 나에게 할당되었습니다.",
+      "attachmentMeta": "{type} · {size}",
+      "category": {
+        "account": "계정",
+        "bug": "버그",
+        "featureRequest": "기능 요청",
+        "other": "기타",
+        "usageQuestion": "사용 문의"
+      },
+      "changeStatus": "상태 변경",
+      "changeStatusAriaLabel": "티켓 상태 변경",
+      "conversation": "대화 기록",
+      "createdAt": "생성 {time}",
+      "detailSubtitle": "티켓 #{id} · 사용자 #{userId}",
+      "detailTitle": "지원 티켓",
+      "detailUnavailable": "티켓 상세 정보를 사용할 수 없습니다.",
+      "downloadFailed": "첨부 파일을 다운로드하지 못했습니다.",
+      "emptyDescription": "지원 티켓을 제출한 사용자가 없습니다.",
+      "emptyFiltered": "필터를 하나 이상 해제해 보세요.",
+      "emptyTitle": "지원 티켓을 찾을 수 없습니다",
+      "fields": {
+        "assignment": "할당",
+        "category": "분류",
+        "priority": "우선순위",
+        "status": "상태",
+        "updated": "업데이트"
+      },
+      "filterByCategory": "분류로 필터링",
+      "filterByPriority": "우선순위로 필터링",
+      "filterByStatus": "상태로 필터링",
+      "invalidId": "지원 티켓 ID가 올바르지 않습니다.",
+      "loadDetailFailed": "지원 티켓을 불러오지 못했습니다.",
+      "loadFailed": "지원 티켓 목록을 불러오지 못했습니다.",
+      "loadingDetail": "티켓 상세 정보 불러오는 중",
+      "noMessagesDescription": "이 티켓에는 대화 메시지가 없습니다.",
+      "noMessagesTitle": "메시지 없음",
+      "priority": {
+        "high": "높음",
+        "low": "낮음",
+        "medium": "보통"
+      },
+      "replyAriaLabel": "관리자 답변",
+      "replyFailed": "답변을 전송하지 못했습니다.",
+      "replyPlaceholder": "관리자 답변 작성",
+      "replySent": "답변이 전송되었습니다.",
+      "resolvedAt": "해결 {time}",
+      "searchAriaLabel": "지원 티켓 검색",
+      "searchPlaceholder": "티켓 제목 검색",
+      "sendReply": "답변 전송",
+      "stats": {
+        "inProgress": "진행 중",
+        "open": "미처리",
+        "resolved": "해결됨",
+        "total": "전체"
+      },
+      "status": {
+        "closed": "종료됨",
+        "inProgress": "진행 중",
+        "open": "미처리",
+        "resolved": "해결됨"
+      },
+      "statusConfirmDescription": "이 티켓을 {status} 상태로 변경하시겠습니까?",
+      "statusConfirmTitle": "티켓 상태를 변경하시겠습니까?",
+      "statusUpdateFailed": "티켓 상태를 업데이트하지 못했습니다.",
+      "statusUpdated": "티켓 상태가 업데이트되었습니다.",
+      "subtitle": "시스템 관리자로서 플랫폼 지원 요청을 확인하고 응대합니다.",
+      "ticketCount": "티켓 {count}건",
+      "ticketMeta": "#{id} · 사용자 #{userId}",
+      "title": "지원 티켓",
+      "unassigned": "미할당",
+      "userRef": "사용자 #{id}"
+    },
+    "title": "시스템 관리",
+    "users": {
+      "actionsFor": "{email} 작업",
+      "badge": {
+        "emailUnverified": "이메일 미인증",
+        "systemAdmin": "시스템 관리자"
+      },
+      "confirm": {
+        "disable": {
+          "description": "계정을 다시 활성화할 때까지 이 사용자는 로그인할 수 없습니다.",
+          "title": "이 계정을 비활성화하시겠습니까?"
+        },
+        "enable": {
+          "description": "이 사용자가 다시 로그인할 수 있습니다.",
+          "title": "이 계정을 활성화하시겠습니까?"
+        },
+        "grantAdmin": {
+          "description": "이 사용자는 플랫폼의 모든 계정과 조직을 관리할 수 있게 됩니다.",
+          "title": "시스템 관리자 권한을 부여하시겠습니까?"
+        },
+        "revokeAdmin": {
+          "description": "이 사용자는 시스템 관리 접근 권한을 즉시 상실합니다.",
+          "title": "시스템 관리자 권한을 회수하시겠습니까?"
+        },
+        "unverifyEmail": {
+          "description": "이 계정은 이메일 미인증 상태로 되돌아갑니다.",
+          "title": "이메일 인증을 해제하시겠습니까?"
+        },
+        "verifyEmail": {
+          "description": "소유 여부를 별도로 확인한 후에만 사용하세요.",
+          "title": "이메일을 인증됨으로 표시하시겠습니까?"
+        }
+      },
+      "confirmTarget": "대상: {email}",
+      "count": "사용자 {count}명",
+      "emptyDescription": "아직 사용자 계정이 없습니다.",
+      "emptyTitle": "사용자를 찾을 수 없습니다",
+      "errors": {
+        "action": "사용자 업데이트에 실패했습니다.",
+        "load": "사용자 목록을 불러오지 못했습니다."
+      },
+      "joined": "가입일 {date}",
+      "lastLogin": "마지막 로그인 {datetime}",
+      "menu": {
+        "disableAccount": "계정 비활성화",
+        "enableAccount": "계정 활성화",
+        "grantAdmin": "관리자 권한 부여",
+        "revokeAdmin": "관리자 권한 회수",
+        "unverifyEmail": "이메일 인증 해제",
+        "verifyEmail": "이메일 인증 처리"
+      },
+      "neverSignedIn": "로그인 기록 없음",
+      "searchLabel": "사용자 검색",
+      "searchPlaceholder": "이메일, 사용자 이름 또는 이름으로 검색",
+      "subtitle": "계정 접근 권한, 이메일 인증, 시스템 관리자 권한을 관리합니다.",
+      "toast": {
+        "adminGranted": "시스템 관리자 권한이 부여되었습니다.",
+        "adminRevoked": "시스템 관리자 권한이 회수되었습니다.",
+        "disabled": "사용자가 비활성화되었습니다.",
+        "emailUnverified": "이메일 인증이 해제되었습니다.",
+        "emailVerified": "이메일이 인증됨으로 표시되었습니다.",
+        "enabled": "사용자가 활성화되었습니다."
+      }
+    }
+  }
+}

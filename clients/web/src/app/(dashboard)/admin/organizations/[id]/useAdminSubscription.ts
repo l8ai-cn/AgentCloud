@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -21,6 +22,7 @@ interface SubscriptionResult {
 }
 
 export function useAdminSubscription(orgId: number) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const key = `${orgId}\u0000${revision}`;
   const [result, setResult] = useState<SubscriptionResult>({
@@ -50,12 +52,12 @@ export function useAdminSubscription(orgId: number) {
             key,
             plans: current.plans,
             subscription: current.subscription,
-            error: getErrorMessage(error, "Failed to load subscription."),
+            error: getErrorMessage(error, t("subscription.loadError")),
           }));
         }
       });
     return () => controller.abort();
-  }, [key, orgId]);
+  }, [key, orgId, t]);
 
   const run = useCallback(async (
     name: string,
@@ -68,12 +70,12 @@ export function useAdminSubscription(orgId: number) {
       setResult((current) => ({ ...current, key, subscription, error: null }));
       toast.success(successMessage);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Subscription update failed."));
+      toast.error(getErrorMessage(error, t("subscription.updateError")));
       throw error;
     } finally {
       setMutation(null);
     }
-  }, [key]);
+  }, [key, t]);
 
   return {
     subscription: result.subscription,

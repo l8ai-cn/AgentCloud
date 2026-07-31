@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -17,6 +18,7 @@ import type {
 import { getErrorMessage } from "@/lib/utils";
 
 export function useSupportTicketDetail(ticketId: number | null) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const requestKey = `${ticketId ?? "invalid"}:${revision}`;
   const [result, setResult] = useState<{
@@ -42,57 +44,57 @@ export function useSupportTicketDetail(ticketId: number | null) {
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(error, "Failed to load the support ticket."),
+            error: getErrorMessage(error, t("support.loadDetailFailed")),
           }));
         }
       });
     return () => controller.abort();
-  }, [requestKey, ticketId]);
+  }, [requestKey, t, ticketId]);
 
   const reply = useCallback(async (content: string) => {
     if (ticketId === null) return;
     setAction("reply");
     try {
       await replySupportTicket(ticketId, content);
-      toast.success("Reply sent.");
+      toast.success(t("support.replySent"));
       reload();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to send reply."));
+      toast.error(getErrorMessage(error, t("support.replyFailed")));
       throw error;
     } finally {
       setAction(null);
     }
-  }, [reload, ticketId]);
+  }, [reload, t, ticketId]);
 
   const changeStatus = useCallback(async (status: SupportTicketStatus) => {
     if (ticketId === null) return;
     setAction("status");
     try {
       await updateSupportTicketStatus(ticketId, status);
-      toast.success("Ticket status updated.");
+      toast.success(t("support.statusUpdated"));
       reload();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to update ticket status."));
+      toast.error(getErrorMessage(error, t("support.statusUpdateFailed")));
       throw error;
     } finally {
       setAction(null);
     }
-  }, [reload, ticketId]);
+  }, [reload, t, ticketId]);
 
   const assignToMe = useCallback(async () => {
     if (ticketId === null) return;
     setAction("assign");
     try {
       await assignSupportTicketToCurrentAdmin(ticketId);
-      toast.success("Ticket assigned to you.");
+      toast.success(t("support.assigned"));
       reload();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to assign ticket."));
+      toast.error(getErrorMessage(error, t("support.assignFailed")));
       throw error;
     } finally {
       setAction(null);
     }
-  }, [reload, ticketId]);
+  }, [reload, t, ticketId]);
 
   const downloadAttachment = useCallback(async (id: number, name: string) => {
     setAction("download");
@@ -105,11 +107,11 @@ export function useSupportTicketDetail(ticketId: number | null) {
       link.rel = "noopener noreferrer";
       link.click();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to download attachment."));
+      toast.error(getErrorMessage(error, t("support.downloadFailed")));
     } finally {
       setAction(null);
     }
-  }, []);
+  }, [t]);
 
   return {
     data: result.data,

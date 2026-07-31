@@ -3,6 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,13 +26,14 @@ export default function OrganizationDetailPage({
 }) {
   const { id } = use(params);
   const orgId = Number(id);
+  const t = useTranslations("admin");
   const router = useRouter();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const { organization, members, error, loading } = useOrganizationDetail(orgId);
 
   if (!Number.isSafeInteger(orgId) || orgId <= 0) {
-    return <AlertMessage type="error" message="Invalid organization identifier." />;
+    return <AlertMessage type="error" message={t("organizations.invalidId")} />;
   }
 
   if (loading) {
@@ -46,11 +48,11 @@ export default function OrganizationDetailPage({
   if (error || !organization) {
     return (
       <div className="space-y-4">
-        <AlertMessage type="error" message={error ?? "Organization not found."} />
+        <AlertMessage type="error" message={error ?? t("organizations.notFound")} />
         <Button asChild variant="outline">
           <Link href="/admin/organizations">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to organizations
+            {t("organizations.backToList")}
           </Link>
         </Button>
       </div>
@@ -67,7 +69,7 @@ export default function OrganizationDetailPage({
             className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-1 h-3 w-3" />
-            Organizations
+            {t("nav.organizations")}
           </Link>
         }
         title={organization.name}
@@ -75,21 +77,21 @@ export default function OrganizationDetailPage({
         actions={
           <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete
+            {t("common.delete")}
           </Button>
         }
       />
 
       <section className="grid gap-4 sm:grid-cols-3">
         <div className="border-l-2 border-primary/50 pl-4">
-          <p className="text-xs text-muted-foreground">Members</p>
+          <p className="text-xs text-muted-foreground">{t("organizations.stats.members")}</p>
           <p className="text-2xl font-semibold">{members.length}</p>
         </div>
         <div className="border-l-2 border-border pl-4">
-          <p className="text-xs text-muted-foreground">Subscription</p>
+          <p className="text-xs text-muted-foreground">{t("organizations.stats.subscription")}</p>
           <div className="mt-1 flex flex-wrap gap-2">
             <Badge variant={organization.subscription_status === "active" ? "success" : "secondary"}>
-              {organization.subscription_status || "none"}
+              {organization.subscription_status || t("organizations.subscriptionNone")}
             </Badge>
             {organization.subscription_plan && (
               <Badge variant="outline">{organization.subscription_plan}</Badge>
@@ -97,7 +99,7 @@ export default function OrganizationDetailPage({
           </div>
         </div>
         <div className="border-l-2 border-border pl-4">
-          <p className="text-xs text-muted-foreground">Created</p>
+          <p className="text-xs text-muted-foreground">{t("organizations.stats.created")}</p>
           <p className="mt-1 text-sm font-medium">
             {new Date(organization.created_at).toLocaleDateString()}
           </p>
@@ -111,19 +113,19 @@ export default function OrganizationDetailPage({
       <ConfirmDialog
         open={deleteOpen}
         onOpenChange={setDeleteOpen}
-        title="Delete this organization?"
-        description={`${organization.name} and its tenant-owned resources will be permanently deleted.`}
+        title={t("organizations.deleteTitle")}
+        description={t("organizations.deleteDescription", { name: organization.name })}
         variant="destructive"
-        confirmText="Delete organization"
+        confirmText={t("organizations.deleteConfirm")}
         loading={deleting}
         onConfirm={async () => {
           setDeleting(true);
           try {
             await deleteOrganization(orgId);
-            toast.success("Organization deleted.");
+            toast.success(t("organizations.deleteSuccess"));
             router.push("/admin/organizations");
           } catch (deleteError) {
-            toast.error(getErrorMessage(deleteError, "Failed to delete organization."));
+            toast.error(getErrorMessage(deleteError, t("organizations.deleteError")));
             throw deleteError;
           } finally {
             setDeleting(false);

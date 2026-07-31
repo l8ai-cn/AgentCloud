@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Radio, RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { AlertMessage } from "@/components/ui/alert-message";
@@ -20,6 +21,7 @@ import { getErrorMessage } from "@/lib/utils";
 import { RelayRow } from "./RelayRow";
 
 export default function RelaysPage() {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const [relays, setRelays] = useState<AdminRelay[] | null>(null);
   const [stats, setStats] = useState<AdminRelayStats | null>(null);
@@ -39,33 +41,33 @@ export default function RelaysPage() {
       })
       .catch((loadError) => {
         if (!controller.signal.aborted) {
-          setError(getErrorMessage(loadError, "Failed to load relays."));
+          setError(getErrorMessage(loadError, t("relays.loadFailed")));
         }
       });
     return () => controller.abort();
-  }, [revision]);
+  }, [revision, t]);
 
   return (
     <div className="space-y-5">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title="Relays"
-        subtitle="Monitor data-plane capacity and remove stale relay registrations."
+        title={t("nav.relays")}
+        subtitle={t("relays.subtitle")}
         actions={
           <Button variant="outline" size="sm" onClick={reload} loading={relays === null}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />
 
       <section className="grid gap-4 sm:grid-cols-3">
         {[
-          ["Registered", stats?.total_relays ?? 0],
-          ["Healthy", stats?.healthy_relays ?? 0],
-          ["Connections", stats?.total_connections ?? 0],
-        ].map(([label, value]) => (
-          <div key={label} className="border-l-2 border-border pl-4">
+          { id: "registered", label: t("relays.stats.registered"), value: stats?.total_relays ?? 0 },
+          { id: "healthy", label: t("relays.stats.healthy"), value: stats?.healthy_relays ?? 0 },
+          { id: "connections", label: t("relays.stats.connections"), value: stats?.total_connections ?? 0 },
+        ].map(({ id, label, value }) => (
+          <div key={id} className="border-l-2 border-border pl-4">
             <p className="text-xs text-muted-foreground">{label}</p>
             <p className="text-2xl font-semibold">{value}</p>
           </div>
@@ -94,8 +96,8 @@ export default function RelaysPage() {
           <EmptyState
             size="compact"
             icon={<Radio className="h-5 w-5" />}
-            title="No relays registered"
-            description="Connected relay services will appear here."
+            title={t("relays.empty.title")}
+            description={t("relays.empty.description")}
           />
         )}
       </section>
@@ -103,23 +105,26 @@ export default function RelaysPage() {
       <ConfirmDialog
         open={pending !== null}
         onOpenChange={(open) => !open && setPending(null)}
-        title="Force unregister this relay?"
+        title={t("relays.unregister.title")}
         description={pending
-          ? `${pending.id} has ${pending.connections} active connections. The backend does not provide session migration.`
+          ? t("relays.unregister.listDescription", {
+              id: pending.id,
+              connections: pending.connections,
+            })
           : undefined}
         variant="destructive"
-        confirmText="Unregister relay"
+        confirmText={t("relays.unregister.confirm")}
         loading={busy}
         onConfirm={async () => {
           if (!pending) return;
           setBusy(true);
           try {
             await forceUnregisterRelay(pending.id);
-            toast.success("Relay unregistered.");
+            toast.success(t("relays.unregister.success"));
             setPending(null);
             reload();
           } catch (actionError) {
-            toast.error(getErrorMessage(actionError, "Failed to unregister relay."));
+            toast.error(getErrorMessage(actionError, t("relays.unregister.failed")));
             throw actionError;
           } finally {
             setBusy(false);

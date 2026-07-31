@@ -2,11 +2,11 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
 import { Drawer } from "vaul";
 import { cn } from "@/lib/utils";
 import { useIDEStore, getMoreMenuActivities, type ActivityType } from "@/stores/ide";
-import { useCurrentOrg, useAuthStore } from "@/stores/auth";
+import { useCurrentOrg } from "@/stores/auth";
+import { useIsSystemAdmin } from "@/hooks/useIsSystemAdmin";
 import { useTranslations } from "next-intl";
 import {
   Network,
@@ -14,15 +14,11 @@ import {
   Settings,
   Repeat,
   Target,
+  ShieldCheck,
   Sparkles,
-  Moon,
-  Sun,
-  Monitor,
-  Palette,
-  Check,
   type LucideIcon,
 } from "lucide-react";
-import { themeConfigs, type Theme } from "@/lib/theme";
+import { MobileThemeMenu } from "./MobileThemeMenu";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   network: Network,
@@ -39,32 +35,14 @@ interface MobileMoreMenuProps {
 
 export function MobileMoreMenu({ className }: MobileMoreMenuProps) {
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
   const { setActiveActivity, mobileMoreMenuOpen, setMobileMoreMenuOpen } =
     useIDEStore();
   const currentOrg = useCurrentOrg();
+  const isSystemAdmin = useIsSystemAdmin();
   const t = useTranslations();
   const orgSlug = currentOrg?.slug || "";
 
   const moreActivities = getMoreMenuActivities();
-
-  const [themeMenuOpen, setThemeMenuOpen] = React.useState(false);
-
-  const themeIconMap = {
-    sun: Sun,
-    moon: Moon,
-    monitor: Monitor,
-    palette: Palette,
-  };
-
-  const getThemeIcon = () => {
-    const config = themeConfigs.find((c) => c.id === theme);
-    if (config) {
-      const Icon = themeIconMap[config.icon];
-      return <Icon className="w-5 h-5" />;
-    }
-    return <Monitor className="w-5 h-5" />;
-  };
 
   const getActivityRoute = (activity: ActivityType): string => {
     switch (activity) {
@@ -85,10 +63,14 @@ export function MobileMoreMenu({ className }: MobileMoreMenuProps) {
     }
   };
 
+  const navigate = (route: string) => {
+    setMobileMoreMenuOpen(false);
+    router.push(route);
+  };
+
   const handleActivityClick = (activity: ActivityType) => {
     setActiveActivity(activity);
-    setMobileMoreMenuOpen(false);
-    router.push(getActivityRoute(activity));
+    navigate(getActivityRoute(activity));
   };
 
   return (
@@ -135,56 +117,22 @@ export function MobileMoreMenu({ className }: MobileMoreMenuProps) {
               );
             })}
 
+            {isSystemAdmin && (
+              <button
+                className="w-full flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-muted active:bg-muted transition-colors"
+                onClick={() => navigate("/admin")}
+              >
+                <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <span className="text-sm font-medium">{t("admin.title")}</span>
+              </button>
+            )}
+
             {/* Divider */}
             <div className="h-px bg-border my-2 mx-4" />
 
-            {/* Theme toggle */}
-            <div className="relative">
-              <button
-                className="w-full flex items-center justify-between gap-4 px-4 py-3 rounded-lg hover:bg-muted active:bg-muted transition-colors"
-                onClick={() => setThemeMenuOpen(!themeMenuOpen)}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                    {getThemeIcon()}
-                  </div>
-                  <span className="text-sm font-medium">{t("mobile.menu.theme")}</span>
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {t(`mobile.menu.theme_${theme || "system"}`)}
-                </span>
-              </button>
-
-              {/* Theme submenu */}
-              {themeMenuOpen && (
-                <div className="ml-14 mr-4 mb-2 bg-secondary rounded-lg overflow-hidden">
-                  {themeConfigs.map((config) => {
-                    const Icon = themeIconMap[config.icon];
-                    const isActive = theme === config.id;
-
-                    return (
-                      <button
-                        key={config.id}
-                        className={cn(
-                          "w-full flex items-center justify-between gap-3 px-4 py-2.5 text-sm hover:bg-muted transition-colors",
-                          isActive && "bg-muted/50"
-                        )}
-                        onClick={() => {
-                          setTheme(config.id as Theme);
-                          setThemeMenuOpen(false);
-                        }}
-                      >
-                        <span className="flex items-center gap-3">
-                          <Icon className="w-4 h-4" />
-                          {t(`mobile.menu.${config.nameKey}`)}
-                        </span>
-                        {isActive && <Check className="w-4 h-4 text-primary" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <MobileThemeMenu />
           </div>
 
           {/* Safe area padding */}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,11 +21,15 @@ import { getErrorMessage } from "@/lib/utils";
 import { ExpertReleaseDetail } from "./ExpertReleaseDetail";
 import { ExpertReleaseList } from "./ExpertReleaseList";
 import { ExpertReleasePagination } from "./ExpertReleasePagination";
+import {
+  expertReleaseStatusLabelKeys,
+  expertReleaseStatuses,
+} from "./expertReleaseStatusLabels";
 
-const statuses: ExpertReleaseStatus[] = ["pending", "published", "rejected", "withdrawn"];
 const PAGE_SIZE = 20;
 
 export default function ExpertMarketPage() {
+  const t = useTranslations("admin");
   const [status, setStatus] = useState<ExpertReleaseStatus>("pending");
   const [offset, setOffset] = useState(0);
   const [revision, setRevision] = useState(0);
@@ -63,14 +68,14 @@ export default function ExpertMarketPage() {
       })
       .catch((loadError) => {
         if (!controller.signal.aborted) {
-          setError(getErrorMessage(loadError, "Failed to load expert releases."));
+          setError(getErrorMessage(loadError, t("expertMarket.loadFailed")));
         }
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [offset, revision, status]);
+  }, [offset, revision, status, t]);
 
   const act = async () => {
     if (!selected || !pendingAction) return;
@@ -82,10 +87,14 @@ export default function ExpertMarketPage() {
       setSelected(updated);
       setReason("");
       setPendingAction(null);
-      toast.success(pendingAction === "approve" ? "Release approved." : "Release rejected.");
+      toast.success(
+        pendingAction === "approve"
+          ? t("expertMarket.approved")
+          : t("expertMarket.rejected"),
+      );
       reload();
     } catch (actionError) {
-      toast.error(getErrorMessage(actionError, "Review action failed."));
+      toast.error(getErrorMessage(actionError, t("expertMarket.actionFailed")));
       throw actionError;
     } finally {
       setBusy(false);
@@ -96,12 +105,12 @@ export default function ExpertMarketPage() {
     <div className="space-y-5">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title="Expert market"
-        subtitle="Review publishable expert snapshots and their runtime dependencies."
-        actions={<Button variant="outline" size="sm" onClick={reload}><RefreshCw className="mr-2 h-4 w-4" />Refresh</Button>}
+        title={t("expertMarket.title")}
+        subtitle={t("expertMarket.subtitle")}
+        actions={<Button variant="outline" size="sm" onClick={reload}><RefreshCw className="mr-2 h-4 w-4" />{t("common.refresh")}</Button>}
       />
       <div className="flex max-w-full gap-1 overflow-x-auto border-b border-border">
-        {statuses.map((item) => (
+        {expertReleaseStatuses.map((item) => (
           <Button
             key={item}
             size="sm"
@@ -114,12 +123,14 @@ export default function ExpertMarketPage() {
               setReason("");
             }}
           >
-            {item}
+            {t(expertReleaseStatusLabelKeys[item])}
           </Button>
         ))}
       </div>
       {error && <AlertMessage type="error" message={error} />}
-      <p className="text-sm text-muted-foreground">{data?.total ?? 0} releases</p>
+      <p className="text-sm text-muted-foreground">
+        {t("expertMarket.releaseCount", { count: data?.total ?? 0 })}
+      </p>
       <ExpertReleaseList
         releases={data?.releases ?? []}
         loading={loading && data === null && !error}
@@ -128,7 +139,7 @@ export default function ExpertMarketPage() {
             setSelected(await getExpertRelease(id));
             setReason("");
           } catch (detailError) {
-            toast.error(getErrorMessage(detailError, "Failed to load release."));
+            toast.error(getErrorMessage(detailError, t("expertMarket.loadDetailFailed")));
           }
         }}
       />
@@ -153,12 +164,16 @@ export default function ExpertMarketPage() {
       <ConfirmDialog
         open={pendingAction !== null}
         onOpenChange={(open) => !open && setPendingAction(null)}
-        title={pendingAction === "approve" ? "Approve this release?" : "Reject this release?"}
+        title={pendingAction === "approve"
+          ? t("expertMarket.approveConfirmTitle")
+          : t("expertMarket.rejectConfirmTitle")}
         description={pendingAction === "approve"
-          ? "The release will become available in the expert market."
+          ? t("expertMarket.approveConfirmDescription")
           : reason.trim()}
         variant={pendingAction === "reject" ? "destructive" : "default"}
-        confirmText={pendingAction === "approve" ? "Approve" : "Reject"}
+        confirmText={pendingAction === "approve"
+          ? t("expertMarket.approve")
+          : t("expertMarket.reject")}
         loading={busy}
         onConfirm={act}
       />

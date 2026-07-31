@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import {
   getSupportTicketStats,
@@ -23,6 +24,7 @@ export interface SupportTicketFilters {
 }
 
 export function useSupportTickets(filters: SupportTicketFilters, page: number) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const requestKey = JSON.stringify([filters, page, revision]);
   const [result, setResult] = useState<{
@@ -58,12 +60,12 @@ export function useSupportTickets(filters: SupportTicketFilters, page: number) {
             key: requestKey,
             data: current.data,
             stats: current.stats,
-            error: getErrorMessage(error, "Failed to load support tickets."),
+            error: getErrorMessage(error, t("support.loadFailed")),
           }));
         }
       });
     return () => controller.abort();
-  }, [filters, page, requestKey]);
+  }, [filters, page, requestKey, t]);
 
   return {
     data: result.data,

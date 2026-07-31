@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Eye, Radio, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export function RelayRow({
   busy: boolean;
   onUnregister: () => void;
 }) {
+  const t = useTranslations("admin");
   const load = relay.capacity > 0
     ? Math.min(100, Math.round((relay.connections / relay.capacity) * 100))
     : 0;
@@ -30,7 +32,7 @@ export function RelayRow({
           <div className="flex flex-wrap items-center gap-2">
             <p className="truncate text-sm font-medium">{relay.id}</p>
             <Badge variant={relay.healthy ? "success" : "destructive"}>
-              {relay.healthy ? "Healthy" : "Unhealthy"}
+              {relay.healthy ? t("relays.healthy") : t("relays.unhealthy")}
             </Badge>
             {relay.region && <Badge variant="outline">{relay.region}</Badge>}
           </div>
@@ -41,15 +43,26 @@ export function RelayRow({
         <div className="h-1.5 overflow-hidden rounded-full bg-surface-muted">
           <div className="h-full bg-primary" style={{ width: `${load}%` }} />
         </div>
-        <p>{relay.connections}/{relay.capacity} connections · {relay.avg_latency_ms} ms</p>
-        <p>CPU {relay.cpu_usage.toFixed(1)}% · Memory {relay.memory_usage.toFixed(1)}%</p>
+        <p>
+          {t("relays.row.load", {
+            connections: relay.connections,
+            capacity: relay.capacity,
+            latency: relay.avg_latency_ms,
+          })}
+        </p>
+        <p>
+          {t("relays.row.resources", {
+            cpu: relay.cpu_usage.toFixed(1),
+            memory: relay.memory_usage.toFixed(1),
+          })}
+        </p>
       </div>
       <div className="flex items-center justify-end gap-1">
         <Button asChild variant="ghost" size="icon">
           <Link
             href={`/admin/relays/${encodeURIComponent(relay.id)}`}
-            aria-label={`View ${relay.id} details`}
-            title="View relay details"
+            aria-label={t("relays.viewDetails", { name: relay.id })}
+            title={t("relays.viewDetailsTitle")}
           >
             <Eye className="h-4 w-4" />
           </Link>
@@ -58,8 +71,8 @@ export function RelayRow({
           variant="ghost"
           size="icon"
           disabled={busy}
-          aria-label={`Unregister ${relay.id}`}
-          title="Force unregister relay"
+          aria-label={t("relays.unregisterRelay", { name: relay.id })}
+          title={t("relays.unregisterRelayTitle")}
           className="text-destructive hover:text-destructive"
           onClick={onUnregister}
         >

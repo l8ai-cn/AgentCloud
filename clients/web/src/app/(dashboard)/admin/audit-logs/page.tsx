@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { RefreshCw } from "lucide-react";
 import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
@@ -11,14 +12,15 @@ import type { AdminPaginated, AuditLog } from "@/lib/api/admin/types";
 import { getErrorMessage } from "@/lib/utils";
 import { AuditLogRow } from "./AuditLogRow";
 
-const FILTERS: { label: string; value?: string }[] = [
-  { label: "All", value: undefined },
-  { label: "Users", value: "user" },
-  { label: "Organizations", value: "organization" },
-  { label: "Runners", value: "runner" },
+const FILTERS: { labelKey: string; value?: string }[] = [
+  { labelKey: "auditLogs.filters.all", value: undefined },
+  { labelKey: "nav.users", value: "user" },
+  { labelKey: "nav.organizations", value: "organization" },
+  { labelKey: "nav.runners", value: "runner" },
 ];
 
 export default function AuditLogsPage() {
+  const t = useTranslations("admin");
   const [page, setPage] = useState(1);
   const [targetType, setTargetType] = useState<string | undefined>();
   const [revision, setRevision] = useState(0);
@@ -45,21 +47,21 @@ export default function AuditLogsPage() {
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(loadError, "Failed to load audit logs."),
+            error: getErrorMessage(loadError, t("auditLogs.loadError")),
           }));
         }
       });
     return () => {
       cancelled = true;
     };
-  }, [page, requestKey, targetType]);
+  }, [page, requestKey, t, targetType]);
 
   return (
     <div className="space-y-4">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title="Audit logs"
-        subtitle="Review system administrator actions across protected resources."
+        title={t("nav.auditLogs")}
+        subtitle={t("auditLogs.subtitle")}
         actions={
           <Button
             variant="outline"
@@ -68,7 +70,7 @@ export default function AuditLogsPage() {
             loading={isLoading}
           >
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />
@@ -78,7 +80,7 @@ export default function AuditLogsPage() {
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
           <Button
-            key={f.label}
+            key={f.labelKey}
             variant={targetType === f.value ? "default" : "outline"}
             size="sm"
             onClick={() => {
@@ -86,14 +88,14 @@ export default function AuditLogsPage() {
               setPage(1);
             }}
           >
-            {f.label}
+            {t(f.labelKey)}
           </Button>
         ))}
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Audit Logs ({data?.total ?? 0})</CardTitle>
+          <CardTitle>{t("auditLogs.cardTitle", { count: data?.total ?? 0 })}</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -109,7 +111,7 @@ export default function AuditLogsPage() {
               ))}
               {data?.data.length === 0 && (
                 <p className="py-8 text-center text-muted-foreground">
-                  No audit logs
+                  {t("auditLogs.empty")}
                 </p>
               )}
             </div>
@@ -118,7 +120,7 @@ export default function AuditLogsPage() {
           {data && data.total_pages > 1 && (
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm text-muted-foreground">
-                Page {data.page} / {data.total_pages}
+                {t("common.pageOf", { page: data.page, total: data.total_pages })}
               </p>
               <div className="flex gap-2">
                 <Button
@@ -127,7 +129,7 @@ export default function AuditLogsPage() {
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
                 >
-                  Previous
+                  {t("common.previous")}
                 </Button>
                 <Button
                   variant="outline"
@@ -135,7 +137,7 @@ export default function AuditLogsPage() {
                   disabled={page >= data.total_pages}
                   onClick={() => setPage(page + 1)}
                 >
-                  Next
+                  {t("common.next")}
                 </Button>
               </div>
             </div>

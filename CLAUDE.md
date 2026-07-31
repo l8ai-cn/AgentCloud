@@ -374,9 +374,15 @@ system administrators.
 ### Features
 
 - **Dashboard**: System statistics (users, organizations, runners, pods)
-- **User Management**: View, disable/enable users, grant/revoke admin privileges
-- **Organization Management**: View, update, delete organizations
-- **Runner Management**: View, disable/enable, delete runners
+- **User Management**: Search, disable/enable users, verify/unverify email, grant/revoke admin privileges
+- **Organization Management**: Search, delete organizations, read-only members, paginated runners
+- **Subscriptions**: Create, change plan/seats/cycle, freeze/unfreeze/cancel/renew, auto-renew, quotas
+- **Runner Management**: Search, disable/enable, delete runners
+- **Relay Management**: Inventory, stats, connection/capacity/location detail, force unregister
+- **SSO**: OIDC/SAML/LDAP config CRUD, enable/disable, connection test
+- **Promo Codes**: Create, edit, activate/deactivate, delete, redemption history
+- **Support Tickets**: Filter, claim, status changes, replies, attachment download (replies are text-only)
+- **Expert Market**: Paginated release review, approve/reject
 - **Audit Logs**: View all admin actions with filtering
 
 ### Configuration

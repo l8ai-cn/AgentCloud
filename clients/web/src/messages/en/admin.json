@@ -1,0 +1,748 @@
+{
+  "admin": {
+    "auditLogs": {
+      "byActor": "by {actor}",
+      "cardTitle": "Audit Logs ({count})",
+      "empty": "No audit logs",
+      "filters": {
+        "all": "All"
+      },
+      "fromIp": "from {ip}",
+      "loadError": "Failed to load audit logs.",
+      "subtitle": "Review system administrator actions across protected resources."
+    },
+    "common": {
+      "cancel": "Cancel",
+      "close": "Close",
+      "confirm": "Confirm",
+      "delete": "Delete",
+      "disable": "Disable",
+      "disabled": "Disabled",
+      "edit": "Edit",
+      "enable": "Enable",
+      "enabled": "Enabled",
+      "loading": "Loading...",
+      "never": "Never",
+      "next": "Next",
+      "no": "No",
+      "pageOf": "Page {page} of {total}",
+      "previous": "Previous",
+      "refresh": "Refresh",
+      "save": "Save",
+      "tryDifferentSearch": "Try a different search.",
+      "unknownError": "Something went wrong.",
+      "yes": "Yes"
+    },
+    "expertMarket": {
+      "actionFailed": "Review action failed.",
+      "approve": "Approve",
+      "approveConfirmDescription": "The release will become available in the expert market.",
+      "approveConfirmTitle": "Approve this release?",
+      "approveRelease": "Approve release",
+      "approved": "Release approved.",
+      "emptyTitle": "No releases in this state",
+      "expertSnapshot": "Expert snapshot",
+      "loadDetailFailed": "Failed to load release.",
+      "loadFailed": "Failed to load expert releases.",
+      "nextPage": "Next page",
+      "previousPage": "Previous page",
+      "reject": "Reject",
+      "rejectConfirmTitle": "Reject this release?",
+      "rejectRelease": "Reject release",
+      "rejected": "Release rejected.",
+      "rejectionAriaLabel": "Rejection reason",
+      "rejectionPlaceholder": "Rejection reason",
+      "rejectionReason": "Rejection: {reason}",
+      "releaseCount": "{count} releases",
+      "review": "Review",
+      "showingRange": "Showing {first}-{last} of {total}",
+      "skillDependencies": "Skill dependencies",
+      "status": {
+        "pending": "pending",
+        "published": "published",
+        "rejected": "rejected",
+        "withdrawn": "withdrawn"
+      },
+      "subtitle": "Review publishable expert snapshots and their runtime dependencies.",
+      "title": "Expert market",
+      "uncategorized": "Uncategorized",
+      "versionLabel": "v{version}",
+      "workerSpec": "Worker specification"
+    },
+    "nav": {
+      "auditLogs": "Audit logs",
+      "expertReview": "Expert review",
+      "label": "System administration",
+      "organizations": "Organizations",
+      "overview": "Overview",
+      "promoCodes": "Promo codes",
+      "relays": "Relays",
+      "runners": "Runners",
+      "sso": "SSO",
+      "support": "Support",
+      "users": "Users"
+    },
+    "organizations": {
+      "backToList": "Back to organizations",
+      "count": "{count, number} organizations",
+      "createdOn": "Created {date}",
+      "deleteAria": "Delete {name}",
+      "deleteConfirm": "Delete organization",
+      "deleteDescription": "{name} and its tenant-owned resources will be permanently deleted.",
+      "deleteError": "Failed to delete organization.",
+      "deleteSuccess": "Organization deleted.",
+      "deleteTitle": "Delete this organization?",
+      "detailLoadError": "Failed to load organization.",
+      "emptyDescription": "No tenant organizations exist yet.",
+      "emptyTitle": "No organizations found",
+      "invalidId": "Invalid organization identifier.",
+      "loadError": "Failed to load organizations.",
+      "memberFallbackName": "User #{id}",
+      "memberJoined": "Joined {date}",
+      "membersEmptyDescription": "This organization has no active membership records.",
+      "membersEmptyTitle": "No members",
+      "membersHeading": "Members ({count})",
+      "noSubscription": "no subscription",
+      "notFound": "Organization not found.",
+      "openAria": "Open {name}",
+      "runnerAgents": "Available agents",
+      "runnerDescription": "Description",
+      "runnerLastHeartbeat": "Last heartbeat {time}",
+      "runnerManagement": "Runner management",
+      "runnerNoAgents": "None reported",
+      "runnerNoDescription": "No description",
+      "runnerNoHeartbeat": "No heartbeat recorded",
+      "runnerPods": "{current}/{max} pods",
+      "runnerRegistered": "Registered",
+      "runnerVersionAndPods": "v{version} · {current}/{max} pods",
+      "runnersEmptyDescription": "This organization has no registered runners.",
+      "runnersEmptyTitle": "No runners",
+      "runnersHeading": "Runners ({count})",
+      "runnersLoadError": "Failed to load organization runners.",
+      "runnersLoadingAria": "Loading runners",
+      "runnersRetry": "Retry",
+      "searchPlaceholder": "Search organizations",
+      "stats": {
+        "created": "Created",
+        "members": "Members",
+        "subscription": "Subscription"
+      },
+      "subscriptionNone": "none",
+      "subtitle": "Inspect tenant membership, subscriptions, quotas, and execution capacity."
+    },
+    "overview": {
+      "loadError": "Failed to load system statistics.",
+      "stats": {
+        "activePods": "Active pods",
+        "activePodsDetail": "{count, number} total",
+        "organizationsDetail": "{count, number} active subscriptions",
+        "runnersDetail": "{count, number} online",
+        "usersDetail": "{count, number} active"
+      },
+      "subtitle": "Operational status across accounts, organizations, and execution capacity.",
+      "userGrowth": {
+        "last7Days": "Last 7 days",
+        "lastMonth": "Last month",
+        "title": "User growth",
+        "today": "Today"
+      }
+    },
+    "promoCodes": {
+      "action": {
+        "activate": "Activate",
+        "deactivate": "Deactivate"
+      },
+      "confirm": {
+        "activate": {
+          "description": "Eligible organizations will be able to redeem it immediately. Target: {code}",
+          "title": "Activate this promo code?"
+        },
+        "deactivate": {
+          "description": "New redemptions will stop until the code is activated again. Target: {code}",
+          "title": "Deactivate this promo code?"
+        },
+        "delete": {
+          "description": "Deletion is permanent and the backend rejects codes with redemptions. Target: {code}",
+          "title": "Delete this promo code?"
+        },
+        "deleteConfirmText": "Delete code"
+      },
+      "count": "{count} promo codes",
+      "create": {
+        "submit": "Create promo code",
+        "subtitle": "Issue a subscription plan extension with explicit usage and time limits.",
+        "title": "Create promo code"
+      },
+      "createCode": "Create code",
+      "createdAt": "Created {date}",
+      "detail": {
+        "backToList": "Back to promo codes",
+        "confirm": {
+          "activate": "{code} will accept new redemptions.",
+          "deactivate": "{code} will stop accepting new redemptions.",
+          "delete": "{code} will be permanently deleted. The backend rejects deletion if redemptions exist."
+        },
+        "deleteBlocked": "Codes with redemptions cannot be deleted",
+        "deleteTitle": "Delete promo code"
+      },
+      "durationMonths": "{count, plural, one {# month} other {# months}}",
+      "edit": {
+        "description": "Code, type, plan, duration, and start time are immutable in the backend.",
+        "expiresAtHint": "Clear the value to remove expiration.",
+        "heading": "Editable settings",
+        "maxUsesHint": "Blank leaves the current limit unchanged; the API cannot reset a finite limit to unlimited.",
+        "submit": "Save changes"
+      },
+      "empty": {
+        "description": "Create the first promo code for a subscription campaign.",
+        "searching": "Try changing the search or filters.",
+        "title": "No promo codes found"
+      },
+      "endsAt": "Ends {date}",
+      "error": {
+        "actionFailed": "Promo code update failed.",
+        "create": "Failed to create promo code.",
+        "invalidId": "Invalid promo code identifier.",
+        "load": "Failed to load promo codes.",
+        "loadDetail": "Failed to load promo code.",
+        "loadRedemptions": "Failed to load redemptions.",
+        "notFound": "Promo code not found.",
+        "unableToCreate": "Unable to create promo code.",
+        "unableToUpdate": "Unable to update promo code.",
+        "update": "Failed to update promo code."
+      },
+      "expiresAt": "Expires {date}",
+      "filters": {
+        "allPlans": "All plans",
+        "allStatuses": "All statuses",
+        "allTypes": "All types",
+        "planLabel": "Filter by plan",
+        "searchLabel": "Search promo codes",
+        "searchPlaceholder": "Search code or name",
+        "selectedPlanEnterprise": "enterprise",
+        "selectedPlanPro": "pro",
+        "statusLabel": "Filter by status",
+        "typeLabel": "Filter by type"
+      },
+      "form": {
+        "code": "Code",
+        "codeHint": "Stored in uppercase; maximum 50 characters.",
+        "description": "Description",
+        "duration": "Duration (months)",
+        "expiresAt": "Expires at",
+        "expiresAtCreateHint": "Leave blank for no expiration.",
+        "maxUses": "Total use limit",
+        "maxUsesCreateHint": "Leave blank for unlimited.",
+        "name": "Name",
+        "plan": "Plan",
+        "planAriaLabel": "Subscription plan",
+        "startsAt": "Starts at",
+        "startsAtHint": "Leave blank to start immediately.",
+        "type": "Type",
+        "typeAriaLabel": "Promo code type",
+        "usesPerOrg": "Uses per organization"
+      },
+      "plan": {
+        "enterprise": "Enterprise",
+        "pro": "Pro"
+      },
+      "redemptions": {
+        "count": "{count} recorded uses",
+        "durationMonths": "{count} months",
+        "empty": {
+          "description": "This promo code has not been redeemed.",
+          "title": "No redemptions"
+        },
+        "organizationFallback": "Organization #{id}",
+        "title": "Redemptions",
+        "userFallback": "User #{id}",
+        "usernameUnavailable": "Username unavailable"
+      },
+      "row": {
+        "actionsFor": "Actions for {code}",
+        "viewAndEdit": "View and edit"
+      },
+      "status": {
+        "active": "Active",
+        "exhausted": "Exhausted",
+        "expired": "Expired",
+        "inactive": "Inactive"
+      },
+      "subtitle": "Create and control subscription access codes across the platform.",
+      "summary": {
+        "expires": "Expires",
+        "offer": "Offer",
+        "offerValue": "{count, plural, one {# month} other {# months}} of {plan}",
+        "starts": "Starts",
+        "usage": "Usage",
+        "usagePerOrg": "{count} per organization"
+      },
+      "toast": {
+        "activated": "Promo code activated.",
+        "created": "Promo code created.",
+        "deactivated": "Promo code deactivated.",
+        "deleted": "Promo code deleted.",
+        "updated": "Promo code updated."
+      },
+      "type": {
+        "campaign": "Campaign",
+        "internal": "Internal",
+        "media": "Media",
+        "partner": "Partner",
+        "referral": "Referral"
+      },
+      "updatedAt": "Updated {date}",
+      "usage": {
+        "limited": "{used} / {limit}",
+        "unlimited": "{used} / unlimited"
+      },
+      "validation": {
+        "durationPositive": "Duration must be a positive integer.",
+        "expirationAfterStart": "Expiration must be after the start time.",
+        "maxUsesPositive": "Maximum uses must be a positive integer.",
+        "usesPerOrgPositive": "Uses per organization must be a positive integer."
+      }
+    },
+    "relays": {
+      "detail": {
+        "averageLatency": "Average latency",
+        "backToRelays": "Back to relays",
+        "capacityAndHealth": "Capacity and health",
+        "connection": "Connection",
+        "connections": "Connections",
+        "connectionsUsage": "{connections} / {capacity} ({load}%)",
+        "cpuUsage": "CPU usage",
+        "forceUnregister": "Force unregister",
+        "lastHeartbeat": "Last heartbeat",
+        "latitude": "Latitude",
+        "loadFailed": "Failed to load relay.",
+        "location": "Location",
+        "longitude": "Longitude",
+        "memoryUsage": "Memory usage",
+        "milliseconds": "{value} ms",
+        "notReported": "Not reported",
+        "percent": "{value}%",
+        "region": "Region",
+        "relayId": "Relay ID",
+        "retry": "Retry",
+        "status": "Status",
+        "subtitle": "Live registration and health data reported by the backend.",
+        "title": "Relay details",
+        "unavailable": "This relay is unavailable or has already been unregistered.",
+        "url": "URL"
+      },
+      "empty": {
+        "description": "Connected relay services will appear here.",
+        "title": "No relays registered"
+      },
+      "healthy": "Healthy",
+      "loadFailed": "Failed to load relays.",
+      "row": {
+        "load": "{connections}/{capacity} connections · {latency} ms",
+        "resources": "CPU {cpu}% · Memory {memory}%"
+      },
+      "stats": {
+        "connections": "Connections",
+        "healthy": "Healthy",
+        "registered": "Registered"
+      },
+      "subtitle": "Monitor data-plane capacity and remove stale relay registrations.",
+      "unhealthy": "Unhealthy",
+      "unregister": {
+        "confirm": "Unregister relay",
+        "detailDescription": "{id} will be removed from the backend relay roster. Existing connections may be interrupted.",
+        "failed": "Failed to unregister relay.",
+        "listDescription": "{id} has {connections} active connections. The backend does not provide session migration.",
+        "success": "Relay unregistered.",
+        "title": "Force unregister this relay?"
+      },
+      "unregisterRelay": "Unregister {name}",
+      "unregisterRelayTitle": "Force unregister relay",
+      "viewDetails": "View {name} details",
+      "viewDetailsTitle": "View relay details"
+    },
+    "runners": {
+      "actions": {
+        "delete": "Delete {nodeId}",
+        "deleteTitle": "Delete runner",
+        "disable": "Disable {nodeId}",
+        "disableTitle": "Disable runner",
+        "enable": "Enable {nodeId}",
+        "enableTitle": "Enable runner"
+      },
+      "agentCount": "{count} agents",
+      "confirm": {
+        "delete": {
+          "description": "This permanently removes the runner registration and cannot be undone. Target: {nodeId}",
+          "title": "Delete this runner?"
+        },
+        "disable": {
+          "description": "The runner stays connected but will no longer receive new pods. Target: {nodeId}",
+          "title": "Disable this runner?"
+        },
+        "enable": {
+          "description": "The runner becomes eligible to receive new pods again. Target: {nodeId}",
+          "title": "Enable this runner?"
+        }
+      },
+      "count": "{count} runners",
+      "empty": {
+        "description": "No runners are registered yet.",
+        "title": "No runners found"
+      },
+      "lastHeartbeat": "Last heartbeat {time}",
+      "loadFailed": "Failed to load runners.",
+      "noHeartbeat": "No heartbeat recorded",
+      "orgFallback": "Org #{id}",
+      "podsUsage": "{current}/{max} pods",
+      "registeredOn": "Registered {date}",
+      "searchLabel": "Search runners",
+      "searchPlaceholder": "Search by node ID, description, or organization",
+      "subtitle": "Inspect self-hosted runners across all organizations and control their availability.",
+      "toast": {
+        "deleted": "Runner deleted.",
+        "disabled": "Runner disabled.",
+        "enabled": "Runner enabled."
+      },
+      "updateFailed": "Runner update failed.",
+      "version": "v{version}"
+    },
+    "sso": {
+      "allProtocols": "All protocols",
+      "configurationCount": "{count} configurations",
+      "confirm": {
+        "deleteDescription": "This permanently removes the provider configuration and cannot be undone. Target: {domain}",
+        "deleteTitle": "Delete this SSO configuration?",
+        "disableDescription": "New sign-ins through this identity provider will stop. Target: {domain}",
+        "disableTitle": "Disable this SSO configuration?",
+        "enableDescription": "Users with the matching domain can use this identity provider. Target: {domain}",
+        "enableTitle": "Enable this SSO configuration?"
+      },
+      "create": "Create",
+      "defaultOrganization": "Default org #{id}",
+      "emptyDescription": "Create a configuration to enable domain-specific sign-in.",
+      "emptyFiltered": "Try a different search or protocol filter.",
+      "emptyTitle": "No SSO configurations found",
+      "enforced": "Enforced",
+      "filterProtocolAria": "Filter by protocol",
+      "form": {
+        "createDescription": "Configure a domain-specific identity provider for platform sign-in.",
+        "createTitle": "Create SSO configuration",
+        "defaultOrganizationHint": "Federated users join this organization on login.",
+        "defaultOrganizationId": "Default organization ID",
+        "displayName": "Display name",
+        "displayNamePlaceholder": "Company SSO",
+        "domain": "Domain",
+        "domainPlaceholder": "example.com",
+        "editDescription": "Domain and protocol are immutable. Blank secrets keep their current values.",
+        "editTitle": "Edit SSO configuration",
+        "enabledHint": "Allow this configuration to handle sign-in.",
+        "enforceSso": "Enforce SSO",
+        "enforceSsoHint": "Require matching users to sign in through this provider.",
+        "protocol": "Protocol",
+        "protocolAria": "SSO protocol",
+        "saveFailed": "Failed to save SSO configuration.",
+        "submitCreate": "Create configuration",
+        "submitSave": "Save changes"
+      },
+      "ldap": {
+        "baseDn": "Base DN",
+        "bindDn": "Bind DN",
+        "bindPassword": "Bind password",
+        "bindPasswordHint": "Leave blank to keep the current password.",
+        "emailAttribute": "Email attribute",
+        "host": "Host",
+        "legend": "LDAP settings",
+        "nameAttribute": "Name attribute",
+        "port": "Port",
+        "useTls": "Use TLS",
+        "useTlsHint": "Establish the LDAP connection with STARTTLS.",
+        "userFilter": "User filter",
+        "usernameAttribute": "Username attribute"
+      },
+      "listLoadingAria": "Loading SSO configurations",
+      "noDefaultOrganization": "No default organization",
+      "oidc": {
+        "ampBearerCodes": "AMP bearer application codes",
+        "ampBearerCodesHint": "JSON array of application codes allowed to delegate bearer access.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "clientSecretHint": "Leave blank to keep the current secret.",
+        "extraParams": "Authorize extra parameters",
+        "extraParamsHint": "JSON object passed to the authorization endpoint.",
+        "issuerUrl": "Issuer URL",
+        "legend": "OIDC settings",
+        "scopes": "Scopes"
+      },
+      "row": {
+        "deleteAria": "Delete {name}",
+        "deleteTitle": "Delete configuration",
+        "disableAria": "Disable {name}",
+        "disableTitle": "Disable configuration",
+        "editAria": "Edit {name}",
+        "editTitle": "Edit configuration",
+        "enableAria": "Enable {name}",
+        "enableTitle": "Enable configuration"
+      },
+      "saml": {
+        "certificate": "IdP certificate",
+        "legend": "SAML settings",
+        "metadataUrl": "IdP metadata URL",
+        "metadataXml": "IdP metadata XML",
+        "nameIdFormat": "NameID format",
+        "secretHint": "Leave blank to keep the current value.",
+        "spEntityId": "SP entity ID",
+        "ssoUrl": "IdP SSO URL"
+      },
+      "searchAria": "Search SSO configurations",
+      "searchPlaceholder": "Search by domain or display name",
+      "subtitle": "Configure domain-specific OIDC, SAML, and LDAP identity providers.",
+      "test": {
+        "buttonAria": "Test {name}",
+        "buttonTitle": "Test connection",
+        "failed": "Failed",
+        "idle": "Test",
+        "passed": "Passed",
+        "testing": "Testing"
+      },
+      "title": "Single sign-on",
+      "toast": {
+        "createFailed": "Failed to create SSO configuration.",
+        "created": "SSO configuration created.",
+        "deleteFailed": "Failed to delete SSO configuration.",
+        "deleted": "SSO configuration deleted.",
+        "disableFailed": "Failed to disable SSO configuration.",
+        "disabled": "SSO configuration disabled.",
+        "enableFailed": "Failed to enable SSO configuration.",
+        "enabled": "SSO configuration enabled.",
+        "loadFailed": "Failed to load SSO configurations.",
+        "testActionFailed": "Failed to test SSO configuration.",
+        "testFailed": "Connection test failed.",
+        "testPassed": "Connection test passed.",
+        "updateFailed": "Failed to update SSO configuration.",
+        "updated": "SSO configuration updated."
+      },
+      "updatedAt": "Updated {timestamp}",
+      "validation": {
+        "domainAndNameRequired": "Domain and display name are required.",
+        "invalidAmpBearerCodes": "AMP bearer application codes must be a JSON array.",
+        "invalidDomain": "Enter a valid domain such as example.com.",
+        "invalidExtraParams": "Authorize extra parameters must be a JSON object.",
+        "invalidLdapPort": "LDAP port must be between 1 and 65535.",
+        "invalidOrganizationId": "Default organization ID must be a positive integer.",
+        "ldapRequired": "LDAP host and base DN are required.",
+        "oidcRequired": "OIDC issuer URL and client ID are required.",
+        "samlSourceRequired": "Provide metadata URL, metadata XML, or an SSO URL with certificate."
+      }
+    },
+    "subscription": {
+      "autoRenew": "Auto-renew",
+      "autoRenewDisabled": "Auto-renew disabled.",
+      "autoRenewEnabled": "Auto-renew enabled.",
+      "autoRenewHint": "Renew at the end of the current period.",
+      "billing": "Billing",
+      "billingCycleAria": "Billing cycle",
+      "cancelDescription": "Cancel this subscription and stop future renewals.",
+      "cancelSuccess": "Subscription canceled.",
+      "cancelTitle": "Cancel subscription?",
+      "changeCycleDescription": "Change billing to {cycle}.",
+      "changeCycleTitle": "Change billing cycle?",
+      "changePlanDescription": "Change the plan to {plan}.",
+      "changePlanTitle": "Change subscription plan?",
+      "changeSeatsDescription": "Set this subscription to {seats} seats.",
+      "changeSeatsTitle": "Change seat count?",
+      "createButton": "Create subscription",
+      "createDescription": "Create an active {plan} subscription for {months} month(s).",
+      "createSuccess": "Subscription created.",
+      "createTitle": "Create subscription?",
+      "customQuotas": "Custom quotas",
+      "cycleMonthly": "Monthly",
+      "cycleUpdated": "Billing cycle updated.",
+      "cycleYearly": "Yearly",
+      "freeze": "Freeze",
+      "freezeDescription": "Execution and paid access may be restricted.",
+      "freezeSuccess": "Subscription frozen.",
+      "freezeTitle": "Freeze subscription?",
+      "lifecycle": "Lifecycle",
+      "loadError": "Failed to load subscription.",
+      "monthsAria": "Subscription months",
+      "newPlanAria": "New subscription plan",
+      "noRecord": "This organization has no subscription record.",
+      "periodRange": "{start} to {end}",
+      "planAndSeats": "Plan and seats",
+      "planAria": "Subscription plan",
+      "planUpdated": "Subscription plan updated.",
+      "quotaBadge": "{resource}: {value}",
+      "quotaDescription": "Override {resource} with {limit}.",
+      "quotaLimitAria": "Quota limit",
+      "quotaLimitPlaceholder": "-1 = unlimited",
+      "quotaResourceAria": "Quota resource",
+      "quotaTitle": "Set custom quota?",
+      "quotaUpdated": "Custom quota updated.",
+      "renew": "Renew",
+      "renewDescription": "Extend the current period by {months} month(s).",
+      "renewSuccess": "Subscription renewed.",
+      "renewTitle": "Renew subscription?",
+      "renewalMonthsAria": "Renewal months",
+      "seatCountAria": "Seat count",
+      "seatUsage": "{used} used, {available} available",
+      "seatsUpdated": "Seat count updated.",
+      "selectPlan": "Select plan",
+      "setOverride": "Set override",
+      "setSeats": "Set seats",
+      "title": "Subscription",
+      "unfreeze": "Unfreeze",
+      "unfreezeDescription": "Restore the subscription to active service.",
+      "unfreezeSuccess": "Subscription unfrozen.",
+      "unfreezeTitle": "Unfreeze subscription?",
+      "unlimited": "unlimited",
+      "updateError": "Subscription update failed."
+    },
+    "support": {
+      "adminBadge": "Admin",
+      "adminRef": "Admin #{id}",
+      "allCategories": "All categories",
+      "allPriorities": "All priorities",
+      "allStatuses": "All statuses",
+      "assignConfirmDescription": "You will become the assigned system administrator.",
+      "assignConfirmTitle": "Assign this ticket to you?",
+      "assignFailed": "Failed to assign ticket.",
+      "assignToMe": "Assign to me",
+      "assigned": "Ticket assigned to you.",
+      "attachmentMeta": "{type} · {size}",
+      "category": {
+        "account": "Account",
+        "bug": "Bug",
+        "featureRequest": "Feature request",
+        "other": "Other",
+        "usageQuestion": "Usage question"
+      },
+      "changeStatus": "Change status",
+      "changeStatusAriaLabel": "Change ticket status",
+      "conversation": "Conversation",
+      "createdAt": "Created {time}",
+      "detailSubtitle": "Ticket #{id} · User #{userId}",
+      "detailTitle": "Support ticket",
+      "detailUnavailable": "Ticket details are unavailable.",
+      "downloadFailed": "Failed to download attachment.",
+      "emptyDescription": "No users have submitted support tickets.",
+      "emptyFiltered": "Try clearing one or more filters.",
+      "emptyTitle": "No support tickets found",
+      "fields": {
+        "assignment": "Assignment",
+        "category": "Category",
+        "priority": "Priority",
+        "status": "Status",
+        "updated": "Updated"
+      },
+      "filterByCategory": "Filter by category",
+      "filterByPriority": "Filter by priority",
+      "filterByStatus": "Filter by status",
+      "invalidId": "The support ticket ID is invalid.",
+      "loadDetailFailed": "Failed to load the support ticket.",
+      "loadFailed": "Failed to load support tickets.",
+      "loadingDetail": "Loading ticket details",
+      "noMessagesDescription": "This ticket does not contain any conversation messages.",
+      "noMessagesTitle": "No messages",
+      "priority": {
+        "high": "High",
+        "low": "Low",
+        "medium": "Medium"
+      },
+      "replyAriaLabel": "Admin reply",
+      "replyFailed": "Failed to send reply.",
+      "replyPlaceholder": "Write an admin reply",
+      "replySent": "Reply sent.",
+      "resolvedAt": "Resolved {time}",
+      "searchAriaLabel": "Search support tickets",
+      "searchPlaceholder": "Search ticket titles",
+      "sendReply": "Send reply",
+      "stats": {
+        "inProgress": "In progress",
+        "open": "Open",
+        "resolved": "Resolved",
+        "total": "Total"
+      },
+      "status": {
+        "closed": "Closed",
+        "inProgress": "In progress",
+        "open": "Open",
+        "resolved": "Resolved"
+      },
+      "statusConfirmDescription": "Move this ticket to {status}?",
+      "statusConfirmTitle": "Change ticket status?",
+      "statusUpdateFailed": "Failed to update ticket status.",
+      "statusUpdated": "Ticket status updated.",
+      "subtitle": "Review platform support requests and respond as a system administrator.",
+      "ticketCount": "{count} tickets",
+      "ticketMeta": "#{id} · User #{userId}",
+      "title": "Support tickets",
+      "unassigned": "Unassigned",
+      "userRef": "User #{id}"
+    },
+    "title": "System administration",
+    "users": {
+      "actionsFor": "Actions for {email}",
+      "badge": {
+        "emailUnverified": "Email unverified",
+        "systemAdmin": "System admin"
+      },
+      "confirm": {
+        "disable": {
+          "description": "The user will be blocked from signing in until the account is enabled again.",
+          "title": "Disable this account?"
+        },
+        "enable": {
+          "description": "The user can sign in again.",
+          "title": "Enable this account?"
+        },
+        "grantAdmin": {
+          "description": "This user will be able to manage all platform accounts and organizations.",
+          "title": "Grant system administrator access?"
+        },
+        "revokeAdmin": {
+          "description": "The user will immediately lose access to system administration.",
+          "title": "Revoke system administrator access?"
+        },
+        "unverifyEmail": {
+          "description": "The account will return to an unverified email state.",
+          "title": "Remove email verification?"
+        },
+        "verifyEmail": {
+          "description": "Use only after independently confirming ownership.",
+          "title": "Mark email as verified?"
+        }
+      },
+      "confirmTarget": "Target: {email}",
+      "count": "{count} users",
+      "emptyDescription": "No user accounts exist yet.",
+      "emptyTitle": "No users found",
+      "errors": {
+        "action": "User update failed.",
+        "load": "Failed to load users."
+      },
+      "joined": "Joined {date}",
+      "lastLogin": "Last login {datetime}",
+      "menu": {
+        "disableAccount": "Disable account",
+        "enableAccount": "Enable account",
+        "grantAdmin": "Grant admin access",
+        "revokeAdmin": "Revoke admin access",
+        "unverifyEmail": "Remove email verification",
+        "verifyEmail": "Verify email"
+      },
+      "neverSignedIn": "Never signed in",
+      "searchLabel": "Search users",
+      "searchPlaceholder": "Search by email, username, or name",
+      "subtitle": "Manage account access, email verification, and system administrator privileges.",
+      "toast": {
+        "adminGranted": "System administrator access granted.",
+        "adminRevoked": "System administrator access revoked.",
+        "disabled": "User disabled.",
+        "emailUnverified": "Email verification removed.",
+        "emailVerified": "Email marked as verified.",
+        "enabled": "User enabled."
+      }
+    }
+  }
+}

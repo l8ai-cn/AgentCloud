@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, RefreshCw, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +20,7 @@ import { getErrorMessage } from "@/lib/utils";
 import { RelayDetailPanel } from "./RelayDetailPanel";
 
 export default function RelayDetailPage() {
+  const t = useTranslations("admin");
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [relay, setRelay] = useState<AdminRelay | null>(null);
@@ -40,14 +42,14 @@ export default function RelayDetailPage() {
       })
       .catch((loadError) => {
         if (!controller.signal.aborted) {
-          setError(getErrorMessage(loadError, "Failed to load relay."));
+          setError(getErrorMessage(loadError, t("relays.detail.loadFailed")));
         }
       })
       .finally(() => {
         if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [id, revision]);
+  }, [id, revision, t]);
 
   return (
     <div className="space-y-5">
@@ -56,16 +58,16 @@ export default function RelayDetailPage() {
         breadcrumb={
           <Link href="/admin/relays" className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-1 h-3.5 w-3.5" />
-            Relays
+            {t("nav.relays")}
           </Link>
         }
-        title={relay?.id ?? "Relay details"}
-        subtitle="Live registration and health data reported by the backend."
+        title={relay?.id ?? t("relays.detail.title")}
+        subtitle={t("relays.detail.subtitle")}
         actions={
           <>
             <Button variant="outline" size="sm" onClick={reload} loading={loading}>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
+              {t("common.refresh")}
             </Button>
             {relay && (
               <Button
@@ -75,7 +77,7 @@ export default function RelayDetailPage() {
                 onClick={() => setConfirming(true)}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Force unregister
+                {t("relays.detail.forceUnregister")}
               </Button>
             )}
           </>
@@ -94,12 +96,12 @@ export default function RelayDetailPage() {
       ) : (
         <div className="space-y-3 rounded-md border border-border bg-surface-raised p-4">
           <p className="text-sm text-muted-foreground">
-            This relay is unavailable or has already been unregistered.
+            {t("relays.detail.unavailable")}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={reload}>Retry</Button>
+            <Button variant="outline" size="sm" onClick={reload}>{t("relays.detail.retry")}</Button>
             <Button asChild variant="ghost" size="sm">
-              <Link href="/admin/relays">Back to relays</Link>
+              <Link href="/admin/relays">{t("relays.detail.backToRelays")}</Link>
             </Button>
           </div>
         </div>
@@ -108,22 +110,20 @@ export default function RelayDetailPage() {
       <ConfirmDialog
         open={confirming}
         onOpenChange={setConfirming}
-        title="Force unregister this relay?"
-        description={relay
-          ? `${relay.id} will be removed from the backend relay roster. Existing connections may be interrupted.`
-          : undefined}
+        title={t("relays.unregister.title")}
+        description={relay ? t("relays.unregister.detailDescription", { id: relay.id }) : undefined}
         variant="destructive"
-        confirmText="Unregister relay"
+        confirmText={t("relays.unregister.confirm")}
         loading={unregistering}
         onConfirm={async () => {
           if (!relay) return;
           setUnregistering(true);
           try {
             await forceUnregisterRelay(relay.id);
-            toast.success("Relay unregistered.");
+            toast.success(t("relays.unregister.success"));
             router.push("/admin/relays");
           } catch (actionError) {
-            toast.error(getErrorMessage(actionError, "Failed to unregister relay."));
+            toast.error(getErrorMessage(actionError, t("relays.unregister.failed")));
             throw actionError;
           } finally {
             setUnregistering(false);

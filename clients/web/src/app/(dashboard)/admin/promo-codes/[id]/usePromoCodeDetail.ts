@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { getPromoCode } from "@/lib/api/admin/promo";
 import type { AdminPromoCode } from "@/lib/api/admin/promoTypes";
 import { getErrorMessage } from "@/lib/utils";
 
 export function usePromoCodeDetail(id: number) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const requestKey = `${id}:${revision}`;
   const [result, setResult] = useState<{
@@ -31,12 +33,12 @@ export function usePromoCodeDetail(id: number) {
           setResult({
             key: requestKey,
             code: null,
-            error: getErrorMessage(error, "Failed to load promo code."),
+            error: getErrorMessage(error, t("promoCodes.error.loadDetail")),
           });
         }
       });
     return () => controller.abort();
-  }, [id, requestKey]);
+  }, [id, requestKey, t]);
 
   return {
     code: result.code,

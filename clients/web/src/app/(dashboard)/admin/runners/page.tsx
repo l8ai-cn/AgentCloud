@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RefreshCw, Search, Server } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
@@ -9,58 +10,50 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { PageHeader } from "@/components/ui/page-header";
+import { useSearchPagination } from "@/hooks/useSearchPagination";
 import type { AdminRunner } from "@/lib/api/admin/runners";
 import { RunnerRow } from "./RunnerRow";
 import { type RunnerAction, useAdminRunners } from "./useAdminRunners";
 
-const actionCopy: Record<
-  RunnerAction,
-  { title: string; description: string; destructive: boolean }
-> = {
-  disable: {
-    title: "Disable this runner?",
-    description: "The runner stays connected but will no longer receive new pods.",
-    destructive: true,
-  },
-  enable: {
-    title: "Enable this runner?",
-    description: "The runner becomes eligible to receive new pods again.",
-    destructive: false,
-  },
-  delete: {
-    title: "Delete this runner?",
-    description: "This permanently removes the runner registration and cannot be undone.",
-    destructive: true,
-  },
-};
-
 export default function AdminRunnersPage() {
-  const [query, setQuery] = useState("");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const t = useTranslations("admin");
+  const { query, setQuery, search, page, setPage } = useSearchPagination();
   const [pending, setPending] = useState<{ runner: AdminRunner; action: RunnerAction } | null>(null);
   const { data, loading, error, mutating, reload, runAction } = useAdminRunners(search, page);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setSearch(query.trim());
-      setPage(1);
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [query]);
-
-  const copy = pending ? actionCopy[pending.action] : null;
+  const nodeId = pending?.runner.node_id ?? "";
+  const confirmCopy: Record<
+    RunnerAction,
+    { title: string; description: string; destructive: boolean }
+  > = {
+    disable: {
+      title: t("runners.confirm.disable.title"),
+      description: t("runners.confirm.disable.description", { nodeId }),
+      destructive: true,
+    },
+    enable: {
+      title: t("runners.confirm.enable.title"),
+      description: t("runners.confirm.enable.description", { nodeId }),
+      destructive: false,
+    },
+    delete: {
+      title: t("runners.confirm.delete.title"),
+      description: t("runners.confirm.delete.description", { nodeId }),
+      destructive: true,
+    },
+  };
+  const copy = pending ? confirmCopy[pending.action] : null;
 
   return (
     <div className="space-y-5">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title="Runners"
-        subtitle="Inspect self-hosted runners across all organizations and control their availability."
+        title={t("nav.runners")}
+        subtitle={t("runners.subtitle")}
         actions={
           <Button variant="outline" size="sm" onClick={reload} loading={loading}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />
@@ -70,9 +63,9 @@ export default function AdminRunnersPage() {
         <Input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search by node ID, description, or organization"
+          placeholder={t("runners.searchPlaceholder")}
           className="pl-9"
-          aria-label="Search runners"
+          aria-label={t("runners.searchLabel")}
         />
       </div>
 
@@ -80,8 +73,8 @@ export default function AdminRunnersPage() {
 
       <section className="overflow-hidden rounded-md border border-border bg-surface-raised">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h2 className="text-sm font-semibold">{data?.total.toLocaleString() ?? 0} runners</h2>
-          {loading && <span className="text-xs text-muted-foreground">Loading...</span>}
+          <h2 className="text-sm font-semibold">{t("runners.count", { count: data?.total ?? 0 })}</h2>
+          {loading && <span className="text-xs text-muted-foreground">{t("common.loading")}</span>}
         </div>
         {loading && !data ? (
           <div className="space-y-1 p-4">
@@ -102,8 +95,8 @@ export default function AdminRunnersPage() {
           <EmptyState
             size="compact"
             icon={<Server className="h-5 w-5" />}
-            title="No runners found"
-            description={search ? "Try a different search." : "No runners are registered yet."}
+            title={t("runners.empty.title")}
+            description={search ? t("common.tryDifferentSearch") : t("runners.empty.description")}
           />
         )}
       </section>
@@ -111,11 +104,11 @@ export default function AdminRunnersPage() {
       {data && data.total_pages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Page {data.page} of {data.total_pages}
+            {t("common.pageOf", { page: data.page, total: data.total_pages })}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => setPage((value) => value - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= data.total_pages || loading} onClick={() => setPage((value) => value + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => setPage((value) => value - 1)}>{t("common.previous")}</Button>
+            <Button variant="outline" size="sm" disabled={page >= data.total_pages || loading} onClick={() => setPage((value) => value + 1)}>{t("common.next")}</Button>
           </div>
         </div>
       )}
@@ -124,9 +117,9 @@ export default function AdminRunnersPage() {
         open={pending !== null}
         onOpenChange={(open) => !open && setPending(null)}
         title={copy?.title ?? ""}
-        description={pending ? `${copy?.description} Target: ${pending.runner.node_id}` : undefined}
+        description={copy?.description}
         variant={copy?.destructive ? "destructive" : "default"}
-        confirmText="Confirm"
+        confirmText={t("common.confirm")}
         loading={mutating}
         onConfirm={async () => {
           if (!pending) return;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -21,13 +22,8 @@ const actions: Record<RunnerAction, (id: number) => Promise<unknown>> = {
   delete: deleteRunner,
 };
 
-const successMessages: Record<RunnerAction, string> = {
-  disable: "Runner disabled.",
-  enable: "Runner enabled.",
-  delete: "Runner deleted.",
-};
-
 export function useAdminRunners(search: string, page: number) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const requestKey = `${search}\u0000${page}\u0000${revision}`;
   const [result, setResult] = useState<{
@@ -51,28 +47,33 @@ export function useAdminRunners(search: string, page: number) {
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(loadError, "Failed to load runners."),
+            error: getErrorMessage(loadError, t("runners.loadFailed")),
           }));
         }
       });
     return () => controller.abort();
-  }, [page, requestKey, search]);
+  }, [page, requestKey, search, t]);
 
   const runAction = useCallback(
     async (action: RunnerAction, runnerId: number) => {
       setMutating(true);
+      const successMessages: Record<RunnerAction, string> = {
+        disable: t("runners.toast.disabled"),
+        enable: t("runners.toast.enabled"),
+        delete: t("runners.toast.deleted"),
+      };
       try {
         await actions[action](runnerId);
         toast.success(successMessages[action]);
         reload();
       } catch (actionError) {
-        toast.error(getErrorMessage(actionError, "Runner update failed."));
+        toast.error(getErrorMessage(actionError, t("runners.updateFailed")));
         throw actionError;
       } finally {
         setMutating(false);
       }
     },
-    [reload],
+    [reload, t],
   );
 
   return {

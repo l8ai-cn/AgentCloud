@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -13,6 +14,7 @@ import { getErrorMessage } from "@/lib/utils";
 import { CreatePromoCodeForm } from "./CreatePromoCodeForm";
 
 export default function CreatePromoCodePage() {
+  const t = useTranslations("admin");
   const router = useRouter();
   const [saving, setSaving] = useState(false);
 
@@ -20,10 +22,10 @@ export default function CreatePromoCodePage() {
     setSaving(true);
     try {
       const code = await createPromoCode(input);
-      toast.success("Promo code created.");
+      toast.success(t("promoCodes.toast.created"));
       router.push(`/admin/promo-codes/${code.id}`);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to create promo code."));
+      toast.error(getErrorMessage(error, t("promoCodes.error.create")));
       throw error;
     } finally {
       setSaving(false);
@@ -40,11 +42,11 @@ export default function CreatePromoCodePage() {
             className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-1 h-3 w-3" />
-            Promo codes
+            {t("nav.promoCodes")}
           </Link>
         }
-        title="Create promo code"
-        subtitle="Issue a subscription plan extension with explicit usage and time limits."
+        title={t("promoCodes.create.title")}
+        subtitle={t("promoCodes.create.subtitle")}
       />
       <CreatePromoCodeForm saving={saving} onSubmit={create} />
     </div>

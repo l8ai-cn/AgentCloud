@@ -1,0 +1,748 @@
+{
+  "admin": {
+    "auditLogs": {
+      "byActor": "par {actor}",
+      "cardTitle": "Journaux d'audit ({count})",
+      "empty": "Aucun journal d'audit",
+      "filters": {
+        "all": "Tous"
+      },
+      "fromIp": "depuis {ip}",
+      "loadError": "Échec du chargement des journaux d'audit.",
+      "subtitle": "Consultez les actions des administrateurs système sur les ressources protégées."
+    },
+    "common": {
+      "cancel": "Annuler",
+      "close": "Fermer",
+      "confirm": "Confirmer",
+      "delete": "Supprimer",
+      "disable": "Désactiver",
+      "disabled": "Désactivé",
+      "edit": "Modifier",
+      "enable": "Activer",
+      "enabled": "Activé",
+      "loading": "Chargement...",
+      "never": "Jamais",
+      "next": "Suivant",
+      "no": "Non",
+      "pageOf": "Page {page} sur {total}",
+      "previous": "Précédent",
+      "refresh": "Actualiser",
+      "save": "Enregistrer",
+      "tryDifferentSearch": "Essayez une autre recherche.",
+      "unknownError": "Une erreur est survenue.",
+      "yes": "Oui"
+    },
+    "expertMarket": {
+      "actionFailed": "Échec de l'action de validation.",
+      "approve": "Approuver",
+      "approveConfirmDescription": "La version sera disponible sur la place de marché des experts.",
+      "approveConfirmTitle": "Approuver cette version ?",
+      "approveRelease": "Approuver la version",
+      "approved": "Version approuvée.",
+      "emptyTitle": "Aucune version dans cet état",
+      "expertSnapshot": "Instantané de l'expert",
+      "loadDetailFailed": "Échec du chargement de la version.",
+      "loadFailed": "Échec du chargement des versions d'experts.",
+      "nextPage": "Page suivante",
+      "previousPage": "Page précédente",
+      "reject": "Rejeter",
+      "rejectConfirmTitle": "Rejeter cette version ?",
+      "rejectRelease": "Rejeter la version",
+      "rejected": "Version rejetée.",
+      "rejectionAriaLabel": "Motif du rejet",
+      "rejectionPlaceholder": "Motif du rejet",
+      "rejectionReason": "Rejet : {reason}",
+      "releaseCount": "{count} versions",
+      "review": "Examiner",
+      "showingRange": "Affichage de {first}-{last} sur {total}",
+      "skillDependencies": "Dépendances de compétences",
+      "status": {
+        "pending": "en attente",
+        "published": "publiée",
+        "rejected": "rejetée",
+        "withdrawn": "retirée"
+      },
+      "subtitle": "Examinez les instantanés d'experts publiables et leurs dépendances d'exécution.",
+      "title": "Place de marché des experts",
+      "uncategorized": "Non catégorisé",
+      "versionLabel": "v{version}",
+      "workerSpec": "Spécification du worker"
+    },
+    "nav": {
+      "auditLogs": "Journaux d'audit",
+      "expertReview": "Validation des experts",
+      "label": "Administration système",
+      "organizations": "Organisations",
+      "overview": "Vue d'ensemble",
+      "promoCodes": "Codes promo",
+      "relays": "Relays",
+      "runners": "Runners",
+      "sso": "SSO",
+      "support": "Support",
+      "users": "Utilisateurs"
+    },
+    "organizations": {
+      "backToList": "Retour aux organisations",
+      "count": "{count, number} organisations",
+      "createdOn": "Créée le {date}",
+      "deleteAria": "Supprimer {name}",
+      "deleteConfirm": "Supprimer l'organisation",
+      "deleteDescription": "{name} et les ressources détenues par ce locataire seront définitivement supprimés.",
+      "deleteError": "Échec de la suppression de l'organisation.",
+      "deleteSuccess": "Organisation supprimée.",
+      "deleteTitle": "Supprimer cette organisation ?",
+      "detailLoadError": "Échec du chargement de l'organisation.",
+      "emptyDescription": "Aucune organisation locataire n'existe pour le moment.",
+      "emptyTitle": "Aucune organisation trouvée",
+      "invalidId": "Identifiant d'organisation invalide.",
+      "loadError": "Échec du chargement des organisations.",
+      "memberFallbackName": "Utilisateur n°{id}",
+      "memberJoined": "Inscrit le {date}",
+      "membersEmptyDescription": "Cette organisation n'a aucun membre actif.",
+      "membersEmptyTitle": "Aucun membre",
+      "membersHeading": "Membres ({count})",
+      "noSubscription": "aucun abonnement",
+      "notFound": "Organisation introuvable.",
+      "openAria": "Ouvrir {name}",
+      "runnerAgents": "Agents disponibles",
+      "runnerDescription": "Description",
+      "runnerLastHeartbeat": "Dernier signal {time}",
+      "runnerManagement": "Gestion des Runners",
+      "runnerNoAgents": "Aucun signalé",
+      "runnerNoDescription": "Aucune description",
+      "runnerNoHeartbeat": "Aucun signal enregistré",
+      "runnerPods": "{current}/{max} pods",
+      "runnerRegistered": "Enregistré",
+      "runnerVersionAndPods": "v{version} · {current}/{max} pods",
+      "runnersEmptyDescription": "Cette organisation n'a aucun Runner enregistré.",
+      "runnersEmptyTitle": "Aucun Runner",
+      "runnersHeading": "Runners ({count})",
+      "runnersLoadError": "Échec du chargement des Runners de l'organisation.",
+      "runnersLoadingAria": "Chargement des Runners",
+      "runnersRetry": "Réessayer",
+      "searchPlaceholder": "Rechercher des organisations",
+      "stats": {
+        "created": "Création",
+        "members": "Membres",
+        "subscription": "Abonnement"
+      },
+      "subscriptionNone": "aucun",
+      "subtitle": "Inspectez les membres, les abonnements, les quotas et la capacité d'exécution des locataires."
+    },
+    "overview": {
+      "loadError": "Échec du chargement des statistiques système.",
+      "stats": {
+        "activePods": "Pods actifs",
+        "activePodsDetail": "{count, number} au total",
+        "organizationsDetail": "{count, number} abonnements actifs",
+        "runnersDetail": "{count, number} en ligne",
+        "usersDetail": "{count, number} actifs"
+      },
+      "subtitle": "État opérationnel des comptes, des organisations et de la capacité d'exécution.",
+      "userGrowth": {
+        "last7Days": "7 derniers jours",
+        "lastMonth": "Mois dernier",
+        "title": "Croissance des utilisateurs",
+        "today": "Aujourd'hui"
+      }
+    },
+    "promoCodes": {
+      "action": {
+        "activate": "Activer",
+        "deactivate": "Désactiver"
+      },
+      "confirm": {
+        "activate": {
+          "description": "Les organisations éligibles pourront l'utiliser immédiatement. Cible : {code}",
+          "title": "Activer ce code promo ?"
+        },
+        "deactivate": {
+          "description": "Aucune nouvelle utilisation ne sera acceptée jusqu'à la réactivation du code. Cible : {code}",
+          "title": "Désactiver ce code promo ?"
+        },
+        "delete": {
+          "description": "La suppression est définitive et le backend refuse les codes déjà utilisés. Cible : {code}",
+          "title": "Supprimer ce code promo ?"
+        },
+        "deleteConfirmText": "Supprimer le code"
+      },
+      "count": "{count} codes promo",
+      "create": {
+        "submit": "Créer le code promo",
+        "subtitle": "Émettez une extension de forfait d'abonnement avec des limites d'utilisation et de durée explicites.",
+        "title": "Créer un code promo"
+      },
+      "createCode": "Créer un code",
+      "createdAt": "Créé le {date}",
+      "detail": {
+        "backToList": "Retour aux codes promo",
+        "confirm": {
+          "activate": "{code} acceptera de nouvelles utilisations.",
+          "deactivate": "{code} n'acceptera plus de nouvelles utilisations.",
+          "delete": "{code} sera définitivement supprimé. Le backend refuse la suppression si des utilisations existent."
+        },
+        "deleteBlocked": "Les codes déjà utilisés ne peuvent pas être supprimés",
+        "deleteTitle": "Supprimer le code promo"
+      },
+      "durationMonths": "{count, plural, one {# mois} other {# mois}}",
+      "edit": {
+        "description": "Le code, le type, le forfait, la durée et la date de début sont immuables dans le backend.",
+        "expiresAtHint": "Effacez la valeur pour supprimer l'expiration.",
+        "heading": "Paramètres modifiables",
+        "maxUsesHint": "Laisser vide conserve la limite actuelle ; l'API ne peut pas rétablir une limite finie en illimitée.",
+        "submit": "Enregistrer les modifications"
+      },
+      "empty": {
+        "description": "Créez le premier code promo pour une campagne d'abonnement.",
+        "searching": "Essayez de modifier la recherche ou les filtres.",
+        "title": "Aucun code promo trouvé"
+      },
+      "endsAt": "Se termine le {date}",
+      "error": {
+        "actionFailed": "Échec de la mise à jour du code promo.",
+        "create": "Échec de la création du code promo.",
+        "invalidId": "Identifiant de code promo invalide.",
+        "load": "Échec du chargement des codes promo.",
+        "loadDetail": "Échec du chargement du code promo.",
+        "loadRedemptions": "Échec du chargement des utilisations.",
+        "notFound": "Code promo introuvable.",
+        "unableToCreate": "Impossible de créer le code promo.",
+        "unableToUpdate": "Impossible de mettre à jour le code promo.",
+        "update": "Échec de la mise à jour du code promo."
+      },
+      "expiresAt": "Expire le {date}",
+      "filters": {
+        "allPlans": "Tous les forfaits",
+        "allStatuses": "Tous les statuts",
+        "allTypes": "Tous les types",
+        "planLabel": "Filtrer par forfait",
+        "searchLabel": "Rechercher des codes promo",
+        "searchPlaceholder": "Rechercher un code ou un nom",
+        "selectedPlanEnterprise": "enterprise",
+        "selectedPlanPro": "pro",
+        "statusLabel": "Filtrer par statut",
+        "typeLabel": "Filtrer par type"
+      },
+      "form": {
+        "code": "Code",
+        "codeHint": "Enregistré en majuscules ; 50 caractères maximum.",
+        "description": "Description",
+        "duration": "Durée (mois)",
+        "expiresAt": "Date d'expiration",
+        "expiresAtCreateHint": "Laissez vide pour aucune expiration.",
+        "maxUses": "Limite d'utilisations totale",
+        "maxUsesCreateHint": "Laissez vide pour illimité.",
+        "name": "Nom",
+        "plan": "Forfait",
+        "planAriaLabel": "Forfait d'abonnement",
+        "startsAt": "Date de début",
+        "startsAtHint": "Laissez vide pour démarrer immédiatement.",
+        "type": "Type",
+        "typeAriaLabel": "Type de code promo",
+        "usesPerOrg": "Utilisations par organisation"
+      },
+      "plan": {
+        "enterprise": "Enterprise",
+        "pro": "Pro"
+      },
+      "redemptions": {
+        "count": "{count} utilisations enregistrées",
+        "durationMonths": "{count} mois",
+        "empty": {
+          "description": "Ce code promo n'a jamais été utilisé.",
+          "title": "Aucune utilisation"
+        },
+        "organizationFallback": "Organisation n°{id}",
+        "title": "Utilisations",
+        "userFallback": "Utilisateur n°{id}",
+        "usernameUnavailable": "Nom d'utilisateur indisponible"
+      },
+      "row": {
+        "actionsFor": "Actions pour {code}",
+        "viewAndEdit": "Afficher et modifier"
+      },
+      "status": {
+        "active": "Actif",
+        "exhausted": "Épuisé",
+        "expired": "Expiré",
+        "inactive": "Inactif"
+      },
+      "subtitle": "Créez et contrôlez les codes d'accès aux abonnements sur l'ensemble de la plateforme.",
+      "summary": {
+        "expires": "Expiration",
+        "offer": "Offre",
+        "offerValue": "{count, plural, one {# mois} other {# mois}} de {plan}",
+        "starts": "Début",
+        "usage": "Utilisation",
+        "usagePerOrg": "{count} par organisation"
+      },
+      "toast": {
+        "activated": "Code promo activé.",
+        "created": "Code promo créé.",
+        "deactivated": "Code promo désactivé.",
+        "deleted": "Code promo supprimé.",
+        "updated": "Code promo mis à jour."
+      },
+      "type": {
+        "campaign": "Campagne",
+        "internal": "Interne",
+        "media": "Média",
+        "partner": "Partenaire",
+        "referral": "Parrainage"
+      },
+      "updatedAt": "Mis à jour le {date}",
+      "usage": {
+        "limited": "{used} / {limit}",
+        "unlimited": "{used} / illimité"
+      },
+      "validation": {
+        "durationPositive": "La durée doit être un entier positif.",
+        "expirationAfterStart": "L'expiration doit être postérieure à la date de début.",
+        "maxUsesPositive": "Le nombre maximal d'utilisations doit être un entier positif.",
+        "usesPerOrgPositive": "Le nombre d'utilisations par organisation doit être un entier positif."
+      }
+    },
+    "relays": {
+      "detail": {
+        "averageLatency": "Latence moyenne",
+        "backToRelays": "Retour aux Relays",
+        "capacityAndHealth": "Capacité et santé",
+        "connection": "Connexion",
+        "connections": "Connexions",
+        "connectionsUsage": "{connections} / {capacity} ({load} %)",
+        "cpuUsage": "Utilisation CPU",
+        "forceUnregister": "Forcer la désinscription",
+        "lastHeartbeat": "Dernier signal",
+        "latitude": "Latitude",
+        "loadFailed": "Échec du chargement du Relay.",
+        "location": "Emplacement",
+        "longitude": "Longitude",
+        "memoryUsage": "Utilisation mémoire",
+        "milliseconds": "{value} ms",
+        "notReported": "Non renseigné",
+        "percent": "{value} %",
+        "region": "Région",
+        "relayId": "ID du Relay",
+        "retry": "Réessayer",
+        "status": "Statut",
+        "subtitle": "Données d'enregistrement et de santé en temps réel signalées par le backend.",
+        "title": "Détails du Relay",
+        "unavailable": "Ce Relay est indisponible ou a déjà été désinscrit.",
+        "url": "URL"
+      },
+      "empty": {
+        "description": "Les services Relay connectés apparaîtront ici.",
+        "title": "Aucun Relay enregistré"
+      },
+      "healthy": "Sain",
+      "loadFailed": "Échec du chargement des Relays.",
+      "row": {
+        "load": "{connections}/{capacity} connexions · {latency} ms",
+        "resources": "CPU {cpu} % · Mémoire {memory} %"
+      },
+      "stats": {
+        "connections": "Connexions",
+        "healthy": "Sains",
+        "registered": "Enregistrés"
+      },
+      "subtitle": "Surveillez la capacité du plan de données et supprimez les enregistrements de Relay obsolètes.",
+      "unhealthy": "Dégradé",
+      "unregister": {
+        "confirm": "Désinscrire le Relay",
+        "detailDescription": "{id} sera retiré de la liste des Relays du backend. Les connexions existantes peuvent être interrompues.",
+        "failed": "Échec de la désinscription du Relay.",
+        "listDescription": "{id} a {connections} connexions actives. Le backend ne propose pas de migration de session.",
+        "success": "Relay désinscrit.",
+        "title": "Forcer la désinscription de ce Relay ?"
+      },
+      "unregisterRelay": "Désinscrire {name}",
+      "unregisterRelayTitle": "Forcer la désinscription du Relay",
+      "viewDetails": "Afficher les détails de {name}",
+      "viewDetailsTitle": "Afficher les détails du Relay"
+    },
+    "runners": {
+      "actions": {
+        "delete": "Supprimer {nodeId}",
+        "deleteTitle": "Supprimer le Runner",
+        "disable": "Désactiver {nodeId}",
+        "disableTitle": "Désactiver le Runner",
+        "enable": "Activer {nodeId}",
+        "enableTitle": "Activer le Runner"
+      },
+      "agentCount": "{count} agents",
+      "confirm": {
+        "delete": {
+          "description": "Cette action supprime définitivement l'enregistrement du Runner et est irréversible. Cible : {nodeId}",
+          "title": "Supprimer ce Runner ?"
+        },
+        "disable": {
+          "description": "Le Runner reste connecté mais ne recevra plus de nouveaux pods. Cible : {nodeId}",
+          "title": "Désactiver ce Runner ?"
+        },
+        "enable": {
+          "description": "Le Runner pourra à nouveau recevoir de nouveaux pods. Cible : {nodeId}",
+          "title": "Activer ce Runner ?"
+        }
+      },
+      "count": "{count} runners",
+      "empty": {
+        "description": "Aucun Runner n'est encore enregistré.",
+        "title": "Aucun Runner trouvé"
+      },
+      "lastHeartbeat": "Dernier signal {time}",
+      "loadFailed": "Échec du chargement des Runners.",
+      "noHeartbeat": "Aucun signal enregistré",
+      "orgFallback": "Org n°{id}",
+      "podsUsage": "{current}/{max} pods",
+      "registeredOn": "Enregistré le {date}",
+      "searchLabel": "Rechercher des Runners",
+      "searchPlaceholder": "Rechercher par ID de nœud, description ou organisation",
+      "subtitle": "Inspectez les Runners auto-hébergés de toutes les organisations et contrôlez leur disponibilité.",
+      "toast": {
+        "deleted": "Runner supprimé.",
+        "disabled": "Runner désactivé.",
+        "enabled": "Runner activé."
+      },
+      "updateFailed": "Échec de la mise à jour du Runner.",
+      "version": "v{version}"
+    },
+    "sso": {
+      "allProtocols": "Tous les protocoles",
+      "configurationCount": "{count} configurations",
+      "confirm": {
+        "deleteDescription": "Cette action supprime définitivement la configuration du fournisseur et est irréversible. Cible : {domain}",
+        "deleteTitle": "Supprimer cette configuration SSO ?",
+        "disableDescription": "Les nouvelles connexions via ce fournisseur d'identité seront bloquées. Cible : {domain}",
+        "disableTitle": "Désactiver cette configuration SSO ?",
+        "enableDescription": "Les utilisateurs du domaine correspondant pourront utiliser ce fournisseur d'identité. Cible : {domain}",
+        "enableTitle": "Activer cette configuration SSO ?"
+      },
+      "create": "Créer",
+      "defaultOrganization": "Org par défaut n°{id}",
+      "emptyDescription": "Créez une configuration pour activer la connexion par domaine.",
+      "emptyFiltered": "Essayez une autre recherche ou un autre filtre de protocole.",
+      "emptyTitle": "Aucune configuration SSO trouvée",
+      "enforced": "Imposé",
+      "filterProtocolAria": "Filtrer par protocole",
+      "form": {
+        "createDescription": "Configurez un fournisseur d'identité spécifique à un domaine pour la connexion à la plateforme.",
+        "createTitle": "Créer une configuration SSO",
+        "defaultOrganizationHint": "Les utilisateurs fédérés rejoignent cette organisation à la connexion.",
+        "defaultOrganizationId": "ID de l'organisation par défaut",
+        "displayName": "Nom affiché",
+        "displayNamePlaceholder": "SSO de l'entreprise",
+        "domain": "Domaine",
+        "domainPlaceholder": "example.com",
+        "editDescription": "Le domaine et le protocole sont immuables. Les secrets laissés vides conservent leur valeur actuelle.",
+        "editTitle": "Modifier la configuration SSO",
+        "enabledHint": "Autoriser cette configuration à gérer la connexion.",
+        "enforceSso": "Imposer le SSO",
+        "enforceSsoHint": "Obliger les utilisateurs correspondants à se connecter via ce fournisseur.",
+        "protocol": "Protocole",
+        "protocolAria": "Protocole SSO",
+        "saveFailed": "Échec de l'enregistrement de la configuration SSO.",
+        "submitCreate": "Créer la configuration",
+        "submitSave": "Enregistrer les modifications"
+      },
+      "ldap": {
+        "baseDn": "Base DN",
+        "bindDn": "Bind DN",
+        "bindPassword": "Mot de passe de bind",
+        "bindPasswordHint": "Laissez vide pour conserver le mot de passe actuel.",
+        "emailAttribute": "Attribut e-mail",
+        "host": "Hôte",
+        "legend": "Paramètres LDAP",
+        "nameAttribute": "Attribut nom",
+        "port": "Port",
+        "useTls": "Utiliser TLS",
+        "useTlsHint": "Établir la connexion LDAP avec STARTTLS.",
+        "userFilter": "Filtre utilisateur",
+        "usernameAttribute": "Attribut nom d'utilisateur"
+      },
+      "listLoadingAria": "Chargement des configurations SSO",
+      "noDefaultOrganization": "Aucune organisation par défaut",
+      "oidc": {
+        "ampBearerCodes": "Codes d'application bearer AMP",
+        "ampBearerCodesHint": "Tableau JSON des codes d'application autorisés à déléguer l'accès bearer.",
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "clientSecretHint": "Laissez vide pour conserver le secret actuel.",
+        "extraParams": "Paramètres supplémentaires d'autorisation",
+        "extraParamsHint": "Objet JSON transmis au point de terminaison d'autorisation.",
+        "issuerUrl": "URL de l'émetteur",
+        "legend": "Paramètres OIDC",
+        "scopes": "Scopes"
+      },
+      "row": {
+        "deleteAria": "Supprimer {name}",
+        "deleteTitle": "Supprimer la configuration",
+        "disableAria": "Désactiver {name}",
+        "disableTitle": "Désactiver la configuration",
+        "editAria": "Modifier {name}",
+        "editTitle": "Modifier la configuration",
+        "enableAria": "Activer {name}",
+        "enableTitle": "Activer la configuration"
+      },
+      "saml": {
+        "certificate": "Certificat IdP",
+        "legend": "Paramètres SAML",
+        "metadataUrl": "URL des métadonnées IdP",
+        "metadataXml": "XML des métadonnées IdP",
+        "nameIdFormat": "Format NameID",
+        "secretHint": "Laissez vide pour conserver la valeur actuelle.",
+        "spEntityId": "Entity ID du SP",
+        "ssoUrl": "URL SSO de l'IdP"
+      },
+      "searchAria": "Rechercher des configurations SSO",
+      "searchPlaceholder": "Rechercher par domaine ou nom affiché",
+      "subtitle": "Configurez des fournisseurs d'identité OIDC, SAML et LDAP par domaine.",
+      "test": {
+        "buttonAria": "Tester {name}",
+        "buttonTitle": "Tester la connexion",
+        "failed": "Échec",
+        "idle": "Tester",
+        "passed": "Réussi",
+        "testing": "Test en cours"
+      },
+      "title": "Authentification unique",
+      "toast": {
+        "createFailed": "Échec de la création de la configuration SSO.",
+        "created": "Configuration SSO créée.",
+        "deleteFailed": "Échec de la suppression de la configuration SSO.",
+        "deleted": "Configuration SSO supprimée.",
+        "disableFailed": "Échec de la désactivation de la configuration SSO.",
+        "disabled": "Configuration SSO désactivée.",
+        "enableFailed": "Échec de l'activation de la configuration SSO.",
+        "enabled": "Configuration SSO activée.",
+        "loadFailed": "Échec du chargement des configurations SSO.",
+        "testActionFailed": "Échec du test de la configuration SSO.",
+        "testFailed": "Le test de connexion a échoué.",
+        "testPassed": "Test de connexion réussi.",
+        "updateFailed": "Échec de la mise à jour de la configuration SSO.",
+        "updated": "Configuration SSO mise à jour."
+      },
+      "updatedAt": "Mis à jour le {timestamp}",
+      "validation": {
+        "domainAndNameRequired": "Le domaine et le nom affiché sont obligatoires.",
+        "invalidAmpBearerCodes": "Les codes d'application bearer AMP doivent être un tableau JSON.",
+        "invalidDomain": "Saisissez un domaine valide, par exemple example.com.",
+        "invalidExtraParams": "Les paramètres supplémentaires d'autorisation doivent être un objet JSON.",
+        "invalidLdapPort": "Le port LDAP doit être compris entre 1 et 65535.",
+        "invalidOrganizationId": "L'ID de l'organisation par défaut doit être un entier positif.",
+        "ldapRequired": "L'hôte LDAP et le base DN sont obligatoires.",
+        "oidcRequired": "L'URL de l'émetteur OIDC et le client ID sont obligatoires.",
+        "samlSourceRequired": "Fournissez une URL de métadonnées, un XML de métadonnées ou une URL SSO avec certificat."
+      }
+    },
+    "subscription": {
+      "autoRenew": "Renouvellement automatique",
+      "autoRenewDisabled": "Renouvellement automatique désactivé.",
+      "autoRenewEnabled": "Renouvellement automatique activé.",
+      "autoRenewHint": "Renouveler à la fin de la période en cours.",
+      "billing": "Facturation",
+      "billingCycleAria": "Cycle de facturation",
+      "cancelDescription": "Annulez cet abonnement et arrêtez les renouvellements futurs.",
+      "cancelSuccess": "Abonnement annulé.",
+      "cancelTitle": "Annuler l'abonnement ?",
+      "changeCycleDescription": "Passer la facturation à {cycle}.",
+      "changeCycleTitle": "Modifier le cycle de facturation ?",
+      "changePlanDescription": "Changer le forfait pour {plan}.",
+      "changePlanTitle": "Modifier le forfait d'abonnement ?",
+      "changeSeatsDescription": "Définir cet abonnement à {seats} sièges.",
+      "changeSeatsTitle": "Modifier le nombre de sièges ?",
+      "createButton": "Créer un abonnement",
+      "createDescription": "Créer un abonnement {plan} actif pour {months} mois.",
+      "createSuccess": "Abonnement créé.",
+      "createTitle": "Créer l'abonnement ?",
+      "customQuotas": "Quotas personnalisés",
+      "cycleMonthly": "Mensuel",
+      "cycleUpdated": "Cycle de facturation mis à jour.",
+      "cycleYearly": "Annuel",
+      "freeze": "Suspendre",
+      "freezeDescription": "L'exécution et l'accès payant peuvent être restreints.",
+      "freezeSuccess": "Abonnement suspendu.",
+      "freezeTitle": "Suspendre l'abonnement ?",
+      "lifecycle": "Cycle de vie",
+      "loadError": "Échec du chargement de l'abonnement.",
+      "monthsAria": "Mois d'abonnement",
+      "newPlanAria": "Nouveau forfait d'abonnement",
+      "noRecord": "Cette organisation n'a aucun abonnement enregistré.",
+      "periodRange": "{start} au {end}",
+      "planAndSeats": "Forfait et sièges",
+      "planAria": "Forfait d'abonnement",
+      "planUpdated": "Forfait d'abonnement mis à jour.",
+      "quotaBadge": "{resource} : {value}",
+      "quotaDescription": "Remplacer {resource} par {limit}.",
+      "quotaLimitAria": "Limite de quota",
+      "quotaLimitPlaceholder": "-1 = illimité",
+      "quotaResourceAria": "Ressource du quota",
+      "quotaTitle": "Définir un quota personnalisé ?",
+      "quotaUpdated": "Quota personnalisé mis à jour.",
+      "renew": "Renouveler",
+      "renewDescription": "Prolonger la période en cours de {months} mois.",
+      "renewSuccess": "Abonnement renouvelé.",
+      "renewTitle": "Renouveler l'abonnement ?",
+      "renewalMonthsAria": "Mois de renouvellement",
+      "seatCountAria": "Nombre de sièges",
+      "seatUsage": "{used} utilisés, {available} disponibles",
+      "seatsUpdated": "Nombre de sièges mis à jour.",
+      "selectPlan": "Sélectionner un forfait",
+      "setOverride": "Appliquer le remplacement",
+      "setSeats": "Définir les sièges",
+      "title": "Abonnement",
+      "unfreeze": "Réactiver",
+      "unfreezeDescription": "Rétablir l'abonnement en service actif.",
+      "unfreezeSuccess": "Abonnement réactivé.",
+      "unfreezeTitle": "Réactiver l'abonnement ?",
+      "unlimited": "illimité",
+      "updateError": "Échec de la mise à jour de l'abonnement."
+    },
+    "support": {
+      "adminBadge": "Admin",
+      "adminRef": "Admin n°{id}",
+      "allCategories": "Toutes les catégories",
+      "allPriorities": "Toutes les priorités",
+      "allStatuses": "Tous les statuts",
+      "assignConfirmDescription": "Vous deviendrez l'administrateur système assigné.",
+      "assignConfirmTitle": "Vous attribuer ce ticket ?",
+      "assignFailed": "Échec de l'attribution du ticket.",
+      "assignToMe": "M'attribuer",
+      "assigned": "Ticket qui vous est attribué.",
+      "attachmentMeta": "{type} · {size}",
+      "category": {
+        "account": "Compte",
+        "bug": "Bug",
+        "featureRequest": "Demande de fonctionnalité",
+        "other": "Autre",
+        "usageQuestion": "Question d'utilisation"
+      },
+      "changeStatus": "Modifier le statut",
+      "changeStatusAriaLabel": "Modifier le statut du ticket",
+      "conversation": "Conversation",
+      "createdAt": "Créé {time}",
+      "detailSubtitle": "Ticket n°{id} · Utilisateur n°{userId}",
+      "detailTitle": "Ticket de support",
+      "detailUnavailable": "Les détails du ticket sont indisponibles.",
+      "downloadFailed": "Échec du téléchargement de la pièce jointe.",
+      "emptyDescription": "Aucun utilisateur n'a soumis de ticket de support.",
+      "emptyFiltered": "Essayez de supprimer un ou plusieurs filtres.",
+      "emptyTitle": "Aucun ticket de support trouvé",
+      "fields": {
+        "assignment": "Attribution",
+        "category": "Catégorie",
+        "priority": "Priorité",
+        "status": "Statut",
+        "updated": "Mise à jour"
+      },
+      "filterByCategory": "Filtrer par catégorie",
+      "filterByPriority": "Filtrer par priorité",
+      "filterByStatus": "Filtrer par statut",
+      "invalidId": "L'ID du ticket de support est invalide.",
+      "loadDetailFailed": "Échec du chargement du ticket de support.",
+      "loadFailed": "Échec du chargement des tickets de support.",
+      "loadingDetail": "Chargement des détails du ticket",
+      "noMessagesDescription": "Ce ticket ne contient aucun message de conversation.",
+      "noMessagesTitle": "Aucun message",
+      "priority": {
+        "high": "Haute",
+        "low": "Basse",
+        "medium": "Moyenne"
+      },
+      "replyAriaLabel": "Réponse de l'administrateur",
+      "replyFailed": "Échec de l'envoi de la réponse.",
+      "replyPlaceholder": "Rédigez une réponse d'administrateur",
+      "replySent": "Réponse envoyée.",
+      "resolvedAt": "Résolu {time}",
+      "searchAriaLabel": "Rechercher des tickets de support",
+      "searchPlaceholder": "Rechercher un titre de ticket",
+      "sendReply": "Envoyer la réponse",
+      "stats": {
+        "inProgress": "En cours",
+        "open": "Ouverts",
+        "resolved": "Résolus",
+        "total": "Total"
+      },
+      "status": {
+        "closed": "Fermé",
+        "inProgress": "En cours",
+        "open": "Ouvert",
+        "resolved": "Résolu"
+      },
+      "statusConfirmDescription": "Passer ce ticket à {status} ?",
+      "statusConfirmTitle": "Modifier le statut du ticket ?",
+      "statusUpdateFailed": "Échec de la mise à jour du statut du ticket.",
+      "statusUpdated": "Statut du ticket mis à jour.",
+      "subtitle": "Examinez les demandes d'assistance de la plateforme et répondez en tant qu'administrateur système.",
+      "ticketCount": "{count} tickets",
+      "ticketMeta": "n°{id} · Utilisateur n°{userId}",
+      "title": "Tickets de support",
+      "unassigned": "Non attribué",
+      "userRef": "Utilisateur n°{id}"
+    },
+    "title": "Administration système",
+    "users": {
+      "actionsFor": "Actions pour {email}",
+      "badge": {
+        "emailUnverified": "E-mail non vérifié",
+        "systemAdmin": "Administrateur système"
+      },
+      "confirm": {
+        "disable": {
+          "description": "L'utilisateur ne pourra plus se connecter jusqu'à la réactivation du compte.",
+          "title": "Désactiver ce compte ?"
+        },
+        "enable": {
+          "description": "L'utilisateur peut à nouveau se connecter.",
+          "title": "Activer ce compte ?"
+        },
+        "grantAdmin": {
+          "description": "Cet utilisateur pourra gérer tous les comptes et organisations de la plateforme.",
+          "title": "Accorder l'accès administrateur système ?"
+        },
+        "revokeAdmin": {
+          "description": "L'utilisateur perdra immédiatement l'accès à l'administration système.",
+          "title": "Révoquer l'accès administrateur système ?"
+        },
+        "unverifyEmail": {
+          "description": "Le compte reviendra à un état d'e-mail non vérifié.",
+          "title": "Supprimer la vérification de l'e-mail ?"
+        },
+        "verifyEmail": {
+          "description": "À utiliser uniquement après avoir confirmé la propriété de manière indépendante.",
+          "title": "Marquer l'e-mail comme vérifié ?"
+        }
+      },
+      "confirmTarget": "Cible : {email}",
+      "count": "{count} utilisateurs",
+      "emptyDescription": "Aucun compte utilisateur n'existe pour le moment.",
+      "emptyTitle": "Aucun utilisateur trouvé",
+      "errors": {
+        "action": "Échec de la mise à jour de l'utilisateur.",
+        "load": "Échec du chargement des utilisateurs."
+      },
+      "joined": "Inscrit le {date}",
+      "lastLogin": "Dernière connexion {datetime}",
+      "menu": {
+        "disableAccount": "Désactiver le compte",
+        "enableAccount": "Activer le compte",
+        "grantAdmin": "Accorder l'accès admin",
+        "revokeAdmin": "Révoquer l'accès admin",
+        "unverifyEmail": "Supprimer la vérification de l'e-mail",
+        "verifyEmail": "Vérifier l'e-mail"
+      },
+      "neverSignedIn": "Jamais connecté",
+      "searchLabel": "Rechercher des utilisateurs",
+      "searchPlaceholder": "Rechercher par e-mail, nom d'utilisateur ou nom",
+      "subtitle": "Gérez l'accès aux comptes, la vérification des e-mails et les privilèges d'administrateur système.",
+      "toast": {
+        "adminGranted": "Accès administrateur système accordé.",
+        "adminRevoked": "Accès administrateur système révoqué.",
+        "disabled": "Utilisateur désactivé.",
+        "emailUnverified": "Vérification de l'e-mail supprimée.",
+        "emailVerified": "E-mail marqué comme vérifié.",
+        "enabled": "Utilisateur activé."
+      }
+    }
+  }
+}

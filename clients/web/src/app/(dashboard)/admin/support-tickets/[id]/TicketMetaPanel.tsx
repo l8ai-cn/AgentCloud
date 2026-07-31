@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { UserCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -14,13 +15,12 @@ import type {
   SupportTicketStatus,
 } from "@/lib/api/admin/supportTicketTypes";
 import {
-  categoryOptions,
+  categoryLabelKeys,
   categoryVariant,
   formatTicketTime,
-  labelFor,
-  priorityOptions,
+  priorityLabelKeys,
   priorityVariant,
-  statusOptions,
+  statusLabelKeys,
   statusTransitions,
   statusVariant,
 } from "../supportTicketPresentation";
@@ -38,43 +38,49 @@ export function TicketMetaPanel({
   onRequestStatus,
   onRequestAssign,
 }: Props) {
+  const t = useTranslations("admin");
   return (
     <section className="rounded-md border border-border bg-surface-raised">
       <div className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-5">
-        <Meta label="Status">
+        <Meta label={t("support.fields.status")}>
           <Select
             value={ticket.status}
             onValueChange={(value) => onRequestStatus(value as SupportTicketStatus)}
             disabled={busy}
           >
-            <SelectTrigger className="h-8 w-full" aria-label="Change ticket status">
+            <SelectTrigger
+              className="h-8 w-full"
+              aria-label={t("support.changeStatusAriaLabel")}
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ticket.status}>
-                {labelFor(statusOptions, ticket.status)}
+                {t(statusLabelKeys[ticket.status])}
               </SelectItem>
               {statusTransitions[ticket.status].map((status) => (
                 <SelectItem key={status} value={status}>
-                  {labelFor(statusOptions, status)}
+                  {t(statusLabelKeys[status])}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </Meta>
-        <Meta label="Category">
+        <Meta label={t("support.fields.category")}>
           <Badge variant={categoryVariant[ticket.category]}>
-            {labelFor(categoryOptions, ticket.category)}
+            {t(categoryLabelKeys[ticket.category])}
           </Badge>
         </Meta>
-        <Meta label="Priority">
+        <Meta label={t("support.fields.priority")}>
           <Badge variant={priorityVariant[ticket.priority]}>
-            {labelFor(priorityOptions, ticket.priority)}
+            {t(priorityLabelKeys[ticket.priority])}
           </Badge>
         </Meta>
-        <Meta label="Assignment">
+        <Meta label={t("support.fields.assignment")}>
           {ticket.assigned_admin_id ? (
-            <span className="text-sm">Admin #{ticket.assigned_admin_id}</span>
+            <span className="text-sm">
+              {t("support.adminRef", { id: String(ticket.assigned_admin_id) })}
+            </span>
           ) : (
             <Button
               variant="outline"
@@ -83,11 +89,11 @@ export function TicketMetaPanel({
               disabled={busy}
             >
               <UserCheck className="mr-2 h-4 w-4" />
-              Assign to me
+              {t("support.assignToMe")}
             </Button>
           )}
         </Meta>
-        <Meta label="Updated">
+        <Meta label={t("support.fields.updated")}>
           <time className="text-sm" dateTime={ticket.updated_at}>
             {formatTicketTime(ticket.updated_at)}
           </time>
@@ -95,10 +101,11 @@ export function TicketMetaPanel({
       </div>
       <div className="border-t border-border px-4 py-3 text-xs text-muted-foreground">
         <Badge variant={statusVariant[ticket.status]} className="mr-2">
-          {labelFor(statusOptions, ticket.status)}
+          {t(statusLabelKeys[ticket.status])}
         </Badge>
-        Created {formatTicketTime(ticket.created_at)}
-        {ticket.resolved_at && ` · Resolved ${formatTicketTime(ticket.resolved_at)}`}
+        {t("support.createdAt", { time: formatTicketTime(ticket.created_at) })}
+        {ticket.resolved_at &&
+          ` · ${t("support.resolvedAt", { time: formatTicketTime(ticket.resolved_at) })}`}
       </div>
     </section>
   );

@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import type { AuditLog } from "@/lib/api/admin/types";
 
@@ -18,6 +21,8 @@ const actionColors: Record<string, BadgeProps["variant"]> = {
 };
 
 export function AuditLogRow({ log }: { log: AuditLog }) {
+  const t = useTranslations("admin");
+
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-border p-3 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-col gap-1">
@@ -29,9 +34,13 @@ export function AuditLogRow({ log }: { log: AuditLog }) {
         </div>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {log.admin_user && (
-            <span>by {log.admin_user.name || log.admin_user.username}</span>
+            <span>
+              {t("auditLogs.byActor", {
+                actor: log.admin_user.name || log.admin_user.username,
+              })}
+            </span>
           )}
-          {log.ip_address && <span>from {log.ip_address}</span>}
+          {log.ip_address && <span>{t("auditLogs.fromIp", { ip: log.ip_address })}</span>}
         </div>
       </div>
       <div className="hidden text-right text-xs text-muted-foreground sm:block">

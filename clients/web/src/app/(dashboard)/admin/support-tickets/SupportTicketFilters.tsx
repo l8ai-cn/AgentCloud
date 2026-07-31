@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
@@ -9,9 +10,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  categoryOptions,
-  priorityOptions,
-  statusOptions,
+  categoryLabelKeys,
+  categoryValues,
+  priorityLabelKeys,
+  priorityValues,
+  statusLabelKeys,
+  statusValues,
 } from "./supportTicketPresentation";
 import type { SupportTicketFilters as Filters } from "./useSupportTickets";
 
@@ -33,6 +37,7 @@ export function SupportTicketFilters({
   onQueryChange,
   onFilterChange,
 }: Props) {
+  const t = useTranslations("admin");
   return (
     <div className="grid gap-3 md:grid-cols-[minmax(16rem,1fr)_11rem_12rem_10rem]">
       <div className="relative">
@@ -40,9 +45,9 @@ export function SupportTicketFilters({
         <Input
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search ticket titles"
+          placeholder={t("support.searchPlaceholder")}
           className="pl-9"
-          aria-label="Search support tickets"
+          aria-label={t("support.searchAriaLabel")}
           disabled={disabled}
         />
       </div>
@@ -53,14 +58,14 @@ export function SupportTicketFilters({
         }
         disabled={disabled}
       >
-        <SelectTrigger aria-label="Filter by status">
-          <SelectValue placeholder="All statuses" />
+        <SelectTrigger aria-label={t("support.filterByStatus")}>
+          <SelectValue placeholder={t("support.allStatuses")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All statuses</SelectItem>
-          {statusOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
+          <SelectItem value="all">{t("support.allStatuses")}</SelectItem>
+          {statusValues.map((value) => (
+            <SelectItem key={value} value={value}>
+              {t(statusLabelKeys[value])}
             </SelectItem>
           ))}
         </SelectContent>
@@ -72,14 +77,14 @@ export function SupportTicketFilters({
         }
         disabled={disabled}
       >
-        <SelectTrigger aria-label="Filter by category">
-          <SelectValue placeholder="All categories" />
+        <SelectTrigger aria-label={t("support.filterByCategory")}>
+          <SelectValue placeholder={t("support.allCategories")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All categories</SelectItem>
-          {categoryOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
+          <SelectItem value="all">{t("support.allCategories")}</SelectItem>
+          {categoryValues.map((value) => (
+            <SelectItem key={value} value={value}>
+              {t(categoryLabelKeys[value])}
             </SelectItem>
           ))}
         </SelectContent>
@@ -91,14 +96,14 @@ export function SupportTicketFilters({
         }
         disabled={disabled}
       >
-        <SelectTrigger aria-label="Filter by priority">
-          <SelectValue placeholder="All priorities" />
+        <SelectTrigger aria-label={t("support.filterByPriority")}>
+          <SelectValue placeholder={t("support.allPriorities")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All priorities</SelectItem>
-          {priorityOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
+          <SelectItem value="all">{t("support.allPriorities")}</SelectItem>
+          {priorityValues.map((value) => (
+            <SelectItem key={value} value={value}>
+              {t(priorityLabelKeys[value])}
             </SelectItem>
           ))}
         </SelectContent>

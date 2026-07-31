@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ export function SsoFormDialog({
   onCreate,
   onUpdate,
 }: SsoFormDialogProps) {
+  const t = useTranslations("admin");
   const [form, setForm] = useState<SSOFormValues>({ ...emptySSOForm });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,9 +68,9 @@ export function SsoFormDialog({
 
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const validationError = validateSSOForm(form, isEdit);
-    if (validationError) {
-      setError(validationError);
+    const validationKey = validateSSOForm(form, isEdit);
+    if (validationKey) {
+      setError(t(validationKey));
       return;
     }
     setSaving(true);
@@ -81,7 +83,7 @@ export function SsoFormDialog({
       }
       onOpenChange(false);
     } catch (submitError) {
-      setError(getErrorMessage(submitError, "Failed to save SSO configuration."));
+      setError(getErrorMessage(submitError, t("sso.form.saveFailed")));
     } finally {
       setSaving(false);
     }
@@ -91,11 +93,9 @@ export function SsoFormDialog({
     <Dialog open={open} onOpenChange={(nextOpen) => !saving && onOpenChange(nextOpen)}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit SSO configuration" : "Create SSO configuration"}</DialogTitle>
+          <DialogTitle>{isEdit ? t("sso.form.editTitle") : t("sso.form.createTitle")}</DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Domain and protocol are immutable. Blank secrets keep their current values."
-              : "Configure a domain-specific identity provider for platform sign-in."}
+            {isEdit ? t("sso.form.editDescription") : t("sso.form.createDescription")}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={submit}>
@@ -114,10 +114,10 @@ export function SsoFormDialog({
           </DialogBody>
           <DialogFooter>
             <Button type="button" variant="outline" disabled={saving} onClick={() => onOpenChange(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button type="submit" loading={saving}>
-              {isEdit ? "Save changes" : "Create configuration"}
+              {isEdit ? t("sso.form.submitSave") : t("sso.form.submitCreate")}
             </Button>
           </DialogFooter>
         </form>

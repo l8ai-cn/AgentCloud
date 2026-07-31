@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { KeyRound } from "lucide-react";
 
 import { EmptyState } from "@/components/ui/empty-state";
@@ -24,14 +25,15 @@ export function SsoConfigList({
   onEdit: (config: SSOConfig) => void;
   onAction: (config: SSOConfig, action: SSOAction) => void;
 }) {
+  const t = useTranslations("admin");
   return (
     <section className="overflow-hidden rounded-md border border-border bg-surface-raised">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h2 className="text-sm font-semibold">{total.toLocaleString()} configurations</h2>
-        {loading && <span className="text-xs text-muted-foreground">Loading...</span>}
+        <h2 className="text-sm font-semibold">{t("sso.configurationCount", { count: total })}</h2>
+        {loading && <span className="text-xs text-muted-foreground">{t("common.loading")}</span>}
       </div>
       {loading && configs.length === 0 ? (
-        <div className="space-y-1 p-4" aria-label="Loading SSO configurations">
+        <div className="space-y-1 p-4" aria-label={t("sso.listLoadingAria")}>
           {Array.from({ length: 5 }).map((_, index) => (
             <div key={index} className="h-16 animate-pulse rounded-md bg-surface-muted" />
           ))}
@@ -51,12 +53,8 @@ export function SsoConfigList({
         <EmptyState
           size="compact"
           icon={<KeyRound className="h-5 w-5" />}
-          title="No SSO configurations found"
-          description={
-            searchActive
-              ? "Try a different search or protocol filter."
-              : "Create a configuration to enable domain-specific sign-in."
-          }
+          title={t("sso.emptyTitle")}
+          description={searchActive ? t("sso.emptyFiltered") : t("sso.emptyDescription")}
         />
       )}
     </section>

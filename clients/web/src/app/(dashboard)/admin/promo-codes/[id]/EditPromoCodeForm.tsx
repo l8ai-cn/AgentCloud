@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
@@ -19,10 +20,10 @@ interface EditPromoCodeFormProps {
   onSubmit: (input: UpdateAdminPromoCodeInput) => Promise<void>;
 }
 
-function parsePositiveInteger(value: string, label: string) {
+function parsePositiveInteger(value: string, invalidMessage: string) {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < 1) {
-    throw new Error(`${label} must be a positive integer.`);
+    throw new Error(invalidMessage);
   }
   return parsed;
 }
@@ -32,6 +33,7 @@ export function EditPromoCodeForm({
   saving,
   onSubmit,
 }: EditPromoCodeFormProps) {
+  const t = useTranslations("admin");
   const initialExpiration = toDateTimeLocal(code.expires_at);
   const [name, setName] = useState(code.name);
   const [description, setDescription] = useState(code.description);
@@ -61,11 +63,14 @@ export function EditPromoCodeForm({
         input.description = description.trim();
       }
       if (maxUses !== "" && Number(maxUses) !== code.max_uses) {
-        input.max_uses = parsePositiveInteger(maxUses, "Maximum uses");
+        input.max_uses = parsePositiveInteger(
+          maxUses,
+          t("promoCodes.validation.maxUsesPositive"),
+        );
       }
       const perOrg = parsePositiveInteger(
         maxUsesPerOrg,
-        "Uses per organization",
+        t("promoCodes.validation.usesPerOrgPositive"),
       );
       if (perOrg !== code.max_uses_per_org) input.max_uses_per_org = perOrg;
       if (expiration !== initialExpiration) {
@@ -78,7 +83,7 @@ export function EditPromoCodeForm({
       setError(
         submitError instanceof Error
           ? submitError.message
-          : "Unable to update promo code.",
+          : t("promoCodes.error.unableToUpdate"),
       );
     }
   };
@@ -89,31 +94,31 @@ export function EditPromoCodeForm({
       className="space-y-4 rounded-md border border-border bg-surface-raised p-5"
     >
       <div>
-        <h2 className="text-sm font-semibold">Editable settings</h2>
+        <h2 className="text-sm font-semibold">{t("promoCodes.edit.heading")}</h2>
         <p className="text-xs text-muted-foreground">
-          Code, type, plan, duration, and start time are immutable in the backend.
+          {t("promoCodes.edit.description")}
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Name" htmlFor="promo-name" required>
+        <FormField label={t("promoCodes.form.name")} htmlFor="promo-name" required>
           <Input id="promo-name" required maxLength={100} value={name} onChange={(event) => { setName(event.target.value); setError(null); }} />
         </FormField>
-        <FormField label="Expires at" htmlFor="promo-expires" hint="Clear the value to remove expiration.">
+        <FormField label={t("promoCodes.form.expiresAt")} htmlFor="promo-expires" hint={t("promoCodes.edit.expiresAtHint")}>
           <Input id="promo-expires" type="datetime-local" value={expiration} onChange={(event) => { setExpiration(event.target.value); setError(null); }} />
         </FormField>
       </div>
-      <FormField label="Description" htmlFor="promo-description">
+      <FormField label={t("promoCodes.form.description")} htmlFor="promo-description">
         <Textarea id="promo-description" rows={3} value={description} onChange={(event) => { setDescription(event.target.value); setError(null); }} />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
-          label="Total use limit"
+          label={t("promoCodes.form.maxUses")}
           htmlFor="promo-max-uses"
-          hint="Blank leaves the current limit unchanged; the API cannot reset a finite limit to unlimited."
+          hint={t("promoCodes.edit.maxUsesHint")}
         >
           <Input id="promo-max-uses" type="number" min={Math.max(1, code.used_count)} value={maxUses} onChange={(event) => { setMaxUses(event.target.value); setError(null); }} />
         </FormField>
-        <FormField label="Uses per organization" htmlFor="promo-org-limit" required>
+        <FormField label={t("promoCodes.form.usesPerOrg")} htmlFor="promo-org-limit" required>
           <Input id="promo-org-limit" type="number" min={1} required value={maxUsesPerOrg} onChange={(event) => { setMaxUsesPerOrg(event.target.value); setError(null); }} />
         </FormField>
       </div>
@@ -121,7 +126,7 @@ export function EditPromoCodeForm({
       <div className="flex justify-end">
         <Button type="submit" loading={saving} disabled={!dirty || saving}>
           <Save className="mr-2 h-4 w-4" />
-          Save changes
+          {t("promoCodes.edit.submit")}
         </Button>
       </div>
     </form>

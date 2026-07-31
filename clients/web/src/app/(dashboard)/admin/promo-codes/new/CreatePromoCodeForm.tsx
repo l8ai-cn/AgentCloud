@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Save } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
@@ -17,7 +18,7 @@ import type {
   CreateAdminPromoCodeInput,
   PromoCodeType,
 } from "@/lib/api/admin/promoTypes";
-import { promoTypeLabels } from "../promoCodePresentation";
+import { promoTypeLabelKeys } from "../promoCodePresentation";
 
 interface CreatePromoCodeFormProps {
   saving: boolean;
@@ -50,10 +51,10 @@ const initialState: FormState = {
   expiresAt: "",
 };
 
-function positiveInteger(value: string, label: string) {
+function positiveInteger(value: string, invalidMessage: string) {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed < 1) {
-    throw new Error(`${label} must be a positive integer.`);
+    throw new Error(invalidMessage);
   }
   return parsed;
 }
@@ -62,6 +63,7 @@ export function CreatePromoCodeForm({
   saving,
   onSubmit,
 }: CreatePromoCodeFormProps) {
+  const t = useTranslations("admin");
   const [form, setForm] = useState(initialState);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,7 +82,7 @@ export function CreatePromoCodeForm({
         ? new Date(form.expiresAt).toISOString()
         : undefined;
       if (startsAt && expiresAt && expiresAt <= startsAt) {
-        throw new Error("Expiration must be after the start time.");
+        throw new Error(t("promoCodes.validation.expirationAfterStart"));
       }
       await onSubmit({
         code: form.code.trim().toUpperCase(),
@@ -88,13 +90,19 @@ export function CreatePromoCodeForm({
         description: form.description.trim() || undefined,
         type: form.type,
         plan_name: form.planName,
-        duration_months: positiveInteger(form.durationMonths, "Duration"),
+        duration_months: positiveInteger(
+          form.durationMonths,
+          t("promoCodes.validation.durationPositive"),
+        ),
         max_uses: form.maxUses
-          ? positiveInteger(form.maxUses, "Maximum uses")
+          ? positiveInteger(
+              form.maxUses,
+              t("promoCodes.validation.maxUsesPositive"),
+            )
           : undefined,
         max_uses_per_org: positiveInteger(
           form.maxUsesPerOrg,
-          "Uses per organization",
+          t("promoCodes.validation.usesPerOrgPositive"),
         ),
         starts_at: startsAt,
         expires_at: expiresAt,
@@ -103,7 +111,7 @@ export function CreatePromoCodeForm({
       setError(
         submitError instanceof Error
           ? submitError.message
-          : "Unable to create promo code.",
+          : t("promoCodes.error.unableToCreate"),
       );
     }
   };
@@ -114,55 +122,55 @@ export function CreatePromoCodeForm({
       className="space-y-5 rounded-md border border-border bg-surface-raised p-5"
     >
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Code" htmlFor="promo-code" required hint="Stored in uppercase; maximum 50 characters.">
+        <FormField label={t("promoCodes.form.code")} htmlFor="promo-code" required hint={t("promoCodes.form.codeHint")}>
           <Input id="promo-code" required maxLength={50} value={form.code} onChange={(event) => set("code", event.target.value.toUpperCase())} className="font-mono uppercase" />
         </FormField>
-        <FormField label="Name" htmlFor="promo-name" required>
+        <FormField label={t("promoCodes.form.name")} htmlFor="promo-name" required>
           <Input id="promo-name" required maxLength={100} value={form.name} onChange={(event) => set("name", event.target.value)} />
         </FormField>
       </div>
 
-      <FormField label="Description" htmlFor="promo-description">
+      <FormField label={t("promoCodes.form.description")} htmlFor="promo-description">
         <Textarea id="promo-description" rows={3} value={form.description} onChange={(event) => set("description", event.target.value)} />
       </FormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Type" required>
+        <FormField label={t("promoCodes.form.type")} required>
           <Select value={form.type} onValueChange={(value) => set("type", value)}>
-            <SelectTrigger aria-label="Promo code type">{promoTypeLabels[form.type]}</SelectTrigger>
+            <SelectTrigger aria-label={t("promoCodes.form.typeAriaLabel")}>{t(promoTypeLabelKeys[form.type])}</SelectTrigger>
             <SelectContent>
-              {Object.entries(promoTypeLabels).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
+              {Object.entries(promoTypeLabelKeys).map(([value, labelKey]) => <SelectItem key={value} value={value}>{t(labelKey)}</SelectItem>)}
             </SelectContent>
           </Select>
         </FormField>
-        <FormField label="Plan" required>
+        <FormField label={t("promoCodes.form.plan")} required>
           <Select value={form.planName} onValueChange={(value) => set("planName", value)}>
-            <SelectTrigger aria-label="Subscription plan">{form.planName === "pro" ? "Pro" : "Enterprise"}</SelectTrigger>
+            <SelectTrigger aria-label={t("promoCodes.form.planAriaLabel")}>{form.planName === "pro" ? t("promoCodes.plan.pro") : t("promoCodes.plan.enterprise")}</SelectTrigger>
             <SelectContent>
-              <SelectItem value="pro">Pro</SelectItem>
-              <SelectItem value="enterprise">Enterprise</SelectItem>
+              <SelectItem value="pro">{t("promoCodes.plan.pro")}</SelectItem>
+              <SelectItem value="enterprise">{t("promoCodes.plan.enterprise")}</SelectItem>
             </SelectContent>
           </Select>
         </FormField>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <FormField label="Duration (months)" htmlFor="promo-duration" required>
+        <FormField label={t("promoCodes.form.duration")} htmlFor="promo-duration" required>
           <Input id="promo-duration" type="number" min={1} required value={form.durationMonths} onChange={(event) => set("durationMonths", event.target.value)} />
         </FormField>
-        <FormField label="Total use limit" htmlFor="promo-max-uses" hint="Leave blank for unlimited.">
+        <FormField label={t("promoCodes.form.maxUses")} htmlFor="promo-max-uses" hint={t("promoCodes.form.maxUsesCreateHint")}>
           <Input id="promo-max-uses" type="number" min={1} value={form.maxUses} onChange={(event) => set("maxUses", event.target.value)} />
         </FormField>
-        <FormField label="Uses per organization" htmlFor="promo-org-limit" required>
+        <FormField label={t("promoCodes.form.usesPerOrg")} htmlFor="promo-org-limit" required>
           <Input id="promo-org-limit" type="number" min={1} required value={form.maxUsesPerOrg} onChange={(event) => set("maxUsesPerOrg", event.target.value)} />
         </FormField>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Starts at" htmlFor="promo-starts" hint="Leave blank to start immediately.">
+        <FormField label={t("promoCodes.form.startsAt")} htmlFor="promo-starts" hint={t("promoCodes.form.startsAtHint")}>
           <Input id="promo-starts" type="datetime-local" value={form.startsAt} onChange={(event) => set("startsAt", event.target.value)} />
         </FormField>
-        <FormField label="Expires at" htmlFor="promo-expires" hint="Leave blank for no expiration.">
+        <FormField label={t("promoCodes.form.expiresAt")} htmlFor="promo-expires" hint={t("promoCodes.form.expiresAtCreateHint")}>
           <Input id="promo-expires" type="datetime-local" value={form.expiresAt} onChange={(event) => set("expiresAt", event.target.value)} />
         </FormField>
       </div>
@@ -171,7 +179,7 @@ export function CreatePromoCodeForm({
       <div className="flex justify-end">
         <Button type="submit" loading={saving}>
           <Save className="mr-2 h-4 w-4" />
-          Create promo code
+          {t("promoCodes.create.submit")}
         </Button>
       </div>
     </form>

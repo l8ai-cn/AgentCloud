@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -8,7 +9,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import type { PromoCodeType } from "@/lib/api/admin/promoTypes";
-import { promoTypeLabels } from "./promoCodePresentation";
+import { promoTypeLabelKeys } from "./promoCodePresentation";
 
 export type PromoStatusFilter = "all" | "active" | "inactive";
 export type PromoTypeFilter = "all" | PromoCodeType;
@@ -27,6 +28,8 @@ interface PromoCodeFiltersProps {
 }
 
 export function PromoCodeFilters(props: PromoCodeFiltersProps) {
+  const t = useTranslations("admin");
+
   return (
     <div className="grid gap-3 md:grid-cols-[minmax(16rem,1fr)_10rem_10rem_10rem]">
       <div className="relative">
@@ -34,9 +37,9 @@ export function PromoCodeFilters(props: PromoCodeFiltersProps) {
         <Input
           value={props.query}
           onChange={(event) => props.onQueryChange(event.target.value)}
-          placeholder="Search code or name"
+          placeholder={t("promoCodes.filters.searchPlaceholder")}
           className="pl-9"
-          aria-label="Search promo codes"
+          aria-label={t("promoCodes.filters.searchLabel")}
         />
       </div>
       <Select
@@ -44,14 +47,16 @@ export function PromoCodeFilters(props: PromoCodeFiltersProps) {
         disabled={props.disabled}
         onValueChange={(value) => props.onTypeChange(value as PromoTypeFilter)}
       >
-        <SelectTrigger aria-label="Filter by type">
-          {props.type === "all" ? "All types" : promoTypeLabels[props.type]}
+        <SelectTrigger aria-label={t("promoCodes.filters.typeLabel")}>
+          {props.type === "all"
+            ? t("promoCodes.filters.allTypes")
+            : t(promoTypeLabelKeys[props.type])}
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All types</SelectItem>
-          {Object.entries(promoTypeLabels).map(([value, label]) => (
+          <SelectItem value="all">{t("promoCodes.filters.allTypes")}</SelectItem>
+          {Object.entries(promoTypeLabelKeys).map(([value, labelKey]) => (
             <SelectItem key={value} value={value}>
-              {label}
+              {t(labelKey)}
             </SelectItem>
           ))}
         </SelectContent>
@@ -61,13 +66,19 @@ export function PromoCodeFilters(props: PromoCodeFiltersProps) {
         disabled={props.disabled}
         onValueChange={(value) => props.onPlanChange(value as PromoPlanFilter)}
       >
-        <SelectTrigger aria-label="Filter by plan">
-          {props.plan === "all" ? "All plans" : props.plan}
+        <SelectTrigger aria-label={t("promoCodes.filters.planLabel")}>
+          {props.plan === "all"
+            ? t("promoCodes.filters.allPlans")
+            : props.plan === "pro"
+              ? t("promoCodes.filters.selectedPlanPro")
+              : t("promoCodes.filters.selectedPlanEnterprise")}
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All plans</SelectItem>
-          <SelectItem value="pro">Pro</SelectItem>
-          <SelectItem value="enterprise">Enterprise</SelectItem>
+          <SelectItem value="all">{t("promoCodes.filters.allPlans")}</SelectItem>
+          <SelectItem value="pro">{t("promoCodes.plan.pro")}</SelectItem>
+          <SelectItem value="enterprise">
+            {t("promoCodes.plan.enterprise")}
+          </SelectItem>
         </SelectContent>
       </Select>
       <Select
@@ -77,17 +88,21 @@ export function PromoCodeFilters(props: PromoCodeFiltersProps) {
           props.onStatusChange(value as PromoStatusFilter)
         }
       >
-        <SelectTrigger aria-label="Filter by status">
+        <SelectTrigger aria-label={t("promoCodes.filters.statusLabel")}>
           {props.status === "all"
-            ? "All statuses"
+            ? t("promoCodes.filters.allStatuses")
             : props.status === "active"
-              ? "Active"
-              : "Inactive"}
+              ? t("promoCodes.status.active")
+              : t("promoCodes.status.inactive")}
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All statuses</SelectItem>
-          <SelectItem value="active">Active</SelectItem>
-          <SelectItem value="inactive">Inactive</SelectItem>
+          <SelectItem value="all">
+            {t("promoCodes.filters.allStatuses")}
+          </SelectItem>
+          <SelectItem value="active">{t("promoCodes.status.active")}</SelectItem>
+          <SelectItem value="inactive">
+            {t("promoCodes.status.inactive")}
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

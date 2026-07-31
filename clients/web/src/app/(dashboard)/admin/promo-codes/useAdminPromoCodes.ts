@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -24,13 +25,14 @@ const actions: Record<PromoCodeAction, (id: number) => Promise<unknown>> = {
   delete: deletePromoCode,
 };
 
-const successMessages: Record<PromoCodeAction, string> = {
-  activate: "Promo code activated.",
-  deactivate: "Promo code deactivated.",
-  delete: "Promo code deleted.",
+const successKeys: Record<PromoCodeAction, string> = {
+  activate: "promoCodes.toast.activated",
+  deactivate: "promoCodes.toast.deactivated",
+  delete: "promoCodes.toast.deleted",
 };
 
 export function useAdminPromoCodes(params: AdminPromoCodeListParams) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const [busyId, setBusyId] = useState<number | null>(null);
   const requestKey = JSON.stringify({ ...params, revision });
@@ -55,28 +57,28 @@ export function useAdminPromoCodes(params: AdminPromoCodeListParams) {
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(error, "Failed to load promo codes."),
+            error: getErrorMessage(error, t("promoCodes.error.load")),
           }));
         }
       });
     return () => controller.abort();
-  }, [params, requestKey]);
+  }, [params, requestKey, t]);
 
   const runAction = useCallback(
     async (action: PromoCodeAction, id: number) => {
       setBusyId(id);
       try {
         await actions[action](id);
-        toast.success(successMessages[action]);
+        toast.success(t(successKeys[action]));
         reload();
       } catch (error) {
-        toast.error(getErrorMessage(error, "Promo code update failed."));
+        toast.error(getErrorMessage(error, t("promoCodes.error.actionFailed")));
         throw error;
       } finally {
         setBusyId(null);
       }
     },
-    [reload],
+    [reload, t],
   );
 
   return {

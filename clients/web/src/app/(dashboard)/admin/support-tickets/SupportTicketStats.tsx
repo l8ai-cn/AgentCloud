@@ -1,23 +1,40 @@
+import { useTranslations } from "next-intl";
 import { AlertCircle, CheckCircle2, Clock3, MessageSquare } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import type { SupportTicketStats as Stats } from "@/lib/api/admin/supportTicketTypes";
 
 const items = [
-  { key: "total", label: "Total", icon: MessageSquare, tone: "text-muted-foreground" },
-  { key: "open", label: "Open", icon: AlertCircle, tone: "text-danger" },
-  { key: "in_progress", label: "In progress", icon: Clock3, tone: "text-warning" },
-  { key: "resolved", label: "Resolved", icon: CheckCircle2, tone: "text-success" },
+  {
+    key: "total",
+    labelKey: "support.stats.total",
+    icon: MessageSquare,
+    tone: "text-muted-foreground",
+  },
+  { key: "open", labelKey: "support.stats.open", icon: AlertCircle, tone: "text-danger" },
+  {
+    key: "in_progress",
+    labelKey: "support.stats.inProgress",
+    icon: Clock3,
+    tone: "text-warning",
+  },
+  {
+    key: "resolved",
+    labelKey: "support.stats.resolved",
+    icon: CheckCircle2,
+    tone: "text-success",
+  },
 ] as const;
 
 export function SupportTicketStats({ stats }: { stats: Stats }) {
+  const t = useTranslations("admin");
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {items.map(({ key, label, icon: Icon, tone }) => (
+      {items.map(({ key, labelKey, icon: Icon, tone }) => (
         <Card key={key}>
           <CardContent className="flex items-center justify-between p-4">
             <div>
-              <p className="text-xs font-medium text-muted-foreground">{label}</p>
+              <p className="text-xs font-medium text-muted-foreground">{t(labelKey)}</p>
               <p className="mt-1 text-2xl font-semibold">
                 {stats[key].toLocaleString()}
               </p>

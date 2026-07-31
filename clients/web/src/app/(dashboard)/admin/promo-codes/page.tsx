@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Plus, RefreshCw } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { PageHeader } from "@/components/ui/page-header";
+import { useSearchPagination } from "@/hooks/useSearchPagination";
 import type {
   AdminPromoCode,
   AdminPromoCodeListParams,
@@ -24,40 +26,22 @@ import {
   useAdminPromoCodes,
 } from "./useAdminPromoCodes";
 
-const actionCopy: Record<PromoCodeAction, { title: string; description: string }> = {
-  activate: {
-    title: "Activate this promo code?",
-    description: "Eligible organizations will be able to redeem it immediately.",
-  },
-  deactivate: {
-    title: "Deactivate this promo code?",
-    description: "New redemptions will stop until the code is activated again.",
-  },
-  delete: {
-    title: "Delete this promo code?",
-    description: "Deletion is permanent and the backend rejects codes with redemptions.",
-  },
+const confirmKeys: Record<PromoCodeAction, string> = {
+  activate: "promoCodes.confirm.activate",
+  deactivate: "promoCodes.confirm.deactivate",
+  delete: "promoCodes.confirm.delete",
 };
 
 export default function AdminPromoCodesPage() {
-  const [query, setQuery] = useState("");
-  const [search, setSearch] = useState("");
+  const t = useTranslations("admin");
+  const { query, setQuery, search, page, setPage } = useSearchPagination();
   const [type, setType] = useState<PromoTypeFilter>("all");
   const [plan, setPlan] = useState<PromoPlanFilter>("all");
   const [status, setStatus] = useState<PromoStatusFilter>("all");
-  const [page, setPage] = useState(1);
   const [pending, setPending] = useState<{
     code: AdminPromoCode;
     action: PromoCodeAction;
   } | null>(null);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setSearch(query.trim());
-      setPage(1);
-    }, 300);
-    return () => window.clearTimeout(timer);
-  }, [query]);
 
   const params = useMemo<AdminPromoCodeListParams>(
     () => ({
@@ -79,18 +63,18 @@ export default function AdminPromoCodesPage() {
     <div className="space-y-5">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title="Promo codes"
-        subtitle="Create and control subscription access codes across the platform."
+        title={t("nav.promoCodes")}
+        subtitle={t("promoCodes.subtitle")}
         actions={
           <>
             <Button variant="outline" size="sm" onClick={reload} loading={loading}>
               <RefreshCw className="mr-2 h-4 w-4" />
-              Refresh
+              {t("common.refresh")}
             </Button>
             <Button asChild size="sm">
               <Link href="/admin/promo-codes/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Create code
+                {t("promoCodes.createCode")}
               </Link>
             </Button>
           </>
@@ -123,9 +107,13 @@ export default function AdminPromoCodesPage() {
       <section className="overflow-hidden rounded-md border border-border bg-surface-raised">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <h2 className="text-sm font-semibold">
-            {data?.total.toLocaleString() ?? 0} promo codes
+            {t("promoCodes.count", { count: data?.total ?? 0 })}
           </h2>
-          {loading && <span className="text-xs text-muted-foreground">Loading...</span>}
+          {loading && (
+            <span className="text-xs text-muted-foreground">
+              {t("common.loading")}
+            </span>
+          )}
         </div>
         <PromoCodeList
           codes={data?.data ?? []}
@@ -139,11 +127,11 @@ export default function AdminPromoCodesPage() {
       {data && data.total_pages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Page {data.page} of {data.total_pages}
+            {t("common.pageOf", { page: data.page, total: data.total_pages })}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => setPage((value) => value - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= data.total_pages || loading} onClick={() => setPage((value) => value + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => setPage((value) => value - 1)}>{t("common.previous")}</Button>
+            <Button variant="outline" size="sm" disabled={page >= data.total_pages || loading} onClick={() => setPage((value) => value + 1)}>{t("common.next")}</Button>
           </div>
         </div>
       )}
@@ -151,14 +139,20 @@ export default function AdminPromoCodesPage() {
       <ConfirmDialog
         open={pending !== null}
         onOpenChange={(open) => !open && setPending(null)}
-        title={pending ? actionCopy[pending.action].title : ""}
+        title={pending ? t(`${confirmKeys[pending.action]}.title`) : ""}
         description={
           pending
-            ? `${actionCopy[pending.action].description} Target: ${pending.code.code}`
+            ? t(`${confirmKeys[pending.action]}.description`, {
+                code: pending.code.code,
+              })
             : undefined
         }
         variant={pending?.action === "delete" ? "destructive" : "default"}
-        confirmText={pending?.action === "delete" ? "Delete code" : "Confirm"}
+        confirmText={
+          pending?.action === "delete"
+            ? t("promoCodes.confirm.deleteConfirmText")
+            : t("common.confirm")
+        }
         loading={pending ? busyId === pending.code.id : false}
         onConfirm={async () => {
           if (!pending) return;

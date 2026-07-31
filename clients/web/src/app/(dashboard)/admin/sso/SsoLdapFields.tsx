@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -14,11 +16,12 @@ export function SsoLdapFields({
   isEdit: boolean;
   disabled: boolean;
 }) {
+  const t = useTranslations("admin");
   return (
     <fieldset className="space-y-4 rounded-md border border-border p-4">
-      <legend className="px-2 text-sm font-semibold">LDAP settings</legend>
+      <legend className="px-2 text-sm font-semibold">{t("sso.ldap.legend")}</legend>
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_8rem]">
-        <FormField label="Host" htmlFor="ldap-host" required>
+        <FormField label={t("sso.ldap.host")} htmlFor="ldap-host" required>
           <Input
             id="ldap-host"
             value={form.ldap_host}
@@ -27,7 +30,7 @@ export function SsoLdapFields({
             disabled={disabled}
           />
         </FormField>
-        <FormField label="Port" htmlFor="ldap-port" required>
+        <FormField label={t("sso.ldap.port")} htmlFor="ldap-port" required>
           <Input
             id="ldap-port"
             type="number"
@@ -41,9 +44,9 @@ export function SsoLdapFields({
       </div>
       <label className="flex items-center justify-between gap-3 rounded-md border border-border p-3 text-sm">
         <span>
-          <span className="block font-medium">Use TLS</span>
+          <span className="block font-medium">{t("sso.ldap.useTls")}</span>
           <span className="block text-xs text-muted-foreground">
-            Establish the LDAP connection with STARTTLS.
+            {t("sso.ldap.useTlsHint")}
           </span>
         </span>
         <Switch
@@ -53,7 +56,7 @@ export function SsoLdapFields({
         />
       </label>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Bind DN" htmlFor="ldap-bind-dn">
+        <FormField label={t("sso.ldap.bindDn")} htmlFor="ldap-bind-dn">
           <Input
             id="ldap-bind-dn"
             value={form.ldap_bind_dn}
@@ -63,9 +66,9 @@ export function SsoLdapFields({
           />
         </FormField>
         <FormField
-          label="Bind password"
+          label={t("sso.ldap.bindPassword")}
           htmlFor="ldap-bind-password"
-          hint={isEdit ? "Leave blank to keep the current password." : undefined}
+          hint={isEdit ? t("sso.ldap.bindPasswordHint") : undefined}
         >
           <Input
             id="ldap-bind-password"
@@ -77,7 +80,7 @@ export function SsoLdapFields({
           />
         </FormField>
       </div>
-      <FormField label="Base DN" htmlFor="ldap-base-dn" required>
+      <FormField label={t("sso.ldap.baseDn")} htmlFor="ldap-base-dn" required>
         <Input
           id="ldap-base-dn"
           value={form.ldap_base_dn}
@@ -86,7 +89,7 @@ export function SsoLdapFields({
           disabled={disabled}
         />
       </FormField>
-      <FormField label="User filter" htmlFor="ldap-user-filter">
+      <FormField label={t("sso.ldap.userFilter")} htmlFor="ldap-user-filter">
         <Input
           id="ldap-user-filter"
           value={form.ldap_user_filter}
@@ -96,9 +99,9 @@ export function SsoLdapFields({
         />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-3">
-        <AttributeField label="Email attribute" field="ldap_email_attr" form={form} update={update} disabled={disabled} />
-        <AttributeField label="Name attribute" field="ldap_name_attr" form={form} update={update} disabled={disabled} />
-        <AttributeField label="Username attribute" field="ldap_username_attr" form={form} update={update} disabled={disabled} />
+        <AttributeField label={t("sso.ldap.emailAttribute")} field="ldap_email_attr" form={form} update={update} disabled={disabled} />
+        <AttributeField label={t("sso.ldap.nameAttribute")} field="ldap_name_attr" form={form} update={update} disabled={disabled} />
+        <AttributeField label={t("sso.ldap.usernameAttribute")} field="ldap_username_attr" form={form} update={update} disabled={disabled} />
       </div>
     </fieldset>
   );

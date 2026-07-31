@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   CircleCheck,
   CircleX,
@@ -30,6 +31,7 @@ export function SsoConfigRow({
   onEdit: (config: SSOConfig) => void;
   onAction: (config: SSOConfig, action: SSOAction) => void;
 }) {
+  const t = useTranslations("admin");
   const rowBusy = mutationKey !== null;
   const testing = mutationKey === `test:${config.id}`;
   return (
@@ -39,12 +41,12 @@ export function SsoConfigRow({
           <p className="truncate text-sm font-medium">{config.name}</p>
           <Badge variant="outline">{config.protocol.toUpperCase()}</Badge>
           <Badge variant={config.is_enabled ? "success" : "secondary"}>
-            {config.is_enabled ? "Enabled" : "Disabled"}
+            {config.is_enabled ? t("common.enabled") : t("common.disabled")}
           </Badge>
           {config.enforce_sso && (
             <Badge variant="warning" className="gap-1">
               <ShieldCheck className="h-3 w-3" />
-              Enforced
+              {t("sso.enforced")}
             </Badge>
           )}
         </div>
@@ -53,10 +55,10 @@ export function SsoConfigRow({
       <div className="text-xs text-muted-foreground">
         <p>
           {config.default_organization_id
-            ? `Default org #${config.default_organization_id}`
-            : "No default organization"}
+            ? t("sso.defaultOrganization", { id: String(config.default_organization_id) })
+            : t("sso.noDefaultOrganization")}
         </p>
-        <p>Updated {new Date(config.updated_at).toLocaleString()}</p>
+        <p>{t("sso.updatedAt", { timestamp: new Date(config.updated_at).toLocaleString() })}</p>
         {testResult && (
           <p
             role={testResult.status === "error" ? "alert" : "status"}
@@ -75,23 +77,25 @@ export function SsoConfigRow({
           onClick={() => onAction(config, "test")}
         />
         <ActionButton
-          label={`Edit ${config.name}`}
-          title="Edit configuration"
+          label={t("sso.row.editAria", { name: config.name })}
+          title={t("sso.row.editTitle")}
           disabled={rowBusy}
           icon={<Pencil className="h-4 w-4" />}
           onClick={() => onEdit(config)}
         />
         <ActionButton
-          label={`${config.is_enabled ? "Disable" : "Enable"} ${config.name}`}
-          title={config.is_enabled ? "Disable configuration" : "Enable configuration"}
+          label={config.is_enabled
+            ? t("sso.row.disableAria", { name: config.name })
+            : t("sso.row.enableAria", { name: config.name })}
+          title={config.is_enabled ? t("sso.row.disableTitle") : t("sso.row.enableTitle")}
           busy={mutationKey === `${config.is_enabled ? "disable" : "enable"}:${config.id}`}
           disabled={rowBusy}
           icon={config.is_enabled ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />}
           onClick={() => onAction(config, config.is_enabled ? "disable" : "enable")}
         />
         <ActionButton
-          label={`Delete ${config.name}`}
-          title="Delete configuration"
+          label={t("sso.row.deleteAria", { name: config.name })}
+          title={t("sso.row.deleteTitle")}
           busy={mutationKey === `delete:${config.id}`}
           disabled={rowBusy}
           destructive
@@ -116,20 +120,21 @@ function TestButton({
   disabled: boolean;
   onClick: () => void;
 }) {
+  const t = useTranslations("admin");
   const content = testing
-    ? { icon: <LoaderCircle className="h-4 w-4 animate-spin" />, label: "Testing" }
+    ? { icon: <LoaderCircle className="h-4 w-4 animate-spin" />, label: t("sso.test.testing") }
     : result?.status === "success"
-      ? { icon: <CircleCheck className="h-4 w-4 text-success" />, label: "Passed" }
+      ? { icon: <CircleCheck className="h-4 w-4 text-success" />, label: t("sso.test.passed") }
       : result?.status === "error"
-        ? { icon: <CircleX className="h-4 w-4 text-destructive" />, label: "Failed" }
-        : { icon: <FlaskConical className="h-4 w-4" />, label: "Test" };
+        ? { icon: <CircleX className="h-4 w-4 text-destructive" />, label: t("sso.test.failed") }
+        : { icon: <FlaskConical className="h-4 w-4" />, label: t("sso.test.idle") };
 
   return (
     <Button
       variant="outline"
       size="sm"
-      aria-label={`Test ${configName}`}
-      title="Test connection"
+      aria-label={t("sso.test.buttonAria", { name: configName })}
+      title={t("sso.test.buttonTitle")}
       disabled={disabled}
       className="min-w-[5.5rem] gap-1.5"
       onClick={onClick}

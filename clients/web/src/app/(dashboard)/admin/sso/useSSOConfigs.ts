@@ -18,6 +18,7 @@ import {
 } from "@/lib/api/admin/sso";
 import type { AdminPaginated } from "@/lib/api/admin/types";
 import { getErrorMessage } from "@/lib/utils";
+import { useSsoActionMessages } from "./ssoActionMessages";
 
 export type SSOAction = "enable" | "disable" | "test" | "delete";
 export type SSOTestState = {
@@ -26,6 +27,7 @@ export type SSOTestState = {
 };
 
 export function useSSOConfigs(search: string, protocol: SSOProtocol | undefined, page: number) {
+  const messages = useSsoActionMessages();
   const [revision, setRevision] = useState(0);
   const requestKey = JSON.stringify([search, protocol, page, revision]);
   const [mutationKey, setMutationKey] = useState<string | null>(null);
@@ -61,44 +63,44 @@ export function useSSOConfigs(search: string, protocol: SSOProtocol | undefined,
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(error, "Failed to load SSO configurations."),
+            error: getErrorMessage(error, messages.loadFailed),
           }));
         }
       });
     return () => {
       active = false;
     };
-  }, [page, protocol, requestKey, search]);
+  }, [messages.loadFailed, page, protocol, requestKey, search]);
 
   const createConfig = useCallback(async (input: SSOConfigInput) => {
     const key = "create";
     if (!beginMutation(key)) return;
     try {
       await createSSOConfig(input);
-      toast.success("SSO configuration created.");
+      toast.success(messages.created);
       reload();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to create SSO configuration."));
+      toast.error(getErrorMessage(error, messages.createFailed));
       throw error;
     } finally {
       endMutation(key);
     }
-  }, [beginMutation, endMutation, reload]);
+  }, [beginMutation, endMutation, messages.createFailed, messages.created, reload]);
 
   const updateConfig = useCallback(async (id: number, input: UpdateSSOConfigInput) => {
     const key = `update:${id}`;
     if (!beginMutation(key)) return;
     try {
       await updateSSOConfig(id, input);
-      toast.success("SSO configuration updated.");
+      toast.success(messages.updated);
       reload();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to update SSO configuration."));
+      toast.error(getErrorMessage(error, messages.updateFailed));
       throw error;
     } finally {
       endMutation(key);
     }
-  }, [beginMutation, endMutation, reload]);
+  }, [beginMutation, endMutation, messages.updateFailed, messages.updated, reload]);
 
   const runAction = useCallback(async (action: SSOAction, config: SSOConfig) => {
     const key = `${action}:${config.id}`;
@@ -114,10 +116,10 @@ export function useSSOConfigs(search: string, protocol: SSOProtocol | undefined,
       if (action === "test") {
         const testResult = await testSSOConnection(config.id);
         const state: SSOTestState = testResult.success
-          ? { status: "success", message: testResult.message || "Connection test passed." }
+          ? { status: "success", message: testResult.message || messages.testPassed }
           : {
               status: "error",
-              message: testResult.error || testResult.message || "Connection test failed.",
+              message: testResult.error || testResult.message || messages.testFailed,
             };
         setTestResults((current) => ({ ...current, [config.id]: state }));
         if (testResult.success) {
@@ -130,10 +132,10 @@ export function useSSOConfigs(search: string, protocol: SSOProtocol | undefined,
       if (action === "enable") await enableSSOConfig(config.id);
       if (action === "disable") await disableSSOConfig(config.id);
       if (action === "delete") await deleteSSOConfig(config.id);
-      toast.success(action === "delete" ? "SSO configuration deleted." : `SSO configuration ${action}d.`);
+      toast.success(messages.success[action]);
       reload();
     } catch (error) {
-      const message = getErrorMessage(error, `Failed to ${action} SSO configuration.`);
+      const message = getErrorMessage(error, messages.failure[action]);
       if (action === "test") {
         setTestResults((current) => ({
           ...current,
@@ -145,7 +147,7 @@ export function useSSOConfigs(search: string, protocol: SSOProtocol | undefined,
     } finally {
       endMutation(key);
     }
-  }, [beginMutation, endMutation, reload]);
+  }, [beginMutation, endMutation, messages, reload]);
 
   return {
     data: result.data,

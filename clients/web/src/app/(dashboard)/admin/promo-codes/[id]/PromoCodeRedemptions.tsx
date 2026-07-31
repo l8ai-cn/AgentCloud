@@ -1,4 +1,5 @@
 import { Building2, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { AlertMessage } from "@/components/ui/alert-message";
 import { Button } from "@/components/ui/button";
@@ -24,16 +25,26 @@ export function PromoCodeRedemptions({
   page,
   onPageChange,
 }: PromoCodeRedemptionsProps) {
+  const t = useTranslations("admin");
+  const promoDate = (value: string | null) =>
+    formatPromoDate(value) ?? t("common.never");
+
   return (
     <section className="overflow-hidden rounded-md border border-border bg-surface-raised">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div>
-          <h2 className="text-sm font-semibold">Redemptions</h2>
+          <h2 className="text-sm font-semibold">
+            {t("promoCodes.redemptions.title")}
+          </h2>
           <p className="text-xs text-muted-foreground">
-            {data?.total.toLocaleString() ?? 0} recorded uses
+            {t("promoCodes.redemptions.count", { count: data?.total ?? 0 })}
           </p>
         </div>
-        {loading && <span className="text-xs text-muted-foreground">Loading...</span>}
+        {loading && (
+          <span className="text-xs text-muted-foreground">
+            {t("common.loading")}
+          </span>
+        )}
       </div>
       {error && <AlertMessage type="error" message={error} className="m-4" />}
       {loading && !data ? (
@@ -50,31 +61,40 @@ export function PromoCodeRedemptions({
           >
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">
-                {redemption.user_email ?? `User #${redemption.user_id}`}
+                {redemption.user_email ??
+                  t("promoCodes.redemptions.userFallback", {
+                    id: String(redemption.user_id),
+                  })}
               </p>
               <p className="truncate text-xs text-muted-foreground">
                 {redemption.user_username
                   ? `@${redemption.user_username}`
-                  : "Username unavailable"}
+                  : t("promoCodes.redemptions.usernameUnavailable")}
               </p>
             </div>
             <div className="flex min-w-0 items-center gap-2 text-sm">
               <Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
               <span className="truncate">
                 {redemption.organization_name ??
-                  `Organization #${redemption.organization_id}`}
+                  t("promoCodes.redemptions.organizationFallback", {
+                    id: String(redemption.organization_id),
+                  })}
               </span>
             </div>
             <div className="text-xs">
               <p className="font-medium capitalize">{redemption.plan_name}</p>
               <p className="text-muted-foreground">
-                {redemption.duration_months} months
+                {t("promoCodes.redemptions.durationMonths", {
+                  count: redemption.duration_months,
+                })}
               </p>
             </div>
             <div className="text-xs">
-              <p className="font-medium">{formatPromoDate(redemption.created_at)}</p>
+              <p className="font-medium">{promoDate(redemption.created_at)}</p>
               <p className="text-muted-foreground">
-                Ends {formatPromoDate(redemption.new_period_end)}
+                {t("promoCodes.endsAt", {
+                  date: promoDate(redemption.new_period_end),
+                })}
               </p>
             </div>
           </div>
@@ -83,18 +103,18 @@ export function PromoCodeRedemptions({
         <EmptyState
           size="compact"
           icon={<Users className="h-5 w-5" />}
-          title="No redemptions"
-          description="This promo code has not been redeemed."
+          title={t("promoCodes.redemptions.empty.title")}
+          description={t("promoCodes.redemptions.empty.description")}
         />
       )}
       {data && data.total_pages > 1 && (
         <div className="flex items-center justify-between border-t border-border px-4 py-3">
           <p className="text-xs text-muted-foreground">
-            Page {data.page} of {data.total_pages}
+            {t("common.pageOf", { page: data.page, total: data.total_pages })}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => onPageChange(page - 1)}>Previous</Button>
-            <Button variant="outline" size="sm" disabled={page >= data.total_pages || loading} onClick={() => onPageChange(page + 1)}>Next</Button>
+            <Button variant="outline" size="sm" disabled={page <= 1 || loading} onClick={() => onPageChange(page - 1)}>{t("common.previous")}</Button>
+            <Button variant="outline" size="sm" disabled={page >= data.total_pages || loading} onClick={() => onPageChange(page + 1)}>{t("common.next")}</Button>
           </div>
         </div>
       )}

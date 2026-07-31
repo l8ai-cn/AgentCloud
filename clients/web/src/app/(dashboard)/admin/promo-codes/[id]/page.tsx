@@ -4,6 +4,7 @@ import { use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Power, PowerOff, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { AlertMessage } from "@/components/ui/alert-message";
@@ -32,6 +33,7 @@ export default function PromoCodeDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const t = useTranslations("admin");
   const promoCodeId = Number(id);
   const router = useRouter();
   const [redemptionPage, setRedemptionPage] = useState(1);
@@ -41,7 +43,9 @@ export default function PromoCodeDetailPage({
   const redemptions = usePromoCodeRedemptions(promoCodeId, redemptionPage);
 
   if (!Number.isSafeInteger(promoCodeId) || promoCodeId <= 0) {
-    return <AlertMessage type="error" message="Invalid promo code identifier." />;
+    return (
+      <AlertMessage type="error" message={t("promoCodes.error.invalidId")} />
+    );
   }
   if (loading) {
     return (
@@ -55,11 +59,14 @@ export default function PromoCodeDetailPage({
   if (error || !code) {
     return (
       <div className="space-y-4">
-        <AlertMessage type="error" message={error ?? "Promo code not found."} />
+        <AlertMessage
+          type="error"
+          message={error ?? t("promoCodes.error.notFound")}
+        />
         <Button asChild variant="outline">
           <Link href="/admin/promo-codes">
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to promo codes
+            {t("promoCodes.detail.backToList")}
           </Link>
         </Button>
       </div>
@@ -71,7 +78,7 @@ export default function PromoCodeDetailPage({
     try {
       if (action === "delete") {
         await deletePromoCode(code.id);
-        toast.success("Promo code deleted.");
+        toast.success(t("promoCodes.toast.deleted"));
         router.push("/admin/promo-codes");
         return;
       }
@@ -80,12 +87,14 @@ export default function PromoCodeDetailPage({
         : deactivatePromoCode(code.id));
       toast.success(
         action === "activate"
-          ? "Promo code activated."
-          : "Promo code deactivated.",
+          ? t("promoCodes.toast.activated")
+          : t("promoCodes.toast.deactivated"),
       );
       reload();
     } catch (actionError) {
-      toast.error(getErrorMessage(actionError, "Promo code update failed."));
+      toast.error(
+        getErrorMessage(actionError, t("promoCodes.error.actionFailed")),
+      );
       throw actionError;
     } finally {
       setBusy(null);
@@ -96,10 +105,10 @@ export default function PromoCodeDetailPage({
     setBusy("save");
     try {
       await updatePromoCode(code.id, input);
-      toast.success("Promo code updated.");
+      toast.success(t("promoCodes.toast.updated"));
       reload();
     } catch (saveError) {
-      toast.error(getErrorMessage(saveError, "Failed to update promo code."));
+      toast.error(getErrorMessage(saveError, t("promoCodes.error.update")));
       throw saveError;
     } finally {
       setBusy(null);
@@ -116,7 +125,7 @@ export default function PromoCodeDetailPage({
         breadcrumb={
           <Link href="/admin/promo-codes" className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-1 h-3 w-3" />
-            Promo codes
+            {t("nav.promoCodes")}
           </Link>
         }
         title={<span className="font-mono">{code.code}</span>}
@@ -125,17 +134,19 @@ export default function PromoCodeDetailPage({
           <>
             <Button variant="outline" size="sm" disabled={busy !== null} onClick={() => setPending(action)}>
               {code.is_active ? <PowerOff className="mr-2 h-4 w-4" /> : <Power className="mr-2 h-4 w-4" />}
-              {code.is_active ? "Deactivate" : "Activate"}
+              {code.is_active
+                ? t("promoCodes.action.deactivate")
+                : t("promoCodes.action.activate")}
             </Button>
             <Button
               variant="destructive"
               size="sm"
               disabled={busy !== null || hasRedemptions}
-              title={hasRedemptions ? "Codes with redemptions cannot be deleted" : "Delete promo code"}
+              title={hasRedemptions ? t("promoCodes.detail.deleteBlocked") : t("promoCodes.detail.deleteTitle")}
               onClick={() => setPending("delete")}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              {t("common.delete")}
             </Button>
           </>
         }
@@ -154,10 +165,16 @@ export default function PromoCodeDetailPage({
       <ConfirmDialog
         open={pending !== null}
         onOpenChange={(open) => !open && setPending(null)}
-        title={pending === "delete" ? "Delete this promo code?" : `${pending === "activate" ? "Activate" : "Deactivate"} this promo code?`}
-        description={pending === "delete" ? `${code.code} will be permanently deleted. The backend rejects deletion if redemptions exist.` : `${code.code} will ${pending === "activate" ? "accept new redemptions" : "stop accepting new redemptions"}.`}
+        title={t(`promoCodes.confirm.${pending ?? "deactivate"}.title`)}
+        description={t(`promoCodes.detail.confirm.${pending ?? "deactivate"}`, {
+          code: code.code,
+        })}
         variant={pending === "delete" ? "destructive" : "default"}
-        confirmText={pending === "delete" ? "Delete code" : "Confirm"}
+        confirmText={
+          pending === "delete"
+            ? t("promoCodes.confirm.deleteConfirmText")
+            : t("common.confirm")
+        }
         loading={pending !== null && busy === pending}
         onConfirm={async () => {
           if (!pending) return;

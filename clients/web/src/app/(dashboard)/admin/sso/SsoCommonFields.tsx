@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
@@ -16,36 +18,37 @@ export function SsoCommonFields({
   isEdit: boolean;
   disabled: boolean;
 }) {
+  const t = useTranslations("admin");
   return (
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Domain" htmlFor="sso-domain" required disabled={isEdit}>
+        <FormField label={t("sso.form.domain")} htmlFor="sso-domain" required disabled={isEdit}>
           <Input
             id="sso-domain"
             value={form.domain}
             onChange={(event) => update("domain", event.target.value)}
-            placeholder="example.com"
+            placeholder={t("sso.form.domainPlaceholder")}
             disabled={disabled || isEdit}
           />
         </FormField>
-        <FormField label="Display name" htmlFor="sso-name" required>
+        <FormField label={t("sso.form.displayName")} htmlFor="sso-name" required>
           <Input
             id="sso-name"
             value={form.name}
             onChange={(event) => update("name", event.target.value)}
-            placeholder="Company SSO"
+            placeholder={t("sso.form.displayNamePlaceholder")}
             disabled={disabled}
           />
         </FormField>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField label="Protocol" disabled={isEdit}>
+        <FormField label={t("sso.form.protocol")} disabled={isEdit}>
           <Select
             value={form.protocol}
             onValueChange={(value) => update("protocol", value as SSOProtocol)}
             disabled={disabled || isEdit}
           >
-            <SelectTrigger aria-label="SSO protocol">
+            <SelectTrigger aria-label={t("sso.form.protocolAria")}>
               <span>{form.protocol.toUpperCase()}</span>
             </SelectTrigger>
             <SelectContent>
@@ -56,9 +59,9 @@ export function SsoCommonFields({
           </Select>
         </FormField>
         <FormField
-          label="Default organization ID"
+          label={t("sso.form.defaultOrganizationId")}
           htmlFor="default-organization-id"
-          hint="Federated users join this organization on login."
+          hint={t("sso.form.defaultOrganizationHint")}
         >
           <Input
             id="default-organization-id"
@@ -72,15 +75,15 @@ export function SsoCommonFields({
       </div>
       <div className="grid gap-3 rounded-md border border-border p-3 sm:grid-cols-2">
         <ToggleField
-          label="Enabled"
-          description="Allow this configuration to handle sign-in."
+          label={t("common.enabled")}
+          description={t("sso.form.enabledHint")}
           checked={form.is_enabled}
           onCheckedChange={(checked) => update("is_enabled", checked)}
           disabled={disabled}
         />
         <ToggleField
-          label="Enforce SSO"
-          description="Require matching users to sign in through this provider."
+          label={t("sso.form.enforceSso")}
+          description={t("sso.form.enforceSsoHint")}
           checked={form.enforce_sso}
           onCheckedChange={(checked) => update("enforce_sso", checked)}
           disabled={disabled}

@@ -1,6 +1,7 @@
 "use client";
 
 import { type SetStateAction, useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import { listRunners, type AdminRunner } from "@/lib/api/admin/runners";
 import type { AdminPaginated } from "@/lib/api/admin/types";
@@ -9,6 +10,7 @@ import { getErrorMessage } from "@/lib/utils";
 const PAGE_SIZE = 10;
 
 export function useOrganizationRunners(orgId: number) {
+  const t = useTranslations("admin");
   const [pagination, setPagination] = useState({ orgId, page: 1 });
   const [reloadKey, setReloadKey] = useState(0);
   const [result, setResult] = useState<{
@@ -33,7 +35,7 @@ export function useOrganizationRunners(orgId: number) {
           setResult({
             requestKey,
             data: null,
-            error: getErrorMessage(loadError, "Failed to load organization runners."),
+            error: getErrorMessage(loadError, t("organizations.runnersLoadError")),
           });
         }
       });
@@ -41,7 +43,7 @@ export function useOrganizationRunners(orgId: number) {
     return () => {
       active = false;
     };
-  }, [orgId, page, requestKey]);
+  }, [orgId, page, requestKey, t]);
 
   const setPage = useCallback(
     (nextPage: SetStateAction<number>) => {

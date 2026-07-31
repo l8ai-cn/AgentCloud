@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import {
@@ -32,16 +33,17 @@ const actions: Record<UserAction, (id: number) => Promise<AdminUser>> = {
   "unverify-email": unverifyUserEmail,
 };
 
-const successMessages: Record<UserAction, string> = {
-  disable: "User disabled.",
-  enable: "User enabled.",
-  "grant-admin": "System administrator access granted.",
-  "revoke-admin": "System administrator access revoked.",
-  "verify-email": "Email marked as verified.",
-  "unverify-email": "Email verification removed.",
+const successKeys: Record<UserAction, string> = {
+  disable: "disabled",
+  enable: "enabled",
+  "grant-admin": "adminGranted",
+  "revoke-admin": "adminRevoked",
+  "verify-email": "emailVerified",
+  "unverify-email": "emailUnverified",
 };
 
 export function useAdminUsers(search: string, page: number) {
+  const t = useTranslations("admin");
   const [revision, setRevision] = useState(0);
   const requestKey = `${search}\u0000${page}\u0000${revision}`;
   const [result, setResult] = useState<{
@@ -64,25 +66,25 @@ export function useAdminUsers(search: string, page: number) {
           setResult((current) => ({
             key: requestKey,
             data: current.data,
-            error: getErrorMessage(loadError, "Failed to load users."),
+            error: getErrorMessage(loadError, t("users.errors.load")),
           }));
         }
       });
     return () => controller.abort();
-  }, [page, requestKey, search]);
+  }, [page, requestKey, search, t]);
 
   const runAction = useCallback(
     async (action: UserAction, userId: number) => {
       try {
         await actions[action](userId);
-        toast.success(successMessages[action]);
+        toast.success(t(`users.toast.${successKeys[action]}`));
         reload();
       } catch (actionError) {
-        toast.error(getErrorMessage(actionError, "User update failed."));
+        toast.error(getErrorMessage(actionError, t("users.errors.action")));
         throw actionError;
       }
     },
-    [reload],
+    [reload, t],
   );
 
   return {

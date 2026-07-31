@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 import {
   getOrganization,
@@ -11,6 +12,7 @@ import {
 import { getErrorMessage } from "@/lib/utils";
 
 export function useOrganizationDetail(orgId: number) {
+  const t = useTranslations("admin");
   const [result, setResult] = useState<{
     orgId: number;
     organization: AdminOrganization | null;
@@ -32,12 +34,12 @@ export function useOrganizationDetail(orgId: number) {
             orgId,
             organization: null,
             members: [],
-            error: getErrorMessage(error, "Failed to load organization."),
+            error: getErrorMessage(error, t("organizations.detailLoadError")),
           });
         }
       });
     return () => controller.abort();
-  }, [orgId]);
+  }, [orgId, t]);
 
   return {
     organization: result.organization,

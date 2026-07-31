@@ -1,0 +1,748 @@
+{
+  "admin": {
+    "auditLogs": {
+      "byActor": "実行者 {actor}",
+      "cardTitle": "監査ログ（{count}）",
+      "empty": "監査ログはありません",
+      "filters": {
+        "all": "すべて"
+      },
+      "fromIp": "送信元 {ip}",
+      "loadError": "監査ログの読み込みに失敗しました。",
+      "subtitle": "保護対象リソースに対するシステム管理者の操作を確認します。"
+    },
+    "common": {
+      "cancel": "キャンセル",
+      "close": "閉じる",
+      "confirm": "確認",
+      "delete": "削除",
+      "disable": "無効化",
+      "disabled": "無効",
+      "edit": "編集",
+      "enable": "有効化",
+      "enabled": "有効",
+      "loading": "読み込み中...",
+      "never": "なし",
+      "next": "次へ",
+      "no": "いいえ",
+      "pageOf": "{page} / {total} ページ",
+      "previous": "前へ",
+      "refresh": "更新",
+      "save": "保存",
+      "tryDifferentSearch": "別のキーワードでお試しください。",
+      "unknownError": "エラーが発生しました。",
+      "yes": "はい"
+    },
+    "expertMarket": {
+      "actionFailed": "審査操作に失敗しました。",
+      "approve": "承認",
+      "approveConfirmDescription": "このリリースはエキスパートマーケットで公開されます。",
+      "approveConfirmTitle": "このリリースを承認しますか？",
+      "approveRelease": "リリースを承認",
+      "approved": "リリースを承認しました。",
+      "emptyTitle": "この状態のリリースはありません",
+      "expertSnapshot": "エキスパートスナップショット",
+      "loadDetailFailed": "リリースの読み込みに失敗しました。",
+      "loadFailed": "エキスパートリリースの読み込みに失敗しました。",
+      "nextPage": "次のページ",
+      "previousPage": "前のページ",
+      "reject": "却下",
+      "rejectConfirmTitle": "このリリースを却下しますか？",
+      "rejectRelease": "リリースを却下",
+      "rejected": "リリースを却下しました。",
+      "rejectionAriaLabel": "却下理由",
+      "rejectionPlaceholder": "却下理由",
+      "rejectionReason": "却下理由：{reason}",
+      "releaseCount": "{count} 件のリリース",
+      "review": "審査",
+      "showingRange": "{total} 件中 {first}-{last} 件を表示",
+      "skillDependencies": "Skill の依存関係",
+      "status": {
+        "pending": "審査待ち",
+        "published": "公開済み",
+        "rejected": "却下済み",
+        "withdrawn": "取り下げ済み"
+      },
+      "subtitle": "公開可能なエキスパートスナップショットとそのランタイム依存関係を審査します。",
+      "title": "エキスパートマーケット",
+      "uncategorized": "未分類",
+      "versionLabel": "v{version}",
+      "workerSpec": "Worker 仕様"
+    },
+    "nav": {
+      "auditLogs": "監査ログ",
+      "expertReview": "エキスパート審査",
+      "label": "システム管理",
+      "organizations": "組織",
+      "overview": "概要",
+      "promoCodes": "プロモコード",
+      "relays": "Relay",
+      "runners": "Runner",
+      "sso": "SSO",
+      "support": "サポート",
+      "users": "ユーザー"
+    },
+    "organizations": {
+      "backToList": "組織一覧に戻る",
+      "count": "{count, number} 件の組織",
+      "createdOn": "作成日 {date}",
+      "deleteAria": "{name} を削除",
+      "deleteConfirm": "組織を削除",
+      "deleteDescription": "{name} とそのテナント所有リソースは完全に削除されます。",
+      "deleteError": "組織の削除に失敗しました。",
+      "deleteSuccess": "組織を削除しました。",
+      "deleteTitle": "この組織を削除しますか？",
+      "detailLoadError": "組織の読み込みに失敗しました。",
+      "emptyDescription": "テナント組織はまだ存在しません。",
+      "emptyTitle": "組織が見つかりません",
+      "invalidId": "組織 ID が無効です。",
+      "loadError": "組織一覧の読み込みに失敗しました。",
+      "memberFallbackName": "ユーザー #{id}",
+      "memberJoined": "参加日 {date}",
+      "membersEmptyDescription": "この組織には有効なメンバー記録がありません。",
+      "membersEmptyTitle": "メンバーなし",
+      "membersHeading": "メンバー（{count}）",
+      "noSubscription": "サブスクリプションなし",
+      "notFound": "組織が見つかりません。",
+      "openAria": "{name} を開く",
+      "runnerAgents": "利用可能な Agent",
+      "runnerDescription": "説明",
+      "runnerLastHeartbeat": "最終ハートビート {time}",
+      "runnerManagement": "Runner 管理",
+      "runnerNoAgents": "報告なし",
+      "runnerNoDescription": "説明なし",
+      "runnerNoHeartbeat": "ハートビートの記録なし",
+      "runnerPods": "{current}/{max} Pod",
+      "runnerRegistered": "登録日時",
+      "runnerVersionAndPods": "v{version} · {current}/{max} Pod",
+      "runnersEmptyDescription": "この組織には登録済みの Runner がありません。",
+      "runnersEmptyTitle": "Runner なし",
+      "runnersHeading": "Runner（{count}）",
+      "runnersLoadError": "組織の Runner の読み込みに失敗しました。",
+      "runnersLoadingAria": "Runner を読み込み中",
+      "runnersRetry": "再試行",
+      "searchPlaceholder": "組織を検索",
+      "stats": {
+        "created": "作成日時",
+        "members": "メンバー",
+        "subscription": "サブスクリプション"
+      },
+      "subscriptionNone": "なし",
+      "subtitle": "テナントのメンバー、サブスクリプション、クォータ、実行容量を確認します。"
+    },
+    "overview": {
+      "loadError": "システム統計の読み込みに失敗しました。",
+      "stats": {
+        "activePods": "アクティブ Pod",
+        "activePodsDetail": "合計 {count, number} 件",
+        "organizationsDetail": "{count, number} 件の有効なサブスクリプション",
+        "runnersDetail": "{count, number} 件オンライン",
+        "usersDetail": "{count, number} 件アクティブ"
+      },
+      "subtitle": "アカウント、組織、実行容量の全体的な稼働状況。",
+      "userGrowth": {
+        "last7Days": "過去 7 日間",
+        "lastMonth": "過去 1 か月",
+        "title": "ユーザー増加",
+        "today": "本日"
+      }
+    },
+    "promoCodes": {
+      "action": {
+        "activate": "有効化",
+        "deactivate": "無効化"
+      },
+      "confirm": {
+        "activate": {
+          "description": "対象の組織はすぐに利用できるようになります。対象：{code}",
+          "title": "このプロモコードを有効化しますか？"
+        },
+        "deactivate": {
+          "description": "再度有効化するまで新しい利用は停止されます。対象：{code}",
+          "title": "このプロモコードを無効化しますか？"
+        },
+        "delete": {
+          "description": "削除は取り消せません。利用履歴があるコードはバックエンドで削除が拒否されます。対象：{code}",
+          "title": "このプロモコードを削除しますか？"
+        },
+        "deleteConfirmText": "コードを削除"
+      },
+      "count": "{count} 件のプロモコード",
+      "create": {
+        "submit": "プロモコードを作成",
+        "subtitle": "利用回数と有効期間を明示したサブスクリプションプランの延長特典を発行します。",
+        "title": "プロモコードを作成"
+      },
+      "createCode": "コードを作成",
+      "createdAt": "作成日 {date}",
+      "detail": {
+        "backToList": "プロモコード一覧に戻る",
+        "confirm": {
+          "activate": "{code} は新しい利用を受け付けます。",
+          "deactivate": "{code} は新しい利用の受付を停止します。",
+          "delete": "{code} は完全に削除されます。利用履歴がある場合、バックエンドは削除を拒否します。"
+        },
+        "deleteBlocked": "利用履歴のあるコードは削除できません",
+        "deleteTitle": "プロモコードを削除"
+      },
+      "durationMonths": "{count, plural, other {#か月}}",
+      "edit": {
+        "description": "コード、種類、プラン、期間、開始時刻はバックエンドで変更できません。",
+        "expiresAtHint": "値を空にすると有効期限を解除します。",
+        "heading": "編集可能な設定",
+        "maxUsesHint": "空欄の場合は現在の上限を維持します。API では有限の上限を無制限に戻せません。",
+        "submit": "変更を保存"
+      },
+      "empty": {
+        "description": "サブスクリプションキャンペーン用に最初のプロモコードを作成します。",
+        "searching": "検索条件またはフィルターを変更してください。",
+        "title": "プロモコードが見つかりません"
+      },
+      "endsAt": "終了日 {date}",
+      "error": {
+        "actionFailed": "プロモコードの更新に失敗しました。",
+        "create": "プロモコードの作成に失敗しました。",
+        "invalidId": "プロモコード ID が無効です。",
+        "load": "プロモコード一覧の読み込みに失敗しました。",
+        "loadDetail": "プロモコードの読み込みに失敗しました。",
+        "loadRedemptions": "利用履歴の読み込みに失敗しました。",
+        "notFound": "プロモコードが見つかりません。",
+        "unableToCreate": "プロモコードを作成できません。",
+        "unableToUpdate": "プロモコードを更新できません。",
+        "update": "プロモコードの更新に失敗しました。"
+      },
+      "expiresAt": "有効期限 {date}",
+      "filters": {
+        "allPlans": "すべてのプラン",
+        "allStatuses": "すべてのステータス",
+        "allTypes": "すべての種類",
+        "planLabel": "プランで絞り込み",
+        "searchLabel": "プロモコードを検索",
+        "searchPlaceholder": "コードまたは名称を検索",
+        "selectedPlanEnterprise": "エンタープライズ",
+        "selectedPlanPro": "プロ",
+        "statusLabel": "ステータスで絞り込み",
+        "typeLabel": "種類で絞り込み"
+      },
+      "form": {
+        "code": "コード",
+        "codeHint": "大文字で保存されます。最大 50 文字。",
+        "description": "説明",
+        "duration": "期間（月）",
+        "expiresAt": "有効期限",
+        "expiresAtCreateHint": "空欄の場合は無期限になります。",
+        "maxUses": "総利用回数の上限",
+        "maxUsesCreateHint": "空欄の場合は無制限になります。",
+        "name": "名称",
+        "plan": "プラン",
+        "planAriaLabel": "サブスクリプションプラン",
+        "startsAt": "開始日時",
+        "startsAtHint": "空欄の場合はすぐに開始します。",
+        "type": "種類",
+        "typeAriaLabel": "プロモコードの種類",
+        "usesPerOrg": "組織あたりの利用回数"
+      },
+      "plan": {
+        "enterprise": "エンタープライズ",
+        "pro": "プロ"
+      },
+      "redemptions": {
+        "count": "{count} 件の利用履歴",
+        "durationMonths": "{count} か月",
+        "empty": {
+          "description": "このプロモコードはまだ利用されていません。",
+          "title": "利用履歴なし"
+        },
+        "organizationFallback": "組織 #{id}",
+        "title": "利用履歴",
+        "userFallback": "ユーザー #{id}",
+        "usernameUnavailable": "ユーザー名を取得できません"
+      },
+      "row": {
+        "actionsFor": "{code} の操作",
+        "viewAndEdit": "表示・編集"
+      },
+      "status": {
+        "active": "有効",
+        "exhausted": "上限到達",
+        "expired": "期限切れ",
+        "inactive": "無効"
+      },
+      "subtitle": "プラットフォーム全体のサブスクリプションアクセスコードを作成・管理します。",
+      "summary": {
+        "expires": "有効期限",
+        "offer": "特典",
+        "offerValue": "{plan} {count, plural, other {#か月}}分",
+        "starts": "開始",
+        "usage": "利用状況",
+        "usagePerOrg": "組織あたり {count} 回"
+      },
+      "toast": {
+        "activated": "プロモコードを有効化しました。",
+        "created": "プロモコードを作成しました。",
+        "deactivated": "プロモコードを無効化しました。",
+        "deleted": "プロモコードを削除しました。",
+        "updated": "プロモコードを更新しました。"
+      },
+      "type": {
+        "campaign": "キャンペーン",
+        "internal": "社内",
+        "media": "メディア",
+        "partner": "パートナー",
+        "referral": "リファラル"
+      },
+      "updatedAt": "更新日 {date}",
+      "usage": {
+        "limited": "{used} / {limit}",
+        "unlimited": "{used} / 無制限"
+      },
+      "validation": {
+        "durationPositive": "期間は正の整数で入力してください。",
+        "expirationAfterStart": "有効期限は開始時刻より後に設定してください。",
+        "maxUsesPositive": "利用回数の上限は正の整数で入力してください。",
+        "usesPerOrgPositive": "組織あたりの利用回数は正の整数で入力してください。"
+      }
+    },
+    "relays": {
+      "detail": {
+        "averageLatency": "平均レイテンシ",
+        "backToRelays": "Relay 一覧に戻る",
+        "capacityAndHealth": "容量とヘルス状態",
+        "connection": "接続",
+        "connections": "接続数",
+        "connectionsUsage": "{connections} / {capacity}（{load}%）",
+        "cpuUsage": "CPU 使用率",
+        "forceUnregister": "強制登録解除",
+        "lastHeartbeat": "最終ハートビート",
+        "latitude": "緯度",
+        "loadFailed": "Relay の読み込みに失敗しました。",
+        "location": "位置",
+        "longitude": "経度",
+        "memoryUsage": "メモリ使用率",
+        "milliseconds": "{value} ms",
+        "notReported": "報告なし",
+        "percent": "{value}%",
+        "region": "リージョン",
+        "relayId": "Relay ID",
+        "retry": "再試行",
+        "status": "ステータス",
+        "subtitle": "バックエンドが報告するリアルタイムの登録情報とヘルスデータ。",
+        "title": "Relay の詳細",
+        "unavailable": "この Relay は利用できないか、すでに登録解除されています。",
+        "url": "URL"
+      },
+      "empty": {
+        "description": "接続中の Relay サービスがここに表示されます。",
+        "title": "登録済みの Relay はありません"
+      },
+      "healthy": "正常",
+      "loadFailed": "Relay 一覧の読み込みに失敗しました。",
+      "row": {
+        "load": "{connections}/{capacity} 接続 · {latency} ms",
+        "resources": "CPU {cpu}% · メモリ {memory}%"
+      },
+      "stats": {
+        "connections": "接続数",
+        "healthy": "正常",
+        "registered": "登録済み"
+      },
+      "subtitle": "データプレーンの容量を監視し、無効になった Relay 登録を削除します。",
+      "unhealthy": "異常",
+      "unregister": {
+        "confirm": "Relay を登録解除",
+        "detailDescription": "{id} はバックエンドの Relay 一覧から削除されます。既存の接続が中断される場合があります。",
+        "failed": "Relay の登録解除に失敗しました。",
+        "listDescription": "{id} には現在 {connections} 件のアクティブな接続があります。バックエンドはセッション移行を提供しません。",
+        "success": "Relay を登録解除しました。",
+        "title": "この Relay を強制的に登録解除しますか？"
+      },
+      "unregisterRelay": "{name} を登録解除",
+      "unregisterRelayTitle": "Relay を強制登録解除",
+      "viewDetails": "{name} の詳細を表示",
+      "viewDetailsTitle": "Relay の詳細を表示"
+    },
+    "runners": {
+      "actions": {
+        "delete": "{nodeId} を削除",
+        "deleteTitle": "Runner を削除",
+        "disable": "{nodeId} を無効化",
+        "disableTitle": "Runner を無効化",
+        "enable": "{nodeId} を有効化",
+        "enableTitle": "Runner を有効化"
+      },
+      "agentCount": "{count} 件の Agent",
+      "confirm": {
+        "delete": {
+          "description": "Runner の登録情報を完全に削除します。この操作は取り消せません。対象：{nodeId}",
+          "title": "この Runner を削除しますか？"
+        },
+        "disable": {
+          "description": "Runner は接続を維持しますが、新しい Pod を受け付けなくなります。対象：{nodeId}",
+          "title": "この Runner を無効化しますか？"
+        },
+        "enable": {
+          "description": "Runner は再び新しい Pod を受け付けられるようになります。対象：{nodeId}",
+          "title": "この Runner を有効化しますか？"
+        }
+      },
+      "count": "{count} 件の Runner",
+      "empty": {
+        "description": "登録済みの Runner はまだありません。",
+        "title": "Runner が見つかりません"
+      },
+      "lastHeartbeat": "最終ハートビート {time}",
+      "loadFailed": "Runner 一覧の読み込みに失敗しました。",
+      "noHeartbeat": "ハートビートの記録なし",
+      "orgFallback": "組織 #{id}",
+      "podsUsage": "{current}/{max} Pod",
+      "registeredOn": "登録日 {date}",
+      "searchLabel": "Runner を検索",
+      "searchPlaceholder": "ノード ID、説明、組織で検索",
+      "subtitle": "全組織のセルフホスト Runner を確認し、利用可否を制御します。",
+      "toast": {
+        "deleted": "Runner を削除しました。",
+        "disabled": "Runner を無効化しました。",
+        "enabled": "Runner を有効化しました。"
+      },
+      "updateFailed": "Runner の更新に失敗しました。",
+      "version": "v{version}"
+    },
+    "sso": {
+      "allProtocols": "すべてのプロトコル",
+      "configurationCount": "{count} 件の構成",
+      "confirm": {
+        "deleteDescription": "プロバイダー構成を完全に削除します。この操作は取り消せません。対象：{domain}",
+        "deleteTitle": "この SSO 構成を削除しますか？",
+        "disableDescription": "この ID プロバイダー経由の新規サインインが停止します。対象：{domain}",
+        "disableTitle": "この SSO 構成を無効化しますか？",
+        "enableDescription": "ドメインが一致するユーザーはこの ID プロバイダーを利用できます。対象：{domain}",
+        "enableTitle": "この SSO 構成を有効化しますか？"
+      },
+      "create": "新規作成",
+      "defaultOrganization": "既定の組織 #{id}",
+      "emptyDescription": "構成を作成してドメイン別のサインインを有効にします。",
+      "emptyFiltered": "検索語またはプロトコルフィルターを変更してください。",
+      "emptyTitle": "SSO 構成が見つかりません",
+      "enforced": "強制適用中",
+      "filterProtocolAria": "プロトコルで絞り込み",
+      "form": {
+        "createDescription": "プラットフォームのサインイン用に、ドメイン別の ID プロバイダーを構成します。",
+        "createTitle": "SSO 構成を作成",
+        "defaultOrganizationHint": "フェデレーションユーザーはサインイン時にこの組織に参加します。",
+        "defaultOrganizationId": "既定の組織 ID",
+        "displayName": "表示名",
+        "displayNamePlaceholder": "社内 SSO",
+        "domain": "ドメイン",
+        "domainPlaceholder": "example.com",
+        "editDescription": "ドメインとプロトコルは変更できません。シークレットを空欄にすると現在の値を維持します。",
+        "editTitle": "SSO 構成を編集",
+        "enabledHint": "この構成でサインインを処理することを許可します。",
+        "enforceSso": "SSO を強制",
+        "enforceSsoHint": "対象ユーザーにこのプロバイダー経由でのサインインを必須にします。",
+        "protocol": "プロトコル",
+        "protocolAria": "SSO プロトコル",
+        "saveFailed": "SSO 構成の保存に失敗しました。",
+        "submitCreate": "構成を作成",
+        "submitSave": "変更を保存"
+      },
+      "ldap": {
+        "baseDn": "Base DN",
+        "bindDn": "Bind DN",
+        "bindPassword": "Bind パスワード",
+        "bindPasswordHint": "空欄にすると現在のパスワードを維持します。",
+        "emailAttribute": "メール属性",
+        "host": "ホスト",
+        "legend": "LDAP 設定",
+        "nameAttribute": "氏名属性",
+        "port": "ポート",
+        "useTls": "TLS を使用",
+        "useTlsHint": "STARTTLS で LDAP 接続を確立します。",
+        "userFilter": "ユーザーフィルター",
+        "usernameAttribute": "ユーザー名属性"
+      },
+      "listLoadingAria": "SSO 構成を読み込み中",
+      "noDefaultOrganization": "既定の組織なし",
+      "oidc": {
+        "ampBearerCodes": "AMP Bearer アプリケーションコード",
+        "ampBearerCodesHint": "Bearer アクセスの委任を許可するアプリケーションコードの JSON 配列。",
+        "clientId": "Client ID",
+        "clientSecret": "Client Secret",
+        "clientSecretHint": "空欄にすると現在の Client Secret を維持します。",
+        "extraParams": "認可リクエストの追加パラメーター",
+        "extraParamsHint": "認可エンドポイントに渡す JSON オブジェクト。",
+        "issuerUrl": "Issuer URL",
+        "legend": "OIDC 設定",
+        "scopes": "Scopes"
+      },
+      "row": {
+        "deleteAria": "{name} を削除",
+        "deleteTitle": "構成を削除",
+        "disableAria": "{name} を無効化",
+        "disableTitle": "構成を無効化",
+        "editAria": "{name} を編集",
+        "editTitle": "構成を編集",
+        "enableAria": "{name} を有効化",
+        "enableTitle": "構成を有効化"
+      },
+      "saml": {
+        "certificate": "IdP 証明書",
+        "legend": "SAML 設定",
+        "metadataUrl": "IdP メタデータ URL",
+        "metadataXml": "IdP メタデータ XML",
+        "nameIdFormat": "NameID 形式",
+        "secretHint": "空欄にすると現在の値を維持します。",
+        "spEntityId": "SP Entity ID",
+        "ssoUrl": "IdP SSO URL"
+      },
+      "searchAria": "SSO 構成を検索",
+      "searchPlaceholder": "ドメインまたは表示名で検索",
+      "subtitle": "ドメイン別の OIDC、SAML、LDAP ID プロバイダーを構成します。",
+      "test": {
+        "buttonAria": "{name} をテスト",
+        "buttonTitle": "接続をテスト",
+        "failed": "失敗",
+        "idle": "テスト",
+        "passed": "成功",
+        "testing": "テスト中"
+      },
+      "title": "シングルサインオン",
+      "toast": {
+        "createFailed": "SSO 構成の作成に失敗しました。",
+        "created": "SSO 構成を作成しました。",
+        "deleteFailed": "SSO 構成の削除に失敗しました。",
+        "deleted": "SSO 構成を削除しました。",
+        "disableFailed": "SSO 構成の無効化に失敗しました。",
+        "disabled": "SSO 構成を無効化しました。",
+        "enableFailed": "SSO 構成の有効化に失敗しました。",
+        "enabled": "SSO 構成を有効化しました。",
+        "loadFailed": "SSO 構成の読み込みに失敗しました。",
+        "testActionFailed": "SSO 構成のテストに失敗しました。",
+        "testFailed": "接続テストに失敗しました。",
+        "testPassed": "接続テストに成功しました。",
+        "updateFailed": "SSO 構成の更新に失敗しました。",
+        "updated": "SSO 構成を更新しました。"
+      },
+      "updatedAt": "更新日 {timestamp}",
+      "validation": {
+        "domainAndNameRequired": "ドメインと表示名は必須です。",
+        "invalidAmpBearerCodes": "AMP Bearer アプリケーションコードは JSON 配列で指定してください。",
+        "invalidDomain": "example.com のような有効なドメインを入力してください。",
+        "invalidExtraParams": "認可リクエストの追加パラメーターは JSON オブジェクトで指定してください。",
+        "invalidLdapPort": "LDAP ポートは 1 から 65535 の範囲で指定してください。",
+        "invalidOrganizationId": "既定の組織 ID は正の整数で入力してください。",
+        "ldapRequired": "LDAP ホストと Base DN は必須です。",
+        "oidcRequired": "OIDC Issuer URL と Client ID は必須です。",
+        "samlSourceRequired": "メタデータ URL、メタデータ XML、または SSO URL と証明書の組み合わせを指定してください。"
+      }
+    },
+    "subscription": {
+      "autoRenew": "自動更新",
+      "autoRenewDisabled": "自動更新を無効にしました。",
+      "autoRenewEnabled": "自動更新を有効にしました。",
+      "autoRenewHint": "現在の期間の終了時に更新します。",
+      "billing": "請求",
+      "billingCycleAria": "請求サイクル",
+      "cancelDescription": "このサブスクリプションを解約し、以降の更新を停止します。",
+      "cancelSuccess": "サブスクリプションを解約しました。",
+      "cancelTitle": "サブスクリプションを解約しますか？",
+      "changeCycleDescription": "請求サイクルを {cycle} に変更します。",
+      "changeCycleTitle": "請求サイクルを変更しますか？",
+      "changePlanDescription": "プランを {plan} に変更します。",
+      "changePlanTitle": "サブスクリプションプランを変更しますか？",
+      "changeSeatsDescription": "このサブスクリプションのシート数を {seats} に設定します。",
+      "changeSeatsTitle": "シート数を変更しますか？",
+      "createButton": "サブスクリプションを作成",
+      "createDescription": "{months} か月間の有効な {plan} サブスクリプションを作成します。",
+      "createSuccess": "サブスクリプションを作成しました。",
+      "createTitle": "サブスクリプションを作成しますか？",
+      "customQuotas": "カスタムクォータ",
+      "cycleMonthly": "月次",
+      "cycleUpdated": "請求サイクルを更新しました。",
+      "cycleYearly": "年次",
+      "freeze": "凍結",
+      "freezeDescription": "実行機能と有料機能へのアクセスが制限される場合があります。",
+      "freezeSuccess": "サブスクリプションを凍結しました。",
+      "freezeTitle": "サブスクリプションを凍結しますか？",
+      "lifecycle": "ライフサイクル",
+      "loadError": "サブスクリプションの読み込みに失敗しました。",
+      "monthsAria": "サブスクリプションの月数",
+      "newPlanAria": "新しいサブスクリプションプラン",
+      "noRecord": "この組織にはサブスクリプションの記録がありません。",
+      "periodRange": "{start} 〜 {end}",
+      "planAndSeats": "プランとシート",
+      "planAria": "サブスクリプションプラン",
+      "planUpdated": "サブスクリプションプランを更新しました。",
+      "quotaBadge": "{resource}：{value}",
+      "quotaDescription": "{resource} を {limit} で上書きします。",
+      "quotaLimitAria": "クォータ上限",
+      "quotaLimitPlaceholder": "-1 = 無制限",
+      "quotaResourceAria": "クォータ対象リソース",
+      "quotaTitle": "カスタムクォータを設定しますか？",
+      "quotaUpdated": "カスタムクォータを更新しました。",
+      "renew": "更新",
+      "renewDescription": "現在の期間を {months} か月延長します。",
+      "renewSuccess": "サブスクリプションを更新しました。",
+      "renewTitle": "サブスクリプションを更新しますか？",
+      "renewalMonthsAria": "更新月数",
+      "seatCountAria": "シート数",
+      "seatUsage": "使用中 {used}、利用可能 {available}",
+      "seatsUpdated": "シート数を更新しました。",
+      "selectPlan": "プランを選択",
+      "setOverride": "上書き値を設定",
+      "setSeats": "シート数を設定",
+      "title": "サブスクリプション",
+      "unfreeze": "凍結解除",
+      "unfreezeDescription": "サブスクリプションを通常のサービス状態に戻します。",
+      "unfreezeSuccess": "サブスクリプションの凍結を解除しました。",
+      "unfreezeTitle": "サブスクリプションの凍結を解除しますか？",
+      "unlimited": "無制限",
+      "updateError": "サブスクリプションの更新に失敗しました。"
+    },
+    "support": {
+      "adminBadge": "管理者",
+      "adminRef": "管理者 #{id}",
+      "allCategories": "すべてのカテゴリ",
+      "allPriorities": "すべての優先度",
+      "allStatuses": "すべてのステータス",
+      "assignConfirmDescription": "あなたが担当システム管理者になります。",
+      "assignConfirmTitle": "このチケットを自分に割り当てますか？",
+      "assignFailed": "チケットの割り当てに失敗しました。",
+      "assignToMe": "自分に割り当て",
+      "assigned": "チケットを自分に割り当てました。",
+      "attachmentMeta": "{type} · {size}",
+      "category": {
+        "account": "アカウント",
+        "bug": "不具合",
+        "featureRequest": "機能リクエスト",
+        "other": "その他",
+        "usageQuestion": "使い方の質問"
+      },
+      "changeStatus": "ステータスを変更",
+      "changeStatusAriaLabel": "チケットのステータスを変更",
+      "conversation": "やり取り",
+      "createdAt": "作成日時 {time}",
+      "detailSubtitle": "チケット #{id} · ユーザー #{userId}",
+      "detailTitle": "サポートチケット",
+      "detailUnavailable": "チケットの詳細を表示できません。",
+      "downloadFailed": "添付ファイルのダウンロードに失敗しました。",
+      "emptyDescription": "サポートチケットを送信したユーザーはいません。",
+      "emptyFiltered": "フィルターを 1 つ以上解除してみてください。",
+      "emptyTitle": "サポートチケットが見つかりません",
+      "fields": {
+        "assignment": "担当",
+        "category": "カテゴリ",
+        "priority": "優先度",
+        "status": "ステータス",
+        "updated": "更新日時"
+      },
+      "filterByCategory": "カテゴリで絞り込み",
+      "filterByPriority": "優先度で絞り込み",
+      "filterByStatus": "ステータスで絞り込み",
+      "invalidId": "サポートチケット ID が無効です。",
+      "loadDetailFailed": "サポートチケットの読み込みに失敗しました。",
+      "loadFailed": "サポートチケット一覧の読み込みに失敗しました。",
+      "loadingDetail": "チケットの詳細を読み込み中",
+      "noMessagesDescription": "このチケットにはやり取りのメッセージがありません。",
+      "noMessagesTitle": "メッセージなし",
+      "priority": {
+        "high": "高",
+        "low": "低",
+        "medium": "中"
+      },
+      "replyAriaLabel": "管理者の返信",
+      "replyFailed": "返信の送信に失敗しました。",
+      "replyPlaceholder": "管理者の返信を入力",
+      "replySent": "返信を送信しました。",
+      "resolvedAt": "解決日時 {time}",
+      "searchAriaLabel": "サポートチケットを検索",
+      "searchPlaceholder": "チケットのタイトルを検索",
+      "sendReply": "返信を送信",
+      "stats": {
+        "inProgress": "対応中",
+        "open": "未対応",
+        "resolved": "解決済み",
+        "total": "合計"
+      },
+      "status": {
+        "closed": "クローズ",
+        "inProgress": "対応中",
+        "open": "未対応",
+        "resolved": "解決済み"
+      },
+      "statusConfirmDescription": "このチケットを{status}に変更しますか？",
+      "statusConfirmTitle": "チケットのステータスを変更しますか？",
+      "statusUpdateFailed": "チケットのステータス更新に失敗しました。",
+      "statusUpdated": "チケットのステータスを更新しました。",
+      "subtitle": "システム管理者としてプラットフォームのサポート依頼を確認し、対応します。",
+      "ticketCount": "{count} 件のチケット",
+      "ticketMeta": "#{id} · ユーザー #{userId}",
+      "title": "サポートチケット",
+      "unassigned": "未割り当て",
+      "userRef": "ユーザー #{id}"
+    },
+    "title": "システム管理",
+    "users": {
+      "actionsFor": "{email} の操作",
+      "badge": {
+        "emailUnverified": "メール未確認",
+        "systemAdmin": "システム管理者"
+      },
+      "confirm": {
+        "disable": {
+          "description": "アカウントを再度有効化するまで、このユーザーはサインインできません。",
+          "title": "このアカウントを無効化しますか？"
+        },
+        "enable": {
+          "description": "このユーザーは再びサインインできるようになります。",
+          "title": "このアカウントを有効化しますか？"
+        },
+        "grantAdmin": {
+          "description": "このユーザーはプラットフォームのすべてのアカウントと組織を管理できるようになります。",
+          "title": "システム管理者権限を付与しますか？"
+        },
+        "revokeAdmin": {
+          "description": "このユーザーはシステム管理へのアクセス権を直ちに失います。",
+          "title": "システム管理者権限を取り消しますか？"
+        },
+        "unverifyEmail": {
+          "description": "このアカウントはメール未確認の状態に戻ります。",
+          "title": "メール確認を解除しますか？"
+        },
+        "verifyEmail": {
+          "description": "所有者であることを別途確認したうえでのみ実行してください。",
+          "title": "メールを確認済みにしますか？"
+        }
+      },
+      "confirmTarget": "対象：{email}",
+      "count": "{count} 件のユーザー",
+      "emptyDescription": "ユーザーアカウントはまだ存在しません。",
+      "emptyTitle": "ユーザーが見つかりません",
+      "errors": {
+        "action": "ユーザーの更新に失敗しました。",
+        "load": "ユーザー一覧の読み込みに失敗しました。"
+      },
+      "joined": "登録日 {date}",
+      "lastLogin": "最終ログイン {datetime}",
+      "menu": {
+        "disableAccount": "アカウントを無効化",
+        "enableAccount": "アカウントを有効化",
+        "grantAdmin": "管理者権限を付与",
+        "revokeAdmin": "管理者権限を取り消し",
+        "unverifyEmail": "メール確認を解除",
+        "verifyEmail": "メールを確認済みにする"
+      },
+      "neverSignedIn": "サインイン履歴なし",
+      "searchLabel": "ユーザーを検索",
+      "searchPlaceholder": "メール、ユーザー名、氏名で検索",
+      "subtitle": "アカウントのアクセス権、メール確認状態、システム管理者権限を管理します。",
+      "toast": {
+        "adminGranted": "システム管理者権限を付与しました。",
+        "adminRevoked": "システム管理者権限を取り消しました。",
+        "disabled": "ユーザーを無効化しました。",
+        "emailUnverified": "メール確認を解除しました。",
+        "emailVerified": "メールを確認済みにしました。",
+        "enabled": "ユーザーを有効化しました。"
+      }
+    }
+  }
+}

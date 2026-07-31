@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   Activity,
   Building2,
@@ -44,6 +45,7 @@ function StatCard({
 }
 
 export default function AdminOverviewPage() {
+  const t = useTranslations("admin");
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -54,11 +56,11 @@ export default function AdminOverviewPage() {
       setStats(await getDashboardStats());
       setError(null);
     } catch (loadError) {
-      setError(getErrorMessage(loadError, "Failed to load system statistics."));
+      setError(getErrorMessage(loadError, t("overview.loadError")));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     void load();
@@ -68,12 +70,12 @@ export default function AdminOverviewPage() {
     <div className="space-y-6">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title="System administration"
-        subtitle="Operational status across accounts, organizations, and execution capacity."
+        title={t("title")}
+        subtitle={t("overview.subtitle")}
         actions={
           <Button variant="outline" size="sm" onClick={() => void load()} loading={loading}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />
@@ -88,27 +90,29 @@ export default function AdminOverviewPage() {
           : stats && (
               <>
                 <StatCard
-                  title="Users"
+                  title={t("nav.users")}
                   value={stats.total_users}
-                  detail={`${stats.active_users.toLocaleString()} active`}
+                  detail={t("overview.stats.usersDetail", { count: stats.active_users })}
                   icon={Users}
                 />
                 <StatCard
-                  title="Organizations"
+                  title={t("nav.organizations")}
                   value={stats.total_organizations}
-                  detail={`${stats.active_subscriptions.toLocaleString()} active subscriptions`}
+                  detail={t("overview.stats.organizationsDetail", {
+                    count: stats.active_subscriptions,
+                  })}
                   icon={Building2}
                 />
                 <StatCard
-                  title="Runners"
+                  title={t("nav.runners")}
                   value={stats.total_runners}
-                  detail={`${stats.online_runners.toLocaleString()} online`}
+                  detail={t("overview.stats.runnersDetail", { count: stats.online_runners })}
                   icon={Server}
                 />
                 <StatCard
-                  title="Active pods"
+                  title={t("overview.stats.activePods")}
                   value={stats.active_pods}
-                  detail={`${stats.total_pods.toLocaleString()} total`}
+                  detail={t("overview.stats.activePodsDetail", { count: stats.total_pods })}
                   icon={Activity}
                 />
               </>
@@ -119,13 +123,13 @@ export default function AdminOverviewPage() {
         <section className="border-t border-border pt-5">
           <div className="mb-4 flex items-center gap-2">
             <UserPlus className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold">User growth</h2>
+            <h2 className="text-sm font-semibold">{t("overview.userGrowth.title")}</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             {[
-              ["Today", stats.new_users_today],
-              ["Last 7 days", stats.new_users_this_week],
-              ["Last month", stats.new_users_this_month],
+              [t("overview.userGrowth.today"), stats.new_users_today],
+              [t("overview.userGrowth.last7Days"), stats.new_users_this_week],
+              [t("overview.userGrowth.lastMonth"), stats.new_users_this_month],
             ].map(([label, value]) => (
               <div key={String(label)} className="border-l-2 border-primary/50 pl-4">
                 <p className="text-2xl font-semibold">{Number(value).toLocaleString()}</p>

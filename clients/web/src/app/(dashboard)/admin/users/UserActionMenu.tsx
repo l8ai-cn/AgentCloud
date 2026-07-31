@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -20,12 +21,13 @@ interface Props {
 }
 
 export function UserActionMenu({ user, currentUserId, onSelect }: Props) {
+  const t = useTranslations("admin");
   const isCurrentUser = user.id === currentUserId;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Actions for ${user.email}`}>
+        <Button variant="ghost" size="icon" aria-label={t("users.actionsFor", { email: user.email })}>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -34,7 +36,7 @@ export function UserActionMenu({ user, currentUserId, onSelect }: Props) {
           disabled={isCurrentUser && user.is_active}
           onSelect={() => onSelect(user.is_active ? "disable" : "enable")}
         >
-          {user.is_active ? "Disable account" : "Enable account"}
+          {user.is_active ? t("users.menu.disableAccount") : t("users.menu.enableAccount")}
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={isCurrentUser && user.is_system_admin}
@@ -42,7 +44,7 @@ export function UserActionMenu({ user, currentUserId, onSelect }: Props) {
             onSelect(user.is_system_admin ? "revoke-admin" : "grant-admin")
           }
         >
-          {user.is_system_admin ? "Revoke admin access" : "Grant admin access"}
+          {user.is_system_admin ? t("users.menu.revokeAdmin") : t("users.menu.grantAdmin")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -50,7 +52,7 @@ export function UserActionMenu({ user, currentUserId, onSelect }: Props) {
             onSelect(user.is_email_verified ? "unverify-email" : "verify-email")
           }
         >
-          {user.is_email_verified ? "Remove email verification" : "Verify email"}
+          {user.is_email_verified ? t("users.menu.unverifyEmail") : t("users.menu.verifyEmail")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -27,6 +27,7 @@ export const MESSAGE_NAMESPACES = [
   "resource-orchestration",
   "changelog-entries",
   "video-worker",
+  "admin",
 ] as const;
 
 export function isValidLocale(locale: string): locale is Locale {

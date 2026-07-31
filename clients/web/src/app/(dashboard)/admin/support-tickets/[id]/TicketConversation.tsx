@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { Download, MessageSquare, Shield, UserCircle } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -16,13 +17,14 @@ interface Props {
 }
 
 export function TicketConversation({ messages, downloading, onDownload }: Props) {
+  const t = useTranslations("admin");
   if (messages.length === 0) {
     return (
       <EmptyState
         size="compact"
         icon={<MessageSquare className="h-5 w-5" />}
-        title="No messages"
-        description="This ticket does not contain any conversation messages."
+        title={t("support.noMessagesTitle")}
+        description={t("support.noMessagesDescription")}
       />
     );
   }
@@ -49,6 +51,7 @@ function MessageBubble({
   downloading: boolean;
   onDownload: (id: number, name: string) => void;
 }) {
+  const t = useTranslations("admin");
   const isAdmin = message.is_admin_reply;
   const Icon = isAdmin ? Shield : UserCircle;
   return (
@@ -59,9 +62,11 @@ function MessageBubble({
       <div className={`min-w-0 max-w-[85%] ${isAdmin ? "text-right" : ""}`}>
         <div className={`mb-1 flex flex-wrap items-center gap-2 text-xs ${isAdmin ? "justify-end" : ""}`}>
           <span className="font-medium">
-            {message.user?.name || message.user?.email || `User #${message.user_id}`}
+            {message.user?.name ||
+              message.user?.email ||
+              t("support.userRef", { id: String(message.user_id) })}
           </span>
-          {isAdmin && <Badge variant="outline">Admin</Badge>}
+          {isAdmin && <Badge variant="outline">{t("support.adminBadge")}</Badge>}
           <time className="text-muted-foreground" dateTime={message.created_at}>
             {formatTicketTime(message.created_at)}
           </time>
@@ -78,7 +83,10 @@ function MessageBubble({
                 size="sm"
                 disabled={downloading}
                 onClick={() => onDownload(attachment.id, attachment.original_name)}
-                title={`${attachment.mime_type} · ${formatFileSize(attachment.size)}`}
+                title={t("support.attachmentMeta", {
+                  type: attachment.mime_type,
+                  size: formatFileSize(attachment.size),
+                })}
               >
                 <Download className="mr-2 h-4 w-4" />
                 <span className="max-w-48 truncate">{attachment.original_name}</span>

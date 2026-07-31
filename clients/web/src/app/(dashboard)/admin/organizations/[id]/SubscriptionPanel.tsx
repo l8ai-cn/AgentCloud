@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { CreditCard, RefreshCw } from "lucide-react";
 
 import { AlertMessage } from "@/components/ui/alert-message";
@@ -28,10 +29,12 @@ import { useAdminSubscription } from "./useAdminSubscription";
 interface PendingAction {
   title: string;
   description: string;
+  destructive?: boolean;
   run: () => Promise<void>;
 }
 
 export function SubscriptionPanel({ orgId }: { orgId: number }) {
+  const t = useTranslations("admin");
   const { subscription, plans, error, loading, mutation, reload, run } =
     useAdminSubscription(orgId);
   const [pending, setPending] = useState<PendingAction | null>(null);
@@ -42,9 +45,11 @@ export function SubscriptionPanel({ orgId }: { orgId: number }) {
     name: string,
     operation: () => Promise<Awaited<ReturnType<typeof createSubscription>>>,
     success: string,
+    destructive?: boolean,
   ) => setPending({
     title,
     description,
+    destructive,
     run: () => run(name, operation, success),
   });
 
@@ -53,7 +58,7 @@ export function SubscriptionPanel({ orgId }: { orgId: number }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <CreditCard className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-sm font-semibold">Subscription</h2>
+          <h2 className="text-sm font-semibold">{t("subscription.title")}</h2>
           {subscription && (
             <Badge variant={subscription.status === "active" ? "success" : "secondary"}>
               {subscription.status}
@@ -62,7 +67,7 @@ export function SubscriptionPanel({ orgId }: { orgId: number }) {
         </div>
         <Button variant="ghost" size="sm" onClick={reload} loading={loading}>
           <RefreshCw className="mr-2 h-4 w-4" />
-          Refresh
+          {t("common.refresh")}
         </Button>
       </div>
 
@@ -75,11 +80,11 @@ export function SubscriptionPanel({ orgId }: { orgId: number }) {
           plans={plans}
           busy={mutation !== null}
           onCreate={(plan, months) => confirm(
-            "Create subscription?",
-            `Create an active ${plan} subscription for ${months} month(s).`,
+            t("subscription.createTitle"),
+            t("subscription.createDescription", { plan, months }),
             "create",
             () => createSubscription(orgId, plan, months),
-            "Subscription created.",
+            t("subscription.createSuccess"),
           )}
         />
       ) : (
@@ -89,49 +94,79 @@ export function SubscriptionPanel({ orgId }: { orgId: number }) {
             plans={plans}
             mutation={mutation}
             onPlan={(plan) => confirm(
-              "Change subscription plan?",
-              `Change the plan to ${plan}.`,
+              t("subscription.changePlanTitle"),
+              t("subscription.changePlanDescription", { plan }),
               "plan",
               () => updateSubscriptionPlan(orgId, plan),
-              "Subscription plan updated.",
+              t("subscription.planUpdated"),
             )}
             onSeats={(seats) => confirm(
-              "Change seat count?",
-              `Set this subscription to ${seats} seats.`,
+              t("subscription.changeSeatsTitle"),
+              t("subscription.changeSeatsDescription", { seats }),
               "seats",
               () => updateSubscriptionSeats(orgId, seats),
-              "Seat count updated.",
+              t("subscription.seatsUpdated"),
             )}
             onCycle={(cycle) => confirm(
-              "Change billing cycle?",
-              `Change billing to ${cycle}.`,
+              t("subscription.changeCycleTitle"),
+              t("subscription.changeCycleDescription", { cycle }),
               "cycle",
               () => updateSubscriptionCycle(orgId, cycle),
-              "Billing cycle updated.",
+              t("subscription.cycleUpdated"),
             )}
             onAutoRenew={(enabled) => void run(
               "auto-renew",
               () => setSubscriptionAutoRenew(orgId, enabled),
-              `Auto-renew ${enabled ? "enabled" : "disabled"}.`,
+              enabled
+                ? t("subscription.autoRenewEnabled")
+                : t("subscription.autoRenewDisabled"),
             )}
           />
           <SubscriptionLifecycleControls
             status={subscription.status}
             busy={mutation !== null}
-            onFreeze={() => confirm("Freeze subscription?", "Execution and paid access may be restricted.", "freeze", () => freezeSubscription(orgId), "Subscription frozen.")}
-            onUnfreeze={() => confirm("Unfreeze subscription?", "Restore the subscription to active service.", "unfreeze", () => unfreezeSubscription(orgId), "Subscription unfrozen.")}
-            onCancel={() => confirm("Cancel subscription?", "Cancel this subscription and stop future renewals.", "cancel", () => cancelSubscription(orgId), "Subscription canceled.")}
-            onRenew={(months) => confirm("Renew subscription?", `Extend the current period by ${months} month(s).`, "renew", () => renewSubscription(orgId, months), "Subscription renewed.")}
+            onFreeze={() => confirm(
+              t("subscription.freezeTitle"),
+              t("subscription.freezeDescription"),
+              "freeze",
+              () => freezeSubscription(orgId),
+              t("subscription.freezeSuccess"),
+            )}
+            onUnfreeze={() => confirm(
+              t("subscription.unfreezeTitle"),
+              t("subscription.unfreezeDescription"),
+              "unfreeze",
+              () => unfreezeSubscription(orgId),
+              t("subscription.unfreezeSuccess"),
+            )}
+            onCancel={() => confirm(
+              t("subscription.cancelTitle"),
+              t("subscription.cancelDescription"),
+              "cancel",
+              () => cancelSubscription(orgId),
+              t("subscription.cancelSuccess"),
+              true,
+            )}
+            onRenew={(months) => confirm(
+              t("subscription.renewTitle"),
+              t("subscription.renewDescription", { months }),
+              "renew",
+              () => renewSubscription(orgId, months),
+              t("subscription.renewSuccess"),
+            )}
           />
           <SubscriptionQuotaControls
             subscription={subscription}
             busy={mutation !== null}
             onSetQuota={(resource, limit) => confirm(
-              "Set custom quota?",
-              `Override ${resource} with ${limit === -1 ? "unlimited" : limit}.`,
+              t("subscription.quotaTitle"),
+              t("subscription.quotaDescription", {
+                resource,
+                limit: limit === -1 ? t("subscription.unlimited") : String(limit),
+              }),
               "quota",
               () => setSubscriptionQuota(orgId, resource, limit),
-              "Custom quota updated.",
+              t("subscription.quotaUpdated"),
             )}
           />
         </>
@@ -142,8 +177,8 @@ export function SubscriptionPanel({ orgId }: { orgId: number }) {
         onOpenChange={(open) => !open && setPending(null)}
         title={pending?.title ?? ""}
         description={pending?.description}
-        confirmText="Confirm"
-        variant={pending?.title.includes("Cancel") ? "destructive" : "default"}
+        confirmText={t("common.confirm")}
+        variant={pending?.destructive ? "destructive" : "default"}
         onConfirm={async () => {
           if (!pending) return;
           await pending.run();

@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useState } from "react";
 
@@ -15,7 +16,7 @@ import { TicketConversation } from "./TicketConversation";
 import { TicketMetaPanel } from "./TicketMetaPanel";
 import { TicketReplyForm } from "./TicketReplyForm";
 import { useSupportTicketDetail } from "./useSupportTicketDetail";
-import { labelFor, statusOptions } from "../supportTicketPresentation";
+import { statusLabelKeys } from "../supportTicketPresentation";
 
 type PendingAction =
   | { type: "status"; status: SupportTicketStatus }
@@ -23,6 +24,7 @@ type PendingAction =
   | null;
 
 export default function SupportTicketDetailPage() {
+  const t = useTranslations("admin");
   const params = useParams<{ id: string }>();
   const parsedId = Number(params.id);
   const ticketId = Number.isSafeInteger(parsedId) && parsedId > 0 ? parsedId : null;
@@ -34,25 +36,32 @@ export default function SupportTicketDetailPage() {
   const busy = detail.action !== null;
 
   if (ticketId === null) {
-    return <AlertMessage type="error" message="The support ticket ID is invalid." />;
+    return <AlertMessage type="error" message={t("support.invalidId")} />;
   }
 
   return (
     <div className="space-y-5">
       <PageHeader
         className="-mx-4 -mt-4 px-4 md:-mx-6 md:-mt-6 md:px-6"
-        title={ticket?.title ?? "Support ticket"}
-        subtitle={ticket ? `Ticket #${ticket.id} · User #${ticket.user_id}` : "Loading ticket details"}
+        title={ticket?.title ?? t("support.detailTitle")}
+        subtitle={
+          ticket
+            ? t("support.detailSubtitle", {
+                id: String(ticket.id),
+                userId: String(ticket.user_id),
+              })
+            : t("support.loadingDetail")
+        }
         breadcrumb={
           <Link href="/admin/support-tickets" className="inline-flex items-center text-xs text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-1 h-3.5 w-3.5" />
-            Support tickets
+            {t("support.title")}
           </Link>
         }
         actions={
           <Button variant="outline" size="sm" onClick={detail.reload} loading={detail.loading}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            {t("common.refresh")}
           </Button>
         }
       />
@@ -73,7 +82,7 @@ export default function SupportTicketDetailPage() {
           />
           <section className="overflow-hidden rounded-md border border-border bg-surface-raised">
             <div className="border-b border-border px-4 py-3">
-              <h2 className="text-sm font-semibold">Conversation</h2>
+              <h2 className="text-sm font-semibold">{t("support.conversation")}</h2>
             </div>
             <TicketConversation
               messages={messages}
@@ -90,27 +99,37 @@ export default function SupportTicketDetailPage() {
                   await detail.reply(reply.trim());
                   setReply("");
                 } catch (error) {
-                  getErrorMessage(error, "Failed to send reply.");
+                  getErrorMessage(error, t("support.replyFailed"));
                 }
               }}
             />
           </section>
         </>
       ) : (
-        <p className="text-sm text-muted-foreground">Ticket details are unavailable.</p>
+        <p className="text-sm text-muted-foreground">{t("support.detailUnavailable")}</p>
       )}
 
       <ConfirmDialog
         open={pending !== null}
         onOpenChange={(open) => !open && setPending(null)}
-        title={pending?.type === "assign" ? "Assign this ticket to you?" : "Change ticket status?"}
+        title={
+          pending?.type === "assign"
+            ? t("support.assignConfirmTitle")
+            : t("support.statusConfirmTitle")
+        }
         description={
           pending?.type === "status"
-            ? `Move this ticket to ${labelFor(statusOptions, pending.status)}?`
-            : "You will become the assigned system administrator."
+            ? t("support.statusConfirmDescription", {
+                status: t(statusLabelKeys[pending.status]),
+              })
+            : t("support.assignConfirmDescription")
         }
         variant={pending?.type === "status" && pending.status === "closed" ? "warning" : "default"}
-        confirmText={pending?.type === "assign" ? "Assign to me" : "Change status"}
+        confirmText={
+          pending?.type === "assign"
+            ? t("support.assignToMe")
+            : t("support.changeStatus")
+        }
         loading={detail.action === "status" || detail.action === "assign"}
         onConfirm={async () => {
           if (pending?.type === "status") await detail.changeStatus(pending.status);

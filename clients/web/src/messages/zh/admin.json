@@ -1,0 +1,748 @@
+{
+  "admin": {
+    "auditLogs": {
+      "byActor": "操作人 {actor}",
+      "cardTitle": "审计日志（{count}）",
+      "empty": "暂无审计日志",
+      "filters": {
+        "all": "全部"
+      },
+      "fromIp": "来源 {ip}",
+      "loadError": "加载审计日志失败。",
+      "subtitle": "查看系统管理员对受保护资源执行的操作。"
+    },
+    "common": {
+      "cancel": "取消",
+      "close": "关闭",
+      "confirm": "确认",
+      "delete": "删除",
+      "disable": "停用",
+      "disabled": "已停用",
+      "edit": "编辑",
+      "enable": "启用",
+      "enabled": "已启用",
+      "loading": "加载中...",
+      "never": "从未",
+      "next": "下一页",
+      "no": "否",
+      "pageOf": "第 {page} / {total} 页",
+      "previous": "上一页",
+      "refresh": "刷新",
+      "save": "保存",
+      "tryDifferentSearch": "换个关键词试试。",
+      "unknownError": "操作失败。",
+      "yes": "是"
+    },
+    "expertMarket": {
+      "actionFailed": "审核操作失败。",
+      "approve": "通过",
+      "approveConfirmDescription": "该发布版本将在专家市场中上架。",
+      "approveConfirmTitle": "确认通过该发布版本？",
+      "approveRelease": "通过发布",
+      "approved": "发布版本已通过。",
+      "emptyTitle": "该状态下暂无发布版本",
+      "expertSnapshot": "专家快照",
+      "loadDetailFailed": "加载发布版本失败。",
+      "loadFailed": "加载专家发布版本失败。",
+      "nextPage": "下一页",
+      "previousPage": "上一页",
+      "reject": "驳回",
+      "rejectConfirmTitle": "确认驳回该发布版本？",
+      "rejectRelease": "驳回发布",
+      "rejected": "发布版本已驳回。",
+      "rejectionAriaLabel": "驳回原因",
+      "rejectionPlaceholder": "驳回原因",
+      "rejectionReason": "驳回原因：{reason}",
+      "releaseCount": "{count} 个发布版本",
+      "review": "审核",
+      "showingRange": "显示第 {first}-{last} 条，共 {total} 条",
+      "skillDependencies": "Skill 依赖",
+      "status": {
+        "pending": "待审核",
+        "published": "已发布",
+        "rejected": "已驳回",
+        "withdrawn": "已撤回"
+      },
+      "subtitle": "审核可发布的专家快照及其运行时依赖。",
+      "title": "专家市场",
+      "uncategorized": "未分类",
+      "versionLabel": "v{version}",
+      "workerSpec": "Worker 规格"
+    },
+    "nav": {
+      "auditLogs": "审计日志",
+      "expertReview": "专家审核",
+      "label": "系统管理",
+      "organizations": "组织",
+      "overview": "概览",
+      "promoCodes": "优惠码",
+      "relays": "Relay",
+      "runners": "Runner",
+      "sso": "单点登录",
+      "support": "支持工单",
+      "users": "用户"
+    },
+    "organizations": {
+      "backToList": "返回组织列表",
+      "count": "{count, number} 个组织",
+      "createdOn": "创建于 {date}",
+      "deleteAria": "删除 {name}",
+      "deleteConfirm": "删除组织",
+      "deleteDescription": "{name} 及其租户所属资源将被永久删除。",
+      "deleteError": "删除组织失败。",
+      "deleteSuccess": "组织已删除。",
+      "deleteTitle": "确认删除该组织？",
+      "detailLoadError": "加载组织信息失败。",
+      "emptyDescription": "暂无租户组织。",
+      "emptyTitle": "未找到组织",
+      "invalidId": "组织标识无效。",
+      "loadError": "加载组织列表失败。",
+      "memberFallbackName": "用户 #{id}",
+      "memberJoined": "加入于 {date}",
+      "membersEmptyDescription": "该组织没有有效的成员记录。",
+      "membersEmptyTitle": "暂无成员",
+      "membersHeading": "成员（{count}）",
+      "noSubscription": "无订阅",
+      "notFound": "未找到该组织。",
+      "openAria": "打开 {name}",
+      "runnerAgents": "可用 Agent",
+      "runnerDescription": "描述",
+      "runnerLastHeartbeat": "最后心跳 {time}",
+      "runnerManagement": "Runner 管理",
+      "runnerNoAgents": "未上报",
+      "runnerNoDescription": "无描述",
+      "runnerNoHeartbeat": "无心跳记录",
+      "runnerPods": "{current}/{max} Pod",
+      "runnerRegistered": "注册时间",
+      "runnerVersionAndPods": "v{version} · {current}/{max} Pod",
+      "runnersEmptyDescription": "该组织没有已注册的 Runner。",
+      "runnersEmptyTitle": "暂无 Runner",
+      "runnersHeading": "Runner（{count}）",
+      "runnersLoadError": "加载组织 Runner 失败。",
+      "runnersLoadingAria": "正在加载 Runner",
+      "runnersRetry": "重试",
+      "searchPlaceholder": "搜索组织",
+      "stats": {
+        "created": "创建时间",
+        "members": "成员",
+        "subscription": "订阅"
+      },
+      "subscriptionNone": "无",
+      "subtitle": "查看租户成员、订阅、配额与执行容量。"
+    },
+    "overview": {
+      "loadError": "加载系统统计数据失败。",
+      "stats": {
+        "activePods": "活跃 Pod",
+        "activePodsDetail": "共 {count, number} 个",
+        "organizationsDetail": "{count, number} 个有效订阅",
+        "runnersDetail": "{count, number} 个在线",
+        "usersDetail": "{count, number} 个活跃"
+      },
+      "subtitle": "账户、组织与执行容量的整体运行状态。",
+      "userGrowth": {
+        "last7Days": "近 7 天",
+        "lastMonth": "近一个月",
+        "title": "用户增长",
+        "today": "今日"
+      }
+    },
+    "promoCodes": {
+      "action": {
+        "activate": "启用",
+        "deactivate": "停用"
+      },
+      "confirm": {
+        "activate": {
+          "description": "符合条件的组织将可立即兑换。目标：{code}",
+          "title": "确认启用该优惠码？"
+        },
+        "deactivate": {
+          "description": "在重新启用之前将停止新的兑换。目标：{code}",
+          "title": "确认停用该优惠码？"
+        },
+        "delete": {
+          "description": "删除不可恢复，且后端会拒绝删除已有兑换记录的优惠码。目标：{code}",
+          "title": "确认删除该优惠码？"
+        },
+        "deleteConfirmText": "删除优惠码"
+      },
+      "count": "{count} 个优惠码",
+      "create": {
+        "submit": "创建优惠码",
+        "subtitle": "发放订阅套餐延长额度，并明确使用次数与有效期限制。",
+        "title": "创建优惠码"
+      },
+      "createCode": "创建优惠码",
+      "createdAt": "创建于 {date}",
+      "detail": {
+        "backToList": "返回优惠码列表",
+        "confirm": {
+          "activate": "{code} 将开始接受新的兑换。",
+          "deactivate": "{code} 将停止接受新的兑换。",
+          "delete": "{code} 将被永久删除。若已存在兑换记录，后端会拒绝删除。"
+        },
+        "deleteBlocked": "已有兑换记录的优惠码无法删除",
+        "deleteTitle": "删除优惠码"
+      },
+      "durationMonths": "{count, plural, other {# 个月}}",
+      "edit": {
+        "description": "优惠码、类型、套餐、时长和生效时间在后端不可修改。",
+        "expiresAtHint": "清空该值可取消到期限制。",
+        "heading": "可编辑配置",
+        "maxUsesHint": "留空表示保持当前上限不变；接口无法将有限上限重置为不限。",
+        "submit": "保存修改"
+      },
+      "empty": {
+        "description": "为订阅活动创建第一个优惠码。",
+        "searching": "请调整搜索条件或筛选项。",
+        "title": "未找到优惠码"
+      },
+      "endsAt": "结束于 {date}",
+      "error": {
+        "actionFailed": "优惠码更新失败。",
+        "create": "创建优惠码失败。",
+        "invalidId": "优惠码标识无效。",
+        "load": "加载优惠码列表失败。",
+        "loadDetail": "加载优惠码详情失败。",
+        "loadRedemptions": "加载兑换记录失败。",
+        "notFound": "未找到该优惠码。",
+        "unableToCreate": "无法创建优惠码。",
+        "unableToUpdate": "无法更新优惠码。",
+        "update": "更新优惠码失败。"
+      },
+      "expiresAt": "到期于 {date}",
+      "filters": {
+        "allPlans": "全部套餐",
+        "allStatuses": "全部状态",
+        "allTypes": "全部类型",
+        "planLabel": "按套餐筛选",
+        "searchLabel": "搜索优惠码",
+        "searchPlaceholder": "搜索优惠码或名称",
+        "selectedPlanEnterprise": "企业版",
+        "selectedPlanPro": "专业版",
+        "statusLabel": "按状态筛选",
+        "typeLabel": "按类型筛选"
+      },
+      "form": {
+        "code": "优惠码",
+        "codeHint": "以大写形式存储；最多 50 个字符。",
+        "description": "描述",
+        "duration": "时长（月）",
+        "expiresAt": "到期时间",
+        "expiresAtCreateHint": "留空表示永不过期。",
+        "maxUses": "总使用次数上限",
+        "maxUsesCreateHint": "留空表示不限次数。",
+        "name": "名称",
+        "plan": "套餐",
+        "planAriaLabel": "订阅套餐",
+        "startsAt": "生效时间",
+        "startsAtHint": "留空表示立即生效。",
+        "type": "类型",
+        "typeAriaLabel": "优惠码类型",
+        "usesPerOrg": "每个组织可用次数"
+      },
+      "plan": {
+        "enterprise": "企业版",
+        "pro": "专业版"
+      },
+      "redemptions": {
+        "count": "{count} 条兑换记录",
+        "durationMonths": "{count} 个月",
+        "empty": {
+          "description": "该优惠码尚未被兑换。",
+          "title": "暂无兑换记录"
+        },
+        "organizationFallback": "组织 #{id}",
+        "title": "兑换记录",
+        "userFallback": "用户 #{id}",
+        "usernameUnavailable": "用户名不可用"
+      },
+      "row": {
+        "actionsFor": "对 {code} 执行操作",
+        "viewAndEdit": "查看并编辑"
+      },
+      "status": {
+        "active": "已启用",
+        "exhausted": "已用尽",
+        "expired": "已过期",
+        "inactive": "已停用"
+      },
+      "subtitle": "在全平台创建并管控订阅优惠码。",
+      "summary": {
+        "expires": "到期",
+        "offer": "权益",
+        "offerValue": "{count, plural, other {# 个月}}{plan}",
+        "starts": "生效",
+        "usage": "使用情况",
+        "usagePerOrg": "每个组织 {count} 次"
+      },
+      "toast": {
+        "activated": "优惠码已启用。",
+        "created": "优惠码已创建。",
+        "deactivated": "优惠码已停用。",
+        "deleted": "优惠码已删除。",
+        "updated": "优惠码已更新。"
+      },
+      "type": {
+        "campaign": "营销活动",
+        "internal": "内部",
+        "media": "媒体",
+        "partner": "合作伙伴",
+        "referral": "推荐"
+      },
+      "updatedAt": "更新于 {date}",
+      "usage": {
+        "limited": "{used} / {limit}",
+        "unlimited": "{used} / 不限"
+      },
+      "validation": {
+        "durationPositive": "时长必须为正整数。",
+        "expirationAfterStart": "到期时间必须晚于生效时间。",
+        "maxUsesPositive": "总使用次数上限必须为正整数。",
+        "usesPerOrgPositive": "每个组织可用次数必须为正整数。"
+      }
+    },
+    "relays": {
+      "detail": {
+        "averageLatency": "平均延迟",
+        "backToRelays": "返回 Relay 列表",
+        "capacityAndHealth": "容量与健康度",
+        "connection": "连接",
+        "connections": "连接数",
+        "connectionsUsage": "{connections} / {capacity}（{load}%）",
+        "cpuUsage": "CPU 使用率",
+        "forceUnregister": "强制注销",
+        "lastHeartbeat": "最近心跳",
+        "latitude": "纬度",
+        "loadFailed": "加载 Relay 失败。",
+        "location": "位置",
+        "longitude": "经度",
+        "memoryUsage": "内存使用率",
+        "milliseconds": "{value} ms",
+        "notReported": "未上报",
+        "percent": "{value}%",
+        "region": "区域",
+        "relayId": "Relay ID",
+        "retry": "重试",
+        "status": "状态",
+        "subtitle": "后端上报的实时注册与健康数据。",
+        "title": "Relay 详情",
+        "unavailable": "该 Relay 不可用，或已被注销。",
+        "url": "URL"
+      },
+      "empty": {
+        "description": "已连接的 Relay 服务会显示在这里。",
+        "title": "暂无已注册的 Relay"
+      },
+      "healthy": "健康",
+      "loadFailed": "加载 Relay 列表失败。",
+      "row": {
+        "load": "{connections}/{capacity} 连接 · {latency} ms",
+        "resources": "CPU {cpu}% · 内存 {memory}%"
+      },
+      "stats": {
+        "connections": "连接数",
+        "healthy": "健康",
+        "registered": "已注册"
+      },
+      "subtitle": "监控数据面容量，并清理失效的 Relay 注册。",
+      "unhealthy": "异常",
+      "unregister": {
+        "confirm": "注销 Relay",
+        "detailDescription": "{id} 将从后端 Relay 名册中移除，现有连接可能会中断。",
+        "failed": "注销 Relay 失败。",
+        "listDescription": "{id} 当前有 {connections} 个活跃连接。后端不提供会话迁移能力。",
+        "success": "Relay 已注销。",
+        "title": "确认强制注销该 Relay？"
+      },
+      "unregisterRelay": "注销 {name}",
+      "unregisterRelayTitle": "强制注销 Relay",
+      "viewDetails": "查看 {name} 详情",
+      "viewDetailsTitle": "查看 Relay 详情"
+    },
+    "runners": {
+      "actions": {
+        "delete": "删除 {nodeId}",
+        "deleteTitle": "删除 Runner",
+        "disable": "禁用 {nodeId}",
+        "disableTitle": "禁用 Runner",
+        "enable": "启用 {nodeId}",
+        "enableTitle": "启用 Runner"
+      },
+      "agentCount": "{count} 个 Agent",
+      "confirm": {
+        "delete": {
+          "description": "此操作将永久删除该 Runner 的注册记录，且无法撤销。目标：{nodeId}",
+          "title": "确认删除该 Runner？"
+        },
+        "disable": {
+          "description": "Runner 仍保持连接，但不再接收新的 Pod。目标：{nodeId}",
+          "title": "确认禁用该 Runner？"
+        },
+        "enable": {
+          "description": "Runner 将重新可以接收新的 Pod。目标：{nodeId}",
+          "title": "确认启用该 Runner？"
+        }
+      },
+      "count": "{count} 个 Runner",
+      "empty": {
+        "description": "尚未注册任何 Runner。",
+        "title": "未找到 Runner"
+      },
+      "lastHeartbeat": "最近心跳 {time}",
+      "loadFailed": "加载 Runner 列表失败。",
+      "noHeartbeat": "无心跳记录",
+      "orgFallback": "组织 #{id}",
+      "podsUsage": "{current}/{max} 个 Pod",
+      "registeredOn": "注册于 {date}",
+      "searchLabel": "搜索 Runner",
+      "searchPlaceholder": "按节点 ID、描述或组织搜索",
+      "subtitle": "查看所有组织的自托管 Runner，并控制其可用状态。",
+      "toast": {
+        "deleted": "Runner 已删除。",
+        "disabled": "Runner 已禁用。",
+        "enabled": "Runner 已启用。"
+      },
+      "updateFailed": "Runner 更新失败。",
+      "version": "v{version}"
+    },
+    "sso": {
+      "allProtocols": "全部协议",
+      "configurationCount": "{count} 条配置",
+      "confirm": {
+        "deleteDescription": "此操作将永久删除该提供商配置且不可恢复。目标：{domain}",
+        "deleteTitle": "确认删除该 SSO 配置？",
+        "disableDescription": "通过该身份提供商的新登录将被停止。目标：{domain}",
+        "disableTitle": "确认停用该 SSO 配置？",
+        "enableDescription": "域名匹配的用户可以使用该身份提供商。目标：{domain}",
+        "enableTitle": "确认启用该 SSO 配置？"
+      },
+      "create": "新建",
+      "defaultOrganization": "默认组织 #{id}",
+      "emptyDescription": "创建配置以启用按域名的登录。",
+      "emptyFiltered": "请更换搜索词或协议筛选条件。",
+      "emptyTitle": "未找到 SSO 配置",
+      "enforced": "已强制",
+      "filterProtocolAria": "按协议筛选",
+      "form": {
+        "createDescription": "为平台登录配置按域名生效的身份提供商。",
+        "createTitle": "新建 SSO 配置",
+        "defaultOrganizationHint": "联合登录用户将在登录时加入该组织。",
+        "defaultOrganizationId": "默认组织 ID",
+        "displayName": "显示名称",
+        "displayNamePlaceholder": "企业 SSO",
+        "domain": "域名",
+        "domainPlaceholder": "example.com",
+        "editDescription": "域名和协议不可修改。密钥留空则保留当前值。",
+        "editTitle": "编辑 SSO 配置",
+        "enabledHint": "允许该配置处理登录请求。",
+        "enforceSso": "强制 SSO",
+        "enforceSsoHint": "要求匹配的用户必须通过该提供商登录。",
+        "protocol": "协议",
+        "protocolAria": "SSO 协议",
+        "saveFailed": "保存 SSO 配置失败。",
+        "submitCreate": "创建配置",
+        "submitSave": "保存修改"
+      },
+      "ldap": {
+        "baseDn": "Base DN",
+        "bindDn": "Bind DN",
+        "bindPassword": "Bind 密码",
+        "bindPasswordHint": "留空则保留当前密码。",
+        "emailAttribute": "邮箱属性",
+        "host": "主机",
+        "legend": "LDAP 设置",
+        "nameAttribute": "姓名属性",
+        "port": "端口",
+        "useTls": "使用 TLS",
+        "useTlsHint": "通过 STARTTLS 建立 LDAP 连接。",
+        "userFilter": "用户过滤器",
+        "usernameAttribute": "用户名属性"
+      },
+      "listLoadingAria": "正在加载 SSO 配置",
+      "noDefaultOrganization": "无默认组织",
+      "oidc": {
+        "ampBearerCodes": "AMP Bearer 应用编码",
+        "ampBearerCodesHint": "允许代理 Bearer 访问的应用编码 JSON 数组。",
+        "clientId": "Client ID",
+        "clientSecret": "Client Secret",
+        "clientSecretHint": "留空则保留当前 Client Secret。",
+        "extraParams": "授权附加参数",
+        "extraParamsHint": "传递给授权端点的 JSON 对象。",
+        "issuerUrl": "Issuer URL",
+        "legend": "OIDC 设置",
+        "scopes": "Scopes"
+      },
+      "row": {
+        "deleteAria": "删除 {name}",
+        "deleteTitle": "删除配置",
+        "disableAria": "停用 {name}",
+        "disableTitle": "停用配置",
+        "editAria": "编辑 {name}",
+        "editTitle": "编辑配置",
+        "enableAria": "启用 {name}",
+        "enableTitle": "启用配置"
+      },
+      "saml": {
+        "certificate": "IdP 证书",
+        "legend": "SAML 设置",
+        "metadataUrl": "IdP 元数据 URL",
+        "metadataXml": "IdP 元数据 XML",
+        "nameIdFormat": "NameID 格式",
+        "secretHint": "留空则保留当前值。",
+        "spEntityId": "SP Entity ID",
+        "ssoUrl": "IdP SSO URL"
+      },
+      "searchAria": "搜索 SSO 配置",
+      "searchPlaceholder": "按域名或显示名称搜索",
+      "subtitle": "为指定域名配置 OIDC、SAML 和 LDAP 身份提供商。",
+      "test": {
+        "buttonAria": "测试 {name}",
+        "buttonTitle": "测试连接",
+        "failed": "失败",
+        "idle": "测试",
+        "passed": "通过",
+        "testing": "测试中"
+      },
+      "title": "单点登录",
+      "toast": {
+        "createFailed": "创建 SSO 配置失败。",
+        "created": "SSO 配置已创建。",
+        "deleteFailed": "删除 SSO 配置失败。",
+        "deleted": "SSO 配置已删除。",
+        "disableFailed": "停用 SSO 配置失败。",
+        "disabled": "SSO 配置已停用。",
+        "enableFailed": "启用 SSO 配置失败。",
+        "enabled": "SSO 配置已启用。",
+        "loadFailed": "加载 SSO 配置失败。",
+        "testActionFailed": "测试 SSO 配置失败。",
+        "testFailed": "连接测试失败。",
+        "testPassed": "连接测试通过。",
+        "updateFailed": "更新 SSO 配置失败。",
+        "updated": "SSO 配置已更新。"
+      },
+      "updatedAt": "更新于 {timestamp}",
+      "validation": {
+        "domainAndNameRequired": "域名和显示名称为必填项。",
+        "invalidAmpBearerCodes": "AMP Bearer 应用编码必须是 JSON 数组。",
+        "invalidDomain": "请输入有效域名，例如 example.com。",
+        "invalidExtraParams": "授权附加参数必须是 JSON 对象。",
+        "invalidLdapPort": "LDAP 端口必须在 1 到 65535 之间。",
+        "invalidOrganizationId": "默认组织 ID 必须为正整数。",
+        "ldapRequired": "LDAP 主机和 Base DN 为必填项。",
+        "oidcRequired": "OIDC Issuer URL 和 Client ID 为必填项。",
+        "samlSourceRequired": "请提供元数据 URL、元数据 XML，或 SSO URL 与证书组合。"
+      }
+    },
+    "subscription": {
+      "autoRenew": "自动续订",
+      "autoRenewDisabled": "自动续订已关闭。",
+      "autoRenewEnabled": "自动续订已开启。",
+      "autoRenewHint": "在当前周期结束时自动续订。",
+      "billing": "计费",
+      "billingCycleAria": "计费周期",
+      "cancelDescription": "取消该订阅并停止后续续订。",
+      "cancelSuccess": "订阅已取消。",
+      "cancelTitle": "确认取消订阅？",
+      "changeCycleDescription": "将计费周期变更为 {cycle}。",
+      "changeCycleTitle": "确认变更计费周期？",
+      "changePlanDescription": "将套餐变更为 {plan}。",
+      "changePlanTitle": "确认变更订阅套餐？",
+      "changeSeatsDescription": "将该订阅席位数设置为 {seats}。",
+      "changeSeatsTitle": "确认变更席位数？",
+      "createButton": "创建订阅",
+      "createDescription": "为该组织创建 {months} 个月的 {plan} 生效订阅。",
+      "createSuccess": "订阅已创建。",
+      "createTitle": "确认创建订阅？",
+      "customQuotas": "自定义配额",
+      "cycleMonthly": "按月",
+      "cycleUpdated": "计费周期已更新。",
+      "cycleYearly": "按年",
+      "freeze": "冻结",
+      "freezeDescription": "执行能力与付费访问可能被限制。",
+      "freezeSuccess": "订阅已冻结。",
+      "freezeTitle": "确认冻结订阅？",
+      "lifecycle": "生命周期",
+      "loadError": "加载订阅失败。",
+      "monthsAria": "订阅月数",
+      "newPlanAria": "新订阅套餐",
+      "noRecord": "该组织没有订阅记录。",
+      "periodRange": "{start} 至 {end}",
+      "planAndSeats": "套餐与席位",
+      "planAria": "订阅套餐",
+      "planUpdated": "订阅套餐已更新。",
+      "quotaBadge": "{resource}：{value}",
+      "quotaDescription": "将 {resource} 覆盖为 {limit}。",
+      "quotaLimitAria": "配额上限",
+      "quotaLimitPlaceholder": "-1 = 无限制",
+      "quotaResourceAria": "配额资源",
+      "quotaTitle": "确认设置自定义配额？",
+      "quotaUpdated": "自定义配额已更新。",
+      "renew": "续订",
+      "renewDescription": "将当前周期延长 {months} 个月。",
+      "renewSuccess": "订阅已续订。",
+      "renewTitle": "确认续订？",
+      "renewalMonthsAria": "续订月数",
+      "seatCountAria": "席位数",
+      "seatUsage": "已用 {used}，可用 {available}",
+      "seatsUpdated": "席位数已更新。",
+      "selectPlan": "选择套餐",
+      "setOverride": "设置覆盖值",
+      "setSeats": "设置席位",
+      "title": "订阅",
+      "unfreeze": "解冻",
+      "unfreezeDescription": "将订阅恢复为正常服务状态。",
+      "unfreezeSuccess": "订阅已解冻。",
+      "unfreezeTitle": "确认解冻订阅？",
+      "unlimited": "无限制",
+      "updateError": "订阅更新失败。"
+    },
+    "support": {
+      "adminBadge": "管理员",
+      "adminRef": "管理员 #{id}",
+      "allCategories": "全部分类",
+      "allPriorities": "全部优先级",
+      "allStatuses": "全部状态",
+      "assignConfirmDescription": "你将成为该工单的负责系统管理员。",
+      "assignConfirmTitle": "确认将该工单分配给你？",
+      "assignFailed": "分配工单失败。",
+      "assignToMe": "分配给我",
+      "assigned": "工单已分配给你。",
+      "attachmentMeta": "{type} · {size}",
+      "category": {
+        "account": "账号",
+        "bug": "缺陷",
+        "featureRequest": "功能需求",
+        "other": "其他",
+        "usageQuestion": "使用咨询"
+      },
+      "changeStatus": "变更状态",
+      "changeStatusAriaLabel": "变更工单状态",
+      "conversation": "会话记录",
+      "createdAt": "创建于 {time}",
+      "detailSubtitle": "工单 #{id} · 用户 #{userId}",
+      "detailTitle": "支持工单",
+      "detailUnavailable": "工单详情不可用。",
+      "downloadFailed": "下载附件失败。",
+      "emptyDescription": "暂无用户提交支持工单。",
+      "emptyFiltered": "请尝试清除一个或多个筛选条件。",
+      "emptyTitle": "未找到支持工单",
+      "fields": {
+        "assignment": "分配",
+        "category": "分类",
+        "priority": "优先级",
+        "status": "状态",
+        "updated": "更新时间"
+      },
+      "filterByCategory": "按分类筛选",
+      "filterByPriority": "按优先级筛选",
+      "filterByStatus": "按状态筛选",
+      "invalidId": "支持工单 ID 无效。",
+      "loadDetailFailed": "加载支持工单失败。",
+      "loadFailed": "加载支持工单失败。",
+      "loadingDetail": "正在加载工单详情",
+      "noMessagesDescription": "该工单不包含任何会话消息。",
+      "noMessagesTitle": "暂无消息",
+      "priority": {
+        "high": "高",
+        "low": "低",
+        "medium": "中"
+      },
+      "replyAriaLabel": "管理员回复",
+      "replyFailed": "发送回复失败。",
+      "replyPlaceholder": "填写管理员回复",
+      "replySent": "回复已发送。",
+      "resolvedAt": "解决于 {time}",
+      "searchAriaLabel": "搜索支持工单",
+      "searchPlaceholder": "搜索工单标题",
+      "sendReply": "发送回复",
+      "stats": {
+        "inProgress": "处理中",
+        "open": "待处理",
+        "resolved": "已解决",
+        "total": "总计"
+      },
+      "status": {
+        "closed": "已关闭",
+        "inProgress": "处理中",
+        "open": "待处理",
+        "resolved": "已解决"
+      },
+      "statusConfirmDescription": "将该工单变更为{status}？",
+      "statusConfirmTitle": "确认变更工单状态？",
+      "statusUpdateFailed": "更新工单状态失败。",
+      "statusUpdated": "工单状态已更新。",
+      "subtitle": "以系统管理员身份查看并回复平台支持请求。",
+      "ticketCount": "{count} 个工单",
+      "ticketMeta": "#{id} · 用户 #{userId}",
+      "title": "支持工单",
+      "unassigned": "未分配",
+      "userRef": "用户 #{id}"
+    },
+    "title": "系统管理",
+    "users": {
+      "actionsFor": "{email} 的操作",
+      "badge": {
+        "emailUnverified": "邮箱未验证",
+        "systemAdmin": "系统管理员"
+      },
+      "confirm": {
+        "disable": {
+          "description": "该用户将无法登录，直到账号被重新启用。",
+          "title": "确认禁用该账号？"
+        },
+        "enable": {
+          "description": "该用户可以重新登录。",
+          "title": "确认启用该账号？"
+        },
+        "grantAdmin": {
+          "description": "该用户将可以管理平台上的所有账号和组织。",
+          "title": "确认授予系统管理员权限？"
+        },
+        "revokeAdmin": {
+          "description": "该用户将立即失去系统管理权限。",
+          "title": "确认撤销系统管理员权限？"
+        },
+        "unverifyEmail": {
+          "description": "该账号将恢复为邮箱未验证状态。",
+          "title": "确认取消邮箱验证？"
+        },
+        "verifyEmail": {
+          "description": "请仅在独立确认邮箱归属后使用。",
+          "title": "确认标记邮箱为已验证？"
+        }
+      },
+      "confirmTarget": "目标：{email}",
+      "count": "{count} 个用户",
+      "emptyDescription": "尚无任何用户账号。",
+      "emptyTitle": "未找到用户",
+      "errors": {
+        "action": "用户更新失败。",
+        "load": "加载用户列表失败。"
+      },
+      "joined": "注册于 {date}",
+      "lastLogin": "上次登录 {datetime}",
+      "menu": {
+        "disableAccount": "禁用账号",
+        "enableAccount": "启用账号",
+        "grantAdmin": "授予管理员权限",
+        "revokeAdmin": "撤销管理员权限",
+        "unverifyEmail": "取消邮箱验证",
+        "verifyEmail": "标记邮箱已验证"
+      },
+      "neverSignedIn": "从未登录",
+      "searchLabel": "搜索用户",
+      "searchPlaceholder": "按邮箱、用户名或姓名搜索",
+      "subtitle": "管理账号访问权限、邮箱验证状态和系统管理员权限。",
+      "toast": {
+        "adminGranted": "已授予系统管理员权限。",
+        "adminRevoked": "已撤销系统管理员权限。",
+        "disabled": "用户已禁用。",
+        "emailUnverified": "已取消邮箱验证。",
+        "emailVerified": "邮箱已标记为已验证。",
+        "enabled": "用户已启用。"
+      }
+    }
+  }
+}

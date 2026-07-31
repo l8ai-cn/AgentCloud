@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Check, X } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,7 @@ export function ExpertReleaseDetail({
   onApprove: () => void;
   onReject: () => void;
 }) {
+  const t = useTranslations("admin");
   const pending = release.status === "pending";
   return (
     <section className="space-y-4 border-t border-border pt-5">
@@ -36,26 +38,37 @@ export function ExpertReleaseDetail({
         {release.tags.map((tag) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
       </div>
       <div className="grid gap-3 md:grid-cols-3">
-        <Snapshot label="Expert snapshot" value={release.expert_snapshot_json} />
-        <Snapshot label="Worker specification" value={release.worker_spec_snapshot_json} />
-        <Snapshot label="Skill dependencies" value={release.skill_dependencies_json} />
+        <Snapshot
+          label={t("expertMarket.expertSnapshot")}
+          value={release.expert_snapshot_json}
+        />
+        <Snapshot
+          label={t("expertMarket.workerSpec")}
+          value={release.worker_spec_snapshot_json}
+        />
+        <Snapshot
+          label={t("expertMarket.skillDependencies")}
+          value={release.skill_dependencies_json}
+        />
       </div>
       {release.rejection_reason && (
-        <p className="text-sm text-destructive">Rejection: {release.rejection_reason}</p>
+        <p className="text-sm text-destructive">
+          {t("expertMarket.rejectionReason", { reason: release.rejection_reason })}
+        </p>
       )}
       {pending && (
         <div className="space-y-3">
           <Textarea
             value={reason}
             onChange={(event) => onReasonChange(event.target.value)}
-            placeholder="Rejection reason"
-            aria-label="Rejection reason"
+            placeholder={t("expertMarket.rejectionPlaceholder")}
+            aria-label={t("expertMarket.rejectionAriaLabel")}
             disabled={busy}
           />
           <div className="flex flex-wrap gap-2">
             <Button disabled={busy} onClick={onApprove}>
               <Check className="mr-2 h-4 w-4" />
-              Approve release
+              {t("expertMarket.approveRelease")}
             </Button>
             <Button
               variant="destructive"
@@ -63,7 +76,7 @@ export function ExpertReleaseDetail({
               onClick={onReject}
             >
               <X className="mr-2 h-4 w-4" />
-              Reject release
+              {t("expertMarket.rejectRelease")}
             </Button>
           </div>
         </div>
