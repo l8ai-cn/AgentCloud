@@ -55,11 +55,13 @@ if [[ -n "${encoded}" ]]; then
     echo "existing ${secret_name}/${secret_key} is malformed" >&2
     exit 1
   }
-  validate_token "${token}" || {
-    echo "existing ${secret_name}/${secret_key} is rejected by Gitea" >&2
-    exit 1
-  }
-  echo "==> using existing internal Gitea service token"
+  if validate_token "${token}"; then
+    echo "==> using existing internal Gitea service token"
+  else
+    echo "==> existing ${secret_name}/${secret_key} is rejected by Gitea; regenerating" >&2
+    encoded=""
+    token=""
+  fi
 fi
 
 pod="$(

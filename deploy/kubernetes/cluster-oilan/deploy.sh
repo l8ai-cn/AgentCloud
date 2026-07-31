@@ -45,7 +45,12 @@ cleanup_release_workspace() {
   [[ -z "${RELEASE_BUNDLE}" || ! -d "${RELEASE_BUNDLE}" ]] || rm -rf "${RELEASE_BUNDLE}"
   rm -rf "${GEN}"
   if [[ "${APP_WRITES_STOPPED}" == true ]]; then
-    echo "deployment failed; application writes remain stopped" >&2
+    echo "deployment failed; restoring application writers" >&2
+    if [[ "${BACKEND_REPLICAS}" =~ ^[1-9][0-9]*$ ]]; then
+      dexec "kubectl -n ${NS} scale deploy/backend --replicas=${BACKEND_REPLICAS}" || true
+    else
+      dexec "kubectl -n ${NS} scale deploy/backend --replicas=1" || true
+    fi
   fi
   if [[ "${REMOTE_WORKSPACE_MAY_EXIST}" == true ]] &&
       ! doops -session "${SESSION}" clean --target "${TARGET}" --workspace "${SESSION}"; then
@@ -102,7 +107,12 @@ render_release() {
 apply_pinned_manifest() {
   local manifest="$1" image="$2" repository
   repository="${3:-${REG}/agentcloud/${image}}"
-  dexec "digest=\$(awk -v name='${repository}' '\$1 == \"-\" && \$2 == \"name:\" && \$3 == name { found=1; next } found && \$1 == \"digest:\" { print \$2; exit }' release/kustomization.yaml); test \"\${digest}\" != \"\"; sed -E \"s|image: ${repository}:[^[:space:]]+|image: ${repository}@\${digest}|g\" ${manifest} | kubectl apply -f -"
+  dexec "set -eu
+digest=\$(awk -v name='${repository}' '\$1 == \"-\" && \$2 == \"name:\" && \$3 == name { found=1; next } found && \$1 == \"digest:\" { print \$2; exit }' release/kustomization.yaml)
+test -n \"\${digest}\"
+awk -v ns='${NS}' -f bound_pvc_filter.awk ${manifest} |
+  sed -E \"s|image: ${repository}:[^[:space:]]+|image: ${repository}@\${digest}|g\" |
+  kubectl apply -f -"
 }
 
 backend_image() {
@@ -136,9 +146,10 @@ sync_worker_definitions() {
 }
 
 retire_web_admin() {
-  echo "==> retire standalone web-admin resources"
-  dexec "kubectl -n ${NS} delete deployment/web-admin service/web-admin ingress/agentcloud-admin --ignore-not-found=true"
-  dexec "set -eu; for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin; do if kubectl -n ${NS} get \"\${resource}\" >/dev/null 2>&1; then echo \"retired resource still exists: \${resource}\" >&2; exit 1; fi; done"
+  echo "==> retire standalone web-admin and stale Helm marketplace ingresses"
+  # Helm left /api/marketplace/v1 backends on the deleted marketplace Service.
+  dexec "kubectl -n ${NS} delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents ingress/agentcloud-agents-relay ingress/agentcloud-agents-tunnel ingress/agentcloud-login-amp-agents --ignore-not-found=true"
+  dexec "set -eu; for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents; do if kubectl -n ${NS} get \"\${resource}\" >/dev/null 2>&1; then echo \"retired resource still exists: \${resource}\" >&2; exit 1; fi; done"
 }
 
 # Refuse to create a ghost stack in an empty namespace. Live oilan data lives
@@ -176,7 +187,7 @@ apply_all() {
   ensure_internal_gitea
   apply_stateful_prerequisites
   echo "==> apply workloads after DoSql-audited database gate"
-  dexec "kubectl apply -f /tmp/agentcloud-release.yaml"
+  dexec "awk -v ns='${NS}' -f bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -"
   dexec "kubectl -n ${NS} rollout status deploy/backend --timeout=300s"
   dexec "kubectl -n ${NS} rollout status deploy/web --timeout=300s"
   retire_web_admin

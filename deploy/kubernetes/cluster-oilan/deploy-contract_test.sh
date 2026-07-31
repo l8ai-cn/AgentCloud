@@ -102,11 +102,11 @@ backend_image="$(awk '$1 == "image:" && $2 ~ /agentcloud\/backend@sha256:/ { pri
 require_command "${backend_image}"
 require_command '23-worker-definition-sync-job.yaml | kubectl apply -f -'
 require_command 'kubectl -n agentcloud wait --for=condition=complete job/worker-definition-sync --timeout=300s'
-require_command 'kubectl apply -f /tmp/agentcloud-release.yaml'
+require_command 'bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -'
 
 sync_apply="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f -')"
 sync_wait="$(line_number 'job/worker-definition-sync --timeout=300s')"
-workloads="$(line_number 'kubectl apply -f /tmp/agentcloud-release.yaml')"
+workloads="$(line_number 'bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -')"
 
 (( workloads < sync_apply &&
    sync_apply < sync_wait )) || {

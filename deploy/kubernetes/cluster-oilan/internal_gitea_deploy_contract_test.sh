@@ -35,7 +35,7 @@ if [[ "${config}" == *'write-out = "%{http_code}"'* ]]; then
   [[ -f "${state}.active" ]] && printf '200' || printf '401'
   exit 0
 fi
-if [[ "${CONTRACT_SCENARIO}" == wrong_token && "${config}" == *"/api/v1/user"* ]]; then
+if [[ "${CONTRACT_SCENARIO}" == wrong_token && "${config}" == *"/api/v1/user"* && ! -f "${state}.active" ]]; then
   printf '{"login":"wrong-admin","is_admin":true}\n'
   exit 0
 fi
@@ -113,10 +113,13 @@ existing_log="${TMP}/existing.log"
 ! grep -F 'generate-access-token' "${existing_log}" >/dev/null
 grep -F 'cat /data/ssh/ssh_host_ed25519_key.pub' "${existing_log}" >/dev/null
 
-if run_contract wrong_token 2>/dev/null; then
-  echo "token belonging to the wrong Gitea user was accepted" >&2
-  exit 1
-fi
+run_contract wrong_token
+wrong_log="${TMP}/wrong_token.log"
+wrong_manifest="${TMP}/wrong_token.yaml"
+grep -F 'generate-access-token --username agentcloud-service --token-name agentcloud-backend' \
+  "${wrong_log}" >/dev/null
+grep -F 'KB_GITEA_TOKEN:' "${wrong_manifest}" >/dev/null
+! grep -F "${TOKEN}" "${wrong_log}" >/dev/null
 
 if run_contract apply_fail 2>/dev/null; then
   echo "failed Secret persistence was accepted" >&2

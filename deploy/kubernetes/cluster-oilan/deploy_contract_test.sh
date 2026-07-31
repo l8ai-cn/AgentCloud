@@ -117,28 +117,28 @@ require_command "name='repo.aiedulab.cn:8443/library/gitea'"
 require_command 'scale deploy/backend --replicas=0'
 require_command 'scale deploy/gitea --replicas=0'
 require_command 'wait --for=delete pod -l app=gitea'
-require_command '15-gitea-backup-pod.yaml | kubectl apply -f -'
+require_command 'bound_pvc_filter.awk 15-gitea-backup-pod.yaml'
 require_command 'wait --for=condition=Ready pod/gitea-backup'
 require_command "sqlite3 /data/gitea/gitea.db 'PRAGMA quick_check;'"
 require_command 'tar -C /data -czf -'
 require_command 'sha256sum -c'
 require_command 'delete pod gitea-backup --wait=true'
-require_command '14-gitea.yaml | kubectl apply -f -'
+require_command 'bound_pvc_filter.awk 14-gitea.yaml'
 require_command 'gitea-'
 require_command 'rollout status deploy/gitea --timeout=300s'
 require_command 'bash bootstrap_internal_gitea.sh agentcloud'
 require_command 'kubectl apply -f 02-configmap.yaml -f 30-backend-rbac.yaml'
 require_command 'wait --for=delete pod -l app=backend'
 require_command 'delete deploy/marketplace svc/marketplace --ignore-not-found'
-require_command '10-postgres.yaml | kubectl apply -f -'
-require_command '11-redis.yaml | kubectl apply -f -'
-require_command '12-minio.yaml | kubectl apply -f -'
+require_command 'bound_pvc_filter.awk 10-postgres.yaml'
+require_command 'bound_pvc_filter.awk 11-redis.yaml'
+require_command 'bound_pvc_filter.awk 12-minio.yaml'
 require_command 'kubectl -n agentcloud rollout status deploy/postgres --timeout=300s'
-require_command 'kubectl apply -f /tmp/agentcloud-release.yaml'
+require_command 'bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -'
 require_command 'kubectl -n agentcloud rollout status deploy/backend --timeout=300s'
 require_command 'kubectl -n agentcloud rollout status deploy/web --timeout=300s'
-require_command 'kubectl -n agentcloud delete deployment/web-admin service/web-admin ingress/agentcloud-admin --ignore-not-found=true'
-require_command 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin'
+require_command 'kubectl -n agentcloud delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents'
+require_command 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents'
 require_command "https://health-preview.l8ai.cn/"
 require_command "--write-out '%{remote_ip}'"
 require_command 'test -n "${reference_ip}"'
@@ -146,28 +146,28 @@ require_command 'test "${reference_ip}" = "${hostname_ip}"'
 require_command 'https://release-preview-probe.l8ai.cn/preview/release-preview-probe/'
 require_command 'test "${status}" = 401'
 require_command 'grep -Fxq token_required "$body"'
-require_command '13-minio-setup-job.yaml | kubectl apply -f -'
+require_command 'bound_pvc_filter.awk 13-minio-setup-job.yaml'
 require_command '23-worker-definition-sync-job.yaml | kubectl apply -f -'
 
 render_line="$(line_number 'kubectl kustomize . > /tmp/agentcloud-release.yaml')"
 stop_line="$(line_number 'scale deploy/backend --replicas=0')"
 gitea_stop_line="$(line_number 'scale deploy/gitea --replicas=0')"
 gitea_wait_line="$(line_number 'wait --for=delete pod -l app=gitea')"
-gitea_backup_pod_line="$(line_number '15-gitea-backup-pod.yaml | kubectl apply -f -')"
+gitea_backup_pod_line="$(line_number 'bound_pvc_filter.awk 15-gitea-backup-pod.yaml')"
 gitea_backup_ready_line="$(line_number 'wait --for=condition=Ready pod/gitea-backup')"
 gitea_check_line="$(line_number "sqlite3 /data/gitea/gitea.db 'PRAGMA quick_check;'")"
 gitea_backup_line="$(line_number 'tar -C /data -czf -')"
 gitea_checksum_line="$(line_number 'sha256sum -c')"
 gitea_backup_delete_line="$(line_number 'delete pod gitea-backup --wait=true')"
-gitea_line="$(line_number '14-gitea.yaml | kubectl apply -f -')"
+gitea_line="$(line_number 'bound_pvc_filter.awk 14-gitea.yaml')"
 prereq_line="$(line_number 'kubectl apply -f 02-configmap.yaml -f 30-backend-rbac.yaml')"
-postgres_line="$(line_number '10-postgres.yaml | kubectl apply -f -')"
-workload_line="$(line_number 'kubectl apply -f /tmp/agentcloud-release.yaml')"
+postgres_line="$(line_number 'bound_pvc_filter.awk 10-postgres.yaml')"
+workload_line="$(line_number 'bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -')"
 backend_line="$(line_number 'rollout status deploy/backend')"
 web_line="$(line_number 'rollout status deploy/web --timeout=300s')"
-retire_line="$(line_number 'delete deployment/web-admin service/web-admin ingress/agentcloud-admin')"
-retire_verify_line="$(line_number 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin')"
-minio_line="$(line_number '13-minio-setup-job.yaml | kubectl apply -f -')"
+retire_line="$(line_number 'delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents')"
+retire_verify_line="$(line_number 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents')"
+minio_line="$(line_number 'bound_pvc_filter.awk 13-minio-setup-job.yaml')"
 sync_line="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f -')"
 
 (( render_line < stop_line &&
