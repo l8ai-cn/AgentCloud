@@ -1,6 +1,9 @@
-# CNB builds release images only. Deployment is handled by DoOps + Helm.
-".agentsmesh-release-artifacts": &agentsmesh-release-artifacts
-  - name: agentsmesh release artifacts
+# AgentCloud release-image CI.
+# Git authority: https://cnb.cool/l8ai/agentcloud
+# Registry (current): docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD
+# Deployment stays on DoOps + Helm / cluster-oilan; GitHub does not publish business images.
+".agentcloud-release-artifacts": &agentcloud-release-artifacts
+  - name: agentcloud release artifacts
     runner:
       cpus: 8
     services:
@@ -8,13 +11,17 @@
     docker:
       image: docker:27-cli
     stages:
-      - name: 构建 AgentsMesh 业务镜像
+      - name: 构建 AgentCloud 业务镜像
         script: |
           set -eu
           release_version="$(tr -d '[:space:]' < deploy/release-version.txt)"
           if ! printf '%s' "${release_version}" | grep -Eq '^release-[0-9]{8}$'; then
             echo "invalid deploy/release-version.txt: ${release_version}" >&2
             exit 64
+          fi
+          if [ -n "${CNB_TOKEN:-}" ] && [ -n "${CNB_TOKEN_USER_NAME:-}" ]; then
+            printf '%s' "${CNB_TOKEN}" | docker login docker.cnb.cool \
+              -u "${CNB_TOKEN_USER_NAME}" --password-stdin
           fi
           for service_dockerfile in \
             "backend:backend/Dockerfile" \
@@ -30,17 +37,22 @@
               --tag "${image}" \
               --label "org.opencontainers.image.revision=${CNB_COMMIT}" \
               --label "org.opencontainers.image.version=${release_version}" \
+              --label "org.opencontainers.image.source=https://cnb.cool/l8ai/agentcloud" \
               --build-arg "CACHEBUST=${CNB_COMMIT}-${service}" \
               .
             docker push "${image}"
-            printf 'AGENTSMESH_SERVICE=%s:success image=%s\n' "${service}" "${image}"
+            printf 'AGENTCLOUD_SERVICE=%s:success image=%s revision=%s\n' \
+              "${service}" "${image}" "${CNB_COMMIT}"
           done
 
 main:
-  push: *agentsmesh-release-artifacts
+  push: *agentcloud-release-artifacts
 
 "release/*":
-  push: *agentsmesh-release-artifacts
+  push: *agentcloud-release-artifacts
 
 "release-*":
-  push: *agentsmesh-release-artifacts
+  push: *agentcloud-release-artifacts
+
+"$":
+  api_trigger: *agentcloud-release-artifacts

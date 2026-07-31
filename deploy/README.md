@@ -1,7 +1,8 @@
 # AgentCloud Deployment (AMP-aligned)
 
-- **CI (CNB):** `.cnb.yml` builds `backend` / `relay` / `web` as
-  `docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD`
+- **CI git (CNB):** https://cnb.cool/l8ai/agentcloud — push `main` / `release-*` runs `.cnb.yml`
+- **CI images:** `docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD` (`backend` / `relay` / `web`)
+- **Not on GitHub:** business image publish is retired from Actions (`oilan-image-publish` fails closed)
 - **Version SSOT:** `deploy/release-version.txt` (`release-YYYYMMDD`)
 - **Helm chart:** `deploy/helm/agentcloud/` (backend / web / relay / `agents.l8ai.cn` ingress)
 - **Environment values:** `deploy/environments/<env>/values.yaml`
@@ -15,9 +16,11 @@
 # 1. bump daily version (updates release-version.txt + oilan values imageTag)
 bash scripts/release/set_release_version.sh release-20260726
 
-# 2. push to main / release-* → CNB builds and pushes images
+# 2. push to CNB agentcloud main / release-* → CNB builds and pushes images
+git push cnb-agentcloud HEAD:main
+# or: cnb build start-build --repo l8ai/agentcloud --branch main --event api_trigger
 
-# 3. sync CNB → Harbor, then helm upgrade on oilan via doOps
+# 3. sync CNB → Harbor when Helm targets Harbor; then helm upgrade on oilan via doOps
 bash scripts/release/doops_helm_deploy.sh oilan
 ```
 

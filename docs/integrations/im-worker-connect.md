@@ -86,7 +86,7 @@ POST       /api/v1/orgs/:org/im-channels/weixin/qr/start
 | Web image | `repo.aiedulab.cn:8443/agentsmesh/web:im-locale-bindings` |
 | DB | 物理库仍名 `agentsmesh`；`schema_migrations.version = 236`，`dirty = false` |
 | 入口 | **https://agents.l8ai.cn**（canonical）；`dowork.l8ai.cn` 为别名；配对页 `/settings/im-pair` |
-| 分支 | `main`（CNB：`cnb.cool/l8ai/doworker`） |
+| 分支 | `main`（CNB CI：`cnb.cool/l8ai/agentcloud`；镜像仍推 `docker.cnb.cool/l8ai/doworker/*`） |
 
 含 IM 所需的中间 migration：`000232` rebrand → `000233` SSO → `000234` AMP tenant →
 `000235` IM → `000236` connection locale。

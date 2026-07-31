@@ -42,36 +42,22 @@ git add deploy/kubernetes/cluster-oilan/release \
   backend/internal/domain/workerruntime/runtime_catalog.lock.json \
   config/worker-types tools/loops/worker-onboarding/catalog-loop
 git commit
-git push
-# wait for GitHub CI and release checks to succeed
+git push cnb-agentcloud HEAD:main
+# wait for CNB release-image build on https://cnb.cool/l8ai/agentcloud
 DOOPS_SESSION=<release-session> \
   DOOPS_TARGET=gw-oilan-node ./deploy.sh
 ```
 
-When the build host cannot reach the node-local Harbor, dispatch the
-`Oilan Image Publish` workflow on the verified `main` commit. It builds the
-affected platform images into immutable Docker Hub staging tags and publishes
-the `oilan-staging-release` artifact. Download its JSON manifest on an operator
-machine that can reach both registries, then promote the exact manifests:
+Business images (`backend` / `relay` / `web`) are built only by CNB
+(`.cnb.yml` on `cnb.cool/l8ai/agentcloud`) into
+`docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD`. The GitHub
+`Oilan Image Publish` workflow is retired and fails closed.
 
-```bash
-gh run download <run-id> -n oilan-staging-release -D /tmp/oilan-release
-docker login docker.io
-docker login repo.aiedulab.cn:8443
-./promote-staged-images.sh /tmp/oilan-release/oilan-staging-release.json
-git status --short
-```
-
-Harbor API calls use normal TLS verification. When Harbor uses a private CA,
-set `HARBOR_CA_CERT=/path/to/harbor-ca.pem`; insecure TLS is not supported.
-Docker credentials may use `auths`, `credHelpers`, or `credsStore`.
-
-Promotion refuses a staging manifest from a different `main` commit, pulls
-and verifies every source before changing Harbor, checks each `linux/amd64`
-platform and source revision label, pushes all layers, and requires the Harbor
-digest to equal the staged digest. It then updates the immutable release lock
-and provenance metadata. Commit and push those generated files, wait for CI,
-then run `deploy.sh` from a trusted operator machine.
+When the cluster must pull from node-local Harbor instead of CNB, sync the
+CNB release tag into Harbor on an operator machine that can reach both
+registries (crane/skopeo or `scripts/release/doops_helm_deploy.sh`), update
+the immutable release lock / provenance for the synced digests, commit those
+generated files, then run `deploy.sh`.
 
 Runner runtime builds resolve their Node base only through the locked
 `runner-node-base@sha256:...` Harbor reference and fail before building if its
