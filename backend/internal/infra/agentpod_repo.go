@@ -51,6 +51,7 @@ func (r *podRepo) GetByKey(ctx context.Context, podKey string) (*agentpod.Pod, e
 	var pod agentpod.Pod
 	err := r.db.WithContext(ctx).
 		Preload("Runner").Preload("Agent").Preload("Repository").
+		Preload("CreatedBy").
 		Preload("ActiveConfigRevision").
 		Where("pod_key = ?", podKey).First(&pod).Error
 	if err != nil {
