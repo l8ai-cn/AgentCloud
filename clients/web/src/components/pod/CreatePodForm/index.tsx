@@ -57,6 +57,11 @@ export function CreatePodForm({
             filling={controller.state.fill.status === "loading"}
             onPromptChange={controller.setFillPrompt}
             onFill={(prompt) => void controller.fillWithAI(prompt)}
+            blockedReason={
+              controller.state.draft.worker_type_slug
+                ? undefined
+                : t("workers.create.nl.requiresWorkerType")
+            }
           />
           <CreatePodFormFields
             controller={controller}

@@ -347,6 +347,7 @@
         "noGenerationModels": "No compatible generation model is available. Add an enabled chat model with text generation support to use AI fill.",
         "placeholder": "e.g. Review the auth middleware for permission gaps and summarize findings.",
         "hint": "AI updates the same draft below and never creates a Worker automatically. ⌘/Ctrl + Enter to fill.",
+        "requiresWorkerType": "Pick a worker type first — AI fill only refines an existing draft and never chooses the runtime, model or credentials for you.",
         "submit": "Fill with AI"
       },
       "import": {

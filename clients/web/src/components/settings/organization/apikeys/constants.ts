@@ -9,6 +9,8 @@ export const ALL_SCOPES = [
   "repos:read",
   "workflows:read",
   "workflows:write",
+  "experts:read",
+  "experts:write",
 ];
 
 export const SCOPE_GROUPS = [
@@ -33,8 +35,12 @@ export const SCOPE_GROUPS = [
     scopes: ["repos:read"],
   },
   {
-    groupKey: "settings.apiKeys.scopeGroupWorkflows",
+    groupKey: "settings.apiKeys.scopeGroupLoops",
     scopes: ["workflows:read", "workflows:write"],
+  },
+  {
+    groupKey: "settings.apiKeys.scopeGroupExperts",
+    scopes: ["experts:read", "experts:write"],
   },
 ];
 
@@ -47,8 +53,10 @@ export const SCOPE_LABEL_KEYS: Record<string, string> = {
   "channels:write": "settings.apiKeys.createDialog.scopeChannelsWrite",
   "runners:read": "settings.apiKeys.createDialog.scopeRunnersRead",
   "repos:read": "settings.apiKeys.createDialog.scopeReposRead",
-  "workflows:read": "settings.apiKeys.createDialog.scopeWorkflowsRead",
-  "workflows:write": "settings.apiKeys.createDialog.scopeWorkflowsWrite",
+  "workflows:read": "settings.apiKeys.createDialog.scopeLoopsRead",
+  "workflows:write": "settings.apiKeys.createDialog.scopeLoopsWrite",
+  "experts:read": "settings.apiKeys.createDialog.scopeExpertsRead",
+  "experts:write": "settings.apiKeys.createDialog.scopeExpertsWrite",
 };
 
 export const SCOPE_DESCRIPTION_KEYS: Record<string, string> = {
@@ -60,6 +68,8 @@ export const SCOPE_DESCRIPTION_KEYS: Record<string, string> = {
   "channels:write": "settings.apiKeys.createDialog.scopeChannelsWriteDesc",
   "runners:read": "settings.apiKeys.createDialog.scopeRunnersReadDesc",
   "repos:read": "settings.apiKeys.createDialog.scopeReposReadDesc",
-  "workflows:read": "settings.apiKeys.createDialog.scopeWorkflowsReadDesc",
-  "workflows:write": "settings.apiKeys.createDialog.scopeWorkflowsWriteDesc",
+  "workflows:read": "settings.apiKeys.createDialog.scopeLoopsReadDesc",
+  "workflows:write": "settings.apiKeys.createDialog.scopeLoopsWriteDesc",
+  "experts:read": "settings.apiKeys.createDialog.scopeExpertsReadDesc",
+  "experts:write": "settings.apiKeys.createDialog.scopeExpertsWriteDesc",
 };

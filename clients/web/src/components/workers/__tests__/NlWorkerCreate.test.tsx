@@ -39,4 +39,24 @@ describe("NlWorkerCreate", () => {
 
     expect(onFill).toHaveBeenCalledWith("Configure the worker");
   });
+
+  it("blocks AI fill and shows the reason when a prerequisite is missing", () => {
+    const onFill = vi.fn();
+    render(
+      <NlWorkerCreate
+        prompt="Generate a sales order spreadsheet"
+        filling={false}
+        onPromptChange={vi.fn()}
+        onFill={onFill}
+        blockedReason="Pick a worker type first"
+      />,
+    );
+
+    const submit = screen.getByRole("button", { name: "workers.create.nl.submit" });
+    expect(submit).toBeDisabled();
+    expect(screen.getByText("Pick a worker type first")).toBeInTheDocument();
+
+    fireEvent.click(submit);
+    expect(onFill).not.toHaveBeenCalled();
+  });
 });

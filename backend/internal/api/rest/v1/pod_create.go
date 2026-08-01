@@ -60,7 +60,10 @@ func (h *PodHandler) CreatePod(c *gin.Context) {
 		apierr.Conflict(
 			c,
 			apierr.WORKER_RESOURCE_APPLY_REQUIRED,
-			"Fresh Worker creation must use orchestration validate-plan-apply",
+			"Fresh Worker creation must use orchestration validate-plan-apply. "+
+				"To launch a Worker over the external API, publish it as an Expert "+
+				"and POST /api/v1/ext/orgs/{slug}/experts/{expertSlug}/run, or pass "+
+				"source_pod_key to resume an existing Worker.",
 		)
 		return
 	}

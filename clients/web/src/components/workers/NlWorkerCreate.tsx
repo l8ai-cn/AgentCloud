@@ -10,6 +10,7 @@ interface NlWorkerCreateProps {
   filling: boolean;
   onPromptChange: (prompt: string) => void;
   onFill: (prompt: string) => void;
+  blockedReason?: string;
 }
 
 export function NlWorkerCreate({
@@ -17,9 +18,11 @@ export function NlWorkerCreate({
   filling,
   onPromptChange,
   onFill,
+  blockedReason,
 }: NlWorkerCreateProps) {
   const t = useTranslations();
   const trimmed = prompt.trim();
+  const blocked = Boolean(blockedReason);
 
   return (
     <section
@@ -40,15 +43,19 @@ export function NlWorkerCreate({
         onKeyDown={(e) => {
           if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
             e.preventDefault();
-            if (trimmed && !filling) onFill(trimmed);
+            if (trimmed && !filling && !blocked) onFill(trimmed);
           }
         }}
       />
       <div className="mt-3 flex items-center justify-between">
-        <p className="text-xs text-muted-foreground">
-          {t("workers.create.nl.hint")}
+        <p className={blocked ? "text-xs text-warning" : "text-xs text-muted-foreground"}>
+          {blocked ? blockedReason : t("workers.create.nl.hint")}
         </p>
-        <Button type="button" onClick={() => onFill(trimmed)} disabled={!trimmed || filling}>
+        <Button
+          type="button"
+          onClick={() => onFill(trimmed)}
+          disabled={!trimmed || filling || blocked}
+        >
           {filling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {t("workers.create.nl.submit")}
         </Button>

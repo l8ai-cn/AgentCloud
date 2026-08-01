@@ -77,11 +77,40 @@ func TestValidateReturnsSafeDeterministicIssueForInvalidSource(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, result.Issues, 1)
-	assert.Equal(t, "/", result.Issues[0].Path)
+	assert.Equal(t, "/spec", result.Issues[0].Path)
 	assert.Equal(t, "invalid-draft", result.Issues[0].Code)
+	assert.Contains(t, result.Issues[0].Message, "WorkerTemplate schema")
+	assert.Contains(t, result.Issues[0].Message, "unknown field")
 	assert.NotContains(t, result.Issues[0].Message, "sk-do-not-echo")
 	assert.Zero(t, fixture.authorizer.createCalls)
 	assert.Zero(t, fixture.references.calls)
+}
+
+func TestValidateReportsDraftStageForUnparsableAndUnsupportedSources(t *testing.T) {
+	fixture := newOrchestrationServiceFixture(t)
+	service := fixture.service(t)
+
+	unparsable, err := service.Validate(context.Background(), ValidateRequest{
+		Scope:  fixture.scope,
+		Source: ResourceSource{Format: SourceFormatYAML, Content: []byte("kind: [unclosed")},
+	})
+	require.NoError(t, err)
+	require.Len(t, unparsable.Issues, 1)
+	assert.Equal(t, "/", unparsable.Issues[0].Path)
+	assert.Contains(t, unparsable.Issues[0].Message, "could not be parsed")
+
+	unsupported, err := service.Validate(context.Background(), ValidateRequest{
+		Scope: fixture.scope,
+		Source: ResourceSource{Format: SourceFormatJSON, Content: []byte(
+			`{"apiVersion":"agentcloud.io/v1alpha1","kind":"Mystery",` +
+				`"metadata":{"name":"worker-one","namespace":"team-alpha"},"spec":{"title":"x"}}`,
+		)},
+	})
+	require.NoError(t, err)
+	require.Len(t, unsupported.Issues, 1)
+	assert.Equal(t, "/kind", unsupported.Issues[0].Path)
+	assert.Contains(t, unsupported.Issues[0].Message, "Supported kinds:")
+	assert.Contains(t, unsupported.Issues[0].Message, "WorkerTemplate")
 }
 
 func TestValidateAuthorizesTargetBeforeReferenceResolution(t *testing.T) {

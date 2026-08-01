@@ -38,7 +38,7 @@ func (service *Service) validateDraft(
 	}
 	manifest, err := decodeResourceSource(request.Source)
 	if err != nil {
-		return invalidDraftResult(), nil
+		return undecodableDraftIssue(err), nil
 	}
 	target := control.ResourceTarget{
 		TypeMeta:  manifest.TypeMeta,
@@ -46,19 +46,19 @@ func (service *Service) validateDraft(
 		Name:      manifest.Metadata.Name,
 	}
 	if err := target.Validate(request.Scope); err != nil {
-		return invalidDraftResult(), nil
+		return unaddressableDraftIssue(err), nil
 	}
 	planner := service.planners[manifest.TypeMeta]
 	if planner == nil {
-		return invalidDraftResult(), nil
+		return unsupportedDraftKindIssue(supportedDraftKinds(service.planners)), nil
 	}
 	typedSpec, err := service.registry.DecodeAndValidate(manifest)
 	if err != nil {
-		return invalidDraftResult(), nil
+		return invalidDraftSpecIssue(manifest.TypeMeta.Kind, err), nil
 	}
 	canonical, err := control.CanonicalJSONObject(manifest)
 	if err != nil {
-		return invalidDraftResult(), nil
+		return uncanonicalizableDraftIssue(), nil
 	}
 	result := ValidationResult{
 		Target: target, CanonicalManifest: json.RawMessage(canonical),
@@ -98,14 +98,4 @@ func decodeResourceSource(source ResourceSource) (orchestrationresource.Manifest
 	default:
 		return orchestrationresource.Manifest{}, control.ErrInvalid
 	}
-}
-
-func invalidDraftResult() validatedDraft {
-	return validatedDraft{result: ValidationResult{
-		Issues: []control.PlanIssue{{
-			Severity: control.PlanIssueBlocking,
-			Path:     "/", Code: "invalid-draft",
-			Message: "The resource draft is invalid.",
-		}},
-	}}
 }
