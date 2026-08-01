@@ -54,7 +54,7 @@ func (service *Service) validateDraft(
 	}
 	typedSpec, err := service.registry.DecodeAndValidate(manifest)
 	if err != nil {
-		return invalidDraftSpecIssue(manifest.TypeMeta.Kind, err), nil
+		return invalidDraftSpecIssue(manifest.Kind, err), nil
 	}
 	canonical, err := control.CanonicalJSONObject(manifest)
 	if err != nil {
