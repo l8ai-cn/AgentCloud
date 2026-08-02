@@ -1,0 +1,62 @@
+import { useEffect, useMemo, useRef } from "react";
+import { WorkerClient } from "@agent-cloud/agent-ui";
+
+import { useWorkerControlLease } from "@/hooks/useWorkerControlLease";
+import { usePod, usePodStore } from "@/stores/pod";
+import { createPodWorkerTransport } from "./podWorkerTransport";
+import { usePodWorkspaceArtifacts } from "./usePodWorkspaceArtifacts";
+
+export function usePodWorkerSession(podKey: string, controlClientLabel: string) {
+  const pod = usePod(podKey);
+  const controlLease = useWorkerControlLease(podKey, controlClientLabel);
+  const podStatus = pod?.status ?? "unknown";
+  const liveSession = podStatus === "running";
+  const canReadSession =
+    liveSession || podStatus === "completed" || podStatus === "orphaned";
+  const workspaceArtifacts = usePodWorkspaceArtifacts(podKey, canReadSession);
+
+  const latchRef = useRef({
+    controlGranted: false,
+    workspaceArtifactError: null as string | null,
+  });
+
+  const workerRef = useMemo(
+    () => ({ transport: "pod" as const, podKey }),
+    [podKey],
+  );
+
+  /* Transport getters close over a stable latch updated in the effect below. */
+  /* eslint-disable react-hooks/refs */
+  const workerClient = useMemo(() => {
+    const client = new WorkerClient();
+    client.register(
+      createPodWorkerTransport({
+        isControlGranted: () => latchRef.current.controlGranted,
+        getInitProgressMessage: (key) => {
+          const progress = usePodStore.getState().initProgress[key];
+          if (!progress) return null;
+          return progress.message || `${progress.phase} - ${progress.progress}%`;
+        },
+        getWorkspaceArtifactError: () => latchRef.current.workspaceArtifactError,
+      }),
+    );
+    return client;
+  }, [podKey]);
+  /* eslint-enable react-hooks/refs */
+
+  useEffect(() => {
+    latchRef.current = {
+      controlGranted: controlLease.status === "granted",
+      workspaceArtifactError: workspaceArtifacts.error,
+    };
+    usePodStore.setState((state) => ({ _tick: state._tick + 1 }));
+  }, [controlLease.status, workspaceArtifacts.error]);
+
+  return {
+    controlLease,
+    liveSession,
+    workerClient,
+    workerRef,
+    workspaceArtifacts: workspaceArtifacts.artifacts,
+  };
+}

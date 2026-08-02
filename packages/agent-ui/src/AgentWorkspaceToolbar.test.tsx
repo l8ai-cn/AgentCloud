@@ -99,6 +99,31 @@ describe("AgentWorkspace toolbar", () => {
     }
   });
 
+  it("mounts host domain slots in the toolbar and above the view panels", async () => {
+    const snapshot = sessionSnapshot();
+    snapshot.status = "idle";
+    const { agentRuntime } = runtime(snapshot);
+
+    render(
+      <AgentWorkspace
+        domainPanel={<div data-testid="domain-panel">goal strip</div>}
+        headerActions={<button type="button">Open workspace</button>}
+        runtime={agentRuntime}
+        sessionId={snapshot.sessionId}
+      />,
+    );
+
+    const banner = await screen.findByRole("banner");
+    expect(
+      within(banner).getByRole("button", { name: "Open workspace" }),
+    ).toBeVisible();
+    const panel = screen.getByTestId("domain-panel");
+    expect(panel).toBeVisible();
+    expect(panel.compareDocumentPosition(banner)).toBe(
+      Node.DOCUMENT_POSITION_PRECEDING,
+    );
+  });
+
   it("hides the fullscreen toggle when the Fullscreen API is unavailable", async () => {
     const snapshot = sessionSnapshot();
     snapshot.status = "idle";

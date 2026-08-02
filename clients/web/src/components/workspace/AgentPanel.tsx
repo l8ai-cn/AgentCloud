@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
-  WorkerClient,
   WorkerConversation,
   WorkerProvider,
   createBuiltinContentRenderers,
@@ -11,14 +10,11 @@ import {
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useWorkspaceStore, type SplitDirection } from "@/stores/workspace";
-import { usePod, usePodStore } from "@/stores/pod";
 import { useAcpRelay } from "@/hooks/useAcpRelay";
 import { AgentPanelHeader } from "./AgentPanelHeader";
 import { PodSelectorModal } from "./PodSelectorModal";
 import { WorkerControlOverlay } from "@/components/mobile-worker/WorkerControlOverlay";
-import { useWorkerControlLease } from "@/hooks/useWorkerControlLease";
-import { createPodWorkerTransport } from "./agent-ui/podWorkerTransport";
-import { usePodWorkspaceArtifacts } from "./agent-ui/usePodWorkspaceArtifacts";
+import { usePodWorkerSession } from "./agent-ui/usePodWorkerSession";
 
 const AGENT_CONTENT_RENDERERS = createBuiltinContentRenderers();
 const AGENT_TOOL_RENDERERS = createBuiltinToolRenderers();
@@ -54,53 +50,10 @@ export function AgentPanel({
   const setActivePane = useWorkspaceStore((s) => s.setActivePane);
   const splitPane = useWorkspaceStore((s) => s.splitPane);
   const panes = useWorkspaceStore((s) => s.panes);
-  const pod = usePod(podKey);
-  const controlLease = useWorkerControlLease(podKey, controlClientLabel);
+  const session = usePodWorkerSession(podKey, controlClientLabel);
 
   const openPodKeys = useMemo(() => panes.map((p) => p.podKey), [panes]);
-  const podStatus = pod?.status ?? "unknown";
-  const liveSession = podStatus === "running";
-  const canReadSession =
-    liveSession || podStatus === "completed" || podStatus === "orphaned";
-  const workspaceArtifacts = usePodWorkspaceArtifacts(podKey, canReadSession);
-  useAcpRelay(podKey, paneId, liveSession);
-
-  const latchRef = useRef({
-    controlGranted: false,
-    workspaceArtifactError: null as string | null,
-  });
-
-  const workerRef = useMemo(
-    () => ({ transport: "pod" as const, podKey }),
-    [podKey],
-  );
-
-  /* Transport getters close over a stable latch updated in the effect below. */
-  /* eslint-disable react-hooks/refs */
-  const workerClient = useMemo(() => {
-    const client = new WorkerClient();
-    client.register(
-      createPodWorkerTransport({
-        isControlGranted: () => latchRef.current.controlGranted,
-        getInitProgressMessage: (key) => {
-          const progress = usePodStore.getState().initProgress[key];
-          if (!progress) return null;
-          return progress.message || `${progress.phase} - ${progress.progress}%`;
-        },
-        getWorkspaceArtifactError: () => latchRef.current.workspaceArtifactError,
-      }),
-    );
-    return client;
-  }, [podKey]);
-  /* eslint-enable react-hooks/refs */
-
-  useEffect(() => {
-    latchRef.current = {
-      controlGranted: controlLease.status === "granted",
-      workspaceArtifactError: workspaceArtifacts.error,
-    };
-    usePodStore.setState((state) => ({ _tick: state._tick + 1 }));
-  }, [controlLease.status, workspaceArtifacts.error]);
+  useAcpRelay(podKey, paneId, session.liveSession);
 
   const handleFocus = useCallback(() => {
     setActivePane(paneId);
@@ -117,7 +70,7 @@ export function AgentPanel({
         "relative flex flex-col h-full bg-background rounded-lg overflow-hidden border",
         isActive ? "border-primary" : "border-border",
         isMaximized && "fixed inset-4 z-50",
-        !showHeader && controlLease.status !== "granted" && "max-sm:pb-20",
+        !showHeader && session.controlLease.status !== "granted" && "max-sm:pb-20",
         className
       )}
       onClick={handleFocus}
@@ -134,7 +87,7 @@ export function AgentPanel({
         />
       )}
 
-      <WorkerProvider client={workerClient}>
+      <WorkerProvider client={session.workerClient}>
         <WorkerConversation
           className="flex-1"
           clientLabel={controlClientLabel}
@@ -142,15 +95,15 @@ export function AgentPanel({
           locale={locale === "zh" ? "zh-CN" : "en-US"}
           presentation="developer"
           toolRenderers={AGENT_TOOL_RENDERERS}
-          workerRef={workerRef}
-          workspaceArtifacts={workspaceArtifacts.artifacts}
+          workerRef={session.workerRef}
+          workspaceArtifacts={session.workspaceArtifacts}
         />
       </WorkerProvider>
 
-      {liveSession && (
+      {session.liveSession && (
         <WorkerControlOverlay
           blocking={false}
-          lease={controlLease}
+          lease={session.controlLease}
           preserveHeader={showHeader}
         />
       )}

@@ -17,6 +17,9 @@ export interface WorkerConversationProps {
   className?: string;
   clientLabel?: string;
   contentRenderers?: AgentWorkspaceProps["contentRenderers"];
+  domainPanel?: AgentWorkspaceProps["domainPanel"];
+  headerActions?: AgentWorkspaceProps["headerActions"];
+  showFullscreen?: AgentWorkspaceProps["showFullscreen"];
   toolRenderers?: AgentWorkspaceProps["toolRenderers"];
   workspaceArtifacts?: readonly AgentArtifactItem[];
   terminalRuntime?: AgentWorkspaceProps["terminalRuntime"];
@@ -29,6 +32,9 @@ export function WorkerConversation({
   className = "",
   clientLabel,
   contentRenderers,
+  domainPanel,
+  headerActions,
+  showFullscreen,
   toolRenderers,
   workspaceArtifacts,
   terminalRuntime,
@@ -82,11 +88,14 @@ export function WorkerConversation({
       className={className}
       clientLabel={clientLabel}
       contentRenderers={contentRenderers}
+      domainPanel={domainPanel}
+      headerActions={headerActions}
       locale={locale}
       presentation={presentation}
       readOnly={liveness.state === "online" && liveness.readOnly !== null}
       runtime={runtime}
       sessionId={sessionId}
+      showFullscreen={showFullscreen}
       terminalRuntime={terminalRuntime}
       toolRenderers={toolRenderers}
       workspaceArtifacts={workspaceArtifacts}

@@ -1,7 +1,8 @@
-import { useId, useMemo, useState } from "react";
+import { useId, useMemo, useState, type ReactNode } from "react";
 
 import { AgentWorkspaceConversationPanel } from "./AgentWorkspaceConversationPanel";
 import { AgentWorkspaceLocaleProvider } from "./AgentWorkspaceLocaleContext";
+import { agentWorkspaceViews } from "./agentWorkspaceViews";
 import { TerminalSurface } from "./TerminalSurface";
 import type { AgentArtifactItem, AgentSessionRuntime, TerminalRuntime } from "./contracts";
 import type { AgentToolRendererRegistration } from "./react/rendererTypes";
@@ -15,12 +16,7 @@ import { WorkspaceFullscreenButton } from "./WorkspaceFullscreenButton";
 import { WorkspaceHeader } from "./WorkspaceHeader";
 import { ReadOnlyAgentSessionRuntime } from "./runtime/ReadOnlyAgentSessionRuntime";
 import { agentWorkspaceText, type AgentWorkspaceLocale } from "./agentWorkspaceText";
-import {
-  type AgentWorkspacePresentation,
-  userConversationItems,
-  userVisibleArtifacts,
-} from "./userWorkspacePresentation";
-import { userVideoExecutionSteps } from "./userVideoExecutionTrace";
+import type { AgentWorkspacePresentation } from "./userWorkspacePresentation";
 import type { WorkspaceFileSource } from "./conversation/mentions/workspaceFileSource";
 import { WorkspaceViewTabs, type WorkspaceView } from "./WorkspaceViewTabs";
 
@@ -31,6 +27,10 @@ export interface AgentWorkspaceProps {
   clientLabel?: string;
   className?: string;
   contentRenderers?: ContentRendererRegistry<AgentContentRendererRegistration>;
+  /** Host-owned controls placed in the toolbar, left of the fullscreen toggle. */
+  headerActions?: ReactNode;
+  /** Host-owned strip rendered under the toolbar, above every view panel. */
+  domainPanel?: ReactNode;
   locale?: AgentWorkspaceLocale;
   presentation?: AgentWorkspacePresentation;
   readOnly?: boolean;
@@ -48,6 +48,8 @@ export function AgentWorkspace({
   clientLabel = "agent-workspace",
   className = "",
   contentRenderers,
+  headerActions,
+  domainPanel,
   locale = "en-US",
   presentation = "developer",
   readOnly = false,
@@ -73,22 +75,7 @@ export function AgentWorkspace({
   const { containerRef, mode } = useWorkbenchContainerMode();
   const fullscreen = useElementFullscreen(containerRef);
   const terminal = snapshot.terminals[0];
-  const allArtifacts = snapshot.items.filter((item) => item.kind === "artifact");
-  const allConversationItems = snapshot.items.filter(
-    (item) => item.kind !== "artifact",
-  );
-  const artifacts =
-    presentation === "user"
-      ? userVisibleArtifacts(allArtifacts)
-      : allArtifacts;
-  const conversationItems =
-    presentation === "user"
-      ? userConversationItems(allConversationItems)
-      : allConversationItems;
-  const videoExecutionSteps =
-    presentation === "user"
-      ? userVideoExecutionSteps(snapshot, allArtifacts)
-      : [];
+  const views = agentWorkspaceViews(snapshot, presentation);
   const terminalEnabled =
     presentation === "developer" &&
     snapshot.capabilities.terminal &&
@@ -106,13 +93,16 @@ export function AgentWorkspace({
       >
         <WorkspaceHeader
           actions={
-            showFullscreen ? (
-              <WorkspaceFullscreenButton
-                active={fullscreen.active}
-                onToggle={fullscreen.toggle}
-                supported={fullscreen.supported}
-              />
-            ) : null
+            <>
+              {headerActions}
+              {showFullscreen && (
+                <WorkspaceFullscreenButton
+                  active={fullscreen.active}
+                  onToggle={fullscreen.toggle}
+                  supported={fullscreen.supported}
+                />
+              )}
+            </>
           }
           presentation={presentation}
           snapshot={snapshot}
@@ -136,6 +126,7 @@ export function AgentWorkspace({
               : snapshot.error || surfaceError}
           </div>
         )}
+        {domainPanel}
         {view === "terminal" && terminalEnabled ? (
           <section
             aria-labelledby={terminalTabId}
@@ -157,10 +148,10 @@ export function AgentWorkspace({
             role="tabpanel"
           >
             <AgentWorkspaceConversationPanel
-              allArtifacts={allArtifacts}
-              artifacts={artifacts}
+              allArtifacts={views.allArtifacts}
+              artifacts={views.artifacts}
               contentRenderers={contentRenderers}
-              conversationItems={conversationItems}
+              conversationItems={views.conversationItems}
               mentionHarness={mentionHarness}
               mode={mode}
               onError={setSurfaceError}
@@ -170,7 +161,7 @@ export function AgentWorkspace({
               sessionId={sessionId}
               snapshot={snapshot}
               toolRenderers={toolRenderers}
-              videoExecutionSteps={videoExecutionSteps}
+              videoExecutionSteps={views.videoExecutionSteps}
               workspaceArtifacts={workspaceArtifacts}
               workspaceFiles={workspaceFiles}
             />

@@ -1,34 +1,51 @@
 "use client";
 
+import {
+  WorkerConversation,
+  WorkerProvider,
+  createBuiltinContentRenderers,
+  createBuiltinToolRenderers,
+} from "@agent-cloud/agent-ui";
+import { useLocale } from "next-intl";
 import { useParams } from "next/navigation";
-import { useAcpRelay } from "@/hooks/useAcpRelay";
-import { AcpActivityStream } from "@/components/workspace/acp/AcpActivityStream";
-import { AcpPromptInput } from "@/components/workspace/acp/AcpPromptInput";
-import { AcpPermissionDialog } from "@/components/workspace/acp/AcpPermissionDialog";
-import { useAcpSessionField } from "@/stores/acpSession";
-import { DoAgentTopBar } from "@/components/doagent/DoAgentTopBar";
+
+import { usePodWorkerSession } from "@/components/workspace/agent-ui/usePodWorkerSession";
 import { DoAgentGoalBar, useDoAgentGoalSync } from "@/components/doagent/DoAgentGoalBar";
+import { DoAgentWorkspaceLink } from "@/components/doagent/DoAgentWorkspaceLink";
+import { useAcpRelay } from "@/hooks/useAcpRelay";
+
+const CONTENT_RENDERERS = createBuiltinContentRenderers();
+const TOOL_RENDERERS = createBuiltinToolRenderers();
 
 export default function DoAgentConsolePage() {
   const params = useParams();
+  const locale = useLocale();
   const podKey = typeof params.podKey === "string" ? params.podKey : "";
-  const active = !!podKey;
+  const session = usePodWorkerSession(podKey, `doagent-${podKey}`);
 
-  useAcpRelay(podKey, `doagent-${podKey}`, active);
-  useDoAgentGoalSync(podKey, active);
-  const pendingPermissions = useAcpSessionField(podKey, (s) => s.pendingPermissions);
+  // Goal control stays on the relay control channel; the conversation itself is
+  // projected from the workbench session, so both must be subscribed.
+  useAcpRelay(podKey, `doagent-${podKey}`, !!podKey);
+  useDoAgentGoalSync(podKey, !!podKey);
+
+  if (!podKey) return null;
 
   return (
     <div className="flex h-full w-full min-w-0 flex-col overflow-hidden">
-      <DoAgentTopBar podKey={podKey} />
-      <div className="min-h-0 flex-1 overflow-hidden">
-        <AcpActivityStream podKey={podKey} />
-      </div>
-      <DoAgentGoalBar podKey={podKey} />
-      <AcpPromptInput podKey={podKey} />
-      {pendingPermissions.length > 0 && (
-        <AcpPermissionDialog podKey={podKey} permissions={pendingPermissions} />
-      )}
+      <WorkerProvider client={session.workerClient}>
+        <WorkerConversation
+          className="flex-1"
+          clientLabel={`doagent-${podKey}`}
+          contentRenderers={CONTENT_RENDERERS}
+          domainPanel={<DoAgentGoalBar podKey={podKey} />}
+          headerActions={<DoAgentWorkspaceLink podKey={podKey} />}
+          locale={locale === "zh" ? "zh-CN" : "en-US"}
+          presentation="developer"
+          toolRenderers={TOOL_RENDERERS}
+          workerRef={session.workerRef}
+          workspaceArtifacts={session.workspaceArtifacts}
+        />
+      </WorkerProvider>
     </div>
   );
 }
