@@ -88,6 +88,8 @@ func (s *Service) SelectAvailableRunnerForAgent(ctx context.Context, orgID int64
 		return cachedRunners[0].Runner, nil
 	}
 
-	slog.WarnContext(ctx, "no connected runner available for agent", "org_id", orgID, "agent_slug", agentSlug)
-	return nil, ErrNoRunnerForAgent
+	err = s.selectionFailureForAgent(ctx, orgID, userID, agentSlug)
+	slog.WarnContext(ctx, "no connected runner available for agent",
+		"org_id", orgID, "agent_slug", agentSlug, "error", err)
+	return nil, err
 }
