@@ -25,15 +25,21 @@ export function useCompatibleModelResources(
   requirement: WorkerModelResourceRequirement,
 ): CompatibleModelResourcesState {
   const adaptersKey = requirement.protocolAdapters.slice().sort().join(",");
+  const requestKey = `${orgSlug}:${requirement.required}:${adaptersKey}`;
   const [state, setState] = useState<CompatibleModelResourcesState>({
     loading: true,
     error: null,
     options: [],
   });
+  const [loadedKey, setLoadedKey] = useState(requestKey);
+
+  if (loadedKey !== requestKey) {
+    setLoadedKey(requestKey);
+    setState({ loading: true, error: null, options: [] });
+  }
 
   useEffect(() => {
     let active = true;
-    setState({ loading: true, error: null, options: [] });
     void loadCompatibleModelResources({
       orgSlug,
       requirement: {
@@ -69,7 +75,7 @@ export function useCompatibleModelResources(
     return () => {
       active = false;
     };
-  }, [adaptersKey, orgSlug, requirement.required]);
+  }, [adaptersKey, orgSlug, requirement.required, requestKey]);
 
   return state;
 }
