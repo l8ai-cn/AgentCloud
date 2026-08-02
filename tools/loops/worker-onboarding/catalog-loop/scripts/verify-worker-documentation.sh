@@ -28,18 +28,32 @@ rg -q '`verified_local_dev` is local-development evidence' \
   docs/agent-runtime-build-audit.md
 rg -q 'not be described as built-in runnable agents' \
   docs/integrations/openclaw-hermes.md
-rg -q 'but it is not' docs/integrations/do-agent.md
-rg -q 'currently selectable because no immutable runtime image digest has been' \
-  docs/integrations/do-agent.md
+rg -q 'runtime image digest is published' docs/integrations/do-agent.md
+rg -q 'formal product-path evidence is incomplete' docs/integrations/do-agent.md
 
-expected="$(jq -r '.worker_types[].slug' config/worker-types/catalog.json | sort)"
+expected="$(
+  for def in config/worker-types/*/definition.json; do
+    jq -e '.internal == true' "$def" >/dev/null 2>&1 && continue
+    basename "$(dirname "$def")"
+  done | sort
+)"
 actual="$(jq -r '.workers[].slug' clients/web/src/generated/worker-runtime-catalog.json | sort)"
 [[ "$actual" == "$expected" ]] || {
   echo "generated Worker documentation catalog does not match formal Definitions" >&2
   exit 1
 }
 
-expected_worker_slugs="$(jq -c '[.worker_types[].slug] | sort' config/worker-types/catalog.json)"
+node scripts/generate-worker-type-specs.mjs --check
+actual_specs="$(
+  find docs/workers/specs -maxdepth 1 -name '*.md' ! -name README.md -print \
+    | xargs -n1 basename | sed 's/\.md$//' | sort
+)"
+[[ "$actual_specs" == "$expected" ]] || {
+  echo "worker type specs do not cover every public Definition" >&2
+  exit 1
+}
+
+expected_worker_slugs="$(printf '%s\n' "$expected" | jq -R -s -c 'split("\n")|map(select(length>0))')"
 jq -e --argjson expected_worker_slugs "$expected_worker_slugs" '
   ([.workers[].slug] | sort) == $expected_worker_slugs and
   all(.workers[];

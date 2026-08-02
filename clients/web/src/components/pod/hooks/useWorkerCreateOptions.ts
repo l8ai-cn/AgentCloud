@@ -117,10 +117,13 @@ function mergeOptions(
   base: WorkerCreateOptions,
   filtered: WorkerCreateOptions,
 ): WorkerCreateOptions {
+  // Keep the unfiltered image list so the runtime step can switch Worker
+  // types by picking a different image. Filtering by worker_type_slug would
+  // collapse the dropdown to the currently selected type.
   return {
     revision: filtered.revision,
     worker_types: base.worker_types,
-    runtime_images: filtered.runtime_images,
+    runtime_images: base.runtime_images,
     compute_targets: base.compute_targets,
     deployment_modes: filtered.deployment_modes,
     resource_profiles: base.resource_profiles,

@@ -26,7 +26,6 @@ import (
 	sessionusagesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/sessionusage"
 	tokenquotasvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenquota"
 	userservice "github.com/l8ai-cn/agentcloud/backend/internal/service/user"
-	virtualkeysvc "github.com/l8ai-cn/agentcloud/backend/internal/service/virtualkey"
 	workercreation "github.com/l8ai-cn/agentcloud/backend/internal/service/workercreation"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/embedtoken"
@@ -127,7 +126,6 @@ type Deps struct {
 	Grants             *grantservice.Service
 	AIResources        ModelResourceLister
 	EnvBundles         *envbundlesvc.Service
-	VirtualKeys        *virtualkeysvc.Service
 	TokenQuotas        *tokenquotasvc.Service
 	EmbedTokens        *embedtoken.Service
 	PreviewSessions    previewSessionRevoker

@@ -152,6 +152,7 @@ type PodOrchestrator struct {
 	workerSpecs        WorkerSpecSnapshotLoader
 	workerDependencies WorkerSpecDependencyArtifactLoader
 	sessionProvisioner AgentSessionProvisioner
+	runnerEnsurer      RunnerEnsurerForOrchestrator
 }
 
 type agentfileResolved struct {

@@ -26,8 +26,10 @@ func (s *Service) SelectRunnerWithAffinity(
 		return s.selectWithScoring(cachedRunners, userID, hints, repoHistory)
 	}
 
-	slog.Warn("no connected runner available for agent", "org_id", orgID, "agent_slug", agentSlug)
-	return nil, ErrNoRunnerForAgent
+	err = s.selectionFailureForAgent(ctx, orgID, userID, agentSlug)
+	slog.Warn("no connected runner available for agent",
+		"org_id", orgID, "agent_slug", agentSlug, "error", err)
+	return nil, err
 }
 
 func (s *Service) selectWithScoring(

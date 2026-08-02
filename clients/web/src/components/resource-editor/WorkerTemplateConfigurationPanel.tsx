@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useWorkerCreateOptions } from "@/components/pod/hooks/useWorkerCreateOptions";
 import { AlertMessage } from "@/components/ui/alert-message";
@@ -41,6 +41,7 @@ export function WorkerTemplateConfigurationPanel(
   }: WorkerTemplateConfigurationPanelProps,
 ) {
   const t = useTranslations("resourceEditor");
+  const [catalogRefreshKey, setCatalogRefreshKey] = useState(0);
   const workerOptions = useWorkerCreateOptions(true, orgSlug, {
     workerTypeSlug: "",
     computeTargetId: 0,
@@ -86,6 +87,7 @@ export function WorkerTemplateConfigurationPanel(
     orgSlug,
     props.draft.spec.workerType,
     credentialBundleTargetNames(credentialRequirements),
+    catalogRefreshKey,
   );
   const unresolvedReference = findUnresolvedWorkerTemplateReference(
     props.draft,
@@ -123,7 +125,10 @@ export function WorkerTemplateConfigurationPanel(
       )}
       <WorkerTemplateIdentityPanel
         {...panelProps}
+        orgSlug={orgSlug}
         modelRequired={modelRequired}
+        protocolAdapters={selectedWorkerType?.model_protocol_adapters ?? []}
+        onCatalogInvalidate={() => setCatalogRefreshKey((value) => value + 1)}
       />
       <WorkerTemplateBindingsPanel {...panelProps} />
       <WorkerTemplateRuntimePanel

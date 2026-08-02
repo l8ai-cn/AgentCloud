@@ -40,7 +40,6 @@ import (
 	tokenquotasvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenquota"
 	tokenusagesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenusage"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/user"
-	virtualkeysvc "github.com/l8ai-cn/agentcloud/backend/internal/service/virtualkey"
 	workercreation "github.com/l8ai-cn/agentcloud/backend/internal/service/workercreation"
 	workerspecsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
 	workflow "github.com/l8ai-cn/agentcloud/backend/internal/service/workflow"
@@ -75,9 +74,8 @@ type Services struct {
 	MRSync               *ticket.MRSyncService       // MR sync for webhook events
 	AgentPodSettings     *agentpod.SettingsService   // AgentPod user settings
 	AgentPodAIProvider   *agentpod.AIProviderService // AgentPod AI provider management
-	AIResource           *airesourcesvc.Service      // Unified AI resource center
-	VirtualKey           *virtualkeysvc.Service      // Virtual API keys (quota/billing handles)
-	TokenQuota           *tokenquotasvc.Service      // Token quotas + usage report
+	AIResource           *airesourcesvc.Service // Unified AI resource center
+	TokenQuota           *tokenquotasvc.Service // Token quotas + usage report
 	EnvBundle            *envbundlesvc.Service       // Env bundles for harness credential injection
 	Billing              *billing.Service
 	Message              *MessageService                  // Agent-to-agent messaging

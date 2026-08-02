@@ -28,17 +28,6 @@ func accModel(m map[string]*ScopeUsage, model string, tok int64, cost float64) {
 	u.CostUSD += cost
 }
 
-func accKey(m map[int64]*ScopeUsage, keyID, tok int64, cost float64) {
-	u := m[keyID]
-	if u == nil {
-		id := keyID
-		u = &ScopeUsage{VirtualKey: &id}
-		m[keyID] = u
-	}
-	u.Tokens += tok
-	u.CostUSD += cost
-}
-
 func flatten(m map[int64]*ScopeUsage) []ScopeUsage {
 	out := make([]ScopeUsage, 0, len(m))
 	for _, v := range m {

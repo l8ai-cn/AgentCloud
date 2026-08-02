@@ -78,15 +78,37 @@ export function ResourceEditorShell({
       aria-busy={isApplying}
     >
       <header className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-4">
-        <div>
-          <h2 className="text-lg font-semibold">
-            {resourceHeading(t, kind).title}
-          </h2>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-lg font-semibold">
+              {resourceHeading(t, kind).title}
+            </h2>
+            <Badge variant={status.variant}>{t(status.key)}</Badge>
+          </div>
           <p className="mt-1 max-w-3xl text-sm text-muted-foreground">
             {resourceHeading(t, kind).subtitle}
           </p>
         </div>
-        <Badge variant={status.variant}>{t(status.key)}</Badge>
+        <ResourceEditorActions
+          state={state}
+          kind={kind}
+          canSubmit={controller.canSubmit}
+          canPlan={canPlan}
+          canApply={controller.canApply}
+          busy={isApplying}
+          onValidate={() => void controller.runValidation()}
+          onPlan={() => {
+            if (canPlan) void controller.runPlan();
+          }}
+          onApply={() => {
+            void controller.apply().then((result) => {
+              if (result) onApplied?.(result);
+              if (kind === "Worker" && result && "podKey" in result) {
+                onWorkerCreated?.(result.podKey);
+              }
+            });
+          }}
+        />
       </header>
 
       <fieldset
@@ -136,25 +158,6 @@ export function ResourceEditorShell({
         </Tabs>
 
         <ResourceEditorFeedback state={state} />
-        <ResourceEditorActions
-          state={state}
-          kind={kind}
-          canSubmit={controller.canSubmit}
-          canPlan={canPlan}
-          canApply={controller.canApply}
-          onValidate={() => void controller.runValidation()}
-          onPlan={() => {
-            if (canPlan) void controller.runPlan();
-          }}
-          onApply={() => {
-            void controller.apply().then((result) => {
-              if (result) onApplied?.(result);
-              if (kind === "Worker" && result && "podKey" in result) {
-                onWorkerCreated?.(result.podKey);
-              }
-            });
-          }}
-        />
       </fieldset>
     </section>
   );

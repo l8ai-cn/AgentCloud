@@ -9,11 +9,12 @@ import {
   listTokenQuotas,
   upsertTokenQuota,
 } from "@/lib/api/quotaApi";
+import type { TranslationFn } from "./GeneralSettings";
 
 const inputCls =
   "w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm";
 
-export function TokenQuotaPanel() {
+export function TokenQuotaPanel({ t }: { t: TranslationFn }) {
   const [quotas, setQuotas] = useState<TokenQuota[]>([]);
   const [userId, setUserId] = useState("");
   const [model, setModel] = useState("");
@@ -23,12 +24,11 @@ export function TokenQuotaPanel() {
     try {
       setQuotas(await listTokenQuotas());
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to load quotas");
+      toast.error(e instanceof Error ? e.message : t("settings.usagePage.ceilings.loadFailed"));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
-    // Defer so the set-state-in-effect analyzer treats this as opaque.
     Promise.resolve().then(() => {
       void refresh();
     });
@@ -36,7 +36,7 @@ export function TokenQuotaPanel() {
 
   const onSave = async () => {
     if (!limit) {
-      toast.error("Limit is required");
+      toast.error(t("settings.usagePage.ceilings.limitRequired"));
       return;
     }
     try {
@@ -50,54 +50,61 @@ export function TokenQuotaPanel() {
       setLimit("");
       await refresh();
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Failed to save quota");
+      toast.error(e instanceof Error ? e.message : t("settings.usagePage.ceilings.saveFailed"));
     }
   };
 
   return (
     <div className="surface-card space-y-4 p-6">
       <div>
-        <h2 className="text-lg font-semibold">Token Quotas</h2>
+        <h2 className="text-lg font-semibold">{t("settings.usagePage.ceilings.title")}</h2>
         <p className="text-sm text-muted-foreground">
-          Set token ceilings by organization (leave user blank), per user, and/or per model. Report-only — over-limit is flagged, not blocked.
+          {t("settings.usagePage.ceilings.description")}
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
         <input
           className={inputCls}
-          placeholder="User ID (blank = org-wide)"
+          placeholder={t("settings.usagePage.ceilings.userPlaceholder")}
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
         />
         <input
           className={inputCls}
-          placeholder="Model (blank = all)"
+          placeholder={t("settings.usagePage.ceilings.modelPlaceholder")}
           value={model}
           onChange={(e) => setModel(e.target.value)}
         />
         <input
           className={inputCls}
           type="number"
-          placeholder="Limit tokens"
+          placeholder={t("settings.usagePage.ceilings.limitPlaceholder")}
           value={limit}
           onChange={(e) => setLimit(e.target.value)}
         />
-        <Button onClick={onSave}>Save quota</Button>
+        <Button onClick={onSave}>{t("settings.usagePage.ceilings.save")}</Button>
       </div>
 
       <div className="divide-y divide-border">
         {quotas.length === 0 && (
-          <p className="py-3 text-sm text-muted-foreground">No quotas configured.</p>
+          <p className="py-3 text-sm text-muted-foreground">
+            {t("settings.usagePage.ceilings.empty")}
+          </p>
         )}
         {quotas.map((q) => (
           <div key={q.id} className="flex items-center justify-between py-2 text-sm">
             <div>
               <span className="font-medium">
-                {q.user_id ? `User ${q.user_id}` : "Organization"}
+                {q.user_id
+                  ? t("settings.usagePage.ceilings.userLabel").replace("{id}", String(q.user_id))
+                  : t("settings.usagePage.ceilings.orgLabel")}
               </span>
               <span className="ml-2 text-muted-foreground">
-                {q.model ? `· ${q.model}` : "· all models"} · {q.limit_tokens.toLocaleString()} tokens
+                {q.model
+                  ? t("settings.usagePage.ceilings.modelScoped").replace("{model}", q.model)
+                  : t("settings.usagePage.ceilings.allModels")}{" "}
+                · {q.limit_tokens.toLocaleString()} {t("settings.usagePage.ceilings.tokensUnit")}
               </span>
             </div>
             <Button
@@ -108,11 +115,13 @@ export function TokenQuotaPanel() {
                   await deleteTokenQuota(q.id);
                   await refresh();
                 } catch (e) {
-                  toast.error(e instanceof Error ? e.message : "Failed to delete quota");
+                  toast.error(
+                    e instanceof Error ? e.message : t("settings.usagePage.ceilings.deleteFailed"),
+                  );
                 }
               }}
             >
-              Delete
+              {t("settings.usagePage.ceilings.delete")}
             </Button>
           </div>
         ))}

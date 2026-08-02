@@ -12,7 +12,7 @@ func (s *Service) HasAvailableRunnerForAgent(
 	agentSlug string,
 ) (bool, error) {
 	_, err := s.SelectAvailableRunnerForAgent(ctx, orgID, userID, agentSlug)
-	if errors.Is(err, ErrNoRunnerForAgent) {
+	if errors.Is(err, ErrNoRunnerForAgent) || errors.Is(err, ErrRunnerCapacityUnavailable) {
 		return false, nil
 	}
 	return err == nil, err

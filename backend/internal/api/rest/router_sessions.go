@@ -62,7 +62,6 @@ func registerSessionRoutes(
 		Grants:             svc.Grant,
 		AIResources:        svc.AIResource,
 		EnvBundles:         svc.EnvBundle,
-		VirtualKeys:        svc.VirtualKey,
 		TokenQuotas:        tokenquotasvc.NewService(infra.NewTokenQuotaRepository(db), db),
 		EmbedTokens:        embedtoken.NewService(cfg.JWT.Secret, redisClient),
 		Version:            "agent-cloud-dev",

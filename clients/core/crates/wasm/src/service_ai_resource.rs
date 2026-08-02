@@ -86,6 +86,20 @@ impl WasmAIResourceService {
     pub async fn delete_connection_connect(&self, request: &[u8]) -> Result<Vec<u8>, String> {
         self.0.delete_connection_connect(request).await
     }
+    #[wasm_bindgen(js_name = discoverConnectionModelsConnect)]
+    pub async fn discover_connection_models_connect(
+        &self,
+        request: &[u8],
+    ) -> Result<Vec<u8>, String> {
+        self.0.discover_connection_models_connect(request).await
+    }
+    #[wasm_bindgen(js_name = importConnectionModelsConnect)]
+    pub async fn import_connection_models_connect(
+        &self,
+        request: &[u8],
+    ) -> Result<Vec<u8>, String> {
+        self.0.import_connection_models_connect(request).await
+    }
     #[wasm_bindgen(js_name = createResourceConnect)]
     pub async fn create_resource_connect(&self, request: &[u8]) -> Result<Vec<u8>, String> {
         self.0.create_resource_connect(request).await

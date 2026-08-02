@@ -10,7 +10,7 @@ test.describe("Worker resource editor", () => {
     await expect(editor).toBeVisible();
     await expect(editor.getByLabel(/Resource name|资源名称/i)).toBeVisible();
     await expect(editor.getByRole("combobox", {
-      name: /Model binding|模型绑定/i,
+      name: /Model(?: binding)?|模型(?:绑定)?/i,
     })).toBeVisible();
 
     const applyButton = editor.getByRole("button", {

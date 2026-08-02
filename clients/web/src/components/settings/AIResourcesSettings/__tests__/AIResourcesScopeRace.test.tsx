@@ -19,6 +19,7 @@ const api = vi.hoisted(() => ({
   updateConnection: vi.fn(),
   updateResource: vi.fn(),
   validateConnection: vi.fn(),
+  importConnectionModels: vi.fn(),
 }));
 
 vi.mock("@/lib/api", () => api);

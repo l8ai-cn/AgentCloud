@@ -11,9 +11,11 @@ interface ProviderConnectionCardProps {
   modality: string;
   activeModality: string;
   canManage: boolean;
+  supportsModelDiscovery: boolean;
   onAddResource: (connection: ProviderConnection) => void;
   onEdit: (connection: ProviderConnection) => void;
   onRotateCredentials: (connection: ProviderConnection) => void;
+  onSyncModels: (connectionId: number) => Promise<boolean>;
   onEnabledChange: (connectionId: number, enabled: boolean) => Promise<boolean>;
   onValidate: (connectionId: number) => Promise<boolean>;
   onDelete: (connection: ProviderConnection) => void;
@@ -28,9 +30,11 @@ export function ProviderConnectionCard({
   modality,
   activeModality,
   canManage,
+  supportsModelDiscovery,
   onAddResource,
   onEdit,
   onRotateCredentials,
+  onSyncModels,
   onEnabledChange,
   onValidate,
   onDelete,
@@ -40,7 +44,8 @@ export function ProviderConnectionCard({
   onResourceDelete,
 }: ProviderConnectionCardProps) {
   const t = useTranslations();
-  const manageable = canManage && connection.canManage;
+  // Prefer per-connection backend flag; org-role canManage is only a fallback.
+  const manageable = connection.canManage || canManage;
   const resources = filterResources(connection.resources, modality);
   const validationMessage = connection.validationError
     ? aiResourceValidationMessage(connection.validationError, t)
@@ -62,6 +67,16 @@ export function ProviderConnectionCard({
         </div>
         {manageable && (
           <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
+            {supportsModelDiscovery && (
+              <Button
+                variant="outline"
+                size="sm"
+                aria-label={`${t("settings.aiResources.connection.syncModels")}: ${connection.name}`}
+                onClick={() => void onSyncModels(connection.id)}
+              >
+                {t("settings.aiResources.connection.syncModels")}
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={() => void onValidate(connection.id)}>
               {t("settings.aiResources.validate")}
             </Button>

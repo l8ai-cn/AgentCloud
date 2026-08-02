@@ -50,7 +50,10 @@ spec:
                   name: {{ .Values.relay.configMapName }}
                   key: PREVIEW_PUBLIC_ORIGIN
             - name: PREVIEW_COOKIE_MODE
-              value: same-site
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.relay.configMapName }}
+                  key: PREVIEW_COOKIE_MODE
             - name: USE_HTTPS
               value: {{ .Values.web.useHttps | quote }}
             - name: ALLOWED_ORIGINS

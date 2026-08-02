@@ -7,6 +7,7 @@ import {
   createResource,
   deleteConnection,
   deleteResource,
+  importConnectionModels,
   getCatalog,
   listOrganizationConnections,
   listOrganizationEffectiveResources,
@@ -32,6 +33,8 @@ export function useAIResources(scope: AIResourceScope, organizationSlug?: string
   const [error, setError] = useState<string | null>(null);
   const [operationFailed, setOperationFailed] = useState(false);
   const latestRequest = useRef(0);
+  const catalogRef = useRef(data.catalog);
+  catalogRef.current = data.catalog;
   const scopeKey = `${scope}:${organizationSlug ?? ""}`;
   const currentScopeKey = useRef(scopeKey);
   currentScopeKey.current = scopeKey;
@@ -91,10 +94,20 @@ export function useAIResources(scope: AIResourceScope, organizationSlug?: string
   }, [reload, scopeKey]);
 
   const createConnection = useCallback(async (input: ConnectionInput) => {
-    return runOperation(() => scope === "personal"
-      ? createPersonalConnection(input)
-      : createOrganizationConnection({ ...input, orgSlug: requireOrganizationSlug() }));
+    return runOperation(async () => {
+      const created = scope === "personal"
+        ? await createPersonalConnection(input)
+        : await createOrganizationConnection({ ...input, orgSlug: requireOrganizationSlug() });
+      const provider = catalogRef.current.find((item) => item.key === input.providerKey);
+      if (provider?.supportsModelDiscovery) {
+        await importConnectionModels(created.id);
+      }
+    });
   }, [requireOrganizationSlug, runOperation, scope]);
+
+  const syncConnectionModels = useCallback(async (connectionId: number) => {
+    return runOperation(() => importConnectionModels(connectionId));
+  }, [runOperation]);
 
   const createModelResource = useCallback(async (connectionId: number, input: ResourceInput) => {
     return runOperation(() => createResource(connectionId, input));
@@ -143,6 +156,7 @@ export function useAIResources(scope: AIResourceScope, organizationSlug?: string
     operationFailed,
     reload,
     createConnection,
+    syncConnectionModels,
     createModelResource,
     updateProviderConnection,
     rotateCredentials,

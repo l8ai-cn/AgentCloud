@@ -46,6 +46,9 @@ func initializeCoordinatorRuntime(
 		Artifacts:     infra.NewWorkerSpecDependencyArtifactRepository(db),
 		Logger:        logger,
 	})
+	// Worker create shares the same on-demand provisioner so the wizard is not
+	// deadlocked waiting for an already-online Runner in coordinator mode.
+	podOrchestrator.SetRunnerEnsurer(runnerEnsurer)
 	scheduler := coordinatorsvc.NewScheduler(service, logger)
 	scheduler.Start()
 	setupCoordinatorEventSubscriptions(eventBus, service)
