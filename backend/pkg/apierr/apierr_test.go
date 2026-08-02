@@ -60,7 +60,7 @@ func TestRespond_StructFields(t *testing.T) {
 func TestRespondWithExtra(t *testing.T) {
 	c, w := setupTestContext()
 
-	RespondWithExtra(c, http.StatusPaymentRequired, CONCURRENT_POD_QUOTA_EXCEEDED, "quota exceeded", gin.H{
+	RespondWithExtra(c, http.StatusPaymentRequired, RUNNER_QUOTA_EXCEEDED, "quota exceeded", gin.H{
 		"current_count": 5,
 		"max_count":     5,
 	})
@@ -68,7 +68,7 @@ func TestRespondWithExtra(t *testing.T) {
 	assert.Equal(t, http.StatusPaymentRequired, w.Code)
 	resp := parseResponse(t, w)
 	assert.Equal(t, "quota exceeded", resp["error"])
-	assert.Equal(t, "CONCURRENT_POD_QUOTA_EXCEEDED", resp["code"])
+	assert.Equal(t, "RUNNER_QUOTA_EXCEEDED", resp["code"])
 	assert.Equal(t, float64(5), resp["current_count"])
 	assert.Equal(t, float64(5), resp["max_count"])
 	assert.Len(t, resp, 4)
@@ -277,7 +277,6 @@ func TestErrorCodeConstants(t *testing.T) {
 		"ADMIN_REQUIRED":                ADMIN_REQUIRED,
 		"OWNER_REQUIRED":                OWNER_REQUIRED,
 		"ACCOUNT_DISABLED":              ACCOUNT_DISABLED,
-		"CONCURRENT_POD_QUOTA_EXCEEDED": CONCURRENT_POD_QUOTA_EXCEEDED,
 		"SUBSCRIPTION_FROZEN":           SUBSCRIPTION_FROZEN,
 		"VALIDATION_FAILED":             VALIDATION_FAILED,
 		"INVALID_INPUT":                 INVALID_INPUT,

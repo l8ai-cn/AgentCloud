@@ -46,15 +46,6 @@ func (m *mockPodCoordinator) CreatePodOrQueue(ctx context.Context, runnerID int6
 	return m.CreatePod(ctx, runnerID, cmd)
 }
 
-// mockBillingService implements BillingServiceForOrchestrator.
-type mockBillingService struct {
-	err error
-}
-
-func (m *mockBillingService) CheckQuota(_ context.Context, _ int64, _ string, _ int) error {
-	return m.err
-}
-
 // mockUserServiceForOrch implements UserServiceForOrchestrator.
 type mockUserServiceForOrch struct {
 	defaultCred    *user.GitCredential

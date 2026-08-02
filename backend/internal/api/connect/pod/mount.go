@@ -84,9 +84,6 @@ func mapServiceError(err error) error {
 	case errors.Is(err, airesource.ErrDisabled):
 		return connect.NewError(connect.CodeInvalidArgument, errors.New("selected model resource is disabled"))
 
-	// Billing → ResourceExhausted / FailedPrecondition
-	case errors.Is(err, billing.ErrQuotaExceeded):
-		return connect.NewError(connect.CodeResourceExhausted, err)
 	case errors.Is(err, billing.ErrSubscriptionFrozen):
 		return connect.NewError(connect.CodeFailedPrecondition, err)
 	case errors.Is(err, runner.ErrPodAlreadyTerminated):

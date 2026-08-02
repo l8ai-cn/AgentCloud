@@ -10,6 +10,10 @@ import (
 )
 
 func (s *Service) CheckQuota(ctx context.Context, orgID int64, resource string, requestedAmount int) error {
+	if resource == "concurrent_pods" {
+		return nil
+	}
+
 	sub, err := s.GetSubscription(ctx, orgID)
 
 	var plan *billing.SubscriptionPlan
@@ -60,8 +64,6 @@ func (s *Service) CheckQuota(ctx context.Context, orgID int64, resource string, 
 		limit = plan.MaxUsers
 	case "runners":
 		limit = plan.MaxRunners
-	case "concurrent_pods":
-		limit = plan.MaxConcurrentPods
 	case "repositories":
 		limit = plan.MaxRepositories
 	case "pod_minutes":
@@ -135,6 +137,10 @@ func (s *Service) GetCurrentConcurrentPods(ctx context.Context, orgID int64) (in
 }
 
 func (s *Service) SetCustomQuota(ctx context.Context, orgID int64, resource string, limit int) error {
+	if resource == "concurrent_pods" {
+		return fmt.Errorf("concurrent_pods quota is no longer enforced")
+	}
+
 	sub, err := s.GetSubscription(ctx, orgID)
 	if err != nil {
 		return err

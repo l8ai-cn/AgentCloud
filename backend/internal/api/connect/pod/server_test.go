@@ -147,7 +147,6 @@ func TestMapServiceError(t *testing.T) {
 		{"model_resource_disabled", airesourceservice.ErrDisabled, connect.CodeInvalidArgument},
 		{"model_resource_resolver_unavailable", agentpodservice.ErrModelResourceResolverUnavailable, connect.CodeInternal},
 		{"create_resource_unavailable", agentpodservice.ErrCreateResourceUnavailable, connect.CodeInvalidArgument},
-		{"quota_exceeded", billingservice.ErrQuotaExceeded, connect.CodeResourceExhausted},
 		{"subscription_frozen", billingservice.ErrSubscriptionFrozen, connect.CodeFailedPrecondition},
 		{"source_pod_access_denied", agentpodservice.ErrSourcePodAccessDenied, connect.CodePermissionDenied},
 		{"source_pod_already_resumed", agentpodservice.ErrSourcePodAlreadyResumed, connect.CodeAlreadyExists},

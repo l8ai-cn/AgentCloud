@@ -176,25 +176,7 @@ func TestCreatePod_NormalMode_MissingAgentSlug(t *testing.T) {
 	assert.True(t, errors.Is(err, ErrConflictingWorkerCreateInput))
 }
 
-func TestCreatePod_QuotaExceeded(t *testing.T) {
-	errQuota := errors.New("quota exceeded")
-	billing := &mockBillingService{err: errQuota}
-	orch, _, _ := setupOrchestrator(t, withBilling(billing))
-
-	_, err := createPodWithPlanSourceForTest(t, orch, context.Background(), &OrchestrateCreatePodRequest{
-		OrganizationID:  1,
-		UserID:          1,
-		RunnerID:        1,
-		AgentSlug:       "claude-code",
-		ModelResourceID: testModelResourceID(),
-		AgentfileLayer:  ptrStr("CONFIG mcp_enabled = true"),
-	})
-
-	require.Error(t, err)
-	assert.Equal(t, errQuota, err)
-}
-
-func TestCreatePod_NilBilling_SkipsQuotaCheck(t *testing.T) {
+func TestCreatePod_WithoutBillingDependency(t *testing.T) {
 	coord := &mockPodCoordinator{}
 	orch, _, _ := setupOrchestrator(t, withCoordinator(coord))
 
@@ -206,7 +188,6 @@ func TestCreatePod_NilBilling_SkipsQuotaCheck(t *testing.T) {
 		ModelResourceID: testModelResourceID(),
 		AgentfileLayer:  ptrStr("CONFIG mcp_enabled = true"),
 	})
-
 	require.NoError(t, err)
 	assert.NotNil(t, result.Pod)
 }

@@ -83,12 +83,6 @@ func TestMapOrchestratorErrorToHTTP(t *testing.T) {
 			wantNotContain: []string{"repository 17", "org 9", "permission denied"},
 		},
 		{
-			name:     "ErrQuotaExceeded -> 402",
-			err:      billing.ErrQuotaExceeded,
-			wantCode: http.StatusPaymentRequired,
-			wantJSON: map[string]string{"code": "CONCURRENT_POD_QUOTA_EXCEEDED"},
-		},
-		{
 			name:     "ErrSubscriptionFrozen -> 402",
 			err:      billing.ErrSubscriptionFrozen,
 			wantCode: http.StatusPaymentRequired,

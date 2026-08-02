@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import type { AdminSubscription } from "@/lib/api/admin/subscriptionTypes";
 
-const resources = ["users", "runners", "concurrent_pods", "repositories", "pod_minutes"];
+const resources = ["users", "runners", "repositories", "pod_minutes"];
 
 export function SubscriptionQuotaControls({
   subscription,

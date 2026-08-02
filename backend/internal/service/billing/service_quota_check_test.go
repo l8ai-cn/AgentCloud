@@ -140,18 +140,15 @@ func TestCheckQuotaConcurrentPods(t *testing.T) {
 	service := NewService(newTestRepo(db), "")
 	ctx := context.Background()
 
-	seedTestPlan(t, db) // max_concurrent_pods = 5 (based plan)
+	seedTestPlan(t, db)
 	service.CreateSubscription(ctx, 1, "based")
 
-	// Add five running pods to reach the limit
 	for i := 1; i <= 5; i++ {
 		db.Exec("INSERT INTO pods (organization_id, pod_key, status) VALUES (1, ?, 'running')", fmt.Sprintf("pod-%d", i))
 	}
 
-	// Should fail to add another
-	err := service.CheckQuota(ctx, 1, "concurrent_pods", 1)
-	if err != ErrQuotaExceeded {
-		t.Errorf("expected ErrQuotaExceeded, got %v", err)
+	if err := service.CheckQuota(ctx, 1, "concurrent_pods", 1); err != nil {
+		t.Errorf("expected concurrent_pods quota to be disabled, got %v", err)
 	}
 }
 

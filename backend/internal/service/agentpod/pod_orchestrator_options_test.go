@@ -6,10 +6,6 @@ func withCoordinator(coord PodCoordinatorForOrchestrator) func(*PodOrchestratorD
 	return func(d *PodOrchestratorDeps) { d.PodCoordinator = coord }
 }
 
-func withBilling(b BillingServiceForOrchestrator) func(*PodOrchestratorDeps) {
-	return func(d *PodOrchestratorDeps) { d.BillingService = b }
-}
-
 func withUserSvc(u UserServiceForOrchestrator) func(*PodOrchestratorDeps) {
 	return func(d *PodOrchestratorDeps) { d.UserService = u }
 }

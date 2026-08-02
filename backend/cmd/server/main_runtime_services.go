@@ -62,7 +62,6 @@ func createPodOrchestrator(
 		PodService:         services.pod,
 		ConfigBuilder:      configBuilder,
 		PodCoordinator:     podCoordinator,
-		BillingService:     services.billing,
 		UserService:        services.user,
 		RepoService:        services.repository,
 		TicketService:      services.ticket,

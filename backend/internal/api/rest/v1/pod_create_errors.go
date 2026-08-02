@@ -33,8 +33,6 @@ func mapOrchestratorErrorToHTTP(c *gin.Context, err error) {
 	case errors.Is(err, airesource.ErrDisabled):
 		apierr.BadRequest(c, apierr.VALIDATION_FAILED, "Selected model resource is disabled")
 
-	case errors.Is(err, ErrQuotaExceeded):
-		apierr.PaymentRequired(c, apierr.CONCURRENT_POD_QUOTA_EXCEEDED, "Concurrent pod quota exceeded. Please upgrade your plan or terminate existing pods.")
 	case errors.Is(err, ErrSubscriptionFrozen):
 		apierr.PaymentRequired(c, apierr.SUBSCRIPTION_FROZEN, "Your subscription has expired. Please renew to continue.")
 

@@ -66,14 +66,13 @@ func TestCheckQuota_ReposExceeded(t *testing.T) {
 	}
 }
 
-// TestCheckQuota_ConcurrentPodsExceeded tests concurrent pods quota
-func TestCheckQuota_ConcurrentPodsExceeded(t *testing.T) {
+func TestCheckQuota_ConcurrentPodsDisabled(t *testing.T) {
 	svc, db := setupTestService(t)
 
 	now := time.Now()
 	db.Create(&billing.Subscription{
 		OrganizationID:     1,
-		PlanID:             1, // based: max 5 concurrent pods
+		PlanID:             1,
 		Status:             billing.SubscriptionStatusActive,
 		BillingCycle:       billing.BillingCycleMonthly,
 		CurrentPeriodStart: now,
@@ -81,16 +80,13 @@ func TestCheckQuota_ConcurrentPodsExceeded(t *testing.T) {
 		SeatCount:          1,
 	})
 
-	// Add running pods to fill quota (test DB uses simplified schema with 'pods' table)
 	for i := 0; i < 5; i++ {
 		db.Exec("INSERT INTO pods (organization_id, pod_key, status) VALUES (1, ?, 'running')",
 			fmt.Sprintf("pod-%d", i))
 	}
 
-	// Should fail when trying to add another pod
-	err := svc.CheckQuota(context.Background(), 1, "concurrent_pods", 1)
-	if err != ErrQuotaExceeded {
-		t.Errorf("expected ErrQuotaExceeded, got %v", err)
+	if err := svc.CheckQuota(context.Background(), 1, "concurrent_pods", 1); err != nil {
+		t.Errorf("expected concurrent_pods quota to be disabled, got %v", err)
 	}
 }
 

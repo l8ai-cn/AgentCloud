@@ -128,13 +128,6 @@ func (o *PodOrchestrator) CreatePod(ctx context.Context, req *OrchestrateCreateP
 		return nil, err
 	}
 
-	if o.billingService != nil && creation.workerLaunchPod == nil {
-		if err := o.billingService.CheckQuota(ctx, req.OrganizationID, "concurrent_pods", 1); err != nil {
-			slog.WarnContext(ctx, "pod quota check failed", "org_id", req.OrganizationID, "error", err)
-			return nil, err
-		}
-	}
-
 	o.resolveTicketID(ctx, req)
 
 	pod, err := o.podService.CreatePod(ctx, newPodServiceCreateRequest(

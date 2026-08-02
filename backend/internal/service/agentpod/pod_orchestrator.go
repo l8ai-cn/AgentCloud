@@ -58,10 +58,6 @@ type PodCoordinatorForOrchestrator interface {
 	CreatePodOrQueue(ctx context.Context, runnerID int64, cmd *runnerv1.CreatePodCommand, opts podDomain.CreatePodQueueOpts) error
 }
 
-type BillingServiceForOrchestrator interface {
-	CheckQuota(ctx context.Context, orgID int64, quotaType string, amount int) error
-}
-
 type UserServiceForOrchestrator interface {
 	GetDefaultGitCredential(ctx context.Context, userID int64) (*user.GitCredential, error)
 	GetDecryptedCredentialToken(ctx context.Context, userID, credentialID int64) (*userService.DecryptedCredential, error)
@@ -113,7 +109,6 @@ type PodOrchestratorDeps struct {
 	PodService         *PodService
 	ConfigBuilder      *agent.ConfigBuilder
 	PodCoordinator     PodCoordinatorForOrchestrator
-	BillingService     BillingServiceForOrchestrator
 	UserService        UserServiceForOrchestrator
 	RepoService        RepositoryServiceForOrchestrator
 	TicketService      TicketServiceForOrchestrator
@@ -135,7 +130,6 @@ type PodOrchestrator struct {
 	podService         *PodService
 	configBuilder      *agent.ConfigBuilder
 	podCoordinator     PodCoordinatorForOrchestrator
-	billingService     BillingServiceForOrchestrator
 	userService        UserServiceForOrchestrator
 	repoService        RepositoryServiceForOrchestrator
 	ticketService      TicketServiceForOrchestrator
@@ -172,7 +166,6 @@ func NewPodOrchestrator(deps *PodOrchestratorDeps) *PodOrchestrator {
 		podService:         deps.PodService,
 		configBuilder:      deps.ConfigBuilder,
 		podCoordinator:     deps.PodCoordinator,
-		billingService:     deps.BillingService,
 		userService:        deps.UserService,
 		repoService:        deps.RepoService,
 		ticketService:      deps.TicketService,

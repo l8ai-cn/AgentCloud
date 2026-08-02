@@ -164,29 +164,7 @@ func TestPodLifecycle_ResumeMode(t *testing.T) {
 	assert.Equal(t, runnerID, resumed.RunnerID, "runner_id inherited")
 }
 
-// ---------- Test 3: Billing quota rejection ----------
-
-func TestPodLifecycle_BillingQuotaReject(t *testing.T) {
-	quotaErr := errors.New("concurrent pod limit reached")
-	billing := &mockBillingService{err: quotaErr}
-	orch, _, ctx := setupIntegrationOrchestrator(t, withBilling(billing))
-
-	req, preparer := workerSpecPlanRequestForTest(
-		t,
-		ctx,
-		"claude-code",
-		"",
-		resolvedResource("anthropic", "https://api.anthropic.com", "claude-test"),
-	)
-	orch.workerCreation = preparer
-	req.RunnerID = ctxRunnerID(ctx)
-	_, err := createPodWithPlanSourceForTest(t, orch, ctx, req)
-
-	require.Error(t, err)
-	assert.Equal(t, quotaErr, err, "billing error propagated directly")
-}
-
-// ---------- Test 4: Runner auto-selection ----------
+// ---------- Test 3: Runner auto-selection ----------
 
 func TestPodLifecycle_RunnerAutoSelect(t *testing.T) {
 	coord := &mockPodCoordinator{}

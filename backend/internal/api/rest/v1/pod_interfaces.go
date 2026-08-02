@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	ErrQuotaExceeded         = billing.ErrQuotaExceeded
 	ErrSubscriptionFrozen    = billing.ErrSubscriptionFrozen
 	ErrSandboxAlreadyResumed = agentpodService.ErrSandboxAlreadyResumed
 )
