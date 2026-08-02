@@ -7,8 +7,8 @@ image:
   repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260803-drop-concurrent-pod-quota
-  web: oilan-20260803-drop-concurrent-pod-quota
+  backend: oilan-20260803-quota-drop-model-usage
+  web: oilan-20260803-quota-drop-model-usage
   relay: oilan-20260802-model-usage-converge
 rolloutTokenDomain: agentcloud.l8ai.cn
 
