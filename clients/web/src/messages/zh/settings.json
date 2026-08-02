@@ -1194,6 +1194,7 @@
         "save": "保存更改",
         "edit": "编辑连接",
         "rotate": "轮换凭据",
+        "syncModels": "同步模型",
         "enabled": "启用连接",
         "delete": "删除连接"
       },

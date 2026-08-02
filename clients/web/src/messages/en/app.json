@@ -475,7 +475,7 @@
       "cronExpression": "Cron expression",
       "callbackUrl": "Callback URL",
       "optionsRevision": "Options revision",
-      "modelRef": "Model binding",
+      "modelRef": "Model",
       "resourceReference": "Resource reference",
       "revision": "Revision",
       "alias": "Worker alias",

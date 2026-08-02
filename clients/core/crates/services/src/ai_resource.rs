@@ -89,6 +89,16 @@ impl AIResourceService {
         delete_ai_resource_connection_connect
     );
     wire_rpc!(
+        discover_connection_models_connect,
+        ai::DiscoverConnectionModelsRequest,
+        discover_connection_models_connect
+    );
+    wire_rpc!(
+        import_connection_models_connect,
+        ai::ImportConnectionModelsRequest,
+        import_connection_models_connect
+    );
+    wire_rpc!(
         create_resource_connect,
         ai::CreateResourceRequest,
         create_ai_resource_connect

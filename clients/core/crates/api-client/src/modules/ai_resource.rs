@@ -88,6 +88,18 @@ impl ApiClient {
         "DeleteConnection"
     );
     rpc!(
+        discover_connection_models_connect,
+        ai::DiscoverConnectionModelsRequest,
+        ai::DiscoverConnectionModelsResponse,
+        "DiscoverConnectionModels"
+    );
+    rpc!(
+        import_connection_models_connect,
+        ai::ImportConnectionModelsRequest,
+        ai::ImportConnectionModelsResponse,
+        "ImportConnectionModels"
+    );
+    rpc!(
         create_ai_resource_connect,
         ai::CreateResourceRequest,
         ai::ModelResource,

@@ -500,7 +500,7 @@
       "cronExpression": "Cron 表达式",
       "callbackUrl": "回调 URL",
       "optionsRevision": "选项版本",
-      "modelRef": "模型绑定",
+      "modelRef": "模型",
       "resourceReference": "资源引用",
       "revision": "版本",
       "alias": "Worker 别名",

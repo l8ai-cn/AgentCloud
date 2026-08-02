@@ -1194,6 +1194,7 @@
         "save": "Save changes",
         "edit": "Edit connection",
         "rotate": "Rotate credentials",
+        "syncModels": "Sync models",
         "enabled": "Connection enabled",
         "delete": "Delete connection"
       },

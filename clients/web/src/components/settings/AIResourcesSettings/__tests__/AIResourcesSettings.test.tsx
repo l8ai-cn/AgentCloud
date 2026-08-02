@@ -19,6 +19,7 @@ const api = vi.hoisted(() => ({
   updateConnection: vi.fn(),
   updateResource: vi.fn(),
   validateConnection: vi.fn(),
+  importConnectionModels: vi.fn(),
 }));
 
 vi.mock("@/lib/api", () => api);
@@ -350,11 +351,16 @@ describe("AIResourcesSettings", () => {
   });
 
   it("shows unconnected usage honestly and does not expose management actions to an organization member", async () => {
+    api.listOrganizationConnections.mockResolvedValueOnce([{
+      ...connections[0],
+      canManage: false,
+    }]);
     render(<AIResourcesSettings scope="organization" organizationSlug="acme" canManage={false} />);
 
     await screen.findByText("OpenAI production");
     expect(screen.getByText("settings.aiResources.usageNotConnected")).toBeVisible();
     expect(screen.queryByRole("button", { name: "settings.aiResources.addConnection" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "settings.aiResources.connection.edit: OpenAI production" })).not.toBeInTheDocument();
   });
 
   it("renders a recoverable load error", async () => {
