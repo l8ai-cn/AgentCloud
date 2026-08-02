@@ -1,7 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { WorkerCreateOptions } from "@/lib/api/facade/podConnect";
-import { useWorkerCreateOptions } from "./useWorkerCreateOptions";
+import {
+  loadWorkerCreateOptions,
+  useWorkerCreateOptions,
+} from "./useWorkerCreateOptions";
 
 const listWorkerCreateOptions = vi.hoisted(() => vi.fn());
 
@@ -43,6 +46,32 @@ describe("useWorkerCreateOptions", () => {
     expect(listWorkerCreateOptions.mock.calls.map(([orgSlug]) => orgSlug))
       .toEqual(["acme", "globex"]);
   });
+
+  it("keeps the full runtime image list after a worker-type filter", async () => {
+    const base = options("acme");
+    base.runtime_images = [
+      runtimeImage(1, "Codex", "codex-cli"),
+      runtimeImage(16, "E2E Echo", "e2e-echo"),
+    ];
+    const filtered = options("acme");
+    filtered.runtime_images = [base.runtime_images[0]];
+    filtered.deployment_modes = [
+      { value: "pooled", name: "Shared", selectable: true, blocking_reason: "" },
+    ];
+    listWorkerCreateOptions
+      .mockResolvedValueOnce(base)
+      .mockResolvedValueOnce(filtered);
+
+    const merged = await loadWorkerCreateOptions("acme", {
+      workerTypeSlug: "codex-cli",
+      computeTargetId: 0,
+      deploymentMode: "",
+    });
+
+    expect(merged.runtime_images).toHaveLength(2);
+    expect(merged.runtime_images.map((image) => image.id)).toEqual([1, 16]);
+    expect(merged.deployment_modes).toEqual(filtered.deployment_modes);
+  });
 });
 
 function options(orgSlug: string): WorkerCreateOptions {
@@ -53,5 +82,22 @@ function options(orgSlug: string): WorkerCreateOptions {
     compute_targets: [],
     deployment_modes: [],
     resource_profiles: [],
+  };
+}
+
+function runtimeImage(
+  id: number,
+  name: string,
+  workerType: string,
+): WorkerCreateOptions["runtime_images"][number] {
+  return {
+    id,
+    slug: `${workerType}-local`,
+    name,
+    reference: `docker://${workerType}`,
+    digest: `sha256:${id}`,
+    worker_type_slugs: [workerType],
+    selectable: true,
+    blocking_reason: "",
   };
 }

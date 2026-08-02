@@ -6,6 +6,7 @@ const api = vi.hoisted(() => ({
   createPersonalConnection: vi.fn(), createResource: vi.fn(), deleteConnection: vi.fn(), deleteResource: vi.fn(),
   setConnectionEnabled: vi.fn(), setDefaultResource: vi.fn(), setResourceEnabled: vi.fn(), validateConnection: vi.fn(),
   updateConnection: vi.fn(), rotateConnectionCredentials: vi.fn(), updateResource: vi.fn(),
+  importConnectionModels: vi.fn(),
 }));
 
 vi.mock("@/lib/api", () => api);
@@ -31,10 +32,11 @@ describe("AI resource management actions", () => {
       key: "openai", displayName: "OpenAI", modalities: ["chat"],
       credentialFields: [{ key: "api_key", label: "API Key", secret: true, required: true }],
       defaultBaseUrl: "https://api.openai.com/v1", protocolAdapter: "openai",
-      supportsCustomEndpoint: true, supportsModelDiscovery: false,
+      supportsCustomEndpoint: true, supportsModelDiscovery: true,
     }]);
     api.listPersonalConnections.mockResolvedValue([connection]);
     api.listPersonalEffectiveResources.mockResolvedValue([]);
+    api.importConnectionModels.mockResolvedValue({ connectionId: 7, imported: [], skipped: [] });
   });
 
   it("updates connection details, rotates credentials, and updates a model resource", async () => {
@@ -59,5 +61,15 @@ describe("AI resource management actions", () => {
     await waitFor(() => expect(api.updateResource).toHaveBeenCalledWith(9, {
       displayName: "GPT-4.1 team", modelId: "gpt-4.1", modalities: ["chat"], capabilities: ["text-generation"],
     }));
+  });
+
+  it("shows manage actions from connection.canManage and syncs discovered models", async () => {
+    render(<AIResourcesSettings scope="personal" canManage={false} />);
+
+    await screen.findByText("GPT-4.1");
+    expect(screen.getByRole("button", { name: "settings.aiResources.addConnection" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "settings.aiResources.connection.edit: OpenAI" })).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "settings.aiResources.connection.syncModels: OpenAI" }));
+    await waitFor(() => expect(api.importConnectionModels).toHaveBeenCalledWith(7));
   });
 });

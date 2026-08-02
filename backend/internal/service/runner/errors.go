@@ -17,8 +17,9 @@ var (
 	ErrRunnerQuotaExceeded      = errors.New("runner quota exceeded")
 	ErrGRPCTokenNotFound        = errors.New("gRPC registration token not found")
 	ErrExecutionClusterNotFound = errors.New("execution cluster not found")
-	ErrNoRunnerForAgent         = errors.New("no available runner supports the requested agent")
-	ErrRunnerHasWorkflowRefs    = errors.New("cannot delete: runner is referenced by one or more workflows")
+	ErrNoRunnerForAgent          = runnerDomain.ErrNoRunnerForAgent
+	ErrRunnerCapacityUnavailable = runnerDomain.ErrRunnerCapacityUnavailable
+	ErrRunnerHasWorkflowRefs     = errors.New("cannot delete: runner is referenced by one or more workflows")
 
 	ErrCertificateMismatch = errors.New("certificate mismatch")
 

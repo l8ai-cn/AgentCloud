@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { BookOpen, X } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -13,6 +13,12 @@ import {
   type KnowledgeBase,
   type KnowledgeMountSelection,
 } from "@/lib/api/facade/knowledgeBaseApi";
+import { KnowledgeMountChips } from "./KnowledgeMountChips";
+import {
+  isKnowledgeBaseServiceUnavailable,
+  sameKnowledgeMount,
+} from "./knowledgeMountSelection";
+
 interface KnowledgeBaseMountSelectProps {
   selectedMounts: KnowledgeMountSelection[];
   onChange: (mounts: KnowledgeMountSelection[]) => void;
@@ -44,12 +50,15 @@ export function KnowledgeBaseMountSelect({
       .then((items) => {
         if (!cancelled) setLoaded({ key: requestKey, kbs: items, error: null });
       })
-      .catch(() => {
+      .catch((caught: unknown) => {
         if (!cancelled) {
           setLoaded({
             key: requestKey,
             kbs: [],
-            error: t("ide.createPod.knowledgeBasesLoadFailed"),
+            // Service not mounted (dev without Gitea SSH) — empty, not an error.
+            error: isKnowledgeBaseServiceUnavailable(caught)
+              ? null
+              : t("ide.createPod.knowledgeBasesLoadFailed"),
           });
         }
       });
@@ -58,9 +67,10 @@ export function KnowledgeBaseMountSelect({
     };
   }, [orgSlug, requestKey]);
 
-  const mountOf = (kb: KnowledgeBase) => selectedMounts.find((mount) =>
-    sameKnowledgeMount(mount, { id: kb.id, slug: kb.slug, mode: "ro" }),
-  );
+  const mountOf = (kb: KnowledgeBase) =>
+    selectedMounts.find((mount) =>
+      sameKnowledgeMount(mount, { id: kb.id, slug: kb.slug, mode: "ro" }),
+    );
 
   const toggle = (kb: KnowledgeBase) => {
     const selected = mountOf(kb);
@@ -71,75 +81,26 @@ export function KnowledgeBaseMountSelect({
     );
   };
 
-  const setMode = (selected: KnowledgeMountSelection, mode: "ro" | "rw") => {
-    onChange(selectedMounts.map((mount) =>
-      sameKnowledgeMount(mount, selected) ? { ...mount, mode } : mount,
-    ));
-  };
-
   return (
     <section>
-      {!embedded && (
-        <div className="mb-2 flex items-center justify-between gap-2">
+      <div className={`mb-2 flex ${embedded ? "justify-end" : "items-center justify-between gap-2"}`}>
+        {!embedded && (
           <label className="text-sm font-medium">{t("ide.createPod.knowledgeBases")}</label>
-          <Link
-            href={`/${orgSlug}/knowledge-base`}
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t("ide.createPod.manageKnowledgeBases")}
-          </Link>
-        </div>
-      )}
-      {embedded && (
-        <div className="mb-2 flex justify-end">
-          <Link
-            href={`/${orgSlug}/knowledge-base`}
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t("ide.createPod.manageKnowledgeBases")}
-          </Link>
-        </div>
-      )}
+        )}
+        <Link
+          href={`/${orgSlug}/knowledge-base`}
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          {t("ide.createPod.manageKnowledgeBases")}
+        </Link>
+      </div>
 
-      {selectedMounts.length > 0 && (
-        <div className="mb-2 flex flex-wrap gap-1.5">
-          {selectedMounts.map((m) => (
-            <span
-              key={m.id ?? m.slug}
-              className="inline-flex items-center gap-1 rounded-md border border-border bg-muted/30 px-2 py-0.5 text-xs"
-            >
-              <BookOpen className="h-3 w-3 text-primary" />
-              <span className="max-w-[10rem] truncate" title={mountSlug(m, kbs)}>
-                {mountSlug(m, kbs)}
-              </span>
-              <button
-                type="button"
-                className={`rounded px-1 font-mono text-[10px] font-semibold uppercase ${
-                  m.mode === "rw"
-                    ? "bg-primary/15 text-primary"
-                    : "bg-muted text-muted-foreground"
-                }`}
-                onClick={() => setMode(m, m.mode === "rw" ? "ro" : "rw")}
-                title={t("ide.createPod.knowledgeModeToggle")}
-              >
-                {m.mode === "rw"
-                  ? t("ide.createPod.knowledgeModeReadWrite")
-                  : t("ide.createPod.knowledgeModeReadOnly")}
-              </button>
-              <button
-                type="button"
-                className="text-muted-foreground hover:text-destructive"
-                onClick={() => onChange(
-                  selectedMounts.filter((mount) => !sameKnowledgeMount(mount, m)),
-                )}
-                aria-label={t("ide.createPod.removeKnowledgeBase")}
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
+      <KnowledgeMountChips
+        selectedMounts={selectedMounts}
+        knowledgeBases={kbs}
+        onChange={onChange}
+        t={t}
+      />
 
       {loading ? (
         <div className="flex items-center py-2 text-sm text-muted-foreground">
@@ -149,7 +110,12 @@ export function KnowledgeBaseMountSelect({
       ) : error ? (
         <div className="flex items-center justify-between gap-3 py-2">
           <p className="text-xs text-muted-foreground">{error}</p>
-          <Button type="button" variant="outline" size="sm" onClick={() => setReloadToken((value) => value + 1)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setReloadToken((value) => value + 1)}
+          >
             {t("tickets.detail.retry")}
           </Button>
         </div>
@@ -186,14 +152,4 @@ export function KnowledgeBaseMountSelect({
       </p>
     </section>
   );
-}
-function mountSlug(mount: KnowledgeMountSelection, knowledgeBases: KnowledgeBase[]): string {
-  return mount.slug
-    || knowledgeBases.find((item) => item.id === mount.id)?.slug
-    || `#${mount.id}`;
-}
-
-function sameKnowledgeMount(left: KnowledgeMountSelection, right: KnowledgeMountSelection): boolean {
-  if (left.id && right.id) return left.id === right.id;
-  return left.slug !== "" && left.slug === right.slug;
 }

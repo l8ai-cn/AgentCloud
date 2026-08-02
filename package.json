@@ -5,6 +5,8 @@
   "scripts": {
     "worker-docs:sync": "node scripts/generate-worker-docs-catalog.mjs",
     "worker-docs:check": "node scripts/generate-worker-docs-catalog.mjs --check",
+    "worker-specs:sync": "node scripts/generate-worker-type-specs.mjs",
+    "worker-specs:check": "node scripts/generate-worker-type-specs.mjs --check",
     "worker-runtime:check": "node scripts/verify-managed-worker-runtime-config.mjs",
     "proto:gen-ts": "buf generate",
     "proto:gen-go": "bash scripts/proto-gen-go.sh",

@@ -1,0 +1,1061 @@
+{
+  "schemaVersion": 1,
+  "workers": [
+    {
+      "slug": "aider",
+      "name": "Aider",
+      "executable": "aider",
+      "adapterId": "aider-pty",
+      "interactionModes": [
+        "pty"
+      ],
+      "modelRequirement": {
+        "required": false,
+        "protocol_adapters": []
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "aider",
+          "environmentVariable": "OPENAI_API_KEY"
+        },
+        {
+          "id": "anthropic",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "aider",
+          "environmentVariable": "ANTHROPIC_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "edit_format",
+          "kind": "select",
+          "options": [
+            "",
+            "whole",
+            "diff",
+            "udiff"
+          ],
+          "defaultValue": "\"\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "claude-code",
+      "name": "Claude Code",
+      "executable": "claude",
+      "adapterId": "claude-stream-json",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "anthropic"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "anthropic-api-key",
+          "sourceKind": "model_resource",
+          "sourceRef": "anthropic",
+          "environmentVariable": "ANTHROPIC_API_KEY"
+        },
+        {
+          "id": "anthropic-base-url",
+          "sourceKind": "model_resource",
+          "sourceRef": "anthropic",
+          "environmentVariable": "ANTHROPIC_BASE_URL"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "select",
+          "options": [
+            "",
+            "sonnet",
+            "opus"
+          ],
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "permission_mode",
+          "kind": "select",
+          "options": [
+            "default",
+            "plan",
+            "acceptEdits",
+            "dontAsk",
+            "bypassPermissions"
+          ],
+          "defaultValue": "\"bypassPermissions\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "ANTHROPIC_BASE_URL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "CLAUDE_CONFIG_DIR",
+          "flags": "—",
+          "value": "sandbox.root + \"/claude-home\""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": {
+        "id": 2,
+        "slug": "claude-code-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f",
+        "enabled": false,
+        "availability": "invalid_published_digest"
+      },
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "codex-cli",
+      "name": "Codex CLI",
+      "executable": "codex",
+      "adapterId": "codex-app-server",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "approval_mode",
+          "kind": "select",
+          "options": [
+            "untrusted",
+            "on-request",
+            "never"
+          ],
+          "defaultValue": "\"untrusted\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "CODEX_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/codex-home\""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": {
+        "id": 1,
+        "slug": "codex-cli-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
+    },
+    {
+      "slug": "cursor-cli",
+      "name": "Cursor CLI",
+      "executable": "agent",
+      "adapterId": "cursor-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": false,
+        "protocol_adapters": []
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "cursor",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "cursor",
+          "environmentVariable": "CURSOR_API_KEY"
+        }
+      ],
+      "configFields": [],
+      "envBindings": [
+        {
+          "name": "CURSOR_API_KEY",
+          "flags": "SECRET",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "do-agent",
+      "name": "Do Agent",
+      "executable": "do-agent",
+      "adapterId": "do-agent-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible",
+          "anthropic"
+        ]
+      },
+      "toolModelRequirements": [
+        {
+          "id": "seedance-video",
+          "required": false,
+          "provider_keys": [
+            "doubao",
+            "sub2api-seedance"
+          ],
+          "protocol_adapters": [
+            "openai-compatible",
+            "ark-seedance"
+          ],
+          "modality": "video",
+          "capability": "video-generation",
+          "environment": {
+            "api_key": "SEEDANCE_API_KEY",
+            "base_url": "SEEDANCE_BASE_URL",
+            "model_id": "SEEDANCE_MODEL"
+          }
+        },
+        {
+          "id": "minimax-video",
+          "required": false,
+          "provider_keys": [
+            "custom-openai-compatible",
+            "minimax"
+          ],
+          "protocol_adapters": [
+            "openai-compatible",
+            "minimax"
+          ],
+          "modality": "video",
+          "capability": "video-generation",
+          "environment": {
+            "api_key": "MINIMAX_VIDEO_API_KEY",
+            "base_url": "MINIMAX_VIDEO_BASE_URL",
+            "model_id": "MINIMAX_VIDEO_MODEL"
+          }
+        }
+      ],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        },
+        {
+          "id": "anthropic",
+          "sourceKind": "model_resource",
+          "sourceRef": "anthropic",
+          "environmentVariable": "ANTHROPIC_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "DO_AGENT_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/do-agent-home\""
+        },
+        {
+          "name": "DO_AGENT_SETTINGS",
+          "flags": "—",
+          "value": "sandbox.root + \"/do-agent-home/settings.json\""
+        },
+        {
+          "name": "DO_AGENT_LOG_DIR",
+          "flags": "—",
+          "value": "sandbox.root + \"/do-agent-home/logs\""
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "SEEDANCE_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "SEEDANCE_BASE_URL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "SEEDANCE_MODEL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "MINIMAX_VIDEO_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "MINIMAX_VIDEO_BASE_URL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "MINIMAX_VIDEO_MODEL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [
+        {
+          "id": "settings",
+          "format": "json",
+          "target_path": "DO_AGENT_SETTINGS",
+          "required": true
+        }
+      ],
+      "runtimeImage": {
+        "id": 5,
+        "slug": "do-agent-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
+    },
+    {
+      "slug": "gemini-cli",
+      "name": "Gemini CLI",
+      "executable": "gemini",
+      "adapterId": "gemini-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "gemini"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "gemini-api-key",
+          "sourceKind": "model_resource",
+          "sourceRef": "gemini",
+          "environmentVariable": "GEMINI_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "sandbox_mode",
+          "kind": "boolean",
+          "options": [],
+          "defaultValue": "false"
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "GEMINI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": {
+        "id": 3,
+        "slug": "gemini-cli-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
+        "enabled": false,
+        "availability": "invalid_published_digest"
+      },
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "grok-build",
+      "name": "Grok Build",
+      "executable": "grok",
+      "adapterId": "grok-build-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": false,
+        "protocol_adapters": []
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "xai",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "grok-build",
+          "environmentVariable": "XAI_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "effort",
+          "kind": "select",
+          "options": [
+            "",
+            "low",
+            "medium",
+            "high"
+          ],
+          "defaultValue": "\"\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "XAI_API_KEY",
+          "flags": "SECRET",
+          "value": ""
+        },
+        {
+          "name": "GROK_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/grok-home\""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "hermes",
+      "name": "Hermes",
+      "executable": "hermes",
+      "adapterId": "hermes-pty",
+      "interactionModes": [
+        "pty"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        }
+      ],
+      "configFields": [],
+      "envBindings": [
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "kimi-code",
+      "name": "Kimi Code",
+      "executable": "kimi",
+      "adapterId": "kimi-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "kimi-api-key",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_API_KEY"
+        },
+        {
+          "id": "kimi-base-url",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_BASE_URL"
+        },
+        {
+          "id": "kimi-model-name",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_MODEL_NAME"
+        }
+      ],
+      "configFields": [],
+      "envBindings": [
+        {
+          "name": "KIMI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "KIMI_BASE_URL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "KIMI_MODEL_NAME",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "KIMI_CODE_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/kimi-code-home\""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "loopal",
+      "name": "Loopal",
+      "executable": "loopal",
+      "adapterId": "loopal-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": false,
+        "protocol_adapters": []
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "anthropic",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "loopal",
+          "environmentVariable": "ANTHROPIC_API_KEY"
+        },
+        {
+          "id": "openai",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "loopal",
+          "environmentVariable": "OPENAI_API_KEY"
+        },
+        {
+          "id": "google",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "loopal",
+          "environmentVariable": "GOOGLE_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "permission_mode",
+          "kind": "select",
+          "options": [
+            "supervised",
+            "auto",
+            "bypass"
+          ],
+          "defaultValue": "\"supervised\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "GOOGLE_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "minimax-cli",
+      "name": "MiniMax CLI",
+      "executable": "mmx",
+      "adapterId": "minimax-pty",
+      "interactionModes": [
+        "pty"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "minimax"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "minimax-api-key",
+          "sourceKind": "model_resource",
+          "sourceRef": "minimax",
+          "environmentVariable": "MINIMAX_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "base_url",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "MINIMAX_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "openclaw",
+      "name": "OpenClaw",
+      "executable": "openclaw",
+      "adapterId": "openclaw-pty",
+      "interactionModes": [
+        "pty"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        }
+      ],
+      "configFields": [],
+      "envBindings": [
+        {
+          "name": "OPENCLAW_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/openclaw-home\""
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [
+        {
+          "id": "openclaw-json",
+          "format": "json",
+          "target_path": "openclaw-home/.openclaw/openclaw.json",
+          "required": false
+        }
+      ],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "opencode",
+      "name": "OpenCode",
+      "executable": "opencode",
+      "adapterId": "opencode-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "runtimeAvailable": false
+    },
+    {
+      "slug": "pattern-designer",
+      "name": "Pattern Designer",
+      "executable": "codex",
+      "adapterId": "codex-app-server",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        },
+        {
+          "id": "lovart-access-key",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "lovart",
+          "environmentVariable": "LOVART_ACCESS_KEY"
+        },
+        {
+          "id": "lovart-secret-key",
+          "sourceKind": "credential_bundle",
+          "sourceRef": "lovart",
+          "environmentVariable": "LOVART_SECRET_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "approval_mode",
+          "kind": "select",
+          "options": [
+            "untrusted",
+            "on-request",
+            "never"
+          ],
+          "defaultValue": "\"never\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "LOVART_ACCESS_KEY",
+          "flags": "SECRET",
+          "value": ""
+        },
+        {
+          "name": "LOVART_SECRET_KEY",
+          "flags": "SECRET",
+          "value": ""
+        },
+        {
+          "name": "CODEX_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/codex-home\""
+        },
+        {
+          "name": "LOVART_SKILL_PATH",
+          "flags": "—",
+          "value": "sandbox.root + \"/codex-home/skills/lovart-api/agent_skill.py\""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": {
+        "id": 6,
+        "slug": "pattern-designer-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
+    },
+    {
+      "slug": "seedance-expert",
+      "name": "Seedance Expert",
+      "executable": "do-agent",
+      "adapterId": "do-agent-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible",
+          "anthropic"
+        ]
+      },
+      "toolModelRequirements": [
+        {
+          "id": "seedance-video",
+          "provider_keys": [
+            "doubao",
+            "sub2api-seedance"
+          ],
+          "protocol_adapters": [
+            "openai-compatible",
+            "ark-seedance"
+          ],
+          "modality": "video",
+          "capability": "video-generation",
+          "environment": {
+            "api_key": "SEEDANCE_API_KEY",
+            "base_url": "SEEDANCE_BASE_URL",
+            "model_id": "SEEDANCE_MODEL"
+          }
+        }
+      ],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        },
+        {
+          "id": "anthropic",
+          "sourceKind": "model_resource",
+          "sourceRef": "anthropic",
+          "environmentVariable": "ANTHROPIC_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "model",
+          "kind": "string",
+          "options": [],
+          "defaultValue": "\"\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "DO_AGENT_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/seedance-expert-home\""
+        },
+        {
+          "name": "DO_AGENT_SETTINGS",
+          "flags": "—",
+          "value": "sandbox.root + \"/seedance-expert-home/settings.json\""
+        },
+        {
+          "name": "DO_AGENT_LOG_DIR",
+          "flags": "—",
+          "value": "sandbox.root + \"/seedance-expert-home/logs\""
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "SEEDANCE_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "SEEDANCE_BASE_URL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "SEEDANCE_MODEL",
+          "flags": "TEXT OPTIONAL",
+          "value": ""
+        }
+      ],
+      "configDocuments": [
+        {
+          "id": "settings",
+          "format": "json",
+          "target_path": "DO_AGENT_SETTINGS",
+          "required": true
+        }
+      ],
+      "runtimeImage": {
+        "id": 7,
+        "slug": "seedance-expert-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
+    },
+    {
+      "slug": "video-studio",
+      "name": "Video Studio",
+      "executable": "video-studio-codex",
+      "adapterId": "codex-app-server",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "toolModelRequirements": [],
+      "credentialBindings": [
+        {
+          "id": "openai",
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        }
+      ],
+      "configFields": [
+        {
+          "name": "approval_mode",
+          "kind": "select",
+          "options": [
+            "untrusted",
+            "on-request",
+            "never"
+          ],
+          "defaultValue": "\"untrusted\""
+        }
+      ],
+      "envBindings": [
+        {
+          "name": "OPENAI_API_KEY",
+          "flags": "SECRET OPTIONAL",
+          "value": ""
+        },
+        {
+          "name": "CODEX_HOME",
+          "flags": "—",
+          "value": "sandbox.root + \"/video-studio-home\""
+        }
+      ],
+      "configDocuments": [],
+      "runtimeImage": {
+        "id": 4,
+        "slug": "video-studio-stable",
+        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
+    }
+  ]
+}

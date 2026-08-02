@@ -41,8 +41,6 @@ type CreatePodRequest struct {
 
 	InitialStatus string
 
-	// VirtualAPIKeyID attributes usage to a virtual API key for quota/billing.
-	VirtualAPIKeyID *int64
 	ModelResourceID *int64
 	AgentfileLayer  string
 	PreviewPort     int

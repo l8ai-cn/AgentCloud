@@ -21,7 +21,6 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/tokenusage"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	tokenusagesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenusage"
-	sessionusagesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/sessionusage"
 	tuv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/token_usage/v1"
 )
 
@@ -32,13 +31,12 @@ const GetDashboardProcedure = "/" + ServiceName + "/GetDashboard"
 var validGranularities = map[string]bool{"day": true, "week": true, "month": true}
 
 type Server struct {
-	svc       *tokenusagesvc.Service
-	liveUsage *sessionusagesvc.Service
-	orgSvc    middleware.OrganizationService
+	svc    *tokenusagesvc.Service
+	orgSvc middleware.OrganizationService
 }
 
-func NewServer(svc *tokenusagesvc.Service, orgSvc middleware.OrganizationService, liveUsage *sessionusagesvc.Service) *Server {
-	return &Server{svc: svc, orgSvc: orgSvc, liveUsage: liveUsage}
+func NewServer(svc *tokenusagesvc.Service, orgSvc middleware.OrganizationService) *Server {
+	return &Server{svc: svc, orgSvc: orgSvc}
 }
 
 func Mount(mux *http.ServeMux, srv *Server, opts ...connect.HandlerOption) {
@@ -102,13 +100,6 @@ func (s *Server) GetDashboard(
 	})
 	if err := g.Wait(); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	if s.liveUsage != nil {
-		liveAgg, liveErr := s.liveUsage.AggregateOrg(ctx, tenant.OrganizationID)
-		if liveErr == nil {
-			mergeLivePodSessionUsage(&liveAgg, &summary, &byModel)
-		}
 	}
 
 	return connect.NewResponse(&tuv1.GetDashboardResponse{

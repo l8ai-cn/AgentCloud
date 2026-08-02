@@ -6,18 +6,17 @@ import (
 	domain "github.com/l8ai-cn/agentcloud/backend/internal/domain/tokenquota"
 )
 
-func i64(v int64) *int64    { return &v }
-func str(v string) *string  { return &v }
+func i64(v int64) *int64     { return &v }
+func str(v string) *string   { return &v }
 func f64(v float64) *float64 { return &v }
 
 func TestBuildReportAggregatesAndOverlaysQuotas(t *testing.T) {
-	key := int64(7)
 	rows := []usageRow{
 		{UserID: 1, Model: "m1", InputTokens: 100, OutputTokens: 50},
-		{UserID: 2, Model: "m1", InputTokens: 10, OutputTokens: 5, KeyID: &key},
+		{UserID: 2, Model: "m1", InputTokens: 10, OutputTokens: 5},
 	}
 	quotas := []*domain.TokenQuota{
-		{UserID: i64(1), LimitTokens: 100},  // user1 used 150 -> over
+		{UserID: i64(1), LimitTokens: 100},    // user1 used 150 -> over
 		{Model: str("m1"), LimitTokens: 1000}, // model used 165 -> ok
 	}
 
@@ -28,9 +27,6 @@ func TestBuildReportAggregatesAndOverlaysQuotas(t *testing.T) {
 	}
 	if len(rep.ByUser) != 2 {
 		t.Fatalf("by_user len = %d, want 2", len(rep.ByUser))
-	}
-	if len(rep.ByVirtualKey) != 1 || rep.ByVirtualKey[0].Tokens != 15 {
-		t.Fatalf("by_virtual_key wrong: %+v", rep.ByVirtualKey)
 	}
 
 	var userQuota, modelQuota *ScopeUsage

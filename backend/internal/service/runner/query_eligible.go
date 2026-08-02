@@ -105,6 +105,13 @@ func (s *Service) collectEligibleRunners(
 }
 
 func isRunnerAvailableForAgent(ar *ActiveRunner, orgID int64, agentSlug string) bool {
+	if !isRunnerOnlineForAgent(ar, orgID, agentSlug) {
+		return false
+	}
+	return ar.PodCount < ar.Runner.MaxConcurrentPods
+}
+
+func isRunnerOnlineForAgent(ar *ActiveRunner, orgID int64, agentSlug string) bool {
 	if ar == nil || ar.Runner == nil {
 		return false
 	}
@@ -112,11 +119,46 @@ func isRunnerAvailableForAgent(ar *ActiveRunner, orgID int64, agentSlug string) 
 	if r.OrganizationID != orgID ||
 		r.Status != runnerDomain.RunnerStatusOnline ||
 		!r.IsEnabled ||
-		ar.PodCount >= r.MaxConcurrentPods ||
 		time.Since(ar.LastPing) >= 90*time.Second {
 		return false
 	}
 	return agentSlug == "" || r.SupportsAgent(agentSlug)
+}
+
+func (s *Service) selectionFailureForAgent(
+	ctx context.Context,
+	orgID, userID int64,
+	agentSlug string,
+) error {
+	grantedIDs, err := s.fetchGrantedRunnerIDs(ctx, orgID, userID)
+	if err != nil {
+		return err
+	}
+	online := false
+	s.activeRunners.Range(func(key, value interface{}) bool {
+		runnerID, ok := key.(int64)
+		if !ok {
+			return true
+		}
+		lease, ok := value.(*ActiveRunner)
+		if !ok {
+			return true
+		}
+		r, getErr := s.repo.GetByID(ctx, runnerID)
+		if getErr != nil || r == nil {
+			return true
+		}
+		active := &ActiveRunner{Runner: r, LastPing: lease.LastPing, PodCount: r.CurrentPods}
+		if !isRunnerOnlineForAgent(active, orgID, agentSlug) || !isVisibleToUser(r, userID, grantedIDs) {
+			return true
+		}
+		online = true
+		return false
+	})
+	if online {
+		return ErrRunnerCapacityUnavailable
+	}
+	return ErrNoRunnerForAgent
 }
 
 func isVisibleToUser(r *runnerDomain.Runner, userID int64, grantedIDs map[int64]bool) bool {

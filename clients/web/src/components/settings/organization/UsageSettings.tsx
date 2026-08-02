@@ -22,60 +22,25 @@ import {
   UsageByModelTable,
   UsageFilters,
   UsageLiveSessionCost,
+  UsageLoadingSkeleton,
   type TimeRange,
   type Granularity,
 } from "./usage";
 import { fetchOrgLiveUsageSummary, type OrgLiveUsageSummary } from "@/lib/api/orgLiveUsageFetch";
+import { TokenQuotaPanel } from "./TokenQuotaPanel";
+import {
+  getTimeRangeDates,
+  isValidGranularity,
+  isValidTimeRange,
+} from "./usageSettingsSupport";
 
 interface UsageSettingsProps {
   t: TranslationFn;
 }
 
-const validTimeRanges: TimeRange[] = ["7d", "30d", "90d"];
-const validGranularities: Granularity[] = ["day", "week", "month"];
-
-function isValidTimeRange(v: string | null): v is TimeRange {
-  return v !== null && validTimeRanges.includes(v as TimeRange);
-}
-
-function isValidGranularity(v: string | null): v is Granularity {
-  return v !== null && validGranularities.includes(v as Granularity);
-}
-
-function getTimeRangeDates(tr: TimeRange): { start: string; end: string } {
-  const now = new Date();
-  const end = now.toISOString();
-  const days = tr === "7d" ? 7 : tr === "30d" ? 30 : 90;
-  const start = new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
-  return { start, end };
-}
-
-function UsageLoadingSkeleton() {
-  return (
-    <div className="space-y-6 animate-pulse">
-      <div className="h-8 bg-muted rounded w-48" />
-      <div className="h-4 bg-muted rounded w-96" />
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="surface-card p-4">
-            <div className="h-4 bg-muted rounded w-20 mb-2" />
-            <div className="h-8 bg-muted rounded w-24" />
-          </div>
-        ))}
-      </div>
-      <div className="surface-card p-6">
-        <div className="h-4 bg-muted rounded w-40 mb-4" />
-        <div className="h-64 bg-muted rounded" />
-      </div>
-    </div>
-  );
-}
-
 export function UsageSettings({ t }: UsageSettingsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Initialize filter state from URL params (fallback to defaults).
   const [timeRange, setTimeRange] = useState<TimeRange>(() => {
     const v = searchParams.get("timeRange");
     return isValidTimeRange(v) ? v : "30d";
@@ -85,48 +50,30 @@ export function UsageSettings({ t }: UsageSettingsProps) {
     return isValidGranularity(v) ? v : "day";
   });
   const [agent, setAgent] = useState(() => searchParams.get("agent") || "");
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [summary, setSummary] = useState<TokenUsageSummary | null>(null);
   const [timeSeries, setTimeSeries] = useState<TokenUsageTimeSeriesPoint[]>([]);
   const [byAgent, setByAgent] = useState<TokenUsageByAgent[]>([]);
   const [byUser, setByUser] = useState<TokenUsageByUser[]>([]);
   const [byModel, setByModel] = useState<TokenUsageByModel[]>([]);
   const [liveUsage, setLiveUsage] = useState<OrgLiveUsageSummary | null>(null);
-
-  // Agent list derived from unfiltered data to avoid circular dependency:
-  // selecting an agent filter would otherwise shrink the filter options list.
   const [allAgents, setAllAgents] = useState<string[]>([]);
-
   const abortRef = useRef<AbortController | null>(null);
-
   const tRef = useRef(t);
   tRef.current = t;
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (timeRange !== "30d") {
-      params.set("timeRange", timeRange);
-    } else {
-      params.delete("timeRange");
-    }
-    if (granularity !== "day") {
-      params.set("granularity", granularity);
-    } else {
-      params.delete("granularity");
-    }
-    if (agent) {
-      params.set("agent", agent);
-    } else {
-      params.delete("agent");
-    }
-
-    const newQuery = params.toString();
-    const currentQuery = searchParams.toString();
-    if (newQuery !== currentQuery) {
-      router.replace(`?${newQuery}`, { scroll: false });
+    if (timeRange !== "30d") params.set("timeRange", timeRange);
+    else params.delete("timeRange");
+    if (granularity !== "day") params.set("granularity", granularity);
+    else params.delete("granularity");
+    if (agent) params.set("agent", agent);
+    else params.delete("agent");
+    const next = params.toString();
+    if (next !== searchParams.toString()) {
+      router.replace(`?${next}`, { scroll: false });
     }
   }, [timeRange, granularity, agent, searchParams, router]);
 
@@ -134,7 +81,6 @@ export function UsageSettings({ t }: UsageSettingsProps) {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
-
     setLoading(true);
     setError(null);
     const { start, end } = getTimeRangeDates(timeRange);
@@ -144,7 +90,6 @@ export function UsageSettings({ t }: UsageSettingsProps) {
       granularity,
       agent_slug: agent || undefined,
     };
-
     try {
       const data = await getDashboardConnect({
         orgSlug: readCurrentOrg()?.slug ?? "",
@@ -155,23 +100,18 @@ export function UsageSettings({ t }: UsageSettingsProps) {
         model: params.model ?? undefined,
         granularity: params.granularity ?? undefined,
       });
-
       if (controller.signal.aborted) return;
-
       setSummary(data.summary ?? null);
       setTimeSeries(data.time_series ?? []);
       setByAgent(data.by_agent ?? []);
       setByUser(data.by_user ?? []);
       setByModel(data.by_model ?? []);
-
       const live = await fetchOrgLiveUsageSummary();
-      if (!controller.signal.aborted) {
-        setLiveUsage(live);
-      }
-
+      if (!controller.signal.aborted) setLiveUsage(live);
       if (!agent && data.by_agent) {
         setAllAgents(
-          [...new Set(data.by_agent.map((a: TokenUsageByAgent) => a.agent_slug))].filter(Boolean) as string[]
+          [...new Set(data.by_agent.map((a: TokenUsageByAgent) => a.agent_slug))]
+            .filter(Boolean) as string[],
         );
       }
     } catch (err: unknown) {
@@ -187,12 +127,7 @@ export function UsageSettings({ t }: UsageSettingsProps) {
     return () => abortRef.current?.abort();
   }, [loadData]);
 
-  // Show full skeleton only on initial load. For subsequent filter changes,
-  // keep the existing data visible to avoid jarring flicker.
-  if (loading && !summary) {
-    return <UsageLoadingSkeleton />;
-  }
-
+  if (loading && !summary) return <UsageLoadingSkeleton />;
   if (error && !summary) {
     return (
       <div className="space-y-6">
@@ -214,13 +149,11 @@ export function UsageSettings({ t }: UsageSettingsProps) {
           {t("settings.usagePage.description")}
         </p>
       </div>
-
       {error && (
         <div className="p-4 rounded-lg bg-danger-bg text-danger border border-danger">
           {error}
         </div>
       )}
-
       <UsageFilters
         timeRange={timeRange}
         granularity={granularity}
@@ -231,19 +164,18 @@ export function UsageSettings({ t }: UsageSettingsProps) {
         agents={allAgents}
         t={t}
       />
-
+      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+        {t("settings.usagePage.historicalSection")}
+      </p>
       <UsageOverviewCards summary={summary} t={t} />
-
-      <UsageLiveSessionCost live={liveUsage} t={t} />
-
       <UsageTimeSeriesChart data={timeSeries} t={t} />
-
       <UsageByAgentChart data={byAgent} t={t} />
-
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <UsageByUserTable data={byUser} t={t} />
         <UsageByModelTable data={byModel} t={t} />
       </div>
+      <UsageLiveSessionCost live={liveUsage} t={t} />
+      <TokenQuotaPanel t={t} />
     </div>
   );
 }

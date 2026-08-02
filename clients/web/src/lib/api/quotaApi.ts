@@ -4,17 +4,6 @@ import {
   readJsonResponse,
 } from "./authenticatedRequest";
 
-export type VirtualKey = {
-  id: number;
-  name: string;
-  key_prefix: string;
-  model_resource_id: number;
-  token_budget?: number;
-  status: string;
-  last_used_at?: string;
-  created_at: string;
-};
-
 export type TokenQuota = {
   id: number;
   user_id?: number;
@@ -26,7 +15,6 @@ export type TokenQuota = {
 export type ScopeUsage = {
   user_id?: number;
   model?: string;
-  virtual_api_key_id?: number;
   tokens: number;
   cost_usd: number;
   limit_tokens?: number;
@@ -38,7 +26,6 @@ export type QuotaReport = {
   total_cost_usd: number;
   by_user: ScopeUsage[];
   by_model: ScopeUsage[];
-  by_virtual_key: ScopeUsage[];
   quotas: ScopeUsage[];
 };
 
@@ -49,23 +36,6 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
     init,
   );
   return readJsonResponse<T>(response);
-}
-
-export async function listVirtualKeys(): Promise<VirtualKey[]> {
-  const data = await req<{ data: VirtualKey[] }>("/virtual-keys");
-  return data.data ?? [];
-}
-
-export async function createVirtualKey(input: {
-  name: string;
-  model_resource_id: number;
-  token_budget?: number;
-}): Promise<{ token: string; key: VirtualKey }> {
-  return req("/virtual-keys", { method: "POST", body: JSON.stringify(input) });
-}
-
-export async function revokeVirtualKey(id: number): Promise<void> {
-  await req(`/virtual-keys/${id}`, { method: "DELETE" });
 }
 
 export async function listTokenQuotas(): Promise<TokenQuota[]> {

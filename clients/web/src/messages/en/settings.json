@@ -678,8 +678,9 @@
       }
     },
     "usagePage": {
-      "title": "Token Usage",
-      "description": "Monitor token consumption across your organization",
+      "title": "Usage",
+      "description": "Historical token analytics from completed sessions, live cost from active Workers, and optional report-only ceilings.",
+      "historicalSection": "Completed sessions",
       "inputTokens": "Input Tokens",
       "outputTokens": "Output Tokens",
       "cacheReadTokens": "Cache Read Tokens",
@@ -707,10 +708,29 @@
         "week": "Week",
         "month": "Month"
       },
-      "liveSessionsTitle": "Active session cost (live)",
-      "liveSessionsHint": "USD estimate from running pods via pod_session_usage; merged into token totals above.",
+      "liveSessionsTitle": "Active Workers (live)",
+      "liveSessionsHint": "USD estimate from active Workers. Separate from completed-session totals above.",
       "liveSessionsEmpty": "No active session usage recorded",
-      "estimatedCost": "Est. cost (USD)"
+      "estimatedCost": "Est. cost (USD)",
+      "ceilings": {
+        "title": "Token ceilings",
+        "description": "Optional report-only limits by organization, user, and/or model. Over-limit is flagged in reports; creation and runtime are not blocked.",
+        "userPlaceholder": "User ID (blank = org-wide)",
+        "modelPlaceholder": "Model (blank = all)",
+        "limitPlaceholder": "Limit tokens",
+        "save": "Save ceiling",
+        "empty": "No ceilings configured.",
+        "orgLabel": "Organization",
+        "userLabel": "User {id}",
+        "allModels": "· all models",
+        "modelScoped": "· {model}",
+        "tokensUnit": "tokens",
+        "delete": "Delete",
+        "limitRequired": "Limit is required",
+        "loadFailed": "Failed to load ceilings",
+        "saveFailed": "Failed to save ceiling",
+        "deleteFailed": "Failed to delete ceiling"
+      }
     },
     "notifications": {
       "title": "Push Notifications",
@@ -1174,6 +1194,7 @@
         "save": "Save changes",
         "edit": "Edit connection",
         "rotate": "Rotate credentials",
+        "syncModels": "Sync models",
         "enabled": "Connection enabled",
         "delete": "Delete connection"
       },

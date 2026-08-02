@@ -7,15 +7,22 @@ import {
   FormRow,
 } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
-import { ResourceReferenceField } from "./ResourceReferenceField";
+import { WorkerTemplateModelBindingField } from "./WorkerTemplateModelBindingField";
 import type { WorkerTemplatePanelProps } from "./worker-template-panel-props";
 
 export function WorkerTemplateIdentityPanel({
   draft,
-  catalog,
+  orgSlug,
   modelRequired,
+  protocolAdapters,
   onChange,
-}: WorkerTemplatePanelProps & { modelRequired: boolean }) {
+  onCatalogInvalidate,
+}: WorkerTemplatePanelProps & {
+  orgSlug: string;
+  modelRequired: boolean;
+  protocolAdapters: string[];
+  onCatalogInvalidate: () => void;
+}) {
   const t = useTranslations("resourceEditor");
   const setMetadata = (
     patch: Partial<WorkerTemplatePanelProps["draft"]["metadata"]>,
@@ -57,14 +64,13 @@ export function WorkerTemplateIdentityPanel({
           />
         </FormField>
       </FormRow>
-      <ResourceReferenceField
-        id="model-reference"
-        label={t("fields.modelRef")}
-        kind="ModelBinding"
+      <WorkerTemplateModelBindingField
+        orgSlug={orgSlug}
         value={draft.spec.modelRef}
-        catalog={catalog}
         required={modelRequired}
+        protocolAdapters={protocolAdapters}
         onChange={(modelRef) => setSpec({ modelRef })}
+        onCatalogInvalidate={onCatalogInvalidate}
       />
       <FormField label={t("fields.alias")} htmlFor="worker-alias">
         <Input

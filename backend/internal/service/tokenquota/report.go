@@ -9,13 +9,12 @@ import (
 // ScopeUsage is consumption for one aggregation bucket, optionally paired with
 // a matching quota limit and an over-limit flag.
 type ScopeUsage struct {
-	UserID     *int64  `json:"user_id,omitempty"`
-	Model      *string `json:"model,omitempty"`
-	VirtualKey *int64  `json:"virtual_api_key_id,omitempty"`
-	Tokens     int64   `json:"tokens"`
-	CostUSD    float64 `json:"cost_usd"`
-	Limit      *int64  `json:"limit_tokens,omitempty"`
-	Over       bool    `json:"over_limit"`
+	UserID  *int64  `json:"user_id,omitempty"`
+	Model   *string `json:"model,omitempty"`
+	Tokens  int64   `json:"tokens"`
+	CostUSD float64 `json:"cost_usd"`
+	Limit   *int64  `json:"limit_tokens,omitempty"`
+	Over    bool    `json:"over_limit"`
 }
 
 // Report is the org-wide usage-vs-quota snapshot.
@@ -24,13 +23,11 @@ type Report struct {
 	TotalCostUSD float64      `json:"total_cost_usd"`
 	ByUser       []ScopeUsage `json:"by_user"`
 	ByModel      []ScopeUsage `json:"by_model"`
-	ByVirtualKey []ScopeUsage `json:"by_virtual_key"`
 	Quotas       []ScopeUsage `json:"quotas"`
 }
 
 type usageRow struct {
 	UserID              int64
-	KeyID               *int64
 	Model               string
 	InputTokens         int64
 	OutputTokens        int64
@@ -73,7 +70,6 @@ func (s *Service) usageRows(ctx context.Context, orgID int64) ([]usageRow, error
 	err := s.db.WithContext(ctx).
 		Table("pod_session_usage psu").
 		Select(`p.created_by_id AS user_id,
-			p.virtual_api_key_id AS key_id,
 			psu.model AS model,
 			psu.input_tokens, psu.output_tokens,
 			psu.cache_read_tokens, psu.cache_creation_tokens,
@@ -89,7 +85,6 @@ func buildReport(rows []usageRow, quotas []*domain.TokenQuota) *Report {
 	rep := &Report{}
 	byUser := map[int64]*ScopeUsage{}
 	byModel := map[string]*ScopeUsage{}
-	byKey := map[int64]*ScopeUsage{}
 
 	for _, row := range rows {
 		tok, cost := row.tokens(), row.cost()
@@ -97,14 +92,10 @@ func buildReport(rows []usageRow, quotas []*domain.TokenQuota) *Report {
 		rep.TotalCostUSD += cost
 		accUser(byUser, row.UserID, tok, cost)
 		accModel(byModel, row.Model, tok, cost)
-		if row.KeyID != nil {
-			accKey(byKey, *row.KeyID, tok, cost)
-		}
 	}
 
 	rep.ByUser = flatten(byUser)
 	rep.ByModel = flattenModel(byModel)
-	rep.ByVirtualKey = flatten(byKey)
 	rep.Quotas = overlayQuotas(rows, quotas)
 	return rep
 }

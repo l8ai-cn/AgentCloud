@@ -8,6 +8,7 @@ import {
   type ResourceBindingDraft,
   type ResourceIDBindingKind,
 } from "./resource-editor-types";
+import { ModelBindingResourceField } from "./ModelBindingResourceField";
 import { ResourceIdentityFields } from "./ResourceIdentityFields";
 import { ResourceReferenceField } from "./ResourceReferenceField";
 import { useResourceReferenceOptions } from "./use-resource-reference-options";
@@ -47,6 +48,15 @@ export function ResourceBindingConfigurationPanel({
               });
             }}
           />
+        ) : draft.kind === "ModelBinding" ? (
+          <ModelBindingResourceField
+            orgSlug={orgSlug}
+            value={draft.spec.resourceId}
+            onChange={(resourceId) => onChange({
+              ...draft,
+              spec: { resourceId },
+            })}
+          />
         ) : (
           <BindingIDField
             draft={draft}
@@ -62,7 +72,7 @@ function BindingIDField({
   draft,
   onChange,
 }: {
-  draft: Exclude<ResourceBindingDraft, { kind: "ToolBinding" }>;
+  draft: Exclude<ResourceBindingDraft, { kind: "ToolBinding" | "ModelBinding" }>;
   onChange: (draft: ResourceBindingDraft) => void;
 }) {
   const t = useTranslations("resourceEditor");

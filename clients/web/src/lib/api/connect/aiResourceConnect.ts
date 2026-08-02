@@ -3,7 +3,10 @@ import type { GenMessage } from "@bufbuild/protobuf/codegenv2";
 import {
   CreateOrganizationConnectionRequestSchema, CreatePersonalConnectionRequestSchema,
   CreateResourceRequestSchema, DeleteConnectionRequestSchema, DeleteResourceRequestSchema,
-  GetCatalogRequestSchema, GetCatalogResponseSchema, ListConnectionsResponseSchema,
+  DiscoverConnectionModelsRequestSchema, DiscoverConnectionModelsResponseSchema,
+  GetCatalogRequestSchema, GetCatalogResponseSchema,
+  ImportConnectionModelsRequestSchema, ImportConnectionModelsResponseSchema,
+  ListConnectionsResponseSchema,
   ListOrganizationConnectionsRequestSchema, ListOrganizationEffectiveResourcesRequestSchema,
   ListPersonalConnectionsRequestSchema, ListPersonalEffectiveResourcesRequestSchema,
   ListEffectiveResourcesResponseSchema, MutationResponseSchema,
@@ -84,6 +87,42 @@ export const rotateConnectionCredentials = (connectionId: number, credentials: R
 export const setConnectionEnabled = (connectionId: number, enabled: boolean) => mutate(SetConnectionEnabledRequestSchema, create(SetConnectionEnabledRequestSchema, { connectionId: BigInt(connectionId), enabled }), (bytes) => getAIResourceService().setConnectionEnabledConnect(bytes));
 export const validateConnection = (connectionId: number) => mutate(ValidateConnectionRequestSchema, create(ValidateConnectionRequestSchema, { connectionId: BigInt(connectionId) }), (bytes) => getAIResourceService().validateConnectionConnect(bytes));
 export const deleteConnection = (connectionId: number) => mutate(DeleteConnectionRequestSchema, create(DeleteConnectionRequestSchema, { connectionId: BigInt(connectionId) }), (bytes) => getAIResourceService().deleteConnectionConnect(bytes));
+
+export async function discoverConnectionModels(connectionId: number) {
+  const request = toBinary(
+    DiscoverConnectionModelsRequestSchema,
+    create(DiscoverConnectionModelsRequestSchema, { connectionId: BigInt(connectionId) }),
+  );
+  return call(
+    DiscoverConnectionModelsResponseSchema,
+    request,
+    (bytes) => getAIResourceService().discoverConnectionModelsConnect(bytes),
+  );
+}
+
+/** Empty modelIds imports every importable candidate from the provider. */
+export async function importConnectionModels(connectionId: number, modelIds: string[] = []) {
+  const request = toBinary(
+    ImportConnectionModelsRequestSchema,
+    create(ImportConnectionModelsRequestSchema, {
+      connectionId: BigInt(connectionId),
+      modelIds,
+    }),
+  );
+  const response = await call(
+    ImportConnectionModelsResponseSchema,
+    request,
+    (bytes) => getAIResourceService().importConnectionModelsConnect(bytes),
+  );
+  return {
+    connectionId: Number(response.connectionId),
+    imported: response.imported.map(fromModelResource),
+    skipped: response.skipped.map((item) => ({
+      modelId: item.modelId,
+      reason: item.reason,
+    })),
+  };
+}
 
 export async function createResource(connectionId: number, input: ResourceInput) {
   const resource = create(ResourceSpecSchema, input);

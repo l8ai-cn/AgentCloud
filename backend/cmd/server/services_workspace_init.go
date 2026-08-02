@@ -24,7 +24,6 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/ticket"
 	tokenquotasvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenquota"
-	virtualkeysvc "github.com/l8ai-cn/agentcloud/backend/internal/service/virtualkey"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/ampbearer"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/crypto"
 	"gorm.io/gorm"
@@ -80,7 +79,6 @@ func initializeWorkspaceServices(services *serviceContainer, cfg *config.Config,
 	services.promoCode = promocode.NewService(infra.NewPromocodeRepository(db), infra.NewGormBillingProvider(db))
 	services.agentpodSettings = agentpod.NewSettingsService(infra.NewSettingsRepository(db))
 	services.agentpodAIProvider = agentpod.NewAIProviderService(infra.NewAIProviderRepository(db), encryptor)
-	services.virtualKey = virtualkeysvc.NewService(infra.NewVirtualAPIKeyRepository(db), services.aiResource)
 	services.tokenQuota = tokenquotasvc.NewService(infra.NewTokenQuotaRepository(db), db)
 	workerServices, err := initializeWorkerServices(
 		cfg, db, services.agentSvc, services.aiResource, services.repository, services.runner, services.user,

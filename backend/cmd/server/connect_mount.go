@@ -124,7 +124,7 @@ func mountTokenUsageService(mux *http.ServeMux, svc *serviceContainer, opts []co
 	if svc.tokenUsage == nil {
 		return
 	}
-	srv := tokenusageconnect.NewServer(svc.tokenUsage, svc.org, svc.podSessionUsage)
+	srv := tokenusageconnect.NewServer(svc.tokenUsage, svc.org)
 	tokenusageconnect.Mount(mux, srv, opts...)
 }
 

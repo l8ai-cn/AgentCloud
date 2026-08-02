@@ -19,7 +19,6 @@ import {
   ExtensionsSettings,
   UsageSettings,
   InfrastructureOverview,
-  ModelQuotasSettings,
 } from "@/components/settings/organization";
 import { SupportTicketsContent } from "@/components/support/SupportTicketsContent";
 
@@ -67,6 +66,7 @@ export default function SettingsPage() {
       case "billing":
         return <BillingSettings t={t} />;
       case "usage":
+      case "model-quotas":
         return <UsageSettings t={t} />;
       case "ai-resources":
         return (
@@ -76,8 +76,6 @@ export default function SettingsPage() {
             canManage={currentOrg?.role === "owner" || currentOrg?.role === "admin"}
           />
         );
-      case "model-quotas":
-        return <ModelQuotasSettings />;
       case "infrastructure":
         return <InfrastructureOverview />;
       default:

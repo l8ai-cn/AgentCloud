@@ -32,6 +32,7 @@ export function AIResourcesSettings({ scope, organizationSlug, canManage }: AIRe
   const [resourceEditor, setResourceEditor] = useState<{ connection: ProviderConnection; resource?: ModelResource } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<AIResourceDeletionTarget | null>(null);
   const resources = useAIResources(scope, organizationSlug);
+  const pageCanManage = canManage || resources.connections.some((connection) => connection.canManage);
   const visibleConnections = useMemo(() => resources.connections.filter((connection) => modality === "all" || connection.resources.some((resource) => resource.modalities.includes(modality))), [modality, resources.connections]);
   const closeConnectionDialog = () => {
     setConnectionDialogOpen(false);
@@ -48,7 +49,7 @@ export function AIResourcesSettings({ scope, organizationSlug, canManage }: AIRe
           <h1 className="text-xl font-semibold text-foreground">{t("settings.aiResources.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("settings.aiResources.description")}</p>
         </div>
-        {canManage && <Button onClick={() => setConnectionDialogOpen(true)}><Plus className="mr-2 h-4 w-4" />{t("settings.aiResources.addConnection")}</Button>}
+        {pageCanManage && <Button onClick={() => setConnectionDialogOpen(true)}><Plus className="mr-2 h-4 w-4" />{t("settings.aiResources.addConnection")}</Button>}
       </div>
       <section className="surface-card p-5">
         <h2 className="mb-4 text-base font-semibold text-foreground">{t("settings.aiResources.summary.title")}</h2>
@@ -57,10 +58,30 @@ export function AIResourcesSettings({ scope, organizationSlug, canManage }: AIRe
       <PillTabs active={modality} onChange={setModality} tabs={modalities.map((item) => ({ id: item, label: t(`settings.aiResources.modality.${item}`) }))} />
       {resources.operationFailed && <AIResourcesOperationError />}
       {resources.connections.length === 0
-        ? <AIResourcesEmpty canManage={canManage} onAdd={() => setConnectionDialogOpen(true)} />
+        ? <AIResourcesEmpty canManage={pageCanManage} onAdd={() => setConnectionDialogOpen(true)} />
         : visibleConnections.length === 0
           ? <AIResourcesFilteredEmpty />
-          : <div className="space-y-3">{visibleConnections.map((connection) => <ProviderConnectionCard key={connection.id} connection={connection} modality={modality} activeModality={modality} canManage={canManage} onAddResource={(item) => setResourceEditor({ connection: item })} onEdit={setConnectionToEdit} onRotateCredentials={setConnectionToRotate} onEnabledChange={resources.changeConnectionEnabled} onValidate={resources.checkConnection} onDelete={(item) => setDeleteTarget({ kind: "connection", id: item.id, name: item.name })} onResourceEnabledChange={resources.changeResourceEnabled} onSetDefault={resources.makeDefault} onResourceEdit={(connection, resource) => setResourceEditor({ connection, resource })} onResourceDelete={(item) => setDeleteTarget({ kind: "resource", id: item.id, name: item.displayName })} />)}</div>}
+          : <div className="space-y-3">{visibleConnections.map((connection) => (
+            <ProviderConnectionCard
+              key={connection.id}
+              connection={connection}
+              modality={modality}
+              activeModality={modality}
+              canManage={canManage}
+              supportsModelDiscovery={Boolean(resources.catalog.find((provider) => provider.key === connection.providerKey)?.supportsModelDiscovery)}
+              onAddResource={(item) => setResourceEditor({ connection: item })}
+              onEdit={setConnectionToEdit}
+              onRotateCredentials={setConnectionToRotate}
+              onSyncModels={resources.syncConnectionModels}
+              onEnabledChange={resources.changeConnectionEnabled}
+              onValidate={resources.checkConnection}
+              onDelete={(item) => setDeleteTarget({ kind: "connection", id: item.id, name: item.name })}
+              onResourceEnabledChange={resources.changeResourceEnabled}
+              onSetDefault={resources.makeDefault}
+              onResourceEdit={(nextConnection, resource) => setResourceEditor({ connection: nextConnection, resource })}
+              onResourceDelete={(item) => setDeleteTarget({ kind: "resource", id: item.id, name: item.displayName })}
+            />
+          ))}</div>}
       <ProviderConnectionDialog key={connectionToEdit?.id ?? "create"} open={connectionDialogOpen || Boolean(connectionToEdit)} catalog={resources.catalog} connection={connectionToEdit ?? undefined} onOpenChange={(open) => !open && closeConnectionDialog()} onSubmit={resources.createConnection} onUpdate={resources.updateProviderConnection} />
       <ConnectionCredentialsDialog key={`credentials-${connectionToRotate?.id ?? "none"}`} connection={connectionToRotate} provider={resources.catalog.find((provider) => provider.key === connectionToRotate?.providerKey)} onOpenChange={() => setConnectionToRotate(null)} onSubmit={resources.rotateCredentials} />
       <ModelResourceDialog key={`resource-${resourceEditor?.resource?.id ?? resourceEditor?.connection.id ?? "none"}`} connection={resourceEditor?.connection ?? null} resource={resourceEditor?.resource} provider={resources.catalog.find((provider) => provider.key === resourceEditor?.connection.providerKey)} onOpenChange={() => setResourceEditor(null)} onSubmit={resources.createModelResource} onUpdate={resources.updateModelResource} />

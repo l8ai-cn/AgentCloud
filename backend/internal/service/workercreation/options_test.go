@@ -219,6 +219,36 @@ func TestServiceListOptionsBlocksEnabledImageWithoutOnlineRunner(t *testing.T) {
 	)
 }
 
+func TestServiceListOptionsAllowsProvisionableWorkerWithoutOnlineRunner(t *testing.T) {
+	source := "AGENT codex\nEXECUTABLE codex\nMODE acp\n"
+	service := NewService(Deps{
+		Catalog: enabledCodexRuntimeCatalog(),
+		Definitions: staticWorkerDefinitions{
+			"codex-cli": workerDefinition("codex-cli", "codex", source, "pty", "acp"),
+		},
+		Agents: &workerOptionsAgentProvider{agents: []*agentdomain.Agent{
+			activeWorkerTypeAgentFor("codex-cli", "codex", source),
+		}},
+		Runners: WithRunnerProvision(
+			workerOptionsRunnerAvailability{},
+			staticRunnerProvisionChecker{"codex-cli": {}},
+		),
+	})
+
+	options, err := service.ListOptions(
+		context.Background(),
+		specservice.Scope{OrgID: 77, UserID: 7},
+		OptionsFilter{},
+	)
+
+	require.NoError(t, err)
+	require.Len(t, options.WorkerTypes, 1)
+	assert.True(t, options.WorkerTypes[0].Selectable)
+	assert.Empty(t, options.WorkerTypes[0].BlockingReason)
+	require.Len(t, options.RuntimeImages, 1)
+	assert.True(t, options.RuntimeImages[0].Selectable)
+}
+
 func TestServiceListOptionsReturnsRunnerAvailabilityErrors(t *testing.T) {
 	source := "AGENT codex\nEXECUTABLE codex\nMODE acp\n"
 	runnerFailure := errors.New("runner query failed")
