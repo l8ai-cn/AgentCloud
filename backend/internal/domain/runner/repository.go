@@ -9,6 +9,7 @@ import (
 var (
 	ErrTokenExhausted            = errors.New("registration token usage exhausted")
 	ErrRunnerCapacityUnavailable = errors.New("runner pod capacity is unavailable")
+	ErrNoRunnerForAgent          = errors.New("no available runner supports the requested agent")
 )
 
 type HeartbeatUpdate struct {

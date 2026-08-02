@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	runnerDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/runner"
-	runnersvc "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -33,7 +32,7 @@ func (selector *provisionThenOnlineSelector) SelectRunnerWithAffinity(
 ) (*runnerDomain.Runner, error) {
 	selector.calls++
 	if selector.ensurer.calls == 0 {
-		return nil, runnersvc.ErrNoRunnerForAgent
+		return nil, runnerDomain.ErrNoRunnerForAgent
 	}
 	return selector.runner, nil
 }
@@ -41,7 +40,7 @@ func (selector *provisionThenOnlineSelector) SelectRunnerWithAffinity(
 func (selector *provisionThenOnlineSelector) ResolveRunnerForCreate(
 	context.Context, int64, int64, int64, string, bool,
 ) (*runnerDomain.Runner, error) {
-	return nil, runnersvc.ErrNoRunnerForAgent
+	return nil, runnerDomain.ErrNoRunnerForAgent
 }
 
 func TestResolveRunnerForFreshCreateProvisionsWhenMissing(t *testing.T) {

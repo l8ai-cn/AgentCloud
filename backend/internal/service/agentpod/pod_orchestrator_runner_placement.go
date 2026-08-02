@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	runnerDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/runner"
-	runnersvc "github.com/l8ai-cn/agentcloud/backend/internal/service/runner"
 )
 
 // RunnerEnsurerForOrchestrator provisions a Runner when none is online yet
@@ -56,7 +55,7 @@ func (o *PodOrchestrator) selectRunnerWithOptionalProvision(
 	if err == nil {
 		return selected, nil
 	}
-	if o.runnerEnsurer == nil || !errors.Is(err, runnersvc.ErrNoRunnerForAgent) {
+	if o.runnerEnsurer == nil || !errors.Is(err, runnerDomain.ErrNoRunnerForAgent) {
 		return nil, err
 	}
 	if ensureErr := o.runnerEnsurer.Ensure(
