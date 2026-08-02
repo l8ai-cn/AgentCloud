@@ -39,6 +39,7 @@ export function ResourceEditorActions({
         type="button"
         variant="outline"
         size="sm"
+        className="h-11 sm:h-8"
         disabled={busy || !canSubmit}
         loading={state.validation.status === "loading"}
         onClick={onValidate}
@@ -52,6 +53,7 @@ export function ResourceEditorActions({
         type="button"
         variant="outline"
         size="sm"
+        className="h-11 sm:h-8"
         disabled={busy || !canPlan}
         loading={state.plan.status === "loading"}
         onClick={onPlan}
@@ -64,6 +66,7 @@ export function ResourceEditorActions({
       <Button
         type="button"
         size="sm"
+        className="h-11 sm:h-8"
         disabled={busy || !canApply}
         loading={state.apply.status === "loading"}
         onClick={onApply}
