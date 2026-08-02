@@ -168,3 +168,22 @@ AgentCloud 侧的主体校验——后者会破坏 worker 归属真实用户的�
 
 原因 C 需要 zhiyong 侧在调用前换取 AMP business token，而非原样转发会话凭证。
 禁止为兼容而并存两套凭证或加 fallback 分支。
+
+## 2026-08-02 实测结论
+
+用 `study.l8ai.cn` 租户 `6` 的 `admin`（`principal:testadminuser02`）拿到的
+AMP business token（`user_session` / `ZHIYONG` / tenant `6`）直连
+`teacher-assistant-partner/run`：
+
+1. **身份链通过**。不是闸门 2/3/7；联邦用户 `user-493753e7`（id=3）可写 org `l8ai`。
+2. **真实阻塞是模型绑定漂移**：snapshot 指向已删除的 `model_resource_id=52`
+   （connection 7），表现为 `Failed to create pod` / `record not found`。
+   已把 bootstrap 改为在 model/image/skill/config 漂移时重建 snapshot，并重绑到
+   org 2 的 `model_resource_id=132`（connection 12 / `gpt-5.4`）。
+3. **次要阻塞是 Based 套餐并发配额=5**：清理 3 个卡住的旧 pod 后，
+   `RunExpert` 返回 201，`embed-grant` 返回 200，`run_count` 从 0 变为 2，
+   新建 pod `3-standalone-*` 归属联邦用户 3。
+
+仍未覆盖：`teacher1` / `testteacher001` 登录返回 2107（outside application login
+scope）；全量 bootstrap 仍会在后续 `video-production-expert` 因 runtime image
+不可用而失败，但不影响教育类 partner。
