@@ -12,6 +12,7 @@ interface ResourceEditorActionsProps {
   canSubmit: boolean;
   canPlan: boolean;
   canApply: boolean;
+  busy?: boolean;
   onValidate: () => void;
   onPlan: () => void;
   onApply: () => void;
@@ -23,18 +24,22 @@ export function ResourceEditorActions({
   canSubmit,
   canPlan,
   canApply,
+  busy = false,
   onValidate,
   onPlan,
   onApply,
 }: ResourceEditorActionsProps) {
   const t = useTranslations("resourceEditor");
   return (
-    <div className="sticky bottom-0 z-10 -mx-1 grid grid-cols-2 gap-2 border-t border-border bg-background/95 px-1 py-4 backdrop-blur sm:flex sm:flex-wrap sm:justify-end">
+    <div
+      className="flex flex-wrap items-center justify-end gap-2"
+      data-testid="resource-editor-actions"
+    >
       <Button
         type="button"
         variant="outline"
-        className="h-11 sm:h-9"
-        disabled={!canSubmit}
+        size="sm"
+        disabled={busy || !canSubmit}
         loading={state.validation.status === "loading"}
         onClick={onValidate}
       >
@@ -46,8 +51,8 @@ export function ResourceEditorActions({
       <Button
         type="button"
         variant="outline"
-        className="h-11 sm:h-9"
-        disabled={!canPlan}
+        size="sm"
+        disabled={busy || !canPlan}
         loading={state.plan.status === "loading"}
         onClick={onPlan}
       >
@@ -58,8 +63,8 @@ export function ResourceEditorActions({
       </Button>
       <Button
         type="button"
-        className="col-span-2 h-11 sm:h-9"
-        disabled={!canApply}
+        size="sm"
+        disabled={busy || !canApply}
         loading={state.apply.status === "loading"}
         onClick={onApply}
       >

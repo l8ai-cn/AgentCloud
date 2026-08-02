@@ -1,0 +1,117 @@
+{
+  "cluster": "oilan",
+  "base": "https://agents.l8ai.cn",
+  "org": "dev-org",
+  "revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
+  "probed_at": "2026-08-01T15:04:05.922698+00:00",
+  "account": "admin@agentsmesh.local",
+  "results": [
+    {
+      "slug": "aider",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "claude-code",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "codex-cli",
+      "verdict": "PASS",
+      "api_blocking": "",
+      "pod_key": "2-standalone-489cd733"
+    },
+    {
+      "slug": "cursor-cli",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "do-agent",
+      "verdict": "PASS",
+      "api_blocking": "",
+      "pod_key": "2-standalone-c46c03fd"
+    },
+    {
+      "slug": "gemini-cli",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "grok-build",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "hermes",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "kimi-code",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "loopal",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "minimax-cli",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "openclaw",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "opencode",
+      "verdict": "BLOCKED",
+      "api_blocking": "No runtime image is available for this worker type",
+      "pod_key": null
+    },
+    {
+      "slug": "pattern-designer",
+      "verdict": "PASS",
+      "api_blocking": "",
+      "pod_key": "2-standalone-e88dc648"
+    },
+    {
+      "slug": "seedance-expert",
+      "verdict": "PASS",
+      "api_blocking": "",
+      "pod_key": "2-standalone-249f4642"
+    },
+    {
+      "slug": "video-studio",
+      "verdict": "PASS",
+      "api_blocking": "",
+      "pod_key": "2-standalone-57cf4dc5"
+    }
+  ],
+  "summary": {
+    "BLOCKED": 11,
+    "PASS": 5
+  },
+  "notes": [
+    "CreatePod must send only orgSlug/cols/rows/workerSpec (no agentSlug/alias top-level).",
+    "pattern-designer needs env-bundle secret refs for LOVART_* keys.",
+    "do-agent/seedance-expert need configDocumentBindings.settings -> config env-bundle.",
+    "seedance-expert requires toolModelResourceIds.seedance-video.",
+    "Remaining BLOCKED types lack enabled runtime catalog images (or runners)."
+  ]
+}

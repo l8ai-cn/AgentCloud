@@ -156,7 +156,7 @@ const nextConfig: NextConfig = {
           destination: `${proxyTarget}/api/:path*`,
         },
         // Session REST API is mounted at bare `/v1/*` on the backend (e.g.
-        // /v1/virtual-keys, /v1/usage/quota-report). quotaApi.ts reaches it
+        // /v1/token-quotas, /v1/usage/quota-report). quotaApi.ts reaches it
         // via plain fetch without the connect-protocol-version header, so the
         // Connect `/:svc/:method` rewrite below can't catch these — proxy the
         // whole `/v1` prefix explicitly. Traefik already routes `/v1` in prod.

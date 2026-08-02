@@ -13,12 +13,6 @@ function formatTokens(n: number): string {
   return n.toLocaleString();
 }
 
-/**
- * Optional per-Worker budget mount. The numeric cap is emitted as
- * `CONFIG token_budget` in the AgentFile layer (existing backend contract);
- * the org-level usage/quota is shown read-only so the operator can see the
- * quota gate that the backend enforces at pod creation.
- */
 export function WorkerBudgetSection({ tokenBudget, onChange, t }: Props) {
   const [orgUsage, setOrgUsage] = useState<ScopeUsage | null>(null);
 

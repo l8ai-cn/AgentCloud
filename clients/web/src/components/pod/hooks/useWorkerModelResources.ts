@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
+import type { EffectiveResource } from "@/lib/api/facade/aiResource";
 import {
-  getCatalog,
   listOrganizationEffectiveResources,
   listPersonalEffectiveResources,
 } from "@/lib/api/facade/aiResourceConnect";
-import type { EffectiveResource } from "@/lib/api/facade/aiResource";
 import { readCurrentOrg } from "@/stores/auth";
-import {
-  compatibleModelResources,
-  type WorkerModelResourceRequirement,
-} from "../CreatePodForm/workerModelResources";
+import { loadCompatibleModelResources } from "../CreatePodForm/loadCompatibleModelResources";
+import type { WorkerModelResourceRequirement } from "../CreatePodForm/workerModelResources";
 
 export function useWorkerModelResources(
   agentSlug: string | null | undefined,
@@ -22,7 +19,9 @@ export function useWorkerModelResources(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loadedAgentSlug, setLoadedAgentSlug] = useState("");
-  const [selectedModelResourceId, setSelectedModelResourceId] = useState<number | null>(null);
+  const [selectedModelResourceId, setSelectedModelResourceId] = useState<
+    number | null
+  >(null);
   const requestAgentSlug = agentSlug ?? "";
   const modelRequired = requirement?.required ?? false;
   const protocolAdapterKey = requirement?.protocolAdapters.join(",") ?? "";
@@ -44,38 +43,34 @@ export function useWorkerModelResources(
       setError(null);
       try {
         const orgSlug = readCurrentOrg()?.slug ?? "";
-        const [catalog, effective] = await Promise.all([
-          getCatalog(),
-          orgSlug
-            ? listOrganizationEffectiveResources(
-              orgSlug,
-              includeToolModels ? ["chat", "video"] : ["chat"],
-            )
-            : listPersonalEffectiveResources(
-              includeToolModels ? ["chat", "video"] : ["chat"],
-            ),
+        const modalities = includeToolModels ? ["chat", "video"] : ["chat"];
+        const [compatible, toolPool] = await Promise.all([
+          loadCompatibleModelResources({
+            orgSlug: orgSlug || undefined,
+            modalities,
+            requirement: {
+              required: true,
+              protocolAdapters: protocolAdapterKey
+                ? protocolAdapterKey.split(",")
+                : [],
+            },
+          }),
+          includeToolModels
+            ? (orgSlug
+              ? listOrganizationEffectiveResources(orgSlug, modalities)
+              : listPersonalEffectiveResources(modalities))
+            : Promise.resolve([] as EffectiveResource[]),
         ]);
         if (cancelled) return;
-        const deduped = dedupeResources(effective);
-        const requiredProtocolAdapters = protocolAdapterKey
-          ? protocolAdapterKey.split(",")
-          : [];
-        setResources(
-          compatibleModelResources(
-            deduped,
-            catalog,
-            {
-              required: true,
-              protocolAdapters: requiredProtocolAdapters,
-            },
-          ),
-        );
-        setToolResources(includeToolModels ? deduped : []);
+        setResources(compatible);
+        setToolResources(includeToolModels ? dedupeResources(toolPool) : []);
       } catch (err) {
         if (cancelled) return;
         setResources([]);
         setToolResources([]);
-        setError(err instanceof Error ? err.message : "Failed to load model resources");
+        setError(
+          err instanceof Error ? err.message : "Failed to load model resources",
+        );
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -89,7 +84,6 @@ export function useWorkerModelResources(
       cancelled = true;
     };
   }, [
-    agentSlug,
     includeToolModels,
     initialModelResourceId,
     modelRequired,
@@ -106,8 +100,7 @@ export function useWorkerModelResources(
   return {
     modelResources: visibleResources,
     toolModelResources: current ? toolResources : [],
-    loadingModelResources:
-      modelRequired && (!current || loading),
+    loadingModelResources: modelRequired && (!current || loading),
     modelResourceError: current ? error : null,
     selectedModelResource,
     selectedModelResourceId,

@@ -116,7 +116,6 @@ func (s *PodService) CreatePod(ctx context.Context, req *CreatePodRequest) (*age
 		Perpetual:       req.Perpetual,
 		ResolvedConfig:  req.ResolvedConfig,
 		PodResourceBindings: agentpod.PodResourceBindings{
-			VirtualAPIKeyID:             req.VirtualAPIKeyID,
 			ModelResourceID:             req.ModelResourceID,
 			WorkerSpecSnapshotID:        req.WorkerSpecSnapshotID,
 			OrchestrationWorkerLaunchID: req.OrchestrationWorkerLaunchID,

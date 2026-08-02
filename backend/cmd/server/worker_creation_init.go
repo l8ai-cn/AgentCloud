@@ -90,11 +90,13 @@ func initializeWorkerCreationService(
 	commits workercreation.WorkspaceCommitResolver,
 ) *workercreation.Service {
 	return workercreation.NewService(workercreation.Deps{
-		Catalog:      catalog,
-		Definitions:  definitions,
-		Agents:       agents,
-		Models:       models,
-		Runners:      runners,
+		Catalog:     catalog,
+		Definitions: definitions,
+		Agents:      agents,
+		Models:      models,
+		Runners: workercreation.WithRunnerProvision(
+			runners, workercreation.ProvisionableAgentsFromEnv(),
+		),
 		Repositories: repositories,
 		Skills:       infra.NewSkillCatalogRepository(db),
 		Knowledge:    infra.NewKnowledgeBaseRepository(db),

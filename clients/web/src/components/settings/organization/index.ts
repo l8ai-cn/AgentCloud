@@ -8,4 +8,3 @@ export { ExtensionsSettings } from "./ExtensionsSettings";
 export { UsageSettings } from "./UsageSettings";
 export { InfrastructureOverview } from "./InfrastructureOverview";
 export { RepositoriesSettings } from "./RepositoriesSettings";
-export { ModelQuotasSettings } from "./ModelQuotasSettings";

@@ -678,8 +678,9 @@
       }
     },
     "usagePage": {
-      "title": "Token 用量",
-      "description": "监控组织内的 Token 消耗情况",
+      "title": "用量",
+      "description": "已完成会话的历史 Token 分析、活跃 Worker 的实时成本，以及仅用于报表的可选上限。",
+      "historicalSection": "已完成会话",
       "inputTokens": "输入 Token",
       "outputTokens": "输出 Token",
       "cacheReadTokens": "缓存读取 Token",
@@ -707,10 +708,29 @@
         "week": "周",
         "month": "月"
       },
-      "liveSessionsTitle": "活跃会话成本（实时）",
-      "liveSessionsHint": "来自运行中 Pod 的 USD 估算（pod_session_usage），已合并进上方 Token 汇总。",
+      "liveSessionsTitle": "活跃 Worker（实时）",
+      "liveSessionsHint": "来自活跃 Worker 的 USD 估算，与上方已完成会话汇总分开统计。",
       "liveSessionsEmpty": "暂无活跃会话用量",
-      "estimatedCost": "估算成本 (USD)"
+      "estimatedCost": "估算成本 (USD)",
+      "ceilings": {
+        "title": "Token 上限",
+        "description": "可按组织、用户和/或模型设置仅报表用的上限。超额会在报表中标记，不会拦截创建或运行。",
+        "userPlaceholder": "用户 ID（留空=组织级）",
+        "modelPlaceholder": "模型（留空=全部）",
+        "limitPlaceholder": "上限 tokens",
+        "save": "保存上限",
+        "empty": "尚未配置上限。",
+        "orgLabel": "组织",
+        "userLabel": "用户 {id}",
+        "allModels": "· 全部模型",
+        "modelScoped": "· {model}",
+        "tokensUnit": "tokens",
+        "delete": "删除",
+        "limitRequired": "请填写上限",
+        "loadFailed": "加载上限失败",
+        "saveFailed": "保存上限失败",
+        "deleteFailed": "删除上限失败"
+      }
     },
     "notifications": {
       "title": "推送通知",

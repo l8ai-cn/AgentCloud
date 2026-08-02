@@ -87,6 +87,20 @@ describe("KnowledgeBaseMountSelect", () => {
     expect(screen.getByText("ide.createPod.manageKnowledgeBases")).toBeInTheDocument();
     expect(screen.getByText("ide.createPod.knowledgeModeReadOnly")).toBeInTheDocument();
   });
+
+  it("treats an unmounted knowledge base service as an empty catalog", async () => {
+    mockListKnowledgeBases.mockRejectedValueOnce(new Error("404 page not found"));
+    render(
+      <KnowledgeBaseMountSelect selectedMounts={[]} onChange={vi.fn()} />,
+    );
+
+    expect(await screen.findByText(
+      "ide.createPod.noKnowledgeBasesHint",
+    )).toBeInTheDocument();
+    expect(screen.queryByText(
+      "ide.createPod.knowledgeBasesLoadFailed",
+    )).not.toBeInTheDocument();
+  });
 });
 
 function knowledgeBase(id: number, slug: string): KnowledgeBase {

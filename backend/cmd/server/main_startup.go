@@ -144,7 +144,6 @@ func buildServicesContainer(
 		AgentPodSettings:     services.agentpodSettings,
 		AgentPodAIProvider:   services.agentpodAIProvider,
 		AIResource:           services.aiResource,
-		VirtualKey:           services.virtualKey,
 		TokenQuota:           services.tokenQuota,
 		EnvBundle:            services.envBundle,
 		APIKey:               services.apikey,

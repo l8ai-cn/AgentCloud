@@ -32,10 +32,17 @@ const api = vi.hoisted(() => ({
   createWorkerFromPlan: vi.fn(),
   listResources: vi.fn(),
 }));
+const aiResources = vi.hoisted(() => ({
+  getCatalog: vi.fn(),
+  listOrganizationEffectiveResources: vi.fn(),
+  listPersonalEffectiveResources: vi.fn(),
+}));
 
 vi.mock("@/lib/api/facade/orchestrationResource", () => ({
   ...api,
 }));
+
+vi.mock("@/lib/api/facade/aiResourceConnect", () => aiResources);
 
 vi.mock("@/components/pod/hooks/useWorkerCreateOptions", () => ({
   useWorkerCreateOptions: () => ({
@@ -48,7 +55,28 @@ vi.mock("@/components/pod/hooks/useWorkerCreateOptions", () => ({
 describe("ResourceEditorShell", () => {
   beforeEach(() => {
     Object.values(api).forEach((method) => method.mockReset());
+    Object.values(aiResources).forEach((method) => method.mockReset());
     api.listResources.mockResolvedValue({ items: [] });
+    aiResources.getCatalog.mockResolvedValue([
+      { key: "openai", protocolAdapter: "openai-compatible" },
+    ]);
+    aiResources.listOrganizationEffectiveResources.mockResolvedValue([{
+      selectable: true,
+      blockingReason: "",
+      connection: {
+        providerKey: "openai",
+        isEnabled: true,
+        name: "OpenAI",
+      },
+      resource: {
+        id: 101,
+        isEnabled: true,
+        modalities: ["chat"],
+        capabilities: ["text-generation"],
+        displayName: "GPT",
+        modelId: "gpt-5.4",
+      },
+    }]);
     api.validateResource.mockResolvedValue(create(
       ValidateResourceResponseSchema,
       {
@@ -258,7 +286,10 @@ describe("ResourceEditorShell", () => {
 
     render(<ResourceEditorShell orgSlug="acme" kind="ModelBinding" />);
     await user.type(screen.getByLabelText(/Resource name/), "coding-primary");
-    await user.type(screen.getByLabelText(/Model API resource ID/), "101");
+    await user.click(await screen.findByRole("combobox", {
+      name: /Model API resource/,
+    }));
+    await user.click(screen.getByRole("option", { name: /OpenAI · GPT/ }));
     await user.click(screen.getByRole("button", { name: "Generate plan" }));
     await screen.findByText("Plan ready");
     await user.click(screen.getByRole("button", { name: "Apply resource" }));

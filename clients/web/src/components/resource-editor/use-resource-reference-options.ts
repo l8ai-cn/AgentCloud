@@ -8,11 +8,12 @@ export function useResourceReferenceOptions(
   orgSlug: string,
   workerType: string = "",
   credentialTargetNames: readonly string[] = [],
+  refreshKey: number = 0,
 ): ResourceReferenceCatalog {
   const credentialTargetsJSON = JSON.stringify(
     [...new Set(credentialTargetNames)].sort(),
   );
-  const identity = `${orgSlug}:${workerType}:${credentialTargetsJSON}`;
+  const identity = `${orgSlug}:${workerType}:${credentialTargetsJSON}:${refreshKey}`;
   const [state, setState] = useState<{
     identity: string;
     catalog: ResourceReferenceCatalog;
@@ -34,7 +35,7 @@ export function useResourceReferenceOptions(
     return () => {
       active = false;
     };
-  }, [credentialTargetsJSON, identity, orgSlug, workerType]);
+  }, [credentialTargetsJSON, identity, orgSlug, refreshKey, workerType]);
 
   return state.identity === identity ? state.catalog : emptyLoadingCatalog();
 }

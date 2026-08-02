@@ -44,7 +44,6 @@ import (
 	tokenquotasvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenquota"
 	tokenusagesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/tokenusage"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/user"
-	virtualkeysvc "github.com/l8ai-cn/agentcloud/backend/internal/service/virtualkey"
 	workflow "github.com/l8ai-cn/agentcloud/backend/internal/service/workflow"
 )
 
@@ -79,7 +78,6 @@ type serviceContainer struct {
 	agentpodSettings    *agentpod.SettingsService
 	agentpodAIProvider  *agentpod.AIProviderService
 	aiResource          *airesourceservice.Service
-	virtualKey          *virtualkeysvc.Service
 	tokenQuota          *tokenquotasvc.Service
 	license             *license.Service
 	apikey              *apikeyservice.Service
