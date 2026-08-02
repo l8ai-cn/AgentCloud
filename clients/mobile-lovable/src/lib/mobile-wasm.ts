@@ -1,13 +1,14 @@
 import initWasm, {
   WasmApiClient,
-  type WasmAcpSessionManager,
   type WasmPodService,
 } from "agent-cloud-wasm";
 import { getMobileAuthManager, mobileAuthBaseUrl } from "./mobile-auth-manager";
+import type { MobileAcpManager } from "./mobile-acp-session";
+import { createInMemoryMobileAcpManager } from "./mobile-in-memory-acp-manager";
 
 let apiClientPromise: Promise<WasmApiClient> | undefined;
 let podServicePromise: Promise<WasmPodService> | undefined;
-let acpManagerPromise: Promise<WasmAcpSessionManager> | undefined;
+let acpManagerPromise: Promise<MobileAcpManager> | undefined;
 
 export function getMobileApiClient(): Promise<WasmApiClient> {
   if (!apiClientPromise) {
@@ -26,9 +27,10 @@ export function getMobilePodService(): Promise<WasmPodService> {
   return podServicePromise;
 }
 
-export function getMobileAcpManager(): Promise<WasmAcpSessionManager> {
+/** Local ACP view cache — Wasm ACP manager was removed with the V1 stack. */
+export function getMobileAcpManager(): Promise<MobileAcpManager> {
   if (!acpManagerPromise) {
-    acpManagerPromise = getMobileApiClient().then((client) => client.get_acp_manager());
+    acpManagerPromise = Promise.resolve(createInMemoryMobileAcpManager());
   }
   return acpManagerPromise;
 }

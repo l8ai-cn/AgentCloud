@@ -1,5 +1,3 @@
-import { create, fromBinary } from "@bufbuild/protobuf";
-import { AddPermissionRequestRequestSchema } from "@agent-cloud/proto/acp_state/v1/acp_state_pb";
 import { describe, expect, it, vi } from "vitest";
 import {
   applyMobileAcpRelayMessage,
@@ -20,7 +18,7 @@ function manager(): MobileAcpManager {
 }
 
 describe("mobile ACP session", () => {
-  it("hydrates the authoritative Wasm cache from an ACP snapshot", () => {
+  it("hydrates the authoritative cache from an ACP snapshot", () => {
     const acp = manager();
 
     applyMobileAcpRelayMessage(acp, "pod-1", 0x0d, {
@@ -39,17 +37,14 @@ describe("mobile ACP session", () => {
     expect(acp.clear_session).toHaveBeenCalledWith("pod-1");
     expect(acp.update_session_state).toHaveBeenCalledWith("pod-1", "waiting_permission");
     expect(acp.add_content_chunk).toHaveBeenCalledWith("pod-1", "hello", "assistant");
-    const request = fromBinary(
-      AddPermissionRequestRequestSchema,
-      vi.mocked(acp.add_permission_request).mock.calls[0][0],
+    const request = JSON.parse(
+      new TextDecoder().decode(vi.mocked(acp.add_permission_request).mock.calls[0][0]),
     );
-    expect(request).toEqual(
-      create(AddPermissionRequestRequestSchema, {
-        podKey: "pod-1",
-        requestJson:
-          "{\"id\":\"perm-1\",\"tool_name\":\"shell\",\"args\":{\"command\":\"ls\"},\"description\":\"List files\"}",
-      }),
-    );
+    expect(request).toEqual({
+      podKey: "pod-1",
+      requestJson:
+        "{\"id\":\"perm-1\",\"tool_name\":\"shell\",\"args\":{\"command\":\"ls\"},\"description\":\"List files\"}",
+    });
     expect(
       vi.mocked(acp.add_content_chunk).mock.invocationCallOrder[0],
     ).toBeLessThan(vi.mocked(acp.update_session_state).mock.invocationCallOrder[0]);
@@ -69,7 +64,7 @@ describe("mobile ACP session", () => {
     expect(acp.mark_last_message_complete).toHaveBeenCalledWith("pod-1");
   });
 
-  it("reads only renderable ACP state from the Wasm cache", () => {
+  it("reads only renderable ACP state from the session cache", () => {
     const acp = manager();
     vi.mocked(acp.get_session_json).mockReturnValue(
       JSON.stringify({
