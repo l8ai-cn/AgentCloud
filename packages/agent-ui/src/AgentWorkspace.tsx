@@ -85,7 +85,7 @@ export function AgentWorkspace({
   return (
     <AgentWorkspaceLocaleProvider locale={locale}>
       <div
-        className={`group/agentws flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground ${
+        className={`flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground ${
           fullscreen.active ? "agent-workspace-fullscreen" : ""
         } ${className}`}
         data-agent-workspace={sessionId}

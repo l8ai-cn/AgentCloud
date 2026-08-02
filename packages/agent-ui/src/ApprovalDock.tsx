@@ -8,6 +8,7 @@ import type {
   AgentSessionRuntime,
 } from "./contracts";
 import { PermissionQuestionForm } from "./PermissionQuestionForm";
+import { CONVERSATION_CONTENT_WIDTH } from "./conversationContentWidth";
 
 export function ApprovalDock({
   disabled = false,
@@ -61,8 +62,8 @@ export function ApprovalDock({
     );
   }
   return (
-    <section className="border-t border-amber-300 bg-amber-50 px-3 py-3 text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-50">
-      <div className="flex items-start gap-2">
+    <section className="border-t border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-50">
+      <div className={`${CONVERSATION_CONTENT_WIDTH} flex items-start gap-2`}>
         <ShieldAlert className="mt-0.5 size-4 shrink-0" />
         <div className="min-w-0 flex-1">
           <div className="text-sm font-medium">{permission.title}</div>

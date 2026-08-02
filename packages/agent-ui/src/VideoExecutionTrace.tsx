@@ -7,6 +7,7 @@ import {
 
 import { useAgentWorkspaceText } from "./AgentWorkspaceLocaleContext";
 import type { UserVideoExecutionStep } from "./userVideoExecutionTrace";
+import { CONVERSATION_CONTENT_WIDTH } from "./conversationContentWidth";
 
 export function UserVideoExecutionTrace({
   steps,
@@ -22,7 +23,7 @@ export function UserVideoExecutionTrace({
       aria-live="polite"
       className="border-b border-border bg-muted/20 px-4 py-3"
     >
-      <div className="mx-auto max-w-4xl">
+      <div className={CONVERSATION_CONTENT_WIDTH}>
         <div className="mb-2 text-xs font-medium text-foreground">{text.label}</div>
         <ol className="grid gap-2 sm:grid-cols-4">
           {steps.map((step) => {

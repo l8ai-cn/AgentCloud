@@ -21,6 +21,7 @@ import type {
   AgentSessionSnapshot,
 } from "./contracts";
 import type { AgentWorkspacePresentation } from "./userWorkspacePresentation";
+import { CONVERSATION_CONTENT_WIDTH } from "./conversationContentWidth";
 
 export function ConversationComposer({
   onError,
@@ -108,8 +109,10 @@ export function ConversationComposer({
   };
 
   return (
-    <form className="shrink-0 px-3 pb-3 pt-2" onSubmit={submit}>
-      <div className="relative mx-auto w-full max-w-4xl rounded-lg border border-border bg-card shadow-sm transition-colors focus-within:border-ring">
+    <form className="shrink-0 px-4 pb-3 pt-2" onSubmit={submit}>
+      <div
+        className={`${CONVERSATION_CONTENT_WIDTH} relative rounded-lg border border-border bg-card shadow-sm transition-colors focus-within:border-ring`}
+      >
         {presentation === "developer" && (
           <ComposerCommandMenu
             commands={snapshot.commands ?? []}

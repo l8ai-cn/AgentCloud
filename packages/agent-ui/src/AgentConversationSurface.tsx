@@ -60,23 +60,28 @@ export function AgentConversationSurface({
     });
 
   if (isEmpty) {
+    // The scroller stays a plain block and the inner band carries min-h-full:
+    // centering with justify-content on an overflowing flex scroller clips the
+    // top out of reach.
     return (
-      <main className="flex h-full min-h-0 flex-col justify-center gap-5 overflow-y-auto py-6 group-[.agent-workspace-fullscreen]/agentws:mx-auto group-[.agent-workspace-fullscreen]/agentws:max-w-4xl group-[.agent-workspace-fullscreen]/agentws:px-6">
-        <ConversationEmptyState agentLabel={snapshot.agentLabel} />
-        <ConversationComposer
-          mentionHarness={mentionHarness}
-          onError={onError}
-          presentation={presentation}
-          runtime={runtime}
-          snapshot={snapshot}
-          workspaceFiles={workspaceFiles}
-        />
+      <main className="h-full min-h-0 overflow-y-auto">
+        <div className="flex min-h-full flex-col justify-center gap-5 py-6">
+          <ConversationEmptyState agentLabel={snapshot.agentLabel} />
+          <ConversationComposer
+            mentionHarness={mentionHarness}
+            onError={onError}
+            presentation={presentation}
+            runtime={runtime}
+            snapshot={snapshot}
+            workspaceFiles={workspaceFiles}
+          />
+        </div>
       </main>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col group-[.agent-workspace-fullscreen]/agentws:mx-auto group-[.agent-workspace-fullscreen]/agentws:max-w-4xl group-[.agent-workspace-fullscreen]/agentws:px-6">
+    <div className="flex h-full min-h-0 flex-col">
       {executionTrace}
       <div className="relative min-h-0 flex-1">
         <main className="h-full overflow-y-auto" ref={scrollRef}>

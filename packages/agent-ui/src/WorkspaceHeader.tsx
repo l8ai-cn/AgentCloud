@@ -24,7 +24,7 @@ export function WorkspaceHeader({
       <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
         <Bot className="size-4" />
       </div>
-      <div className="min-w-0 shrink basis-40">
+      <div className="min-w-0 flex-1 basis-40">
         <div className="truncate text-sm font-medium">{snapshot.title}</div>
         <div className="hidden min-w-0 items-center gap-1.5 overflow-hidden text-xs text-muted-foreground sm:flex">
           <span className="shrink-0">{snapshot.agentLabel}</span>
@@ -48,7 +48,7 @@ export function WorkspaceHeader({
         </div>
       </div>
       {tabs}
-      <div className="ml-auto flex shrink-0 items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1.5">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
           {snapshot.status === "failed" ? (
             <CircleAlert className="size-3.5 text-destructive" />

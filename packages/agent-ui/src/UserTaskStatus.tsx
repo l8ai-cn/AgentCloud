@@ -10,6 +10,7 @@ import type {
 } from "./contracts";
 import { useAgentWorkspaceText } from "./AgentWorkspaceLocaleContext";
 import { userVideoTaskState } from "./userWorkspacePresentation";
+import { CONVERSATION_CONTENT_WIDTH } from "./conversationContentWidth";
 
 export function UserTaskStatus({
   artifacts,
@@ -40,7 +41,9 @@ export function UserTaskStatus({
       }`}
       role={failed ? "alert" : "status"}
     >
-      <div className="mx-auto flex max-w-4xl items-start gap-2.5 sm:items-center">
+      <div
+        className={`${CONVERSATION_CONTENT_WIDTH} flex items-start gap-2.5 sm:items-center`}
+      >
         <Icon
           aria-hidden="true"
           className={`mt-0.5 size-4 shrink-0 ${

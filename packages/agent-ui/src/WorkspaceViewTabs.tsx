@@ -27,7 +27,7 @@ export function WorkspaceViewTabs({
   return (
     <nav
       aria-label={text.workspaceViews}
-      className="flex items-center gap-1"
+      className="flex shrink-0 items-center gap-1"
       onKeyDown={focusAdjacentTab}
       role="tablist"
     >

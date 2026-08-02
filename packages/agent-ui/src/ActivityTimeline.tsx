@@ -13,6 +13,7 @@ import type { AgentToolRendererRegistration } from "./react/rendererTypes";
 import type { AgentContentRendererRegistration } from "./react/contentRendererTypes";
 import type { ContentRendererRegistry } from "./registry/ContentRendererRegistry";
 import type { ToolRendererRegistry } from "./registry/ToolRendererRegistry";
+import { CONVERSATION_CONTENT_WIDTH } from "./conversationContentWidth";
 
 export function ActivityTimeline({
   items,
@@ -39,7 +40,9 @@ export function ActivityTimeline({
     );
   }
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 px-4 py-4">
+    <div
+      className={`${CONVERSATION_CONTENT_WIDTH} flex flex-col gap-3 px-4 py-4`}
+    >
       {groupToolActivity(items).map((item) =>
         item.kind === "tool-run" ? (
           <ToolActivityGroup
