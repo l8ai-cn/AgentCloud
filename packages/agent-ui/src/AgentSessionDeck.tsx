@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { AgentWorkspace, type AgentWorkspaceProps } from "./AgentWorkspace";
 import {
@@ -9,9 +9,14 @@ import {
 import { AgentWorkspaceLocaleProvider } from "./AgentWorkspaceLocaleContext";
 import { focusAdjacentTab } from "./react/tabKeyboardNavigation";
 import { useAgentWorkspaceText } from "./AgentWorkspaceLocaleContext";
+import { useElementFullscreen } from "./useElementFullscreen";
+import { WorkspaceFullscreenButton } from "./WorkspaceFullscreenButton";
 
 export interface AgentSessionDeckProps
-  extends Omit<AgentWorkspaceProps, "runtime" | "sessionId" | "terminalRuntime"> {
+  extends Omit<
+    AgentWorkspaceProps,
+    "runtime" | "sessionId" | "showFullscreen" | "terminalRuntime"
+  > {
   activeSessionId?: string;
   defaultActiveSessionId?: string;
   onActiveSessionChange?: (sessionId: string) => void;
@@ -53,19 +58,27 @@ export function AgentSessionDeck({
     setInnerActive(sessionId);
     onActiveSessionChange?.(sessionId);
   };
+  const deckRef = useRef<HTMLDivElement>(null);
+  const fullscreen = useElementFullscreen(deckRef);
 
   return (
     <AgentWorkspaceLocaleProvider locale={locale}>
       <div
-        className={`flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground ${className}`}
+        className={`group/agentws flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground ${
+          fullscreen.active ? "agent-workspace-fullscreen" : ""
+        } ${className}`}
         data-agent-session-deck=""
+        ref={deckRef}
       >
         <AgentSessionDeckStrip
           activeSessionId={resolvedActive}
           baseId={baseId}
+          fullscreenActive={fullscreen.active}
+          fullscreenSupported={fullscreen.supported}
           onActivate={activate}
           onCloseSession={onCloseSession}
           onCreateSession={onCreateSession}
+          onToggleFullscreen={fullscreen.toggle}
           sessions={sessions}
         />
         {mounted.map((entry) => {
@@ -85,6 +98,7 @@ export function AgentSessionDeck({
                 locale={locale}
                 runtime={entry.runtime}
                 sessionId={entry.sessionId}
+                showFullscreen={false}
                 terminalRuntime={entry.terminalRuntime}
               />
             </section>
@@ -98,39 +112,47 @@ export function AgentSessionDeck({
 function AgentSessionDeckStrip({
   activeSessionId,
   baseId,
+  fullscreenActive,
+  fullscreenSupported,
   onActivate,
   onCloseSession,
   onCreateSession,
+  onToggleFullscreen,
   sessions,
 }: {
   activeSessionId?: string;
   baseId: string;
+  fullscreenActive: boolean;
+  fullscreenSupported: boolean;
   onActivate: (sessionId: string) => void;
   onCloseSession?: (sessionId: string) => void;
   onCreateSession?: () => void;
+  onToggleFullscreen: () => void;
   sessions: readonly AgentSessionDeckEntry[];
 }) {
   const text = useAgentWorkspaceText();
   return (
-    <div
-      aria-label={text.sessions}
-      className="flex h-11 shrink-0 items-center gap-1 overflow-x-auto border-b border-border px-2"
-      onKeyDown={focusAdjacentTab}
-      role="tablist"
-    >
-      {sessions.map((entry) => (
-        <AgentSessionDeckTab
-          active={entry.sessionId === activeSessionId}
-          entry={entry}
-          id={`${baseId}-${entry.sessionId}-tab`}
-          key={entry.sessionId}
-          onActivate={() => onActivate(entry.sessionId)}
-          onClose={
-            onCloseSession ? () => onCloseSession(entry.sessionId) : undefined
-          }
-          panelId={`${baseId}-${entry.sessionId}-panel`}
-        />
-      ))}
+    <div className="flex h-11 shrink-0 items-center gap-1 border-b border-border px-2">
+      <div
+        aria-label={text.sessions}
+        className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto"
+        onKeyDown={focusAdjacentTab}
+        role="tablist"
+      >
+        {sessions.map((entry) => (
+          <AgentSessionDeckTab
+            active={entry.sessionId === activeSessionId}
+            entry={entry}
+            id={`${baseId}-${entry.sessionId}-tab`}
+            key={entry.sessionId}
+            onActivate={() => onActivate(entry.sessionId)}
+            onClose={
+              onCloseSession ? () => onCloseSession(entry.sessionId) : undefined
+            }
+            panelId={`${baseId}-${entry.sessionId}-panel`}
+          />
+        ))}
+      </div>
       {onCreateSession && (
         <button
           aria-label={text.newSession}
@@ -142,6 +164,11 @@ function AgentSessionDeckStrip({
           <span className="hidden sm:inline">{text.newSession}</span>
         </button>
       )}
+      <WorkspaceFullscreenButton
+        active={fullscreenActive}
+        onToggle={onToggleFullscreen}
+        supported={fullscreenSupported}
+      />
     </div>
   );
 }

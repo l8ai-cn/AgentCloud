@@ -34,6 +34,7 @@ export interface AgentWorkspaceProps {
   locale?: AgentWorkspaceLocale;
   presentation?: AgentWorkspacePresentation;
   readOnly?: boolean;
+  showFullscreen?: boolean;
   toolRenderers?: ToolRendererRegistry<AgentToolRendererRegistration>;
   workspaceArtifacts?: readonly AgentArtifactItem[];
   workspaceFiles?: WorkspaceFileSource;
@@ -50,6 +51,7 @@ export function AgentWorkspace({
   locale = "en-US",
   presentation = "developer",
   readOnly = false,
+  showFullscreen = true,
   toolRenderers,
   workspaceArtifacts = [],
   workspaceFiles,
@@ -96,17 +98,21 @@ export function AgentWorkspace({
   return (
     <AgentWorkspaceLocaleProvider locale={locale}>
       <div
-        className={`flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground ${className}`}
+        className={`group/agentws flex h-full min-h-0 flex-col overflow-hidden bg-background text-foreground ${
+          fullscreen.active ? "agent-workspace-fullscreen" : ""
+        } ${className}`}
         data-agent-workspace={sessionId}
         ref={containerRef}
       >
         <WorkspaceHeader
           actions={
-            <WorkspaceFullscreenButton
-              active={fullscreen.active}
-              onToggle={fullscreen.toggle}
-              supported={fullscreen.supported}
-            />
+            showFullscreen ? (
+              <WorkspaceFullscreenButton
+                active={fullscreen.active}
+                onToggle={fullscreen.toggle}
+                supported={fullscreen.supported}
+              />
+            ) : null
           }
           presentation={presentation}
           snapshot={snapshot}

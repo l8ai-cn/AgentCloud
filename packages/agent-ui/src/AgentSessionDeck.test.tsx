@@ -133,6 +133,55 @@ describe("AgentSessionDeck", () => {
     );
   });
 
+  it("offers one deck-level fullscreen toggle and suppresses workspace toggles", async () => {
+    const requestFullscreen = vi.fn(async () => undefined);
+    Object.defineProperty(document, "fullscreenEnabled", {
+      configurable: true,
+      value: true,
+    });
+    Object.defineProperty(HTMLElement.prototype, "requestFullscreen", {
+      configurable: true,
+      value: requestFullscreen,
+    });
+    try {
+      render(
+        <AgentSessionDeck
+          sessions={[deckEntry("session-1", "Release audit"), deckEntry("session-2", "Docs sweep")]}
+        />,
+      );
+      await screen.findByRole("tab", { name: "Release audit" });
+
+      const toggles = await screen.findAllByRole("button", {
+        name: "Enter fullscreen",
+      });
+      expect(toggles).toHaveLength(1);
+      fireEvent.click(toggles[0]!);
+      expect(requestFullscreen).toHaveBeenCalledTimes(1);
+      expect(requestFullscreen.mock.instances[0]).toBe(
+        document.querySelector("[data-agent-session-deck]"),
+      );
+
+      Object.defineProperty(document, "fullscreenElement", {
+        configurable: true,
+        get: () => document.querySelector("[data-agent-session-deck]"),
+      });
+      fireEvent(document, new Event("fullscreenchange"));
+
+      expect(
+        await screen.findByRole("button", { name: "Exit fullscreen" }),
+      ).toBeVisible();
+      expect(document.querySelector(".agent-workspace-fullscreen")).toBe(
+        document.querySelector("[data-agent-session-deck]"),
+      );
+    } finally {
+      delete (document as { fullscreenEnabled?: boolean }).fullscreenEnabled;
+      delete (document as { fullscreenElement?: Element | null })
+        .fullscreenElement;
+      delete (HTMLElement.prototype as { requestFullscreen?: unknown })
+        .requestFullscreen;
+    }
+  });
+
   it("shows a running session with a live status indicator", async () => {
     const running = deckEntry("session-1", "Release audit");
     const snapshot = running.runtime.getSnapshot("session-1");

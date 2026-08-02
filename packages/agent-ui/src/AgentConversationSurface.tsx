@@ -61,7 +61,7 @@ export function AgentConversationSurface({
 
   if (isEmpty) {
     return (
-      <main className="flex h-full min-h-0 flex-col justify-center gap-5 overflow-y-auto py-6">
+      <main className="flex h-full min-h-0 flex-col justify-center gap-5 overflow-y-auto py-6 group-[.agent-workspace-fullscreen]/agentws:mx-auto group-[.agent-workspace-fullscreen]/agentws:max-w-4xl group-[.agent-workspace-fullscreen]/agentws:px-6">
         <ConversationEmptyState agentLabel={snapshot.agentLabel} />
         <ConversationComposer
           mentionHarness={mentionHarness}
@@ -76,7 +76,7 @@ export function AgentConversationSurface({
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col group-[.agent-workspace-fullscreen]/agentws:mx-auto group-[.agent-workspace-fullscreen]/agentws:max-w-4xl group-[.agent-workspace-fullscreen]/agentws:px-6">
       {executionTrace}
       <div className="relative min-h-0 flex-1">
         <main className="h-full overflow-y-auto" ref={scrollRef}>

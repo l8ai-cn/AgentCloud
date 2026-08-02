@@ -81,6 +81,11 @@ describe("AgentWorkspace toolbar", () => {
       expect(
         await screen.findByRole("button", { name: "Exit fullscreen" }),
       ).toBeVisible();
+      expect(
+        document.querySelector("[data-agent-workspace]")?.classList.contains(
+          "agent-workspace-fullscreen",
+        ),
+      ).toBe(true);
     } finally {
       if (enabledDescriptor) {
         Object.defineProperty(document, "fullscreenEnabled", enabledDescriptor);
