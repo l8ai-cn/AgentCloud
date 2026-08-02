@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -159,29 +157,6 @@ func TestForkSessionRollsBackPodAndSessionWhenItemCopyFails(t *testing.T) {
 	assert.Equal(t, int64(0), pendingCommandCount(t, db))
 }
 
-func TestImportSessionTerminatesPodWhenSessionPersistenceFails(t *testing.T) {
-	deps, db, lifecycle := setupSessionCreationCompensationTest(t)
-	require.NoError(t, failSessionInserts(db))
-
-	response := importSessionCompensationRequest(t, deps)
-
-	assert.Equal(t, http.StatusInternalServerError, response.Code)
-	assert.Equal(t, []string{"new-pod"}, lifecycle.terminated)
-	assert.Equal(t, int64(0), pendingCommandCount(t, db))
-}
-
-func TestImportSessionRollsBackPodAndSessionWhenItemPersistenceFails(t *testing.T) {
-	deps, db, lifecycle := setupSessionCreationCompensationTest(t)
-	require.NoError(t, failConversationItemInserts(db))
-
-	response := importSessionCompensationRequest(t, deps)
-
-	assert.Equal(t, http.StatusInternalServerError, response.Code)
-	assert.Equal(t, []string{"new-pod"}, lifecycle.terminated)
-	assert.Equal(t, int64(0), activeSessionCount(t, db))
-	assert.Equal(t, int64(0), pendingCommandCount(t, db))
-}
-
 func setupSessionCreationCompensationTest(
 	t *testing.T,
 ) (*Deps, *gorm.DB, *recordingSessionPodLifecycle) {
@@ -243,21 +218,6 @@ func forkSessionCompensationRequest(deps *Deps) *httptest.ResponseRecorder {
 		"/v1/sessions/conv_source/fork",
 		gin.Params{{Key: "id", Value: "conv_source"}},
 		withSessionWorkerPlan(`{"agent_id":"do-agent"}`),
-	)
-}
-
-func importSessionCompensationRequest(t *testing.T, deps *Deps) *httptest.ResponseRecorder {
-	t.Helper()
-	path := filepath.Join(t.TempDir(), "rollout-test.jsonl")
-	require.NoError(t, os.WriteFile(path, []byte(
-		"{\"timestamp\":\"t\",\"type\":\"session_meta\",\"payload\":{\"session_id\":\"source\"}}\n"+
-			"{\"timestamp\":\"t\",\"type\":\"response_item\",\"payload\":{\"type\":\"message\",\"role\":\"user\",\"content\":[{\"type\":\"input_text\",\"text\":\"hello\"}]}}\n",
-	), 0o600))
-	return sessionCreationRequest(
-		deps.handleImportSession,
-		"/v1/sessions/import",
-		nil,
-		withSessionWorkerPlan(`{"source_path":"`+path+`","agent_id":"do-agent"}`),
 	)
 }
 

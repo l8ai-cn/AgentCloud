@@ -51,23 +51,18 @@ describe("CreatePodForm", () => {
     expect(screen.getAllByText("workerCreate.steps.preflight").length).toBeGreaterThan(0);
   });
 
-  it("uses the natural-language panel to fill the same controller", () => {
+  it("uses the quick AI create prompt as the single intake surface", () => {
     render(<CreatePodForm config={{ scenario: "workspace" }} />);
 
-    fireEvent.change(screen.getByPlaceholderText("workers.create.nl.placeholder"), {
-      target: { value: "Review authentication" },
-    });
-    expect(mockSetFillPrompt).toHaveBeenCalledWith("Review authentication");
-
-    mockUseWorkerCreateDraft.mockReturnValue(controllerFixture({
-      state: { fillPrompt: "Review authentication" },
-    }));
-    const { rerender } = render(
-      <CreatePodForm config={{ scenario: "workspace" }} />,
+    fireEvent.change(
+      screen.getByPlaceholderText("workers.create.quick.taskPlaceholder"),
+      { target: { value: "帮我创建一个配置好kimi的codex" } },
     );
-    rerender(<CreatePodForm config={{ scenario: "workspace" }} />);
-    fireEvent.click(screen.getAllByText("workers.create.nl.submit").at(-1)!);
-    expect(mockFillWithAI).toHaveBeenCalledWith("Review authentication");
+    expect(mockSetFillPrompt).toHaveBeenCalledWith(
+      "帮我创建一个配置好kimi的codex",
+    );
+    expect(screen.getByTestId("worker-ai-create")).toBeInTheDocument();
+    expect(mockFillWithAI).not.toHaveBeenCalled();
   });
 
   it("passes ticket context and generated task into the WorkerSpec hook", () => {

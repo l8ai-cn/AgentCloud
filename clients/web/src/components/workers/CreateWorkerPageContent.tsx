@@ -8,13 +8,11 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
-import { ArrowLeft, FileInput } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ImportCodexDialog } from "@/components/workers/ImportCodexDialog";
 import { CreatePodForm } from "@/components/pod/CreatePodForm";
 import { ResourceDependencyEditor } from "@/components/resource-editor/ResourceDependencyEditor";
 import { ResourceEditorShell } from "@/components/resource-editor/ResourceEditorShell";
-import { Button } from "@/components/ui/button";
 import { PillTabs } from "@/components/ui/pill-tabs";
 
 export function CreateWorkerPageContent() {
@@ -26,7 +24,6 @@ export function CreateWorkerPageContent() {
   const orgSlug = params.org as string;
   const requestedMode = searchParams.get("mode");
 
-  const [importOpen, setImportOpen] = useState(false);
   const [mode, setMode] = useState<"run" | "template" | "resources">(
     () => pageMode(requestedMode),
   );
@@ -46,28 +43,13 @@ export function CreateWorkerPageContent() {
           {t("workers.create.backToWorkspace")}
         </Link>
 
-        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold tracking-tight">
-              {t("workers.create.title")}
-            </h1>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {t("workers.create.subtitle")}
-            </p>
-          </div>
-          {mode === "run" && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="shrink-0"
-              data-testid="open-import-codex"
-              onClick={() => setImportOpen(true)}
-            >
-              <FileInput className="mr-2 h-4 w-4" />
-              {t("workers.create.import.button")}
-            </Button>
-          )}
+        <header className="mb-6 space-y-2">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t("workers.create.title")}
+          </h1>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {t("workers.create.subtitle")}
+          </p>
         </header>
 
         <PillTabs
@@ -99,28 +81,19 @@ export function CreateWorkerPageContent() {
         />
 
         {mode === "run" ? (
-          <>
-            <ImportCodexDialog
-              open={importOpen}
-              onOpenChange={setImportOpen}
-              onImported={(podKey) => {
-                router.push(`/${orgSlug}/workspace?pod=${encodeURIComponent(podKey)}`);
-              }}
-            />
-            <CreatePodForm
-              config={{
-                scenario: "workspace",
-                onSuccess: (pod) => {
-                  router.push(
-                    `/${orgSlug}/workspace?pod=${encodeURIComponent(pod.pod_key)}`,
-                  );
-                },
-                onCancel: () => {
-                  router.push(`/${orgSlug}/workspace`);
-                },
-              }}
-            />
-          </>
+          <CreatePodForm
+            config={{
+              scenario: "workspace",
+              onSuccess: (pod) => {
+                router.push(
+                  `/${orgSlug}/workspace?pod=${encodeURIComponent(pod.pod_key)}`,
+                );
+              },
+              onCancel: () => {
+                router.push(`/${orgSlug}/workspace`);
+              },
+            }}
+          />
         ) : mode === "template" ? (
           <ResourceEditorShell
             orgSlug={orgSlug}

@@ -5,7 +5,7 @@ const { fetchSessionByPodKey } = vi.hoisted(() => ({
   fetchSessionByPodKey: vi.fn(),
 }));
 
-vi.mock("@/lib/api/sessionImportApi", () => ({
+vi.mock("@/lib/api/sessionByPodKey", () => ({
   fetchSessionByPodKey,
 }));
 

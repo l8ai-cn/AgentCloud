@@ -318,7 +318,7 @@
   "workers": {
     "create": {
       "title": "Create Worker",
-      "subtitle": "Describe the work, confirm the default runtime choices, and create a Worker without building a template first.",
+      "subtitle": "Describe the task and preferences in one sentence; AI selects the type and model and creates the Worker. Use advanced settings only for manual tweaks.",
       "stepsTitle": "Creation steps",
       "stepCluster": "Cluster & image — compute + AI runtime",
       "stepCapabilities": "Capabilities — knowledge bases & skills",
@@ -327,17 +327,22 @@
       "backToWorkspace": "Back to workspace",
       "advancedSettings": "Advanced settings",
       "quick": {
-        "title": "What should this Worker do?",
-        "subtitle": "Use the recommended runtime, model, and resource size. Open advanced settings only when you need to change them.",
-        "taskLabel": "Task",
-        "taskPlaceholder": "Review the auth middleware for permission gaps and summarize findings.",
-        "defaultsHint": "Recommended defaults are selected automatically from the organization runtime catalog.",
+        "title": "Create a Worker in one sentence",
+        "subtitle": "Describe the task and preferences (e.g. “create a Codex configured with Kimi”); AI selects the type and model, then creates it.",
+        "taskLabel": "What should we create?",
+        "taskPlaceholder": "Help me create a Codex configured with Kimi",
+        "defaultsHint": "⌘/Ctrl + Enter to create. Use advanced settings only for manual tweaks.",
         "loadingDefaults": "Loading recommended defaults…",
-        "defaultsNotReady": "Recommended defaults are not ready. Open advanced settings to see what is missing.",
-        "taskRequired": "Describe the task before creating a Worker.",
-        "preflightFailed": "Preflight found a blocking issue. Open advanced settings to review the details.",
-        "create": "Create Worker",
-        "creating": "Creating Worker…"
+        "defaultsNotReady": "Runtime defaults are not ready yet. Retry shortly or open advanced settings.",
+        "taskRequired": "Describe the Worker before creating it.",
+        "preflightFailed": "Preflight failed. Open advanced settings for details.",
+        "create": "Create with AI",
+        "creating": "Creating Worker…",
+        "errors": {
+          "runnerUnavailable": "No online Runner supports the selected type (for example Codex). Bring a matching Runner online first.",
+          "modelUnavailable": "No matching enabled model was found (for example Kimi). Enable it under organization AI resources.",
+          "workerTypeRequired": "Mention a Worker type in the request (for example codex / claude / do-agent)."
+        }
       },
       "nl": {
         "title": "Fill the Worker draft with AI",
@@ -349,25 +354,6 @@
         "hint": "AI updates the same draft below and never creates a Worker automatically. ⌘/Ctrl + Enter to fill.",
         "requiresWorkerType": "Pick a worker type first — AI fill only refines an existing draft and never chooses the runtime, model or credentials for you.",
         "submit": "Fill with AI"
-      },
-      "import": {
-        "button": "Import from Codex",
-        "title": "Import from Codex",
-        "sourceLabel": "Codex source path",
-        "sourcePlaceholder": "~/.codex/sessions/…/rollout-….jsonl or output_20260708_161508",
-        "sourceHint": "Server-local rollout .jsonl or workflow output_* directory. Auto-detected.",
-        "titleLabel": "Title (optional)",
-        "titlePlaceholder": "Derived from the first prompt when left blank",
-        "submit": "Migrate & open",
-        "submitting": "Migrating…",
-        "success": "Codex history migrated",
-        "successDetail": "{count} items imported",
-        "errors": {
-          "sourceRequired": "Enter the path to a Codex rollout .jsonl or output_* directory.",
-          "agentRequired": "Pick a target agent for the migrated Worker.",
-          "notAuthenticated": "Sign in and select an organization first.",
-          "failed": "Migration failed. Check the path and try again."
-        }
       }
     }
   },
@@ -717,11 +703,6 @@
       "confirm": "Delete"
     },
     "loadMore": "Load more",
-    "importedSessions": {
-      "title": "Imported from Codex",
-      "loading": "Loading imported sessions…",
-      "error": "Failed to load imported sessions"
-    },
     "pod": {
       "status": "Status",
       "agent": "Agent",

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { NlWorkerCreate } from "@/components/workers/NlWorkerCreate";
 import { useRepositories, useRepositoryStore } from "@/stores/repository";
 import { useWorkerCreateDraft } from "../hooks";
 import { CreatePodFormFields } from "./CreatePodFormFields";
@@ -46,23 +45,17 @@ export function CreatePodForm({
 
   return (
     <div className={className}>
-      <WorkerQuickCreate controller={controller} t={t} />
+      <WorkerQuickCreate
+        controller={controller}
+        t={t}
+        ticketSlug={mergedConfig.context?.ticket?.slug}
+        onSuccess={mergedConfig.onSuccess}
+      />
       <details className="mt-5 rounded-lg border border-border bg-background p-4">
         <summary className="cursor-pointer text-sm font-medium">
           {t("workers.create.advancedSettings")}
         </summary>
         <div className="mt-5">
-          <NlWorkerCreate
-            prompt={controller.state.fillPrompt}
-            filling={controller.state.fill.status === "loading"}
-            onPromptChange={controller.setFillPrompt}
-            onFill={(prompt) => void controller.fillWithAI(prompt)}
-            blockedReason={
-              controller.state.draft.worker_type_slug
-                ? undefined
-                : t("workers.create.nl.requiresWorkerType")
-            }
-          />
           <CreatePodFormFields
             controller={controller}
             initialWizardStep={mergedConfig.initialWizardStep}

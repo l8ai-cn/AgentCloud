@@ -54,7 +54,7 @@ export function workerDraftToProto(draft: WorkerSpecDraft): WorkerSpecDraftMessa
     interactionMode: draft.interaction_mode,
     automationLevel: draft.automation_level,
     repositoryId:
-      draft.repository_id === undefined
+      draft.repository_id === undefined || draft.repository_id <= 0
         ? undefined
         : workerBigInt(draft.repository_id, "repository_id"),
     branch: draft.branch,

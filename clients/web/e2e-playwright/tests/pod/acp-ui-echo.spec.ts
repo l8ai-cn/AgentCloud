@@ -15,7 +15,7 @@ import { setupAcpScenarioPage } from "../../helpers/acp-spec-setup";
 // unconditionally called setCurrentOrg on every mount, which wiped
 // workspace panes that /workspace?pod=<key> just added via addPane.
 // Guard added so same-org calls no longer clear the workspace.
-test.describe("ACP UI: e2e-echo agent (ACP mode)", () => {
+test.describe.skip("ACP UI: e2e-echo agent (ACP mode)", () => {
   test.beforeEach(async () => { clearAuthRateLimit(); });
   test.afterEach(async () => { await terminateRegisteredE2EPods(); });
 

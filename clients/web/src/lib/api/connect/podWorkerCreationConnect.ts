@@ -41,11 +41,15 @@ export async function fillWorkerDraft(
   orgSlug: string,
   prompt: string,
   currentDraft?: WorkerSpecDraft,
+  generationModelResourceId?: number,
 ): Promise<WorkerDraftFillResult> {
   const request = create(FillWorkerDraftRequestSchema, {
     orgSlug,
     prompt,
     currentDraft: currentDraft ? workerDraftToProto(currentDraft) : undefined,
+    generationModelResourceId: generationModelResourceId
+      ? BigInt(generationModelResourceId)
+      : undefined,
   });
   const responseBytes = await getPodService().fill_worker_draft_connect(
     toBinary(FillWorkerDraftRequestSchema, request),

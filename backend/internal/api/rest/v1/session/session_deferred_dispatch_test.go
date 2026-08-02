@@ -36,26 +36,6 @@ func TestForkSessionTriggersDrainAfterCopiedItemsAndCommandPersist(t *testing.T)
 	assert.Equal(t, []int64{3}, queue.triggers)
 }
 
-func TestImportSessionTriggersDrainAfterImportedItemsAndCommandPersist(t *testing.T) {
-	deps, db, _ := setupSessionCreationCompensationTest(t)
-	orchestrator := deps.PodOrchestrator.(*fixedSessionPodOrchestrator)
-	queue := deps.DispatchQueue.(*recordingSessionDispatchQueue)
-	queue.beforeTrigger = func(runnerID int64) {
-		assert.Equal(t, int64(3), runnerID)
-		assert.Equal(t, int64(1), activeSessionCount(t, db))
-		assert.Equal(t, int64(1), conversationItemCount(t, db))
-		assert.Equal(t, int64(1), pendingCommandCount(t, db))
-	}
-
-	response := importSessionCompensationRequest(t, deps)
-
-	assert.Equal(t, http.StatusOK, response.Code)
-	require.NotNil(t, orchestrator.request)
-	assert.True(t, orchestrator.request.DeferRunnerDispatch)
-	assert.Equal(t, 0, orchestrator.dispatches)
-	assert.Equal(t, []int64{3}, queue.triggers)
-}
-
 func TestCreateSessionTerminatesPodWhenDeferredCommandIsMissing(t *testing.T) {
 	deps, db, lifecycle := setupSessionCreationCompensationTest(t)
 	orchestrator := deps.PodOrchestrator.(*fixedSessionPodOrchestrator)

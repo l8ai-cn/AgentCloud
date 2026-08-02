@@ -1,6 +1,3 @@
-import { create, toBinary } from "@bufbuild/protobuf";
-import { AddPermissionRequestRequestSchema } from "@agent-cloud/proto/acp_state/v1/acp_state_pb";
-
 export type MobileAcpManager = {
   add_content_chunk(podKey: string, text: string, role: string): void;
   add_log(podKey: string, level: string, message: string): void;
@@ -96,8 +93,9 @@ function addPermission(
     args: parseArguments(data.argumentsJson),
     description: text(data.description),
   });
-  const request = create(AddPermissionRequestRequestSchema, { podKey, requestJson });
-  manager.add_permission_request(toBinary(AddPermissionRequestRequestSchema, request));
+  manager.add_permission_request(
+    new TextEncoder().encode(JSON.stringify({ podKey, requestJson })),
+  );
 }
 
 function parseObject(raw: unknown): Record<string, unknown> | null {

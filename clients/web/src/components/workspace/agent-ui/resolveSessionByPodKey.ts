@@ -1,4 +1,4 @@
-import { fetchSessionByPodKey } from "@/lib/api/sessionImportApi";
+import { fetchSessionByPodKey } from "@/lib/api/sessionByPodKey";
 
 const LINK_RETRY_DELAY_MS = 500;
 const MAX_LINK_ATTEMPTS = 10;

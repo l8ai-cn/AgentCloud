@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { fetchSessionByPodKey } from "@/lib/api/sessionImportApi";
+import { fetchSessionByPodKey } from "@/lib/api/sessionByPodKey";
 
 interface AgentSessionLinkState {
   error: string | null;

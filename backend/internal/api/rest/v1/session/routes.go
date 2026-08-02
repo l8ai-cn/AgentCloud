@@ -36,7 +36,6 @@ func RegisterRoutes(r *gin.Engine, d Deps) {
 		orgScoped.GET("/sessions/by-pod/:pod_key", d.handleGetSessionByPodKey)
 		orgScoped.POST("/sessions", d.handleCreateSession)
 		orgScoped.POST("/sessions/:id/embed-context", d.handleCreateEmbedContext)
-		orgScoped.POST("/sessions/import", d.handleImportSession)
 		orgScoped.GET("/sessions/:id", d.handleGetSession)
 		orgScoped.GET("/sessions/:id/relay-connection", d.handleGetSessionRelayConnection)
 		orgScoped.PATCH("/sessions/:id", d.handlePatchSession)

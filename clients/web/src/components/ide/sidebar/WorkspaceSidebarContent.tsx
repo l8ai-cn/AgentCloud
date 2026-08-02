@@ -13,7 +13,6 @@ import { RenameDialog } from "@/components/shared/RenameDialog";
 import { ShareDialog } from "@/components/shared/ShareDialog";
 import { RunnerSection } from "./RunnerSection";
 import { WorkspaceFilters } from "./WorkspaceFilters";
-import { ImportedSessionsSection } from "./ImportedSessionsSection";
 import { useWorkspaceSidebar } from "./useWorkspaceSidebar";
 import { PublishExpertDialog } from "@/components/experts/PublishExpertDialog";
 import { PodMobileAccessDialog } from "@/components/mobile/PodMobileAccessDialog";
@@ -105,8 +104,6 @@ export function WorkspaceSidebarContent({ className, onCreatePod, onTerminatePod
           </div>
         )}
       </div>
-
-      <ImportedSessionsSection t={t} />
 
       <RunnerSection runners={s.runners} loading={s.runnersLoading} expanded={s.runnersExpanded}
         onToggle={s.setRunnersExpanded} currentOrgSlug={s.currentOrg?.slug} t={t} />
