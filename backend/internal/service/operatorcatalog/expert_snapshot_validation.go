@@ -48,17 +48,20 @@ func (bootstrapper *Bootstrapper) validateExpertSnapshot(
 		return err
 	}
 	spec := snapshot.Spec
+	// Hard identity failures stay conflicts. Model/image/skill/config drift is
+	// rebuilt so rotating org model resources (e.g. after provider reconnect)
+	// can rebind partners without deleting experts.
 	if snapshot.ID != *expert.WorkerSpecSnapshotID ||
 		snapshot.OrganizationID != request.OrganizationID ||
-		!specdom.HasResolvedProtocolAdapters(spec) ||
-		spec.Runtime.ModelBinding.ResourceID != resolved.ModelResourceID ||
+		!specdom.HasResolvedProtocolAdapters(spec) {
+		return ErrCatalogConflict
+	}
+	if spec.Runtime.ModelBinding.ResourceID != resolved.ModelResourceID ||
 		spec.Runtime.Image.ID != resolved.RuntimeImageID ||
 		spec.Runtime.WorkerType.Slug != resolved.WorkerType ||
 		spec.Workspace.Instructions != definition.Prompt ||
-		!slices.Equal(spec.Workspace.SkillIDs, expectedSkillIDs) {
-		return ErrCatalogConflict
-	}
-	if !workerConfigMatchesCatalog(spec.TypeConfig, resolved) {
+		!slices.Equal(spec.Workspace.SkillIDs, expectedSkillIDs) ||
+		!workerConfigMatchesCatalog(spec.TypeConfig, resolved) {
 		return bootstrapper.rebuildExpertSnapshotForDefinition(
 			ctx,
 			request,

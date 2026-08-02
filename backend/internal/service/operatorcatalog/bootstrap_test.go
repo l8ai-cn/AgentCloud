@@ -9,6 +9,7 @@ import (
 	expertdom "github.com/l8ai-cn/agentcloud/backend/internal/domain/expert"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/expertmarket"
 	skilldom "github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
+	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	expertsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/expert"
 	skillsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/skill"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
@@ -152,32 +153,48 @@ func TestBootstrapVideoExpertsRejectsExistingExpertDrift(t *testing.T) {
 	require.ErrorIs(t, err, ErrCatalogConflict)
 }
 
-func TestBootstrapVideoExpertsRejectsChangedRuntimeBindings(t *testing.T) {
-	tests := map[string]func(*BootstrapRequest){
-		"model resource": func(request *BootstrapRequest) {
-			request.ModelResourceID = 23
+func TestBootstrapRebuildsStaleRuntimeBindings(t *testing.T) {
+	tests := map[string]func(*specdomain.Spec){
+		"model resource": func(spec *specdomain.Spec) {
+			spec.Runtime.ModelBinding.ResourceID = 999
 		},
-		"runtime image": func(request *BootstrapRequest) {
-			request.RuntimeImageID = 29
+		"runtime image": func(spec *specdomain.Spec) {
+			spec.Runtime.Image.ID = 999
 		},
 	}
 	for name, mutate := range tests {
 		t.Run(name, func(t *testing.T) {
+			experts := newBootstrapExpertStore()
+			snapshots := newBootstrapSnapshotStore()
 			bootstrapper := NewBootstrapper(
 				&bootstrapSkillStore{},
-				newBootstrapExpertStore(),
+				experts,
 				&bootstrapWorkerPreparer{},
-				newBootstrapSnapshotStore(),
+				snapshots,
 				&bootstrapDependencyArtifactStore{},
 			)
 			request := validBootstrapRequest()
 			_, err := bootstrapper.Run(context.Background(), request)
 			require.NoError(t, err)
+			expert := experts.experts["learning-companion-partner"]
+			legacySnapshotID := *expert.WorkerSpecSnapshotID
+			snapshot := snapshots.rows[legacySnapshotID]
+			mutate(&snapshot.Spec)
+			snapshots.rows[legacySnapshotID] = snapshot
 
-			mutate(&request)
 			_, err = bootstrapper.Run(context.Background(), request)
-
-			require.ErrorIs(t, err, ErrCatalogConflict)
+			require.NoError(t, err)
+			require.NotEqual(t, legacySnapshotID, *expert.WorkerSpecSnapshotID)
+			require.Equal(
+				t,
+				request.ModelResourceID,
+				snapshots.rows[*expert.WorkerSpecSnapshotID].Spec.Runtime.ModelBinding.ResourceID,
+			)
+			require.Equal(
+				t,
+				int64(5),
+				snapshots.rows[*expert.WorkerSpecSnapshotID].Spec.Runtime.Image.ID,
+			)
 		})
 	}
 }
