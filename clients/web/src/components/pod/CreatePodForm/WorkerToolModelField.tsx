@@ -36,10 +36,17 @@ export function WorkerToolModelField(props: WorkerToolModelFieldProps) {
     return <div data-testid={testId}><AlertMessage type="error" message={props.state.error} /></div>;
   }
   const resources = compatibleToolModelResources(props.requirement, props.state.data);
-  if (resources.length === 0 && !optional) {
+  const selectedId = props.draft.tool_model_resource_ids[field] ?? 0;
+  // Optional tool slots (e.g. do-agent Seedance/Minimax video) only appear when
+  // the org has a compatible resource — otherwise they are dead weight.
+  if (resources.length === 0) {
+    if (optional && selectedId <= 0) return null;
     return (
       <div data-testid={testId}>
-        <AlertMessage type="error" message={props.t("ide.createPod.noModelResourcesAvailableHint")} />
+        <AlertMessage
+          type="error"
+          message={props.t("ide.createPod.noModelResourcesAvailableHint")}
+        />
       </div>
     );
   }

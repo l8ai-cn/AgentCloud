@@ -74,10 +74,6 @@ func TestFreshExecutionInventory(t *testing.T) {
 			Mode:   "snapshot",
 			Fields: []string{"RunnerID", "WorkerSpecSnapshotID"},
 		},
-		"backend/internal/api/rest/v1/session/session_import.go:handleImportSession": {
-			Mode:   "plan",
-			Fields: []string{"WorkerSpecDraft"},
-		},
 		"backend/internal/api/rest/v1/session/session_message_pod.go:ensureMessagePod": {Mode: "lineage", Fields: []string{"SourcePodKey"}},
 		"backend/internal/api/rest/v1/session/session_switch_pod_request.go:buildSessionPlanRebuildPodRequest": {
 			Mode:   "plan",
@@ -308,10 +304,6 @@ func classifyMode(relPath, funcName string) string {
 	}
 	if strings.HasSuffix(relPath, "internal/api/rest/v1/session/session_create_pod_request.go") &&
 		funcName == "sessionCreatePodRequest" {
-		return "plan"
-	}
-	if strings.HasSuffix(relPath, "internal/api/rest/v1/session/session_import.go") &&
-		funcName == "handleImportSession" {
 		return "plan"
 	}
 	if strings.HasSuffix(relPath, "internal/api/rest/v1/session/session_fork_pod_request.go") {

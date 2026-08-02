@@ -84,6 +84,85 @@ describe("WorkerRuntimeStep", () => {
     expect(screen.getByTestId("worker-runtime-field-seedance-video")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Seedance video" })).toBeInTheDocument();
   });
+
+  it("hides optional tool models when the org has no compatible resources", () => {
+    const draft = completeDraft();
+    draft.worker_type_slug = "do-agent";
+    draft.tool_model_resource_ids = {};
+    const options = createOptions();
+    options.worker_types[0] = {
+      ...options.worker_types[0],
+      slug: "do-agent",
+      tool_model_requirements: [
+        {
+          role: "seedance-video",
+          provider_keys: ["doubao", "sub2api-seedance"],
+          protocol_adapters: ["openai-compatible", "ark-seedance"],
+          modality: "video",
+          capability: "video-generation",
+          required: false,
+        },
+        {
+          role: "minimax-video",
+          provider_keys: ["custom-openai-compatible", "minimax"],
+          protocol_adapters: ["openai-compatible", "minimax"],
+          modality: "video",
+          capability: "video-generation",
+          required: false,
+        },
+      ],
+    };
+
+    render(
+      <WorkerRuntimeStep
+        draft={draft}
+        modelResources={{ status: "ready", data: [] }}
+        toolModelResources={{ status: "ready", data: [] }}
+        options={{ status: "ready", data: options }}
+        onPatch={vi.fn()}
+        onWorkerTypeChange={vi.fn()}
+        t={(key) => key}
+      />,
+    );
+
+    expect(screen.queryByTestId("worker-runtime-field-seedance-video"))
+      .not.toBeInTheDocument();
+    expect(screen.queryByTestId("worker-runtime-field-minimax-video"))
+      .not.toBeInTheDocument();
+  });
+
+  it("shows an optional tool model once a compatible resource exists", () => {
+    const draft = completeDraft();
+    draft.worker_type_slug = "do-agent";
+    draft.tool_model_resource_ids = {};
+    const options = createOptions();
+    options.worker_types[0] = {
+      ...options.worker_types[0],
+      slug: "do-agent",
+      tool_model_requirements: [{
+        role: "seedance-video",
+        provider_keys: ["doubao", "sub2api-seedance"],
+        protocol_adapters: ["openai-compatible", "ark-seedance"],
+        modality: "video",
+        capability: "video-generation",
+        required: false,
+      }],
+    };
+
+    render(
+      <WorkerRuntimeStep
+        draft={draft}
+        modelResources={{ status: "ready", data: [] }}
+        toolModelResources={{ status: "ready", data: [seedanceResource()] }}
+        options={{ status: "ready", data: options }}
+        onPatch={vi.fn()}
+        onWorkerTypeChange={vi.fn()}
+        t={(key) => key}
+      />,
+    );
+
+    expect(screen.getByTestId("worker-runtime-field-seedance-video")).toBeInTheDocument();
+  });
 });
 
 function seedanceResource() {

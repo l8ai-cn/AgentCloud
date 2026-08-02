@@ -343,7 +343,7 @@
   "workers": {
     "create": {
       "title": "创建 Worker",
-      "subtitle": "描述要做的任务，确认默认运行配置，即可创建 Worker；不需要先理解或创建模板。",
+      "subtitle": "用一句话描述任务与偏好，AI 选好类型与模型并直接创建；高级设置仅用于手工微调。",
       "stepsTitle": "创建步骤",
       "stepCluster": "集群与镜像 — 算力节点 + AI 运行时",
       "stepCapabilities": "能力挂载 — 知识库与 Skill",
@@ -352,17 +352,22 @@
       "backToWorkspace": "返回工作区",
       "advancedSettings": "高级设置",
       "quick": {
-        "title": "这个 Worker 要做什么？",
-        "subtitle": "默认使用推荐的运行环境、模型和资源规格；只有需要调整时再打开高级设置。",
-        "taskLabel": "任务",
-        "taskPlaceholder": "审查 auth 中间件的权限缺口并总结发现。",
-        "defaultsHint": "推荐配置会根据组织运行目录自动选择。",
+        "title": "用一句话创建 Worker",
+        "subtitle": "描述任务与偏好（例如「配置好 kimi 的 codex」），AI 会选好类型与模型并直接创建。",
+        "taskLabel": "你想创建什么？",
+        "taskPlaceholder": "帮我创建一个配置好 kimi 的 codex",
+        "defaultsHint": "⌘/Ctrl + Enter 创建。高级设置仅用于手工微调。",
         "loadingDefaults": "正在加载推荐配置…",
-        "defaultsNotReady": "推荐配置尚未准备好。打开高级设置查看缺少什么。",
-        "taskRequired": "请先描述任务，再创建 Worker。",
-        "preflightFailed": "预检发现阻塞问题。打开高级设置查看详情。",
-        "create": "创建 Worker",
-        "creating": "正在创建 Worker…"
+        "defaultsNotReady": "运行配置尚未就绪，请稍后重试或打开高级设置检查。",
+        "taskRequired": "请先描述要创建的 Worker。",
+        "preflightFailed": "预检未通过。打开高级设置查看详情。",
+        "create": "AI 创建 Worker",
+        "creating": "正在创建 Worker…",
+        "errors": {
+          "runnerUnavailable": "当前没有可用的 Runner 支持所选类型（例如 Codex）。请先上线对应 Runner。",
+          "modelUnavailable": "找不到匹配的可用模型（例如 kimi）。请在组织 AI 资源中启用对应模型。",
+          "workerTypeRequired": "请在描述里说明 Worker 类型（例如 codex / claude / do-agent）。"
+        }
       },
       "nl": {
         "title": "用 AI 填写 Worker 草稿",
@@ -374,25 +379,6 @@
         "hint": "AI 只更新下方同一份草稿，不会自动创建 Worker。⌘/Ctrl + Enter 填写。",
         "requiresWorkerType": "请先选择 Worker 类型。AI 填写只会补全已有草稿，不会替你选择运行时、模型或凭据。",
         "submit": "用 AI 填写"
-      },
-      "import": {
-        "button": "从 Codex 导入",
-        "title": "从 Codex 导入",
-        "sourceLabel": "Codex 源路径",
-        "sourcePlaceholder": "~/.codex/sessions/…/rollout-….jsonl 或 output_20260708_161508",
-        "sourceHint": "服务器本地的 rollout .jsonl 或 workflow output_* 目录，自动识别类型。",
-        "titleLabel": "标题（可选）",
-        "titlePlaceholder": "留空则从首条用户提示自动推导",
-        "submit": "迁移并打开",
-        "submitting": "迁移中…",
-        "success": "Codex 对话已迁移",
-        "successDetail": "已导入 {count} 条记录",
-        "errors": {
-          "sourceRequired": "请输入 Codex rollout .jsonl 或 output_* 目录路径。",
-          "agentRequired": "请选择迁移目标 Agent。",
-          "notAuthenticated": "请先登录并选择组织。",
-          "failed": "迁移失败，请检查路径后重试。"
-        }
       }
     }
   },
@@ -742,11 +728,6 @@
       "confirm": "删除"
     },
     "loadMore": "加载更多",
-    "importedSessions": {
-      "title": "Codex 已导入",
-      "loading": "正在加载已导入会话…",
-      "error": "加载已导入会话失败"
-    },
     "pod": {
       "status": "状态",
       "agent": "镜像",

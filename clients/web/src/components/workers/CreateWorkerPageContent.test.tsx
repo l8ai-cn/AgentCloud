@@ -13,10 +13,6 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(navigation.search),
 }));
 
-vi.mock("@/components/workers/ImportCodexDialog", () => ({
-  ImportCodexDialog: () => null,
-}));
-
 vi.mock("@/components/pod/CreatePodForm", () => ({
   CreatePodForm: () => <div data-testid="simple-worker-create-form" />,
 }));

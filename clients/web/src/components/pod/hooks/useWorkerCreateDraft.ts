@@ -137,7 +137,14 @@ export function useWorkerCreateDraft(
     const requestId = crypto.randomUUID();
     dispatch({ type: "fill_loading", requestId });
     try {
-      const result = await podApi.fillWorkerDraft(prompt, state.draft);
+      const generationModelId = state.draft.model_resource_id > 0
+        ? state.draft.model_resource_id
+        : undefined;
+      const result = await podApi.fillWorkerDraft(
+        prompt,
+        state.draft,
+        generationModelId,
+      );
       dispatch({ type: "fill_succeeded", requestId, result });
     } catch (error) {
       const resolved = workerCreateError(error);
