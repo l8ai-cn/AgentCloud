@@ -16,6 +16,9 @@ func (c *ACPClient) Start() error {
 		return err
 	}
 	c.transport = transport
+	if receiver, ok := transport.(processEnvReceiver); ok {
+		receiver.SetProcessEnv(c.cfg.Env)
+	}
 
 	proc, err := processmgr.Global().Start(c.ctx, processmgr.Spec{
 		Owner:       "acp:" + c.cfg.Command,

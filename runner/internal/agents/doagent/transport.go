@@ -22,9 +22,14 @@ type transport struct {
 	modelMu   sync.RWMutex
 	models    []string
 	model     string
+	processEnv []string
 
 	ctx    context.Context
 	logger *slog.Logger
+}
+
+func (t *transport) SetProcessEnv(env []string) {
+	t.processEnv = append([]string(nil), env...)
 }
 
 func newTransport(callbacks acp.EventCallbacks, logger *slog.Logger) *transport {

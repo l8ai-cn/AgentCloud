@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -41,7 +42,16 @@ func (t *transport) setCurrentModel(model string) {
 }
 
 func (t *transport) loadModels() {
-	settings, err := readDoAgentSettings(os.Getenv("DO_AGENT_SETTINGS"))
+	settingsPath := lookupProcessEnv(t.processEnv, "DO_AGENT_SETTINGS")
+	if settingsPath == "" {
+		settingsPath = os.Getenv("DO_AGENT_SETTINGS")
+	}
+	if settingsPath == "" {
+		if home := lookupProcessEnv(t.processEnv, "DO_AGENT_HOME"); home != "" {
+			settingsPath = filepath.Join(home, "settings.json")
+		}
+	}
+	settings, err := readDoAgentSettings(settingsPath)
 	if err != nil {
 		t.logger.Warn("do-agent settings unavailable for model list", "error", err)
 		return
@@ -57,6 +67,16 @@ func (t *transport) loadModels() {
 	t.modelMu.Lock()
 	defer t.modelMu.Unlock()
 	t.models = uniqueModels(append([]string{t.model}, models...))
+}
+
+func lookupProcessEnv(env []string, key string) string {
+	prefix := key + "="
+	for _, item := range env {
+		if strings.HasPrefix(item, prefix) {
+			return strings.TrimPrefix(item, prefix)
+		}
+	}
+	return ""
 }
 
 func uniqueModels(models []string) []string {
