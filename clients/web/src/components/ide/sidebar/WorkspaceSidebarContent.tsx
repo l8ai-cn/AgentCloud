@@ -16,8 +16,6 @@ import { WorkspaceFilters } from "./WorkspaceFilters";
 import { useWorkspaceSidebar } from "./useWorkspaceSidebar";
 import { PublishExpertDialog } from "@/components/experts/PublishExpertDialog";
 import { PodMobileAccessDialog } from "@/components/mobile/PodMobileAccessDialog";
-import { usePartnerNamesBySnapshot } from "@/hooks/usePartnerNamesBySnapshot";
-import { partnerSnapshotId } from "@/lib/partner-worker-match";
 import type { Pod } from "@/stores/pod";
 
 interface WorkspaceSidebarContentProps {
@@ -30,7 +28,6 @@ export function WorkspaceSidebarContent({ className, onCreatePod, onTerminatePod
   const t = useTranslations();
   const router = useRouter();
   const s = useWorkspaceSidebar(t, onTerminatePod);
-  const partnerNames = usePartnerNamesBySnapshot();
   const [sharePodKey, setSharePodKey] = useState<string | null>(null);
   const [mobileAccessPod, setMobileAccessPod] = useState<Pod | null>(null);
   const [publishPod, setPublishPod] = useState<Pod | null>(null);
@@ -85,11 +82,8 @@ export function WorkspaceSidebarContent({ className, onCreatePod, onTerminatePod
           </div>
         ) : (
           <div className="py-1">
-            {s.sortedPods.map((pod) => {
-              const snapshotId = partnerSnapshotId(pod);
-              return (
+            {s.sortedPods.map((pod) => (
               <PodListItem key={pod.pod_key} pod={pod} isOpen={s.isPodOpen(pod.pod_key)}
-                partnerName={snapshotId == null ? undefined : partnerNames.get(snapshotId)}
                 onClick={() => s.handleOpenTerminal(pod)} onTerminate={() => s.handleTerminateClick(pod.pod_key)}
                 onDelete={() => s.handleDeleteClick(pod.pod_key)}
                 onWake={() => s.handleWakeClick(pod.pod_key)}
@@ -97,8 +91,7 @@ export function WorkspaceSidebarContent({ className, onCreatePod, onTerminatePod
                 onOpenMobile={() => setMobileAccessPod(pod)}
                 onPublishExpert={() => setPublishPod(pod)}
                 onTogglePerpetual={(perpetual) => s.handleTogglePerpetual(pod.pod_key, perpetual)} />
-              );
-            })}
+            ))}
             {s.podHasMore && (
               <div className="px-3 py-2">
                 <Button size="sm" variant="ghost" className="w-full h-8 text-xs text-muted-foreground"
