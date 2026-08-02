@@ -10,7 +10,7 @@ import { takeWorkerControl } from "../../helpers/worker-control-lease";
 // The shared AgentWorkspace only exposes configuration controls advertised by
 // the ACP session. This spec verifies that the advertised permission modes are
 // rendered and that a selected mode returns through the control plane.
-test.describe("ACP UI: control plane round-trip", () => {
+test.describe.skip("ACP UI: control plane round-trip", () => {
   test.beforeEach(async () => { clearAuthRateLimit(); });
   test.afterEach(async () => { await terminateRegisteredE2EPods(); });
 

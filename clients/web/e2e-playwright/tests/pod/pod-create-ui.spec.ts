@@ -9,10 +9,9 @@ test.describe("Create Worker UI", () => {
       name: /Create a Worker in one sentence|用一句话创建 Worker/i,
     })).toBeVisible();
 
-    const createButton = page.getByRole("button", {
-      name: /^(Create with AI|AI 创建 Worker)$/i,
-    });
-    await expect(createButton).toBeEnabled();
+    const createButton = page.getByTestId("worker-ai-create");
+    await expect(createButton).toBeVisible();
+    await expect(createButton).toBeEnabled({ timeout: 30_000 });
     await createButton.click();
     await expect(page.getByText(
       /Describe the Worker before creating it|请先描述要创建的 Worker/i,

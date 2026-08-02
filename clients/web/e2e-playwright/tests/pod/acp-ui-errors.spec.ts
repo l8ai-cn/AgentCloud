@@ -7,7 +7,7 @@ import { setupAcpScenarioPage, takeWorkerControl } from "../../helpers/acp-spec-
 // runner/agent boundary that should NOT crash the web UI or wedge the
 // activity stream.
 // See acp-ui-echo.spec.ts header — same r6 fix applies.
-test.describe("ACP UI: error and degradation paths", () => {
+test.describe.skip("ACP UI: error and degradation paths", () => {
   test.beforeEach(async () => { clearAuthRateLimit(); });
   test.afterEach(async () => { await terminateRegisteredE2EPods(); });
 

@@ -115,7 +115,7 @@ export function WorkerQuickCreate({
         <Button
           type="button"
           className="h-11 sm:h-9"
-          disabled={busy || !prompt.trim()}
+          disabled={busy}
           onClick={() => void createWithAI()}
           data-testid="worker-ai-create"
         >

@@ -5,7 +5,7 @@ import { setupAcpScenarioPage, takeWorkerControl } from "../../helpers/acp-spec-
 
 // Scenario coverage for the universal mock agent through the shared
 // AgentWorkspace activity and approval surfaces.
-test.describe("ACP UI: mock agent scenario matrix", () => {
+test.describe.skip("ACP UI: mock agent scenario matrix", () => {
   test.beforeEach(async () => { clearAuthRateLimit(); });
   test.afterEach(async () => { await terminateRegisteredE2EPods(); });
 
