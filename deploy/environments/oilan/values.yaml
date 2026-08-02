@@ -26,7 +26,7 @@ backend:
     - agentcloud-secrets
     - agentcloud-gitea
   coordinatorOrgSlug: dev-org
-  coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d,e2e-echo=repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:6120326f0bcadfa2fbf29fe853d69530b48aae81cbbb2fea29a4079696feb941,seedance-expert=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:6120326f0bcadfa2fbf29fe853d69530b48aae81cbbb2fea29a4079696feb941"
+  coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d,e2e-echo=repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:6f845f51d3b6fa0ef7096b72f33334cc69ab6153e480b21a0d2db7a5611a909c,seedance-expert=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:6f845f51d3b6fa0ef7096b72f33334cc69ab6153e480b21a0d2db7a5611a909c"
   strategy:
     type: RollingUpdate
     rollingUpdate:
