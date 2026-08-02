@@ -1,4 +1,9 @@
 export { AgentWorkspace, type AgentWorkspaceProps } from "./AgentWorkspace";
+export {
+  AgentSessionDeck,
+  type AgentSessionDeckEntry,
+  type AgentSessionDeckProps,
+} from "./AgentSessionDeck";
 export { ActivityTimeline } from "./ActivityTimeline";
 export { createBuiltinToolRenderers } from "./builtinToolRenderers";
 export {
@@ -67,6 +72,7 @@ export {
   type WorkbenchContainerMode,
 } from "./react/useWorkbenchContainerMode";
 export { TerminalSurface } from "./TerminalSurface";
+export { useElementFullscreen } from "./useElementFullscreen";
 export {
   UserVideoTaskPresentation,
   type UserVideoTaskPresentationProps,

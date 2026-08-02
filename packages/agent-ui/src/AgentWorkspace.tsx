@@ -1,4 +1,3 @@
-import { MessageSquare, Terminal } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 
 import { AgentWorkspaceConversationPanel } from "./AgentWorkspaceConversationPanel";
@@ -11,10 +10,11 @@ import type { ContentRendererRegistry } from "./registry/ContentRendererRegistry
 import type { ToolRendererRegistry } from "./registry/ToolRendererRegistry";
 import { useWorkbenchContainerMode } from "./react/useWorkbenchContainerMode";
 import { useAgentSessionSnapshot } from "./useAgentSessionSnapshot";
+import { useElementFullscreen } from "./useElementFullscreen";
+import { WorkspaceFullscreenButton } from "./WorkspaceFullscreenButton";
 import { WorkspaceHeader } from "./WorkspaceHeader";
 import { ReadOnlyAgentSessionRuntime } from "./runtime/ReadOnlyAgentSessionRuntime";
 import { agentWorkspaceText, type AgentWorkspaceLocale } from "./agentWorkspaceText";
-import { focusAdjacentTab } from "./react/tabKeyboardNavigation";
 import {
   type AgentWorkspacePresentation,
   userConversationItems,
@@ -22,7 +22,7 @@ import {
 } from "./userWorkspacePresentation";
 import { userVideoExecutionSteps } from "./userVideoExecutionTrace";
 import type { WorkspaceFileSource } from "./conversation/mentions/workspaceFileSource";
-import { WorkspaceViewTab } from "./WorkspaceViewTab";
+import { WorkspaceViewTabs, type WorkspaceView } from "./WorkspaceViewTabs";
 
 export interface AgentWorkspaceProps {
   runtime: AgentSessionRuntime;
@@ -61,7 +61,7 @@ export function AgentWorkspace({
   );
   const snapshot = useAgentSessionSnapshot(activeRuntime, sessionId, runtime);
   const text = agentWorkspaceText(locale);
-  const [view, setView] = useState<"conversation" | "terminal">("conversation");
+  const [view, setView] = useState<WorkspaceView>("conversation");
   const tabId = useId();
   const conversationTabId = `${tabId}-conversation-tab`;
   const conversationPanelId = `${tabId}-conversation-panel`;
@@ -69,6 +69,7 @@ export function AgentWorkspace({
   const terminalPanelId = `${tabId}-terminal-panel`;
   const [surfaceError, setSurfaceError] = useState<string | null>(null);
   const { containerRef, mode } = useWorkbenchContainerMode();
+  const fullscreen = useElementFullscreen(containerRef);
   const terminal = snapshot.terminals[0];
   const allArtifacts = snapshot.items.filter((item) => item.kind === "artifact");
   const allConversationItems = snapshot.items.filter(
@@ -99,31 +100,28 @@ export function AgentWorkspace({
         data-agent-workspace={sessionId}
         ref={containerRef}
       >
-        <WorkspaceHeader presentation={presentation} snapshot={snapshot} />
-        <nav
-          className="flex h-12 items-center gap-1 border-b border-border px-2"
-          onKeyDown={focusAdjacentTab}
-          role="tablist"
-        >
-          <WorkspaceViewTab
-            active={view === "conversation"}
-            icon={<MessageSquare className="size-3.5" />}
-            id={conversationTabId}
-            label={text.conversation}
-            onClick={() => setView("conversation")}
-            panelId={conversationPanelId}
-          />
-          {terminalEnabled && (
-            <WorkspaceViewTab
-              active={view === "terminal"}
-              icon={<Terminal className="size-3.5" />}
-              id={terminalTabId}
-              label={text.terminal}
-              onClick={() => setView("terminal")}
-              panelId={terminalPanelId}
+        <WorkspaceHeader
+          actions={
+            <WorkspaceFullscreenButton
+              active={fullscreen.active}
+              onToggle={fullscreen.toggle}
+              supported={fullscreen.supported}
             />
-          )}
-        </nav>
+          }
+          presentation={presentation}
+          snapshot={snapshot}
+          tabs={
+            <WorkspaceViewTabs
+              conversationPanelId={conversationPanelId}
+              conversationTabId={conversationTabId}
+              onViewChange={setView}
+              terminalEnabled={terminalEnabled}
+              terminalPanelId={terminalPanelId}
+              terminalTabId={terminalTabId}
+              view={view}
+            />
+          }
+        />
         {(surfaceError ||
           (presentation === "developer" && snapshot.error)) && (
           <div className="border-b border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">

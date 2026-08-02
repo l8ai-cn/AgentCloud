@@ -15,6 +15,10 @@ export interface AgentWorkspaceText {
   artifacts: string;
   workspaceViews: string;
   terminal: string;
+  enterFullscreen: string;
+  exitFullscreen: string;
+  sessions: string;
+  newSession: string;
   plan: string;
   agentPlan: string;
   loadEarlierActivity: string;
@@ -60,6 +64,7 @@ export interface AgentWorkspaceText {
   videoPreview(filename: string): string;
   openArtifact(filename: string): string;
   downloadArtifact(filename: string): string;
+  closeSession(title: string): string;
   configurationOptions(label: string): string;
   configurationLabel(id: string, fallback: string): string;
   configurationOption(id: string, value: string, fallback: string): string;
