@@ -12,7 +12,7 @@ export {
   getUserCredentialService, getEnvBundleService, getOrgApiService, getAgentService,
   getTicketRelationsService, getFileService, getSupportTicketService,
   getAuthConnectService, getRunnerState, getMeshState, getTicketState,
-  getChannelState, getWorkflowState, getAcpManager, getLoopalManager, getLoopBuilderState, getRepoState,
+  getChannelState, getWorkflowState, getLoopalManager, getLoopBuilderState, getRepoState,
   getExpertState,
   getAutopilotState, getRelayManager, getBlockstoreService,
   getKnowledgeBaseService,

@@ -10,7 +10,6 @@ import {
 import { useLocale } from "next-intl";
 import { cn } from "@/lib/utils";
 import { useWorkspaceStore, type SplitDirection } from "@/stores/workspace";
-import { useAcpRelay } from "@/hooks/useAcpRelay";
 import { AgentPanelHeader } from "./AgentPanelHeader";
 import { PodSelectorModal } from "./PodSelectorModal";
 import { WorkerControlOverlay } from "@/components/mobile-worker/WorkerControlOverlay";
@@ -53,7 +52,6 @@ export function AgentPanel({
   const session = usePodWorkerSession(podKey, controlClientLabel);
 
   const openPodKeys = useMemo(() => panes.map((p) => p.podKey), [panes]);
-  useAcpRelay(podKey, paneId, session.liveSession);
 
   const handleFocus = useCallback(() => {
     setActivePane(paneId);

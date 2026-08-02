@@ -1,6 +1,7 @@
 import { fromBinary } from "@bufbuild/protobuf";
 import {
   projectPodLiveness,
+  type AgentSessionRuntime,
   type WorkerLiveness,
   type WorkerRef,
   type WorkerTransport,
@@ -21,13 +22,18 @@ export interface PodWorkerTransportOptions {
   isControlGranted: () => boolean;
   getInitProgressMessage: (podKey: string) => string | null;
   getWorkspaceArtifactError: (podKey: string) => string | null;
+  /** Lets a domain host wrap the session runtime, e.g. to add slash commands. */
+  decorateRuntime?: (
+    runtime: AgentSessionRuntime,
+    podKey: string,
+  ) => AgentSessionRuntime;
 }
 
 export function createPodWorkerTransport(
   options: PodWorkerTransportOptions,
 ): WorkerTransport {
   const sessionToPod = new Map<string, string>();
-  const runtimes = new Map<string, { key: string; runtime: WebAgentWorkbenchRuntime }>();
+  const runtimes = new Map<string, { key: string; runtime: AgentSessionRuntime }>();
 
   return {
     kind: "pod",
@@ -70,7 +76,7 @@ export function createPodWorkerTransport(
       if (existing?.key === key) return existing.runtime;
       existing?.runtime.close(sessionId);
       const state = getAgentWorkbenchState();
-      const runtime = new WebAgentWorkbenchRuntime({
+      const base = new WebAgentWorkbenchRuntime({
         agentLabel,
         interactionMode,
         live,
@@ -79,6 +85,7 @@ export function createPodWorkerTransport(
         title,
         workspaceArtifactError,
       });
+      const runtime = options.decorateRuntime?.(base, podKey) ?? base;
       runtimes.set(sessionId, { key, runtime });
       return runtime;
     },

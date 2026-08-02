@@ -46,7 +46,6 @@ repo_state_proto = { workspace = true }
 runner_api_proto = { workspace = true }
 runner_state_proto = { workspace = true }
 autopilot_state_proto = { workspace = true }
-acp_state_proto = { workspace = true }
 sso_proto = { workspace = true }
 support_ticket_proto = { workspace = true }
 ticket_proto = { workspace = true }

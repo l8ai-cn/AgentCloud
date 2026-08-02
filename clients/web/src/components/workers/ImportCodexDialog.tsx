@@ -13,15 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { usePodCreationData } from "@/components/pod/hooks";
 import { getPod } from "@/lib/api/facade/podConnect";
-import {
-  fetchAllSessionItems,
-  importCodexSession,
-} from "@/lib/api/sessionImportApi";
-import {
-  codexItemsToAcpSnapshot,
-  ACP_SNAPSHOT_MSG_TYPE,
-} from "@/lib/codexItemsToAcpSnapshot";
-import { dispatchAcpRelayEvent } from "@/stores/acpEventDispatcher";
+import { importCodexSession } from "@/lib/api/sessionImportApi";
 import { usePodStore } from "@/stores/pod";
 import { readCurrentOrg } from "@/stores/auth";
 import { refreshImportedSessionsList } from "@/components/ide/sidebar/ImportedSessionsSection";
@@ -95,10 +87,6 @@ export function ImportCodexDialog({
         title: title.trim() || undefined,
         modelResourceId: selectedModelResourceId ?? undefined,
       });
-
-      const items = await fetchAllSessionItems(result.sessionId);
-      const snapshot = codexItemsToAcpSnapshot(result.sessionId, items);
-      dispatchAcpRelayEvent(result.podKey, ACP_SNAPSHOT_MSG_TYPE, snapshot);
 
       try {
         const pod = await getPod(orgSlug, result.podKey);

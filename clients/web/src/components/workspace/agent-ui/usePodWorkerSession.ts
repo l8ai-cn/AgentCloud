@@ -1,12 +1,21 @@
 import { useEffect, useMemo, useRef } from "react";
-import { WorkerClient } from "@agent-cloud/agent-ui";
+import { WorkerClient, type AgentSessionRuntime } from "@agent-cloud/agent-ui";
 
 import { useWorkerControlLease } from "@/hooks/useWorkerControlLease";
 import { usePod, usePodStore } from "@/stores/pod";
 import { createPodWorkerTransport } from "./podWorkerTransport";
 import { usePodWorkspaceArtifacts } from "./usePodWorkspaceArtifacts";
 
-export function usePodWorkerSession(podKey: string, controlClientLabel: string) {
+export type PodRuntimeDecorator = (
+  runtime: AgentSessionRuntime,
+  podKey: string,
+) => AgentSessionRuntime;
+
+export function usePodWorkerSession(
+  podKey: string,
+  controlClientLabel: string,
+  decorateRuntime?: PodRuntimeDecorator,
+) {
   const pod = usePod(podKey);
   const controlLease = useWorkerControlLease(podKey, controlClientLabel);
   const podStatus = pod?.status ?? "unknown";
@@ -18,6 +27,7 @@ export function usePodWorkerSession(podKey: string, controlClientLabel: string) 
   const latchRef = useRef({
     controlGranted: false,
     workspaceArtifactError: null as string | null,
+    decorateRuntime: decorateRuntime as PodRuntimeDecorator | undefined,
   });
 
   const workerRef = useMemo(
@@ -31,6 +41,8 @@ export function usePodWorkerSession(podKey: string, controlClientLabel: string) 
     const client = new WorkerClient();
     client.register(
       createPodWorkerTransport({
+        decorateRuntime: (runtime, key) =>
+          latchRef.current.decorateRuntime?.(runtime, key) ?? runtime,
         isControlGranted: () => latchRef.current.controlGranted,
         getInitProgressMessage: (key) => {
           const progress = usePodStore.getState().initProgress[key];
@@ -48,9 +60,10 @@ export function usePodWorkerSession(podKey: string, controlClientLabel: string) 
     latchRef.current = {
       controlGranted: controlLease.status === "granted",
       workspaceArtifactError: workspaceArtifacts.error,
+      decorateRuntime,
     };
     usePodStore.setState((state) => ({ _tick: state._tick + 1 }));
-  }, [controlLease.status, workspaceArtifacts.error]);
+  }, [controlLease.status, workspaceArtifacts.error, decorateRuntime]);
 
   return {
     controlLease,

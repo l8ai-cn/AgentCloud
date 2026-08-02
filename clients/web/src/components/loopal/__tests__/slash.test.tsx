@@ -1,87 +1,93 @@
 import { describe, it, expect } from "vitest";
-import { getSlashQuery } from "../prompt/loopalSlashQuery";
-import { buildLoopalCommands, parseSlashInput, filterCommands } from "../prompt/loopalCommands";
-import { thinkingKey, THINKING_OPTIONS } from "../prompt/loopalThinking";
+import {
+  buildLoopalCommandSpecs,
+  resolveLoopalCommand,
+  toAgentCommands,
+} from "../loopalCommandSpecs";
+import { thinkingKey, THINKING_OPTIONS } from "../loopalThinking";
 
 const t = (k: string) => k;
+const specs = (hasGoal = false) => buildLoopalCommandSpecs({ hasGoal, t });
 
-describe("getSlashQuery", () => {
-  it("matches a leading slash token", () => {
-    expect(getSlashQuery("/comp", 5)).toEqual({ query: "comp", startIndex: 0 });
+describe("loopal command specs", () => {
+  it("hides goal sub-commands until a goal exists", () => {
+    const names = specs().map((spec) => spec.name);
+    expect(names).not.toContain("goal-pause");
+    expect(specs(true).map((spec) => spec.name)).toContain("goal-pause");
   });
-  it("matches a bare slash", () => {
-    expect(getSlashQuery("/", 1)).toEqual({ query: "", startIndex: 0 });
-  });
-  it("returns null without a leading slash", () => {
-    expect(getSlashQuery("hello", 5)).toBeNull();
-  });
-  it("closes once a space is typed (now an argument)", () => {
-    expect(getSlashQuery("/goal ship", 10)).toBeNull();
-  });
-  it("ignores a slash mid-text", () => {
-    expect(getSlashQuery("path/to", 7)).toBeNull();
-  });
-});
 
-describe("buildLoopalCommands", () => {
-  it("omits goal sub-commands without a goal", () => {
-    const ids = buildLoopalCommands({ hasGoal: false, t }).map((c) => c.id);
-    expect(ids).toContain("goal");
-    expect(ids).not.toContain("goal-pause");
+  it("publishes commands in the workbench slash format", () => {
+    const commands = toAgentCommands(specs());
+    const goal = commands.find((command) => command.name === "goal");
+    expect(goal).toMatchObject({ label: "/goal", requiresArgument: true });
+    const act = commands.find((command) => command.name === "act");
+    expect(act).toMatchObject({ label: "/act" });
+    expect(act?.requiresArgument).toBeUndefined();
   });
-  it("adds goal sub-commands with a goal", () => {
-    const ids = buildLoopalCommands({ hasGoal: true, t }).map((c) => c.id);
-    expect(ids).toContain("goal-pause");
-    expect(ids).toContain("goal-clear");
-  });
-  it("maps /plan to loopal.mode plan", () => {
-    const plan = buildLoopalCommands({ hasGoal: false, t }).find((c) => c.id === "plan");
-    expect(plan?.action).toEqual({ kind: "send", subtype: "loopal.mode", payload: { mode: "plan" } });
-  });
-  it("routes /model to the model popover", () => {
-    const model = buildLoopalCommands({ hasGoal: false, t }).find((c) => c.id === "model");
-    expect(model?.action).toEqual({ kind: "popover", popover: "model" });
-  });
-  it("localizes hints through the translator", () => {
-    const act = buildLoopalCommands({ hasGoal: false, t }).find((c) => c.id === "act");
-    expect(act?.hint).toBe("commands.act");
-    expect(act?.label).toBe("/act");
-  });
-});
 
-describe("parseSlashInput", () => {
-  const cmds = buildLoopalCommands({ hasGoal: true, t });
-  it("parses a no-arg command", () => {
-    expect(parseSlashInput("/compact", cmds)?.command.id).toBe("compact");
+  it("routes plain verbs to their relay control subtype", () => {
+    expect(resolveLoopalCommand(specs(), "act", "")).toEqual({
+      subtype: "loopal.mode",
+      payload: { mode: "act" },
+    });
+    expect(resolveLoopalCommand(specs(), "compact", "")).toEqual({
+      subtype: "loopal.compact",
+      payload: undefined,
+    });
   });
-  it("parses a command with an argument", () => {
-    const r = parseSlashInput("/goal ship it", cmds);
-    expect(r?.command.id).toBe("goal");
-    expect(r?.arg).toBe("ship it");
+
+  it("accepts a leading slash and mixed case", () => {
+    expect(resolveLoopalCommand(specs(), "/PLAN", "")).toEqual({
+      subtype: "loopal.mode",
+      payload: { mode: "plan" },
+    });
   });
+
+  it("carries the goal objective as the command argument", () => {
+    expect(resolveLoopalCommand(specs(), "goal", "  ship the release  ")).toEqual({
+      subtype: "loopal.goalCreate",
+      payload: { objective: "ship the release" },
+    });
+  });
+
+  it("rejects an argument-less command that needs one", () => {
+    expect(resolveLoopalCommand(specs(), "goal", "   ")).toBeNull();
+    expect(resolveLoopalCommand(specs(), "resume", "")).toBeNull();
+  });
+
+  it("maps a thinking level to its wire config", () => {
+    const call = resolveLoopalCommand(specs(), "thinking", "high");
+    expect(call?.subtype).toBe("loopal.thinking");
+    expect(thinkingKey(call?.payload?.config as string)).toBe("high");
+  });
+
+  it("rejects an unknown thinking level", () => {
+    expect(resolveLoopalCommand(specs(), "thinking", "turbo")).toBeNull();
+  });
+
+  it("parses a rewind turn index and rejects non-integers", () => {
+    expect(resolveLoopalCommand(specs(), "rewind", "3")).toEqual({
+      subtype: "loopal.rewind",
+      payload: { turn_index: 3 },
+    });
+    expect(resolveLoopalCommand(specs(), "rewind", "-1")).toBeNull();
+    expect(resolveLoopalCommand(specs(), "rewind", "abc")).toBeNull();
+  });
+
   it("returns null for an unknown command", () => {
-    expect(parseSlashInput("/bogus", cmds)).toBeNull();
-  });
-});
-
-describe("filterCommands", () => {
-  it("filters by id prefix", () => {
-    const ids = filterCommands(buildLoopalCommands({ hasGoal: false, t }), "su").map((c) => c.id);
-    expect(ids).toEqual(["suspend"]);
+    expect(resolveLoopalCommand(specs(), "nope", "")).toBeNull();
   });
 });
 
 describe("thinkingKey", () => {
-  it("round-trips effort levels", () => {
-    const high = THINKING_OPTIONS.find((o) => o.key === "high")!;
-    expect(thinkingKey(high.config)).toBe("high");
+  it("round-trips every offered option", () => {
+    for (const option of THINKING_OPTIONS) {
+      expect(thinkingKey(option.config)).toBe(option.key);
+    }
   });
-  it("maps auto and disabled", () => {
-    expect(thinkingKey(JSON.stringify({ type: "auto" }))).toBe("auto");
-    expect(thinkingKey(JSON.stringify({ type: "disabled" }))).toBe("off");
-  });
-  it("returns null for garbage or null", () => {
-    expect(thinkingKey("not json")).toBeNull();
+
+  it("returns null for absent or malformed config", () => {
     expect(thinkingKey(null)).toBeNull();
+    expect(thinkingKey("{oops")).toBeNull();
   });
 });

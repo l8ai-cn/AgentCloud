@@ -3,7 +3,6 @@ use std::sync::Arc;
 use agentcloud_events::types::RealtimeEvent;
 use agentcloud_persistence::StorageBackend;
 
-use crate::acp_session::AcpSessionManager;
 use crate::agent_workbench_state::AgentWorkbenchState;
 pub use crate::app_runtime::{AppRuntime, AppStateDispatchHook};
 use crate::autopilot_state::AutopilotState;
@@ -31,7 +30,6 @@ pub struct AppState {
     pub mesh: MeshState,
     pub autopilot: AutopilotState,
     pub workbench: AgentWorkbenchState,
-    pub acp: AcpSessionManager,
     pub loopal: LoopalSessionManager,
     pub loop_builder: LoopBuilderState,
     pub repo: RepoState,
@@ -71,7 +69,6 @@ impl AppState {
             mesh: MeshState::default(),
             autopilot: AutopilotState::default(),
             workbench: AgentWorkbenchState::new(),
-            acp: AcpSessionManager::new(),
             loopal: LoopalSessionManager::new(),
             loop_builder: LoopBuilderState::new(),
             repo: RepoState::new(),
@@ -96,7 +93,6 @@ impl AppState {
             mesh: MeshState::default(),
             autopilot: AutopilotState::default(),
             workbench: AgentWorkbenchState::new(),
-            acp: AcpSessionManager::new(),
             loopal: LoopalSessionManager::new(),
             loop_builder: LoopBuilderState::new(),
             repo: RepoState::with_storage(backend),

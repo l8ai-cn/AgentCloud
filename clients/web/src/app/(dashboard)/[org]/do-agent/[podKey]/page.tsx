@@ -12,7 +12,7 @@ import { useParams } from "next/navigation";
 import { usePodWorkerSession } from "@/components/workspace/agent-ui/usePodWorkerSession";
 import { DoAgentGoalBar, useDoAgentGoalSync } from "@/components/doagent/DoAgentGoalBar";
 import { DoAgentWorkspaceLink } from "@/components/doagent/DoAgentWorkspaceLink";
-import { useAcpRelay } from "@/hooks/useAcpRelay";
+import { useDomainControlRelay } from "@/hooks/useDomainControlRelay";
 
 const CONTENT_RENDERERS = createBuiltinContentRenderers();
 const TOOL_RENDERERS = createBuiltinToolRenderers();
@@ -25,7 +25,7 @@ export default function DoAgentConsolePage() {
 
   // Goal control stays on the relay control channel; the conversation itself is
   // projected from the workbench session, so both must be subscribed.
-  useAcpRelay(podKey, `doagent-${podKey}`, !!podKey);
+  useDomainControlRelay(podKey, `doagent-${podKey}`, !!podKey);
   useDoAgentGoalSync(podKey, !!podKey);
 
   if (!podKey) return null;

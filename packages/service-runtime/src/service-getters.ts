@@ -14,7 +14,7 @@ import type {
   WasmAIResourceService, WasmOrchestrationResourceService,
   WasmExecutionClusterService,
   WasmRunnerState, WasmMeshState, WasmTicketState, WasmChannelState,
-  WasmWorkflowState, WasmAcpSessionManager, WasmLoopalManager, WasmRepoState,
+  WasmWorkflowState, WasmLoopalManager, WasmRepoState,
   WasmExpertState, WasmAutopilotState, WasmLoopBuilderState, WasmRelayManager,
 } from "agent-cloud-wasm";
 import type { AgentWorkbenchServiceRegistry } from "./agent-workbench-service-registry";
@@ -77,7 +77,6 @@ export interface ServiceRegistry extends AgentWorkbenchServiceRegistry {
   ticketState: WasmTicketState;
   channelState: WasmChannelState;
   workflowState: WasmWorkflowState;
-  acpManager: WasmAcpSessionManager;
   // Loopal control-panel state. Optional — only the web build registers it;
   // missing services fall back to NOOP_PROXY (Loopal console shows empty panels).
   loopalManager?: WasmLoopalManager;
@@ -180,7 +179,6 @@ export const getMeshState = () => g("meshState");
 export const getTicketState = () => g("ticketState");
 export const getChannelState = () => g("channelState");
 export const getWorkflowState = () => g("workflowState");
-export const getAcpManager = () => g("acpManager");
 export const getLoopalManager = (): WasmLoopalManager => {
   const reg = registry();
   return (reg.ready ? reg.instances.loopalManager ?? NOOP_PROXY : NOOP_PROXY) as WasmLoopalManager;

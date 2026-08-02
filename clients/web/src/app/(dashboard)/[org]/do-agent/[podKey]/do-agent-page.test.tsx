@@ -10,8 +10,8 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({ org: "acme", podKey: "pod-1" }),
 }));
 
-vi.mock("@/hooks/useAcpRelay", () => ({
-  useAcpRelay: (_podKey: string, _paneId: string, active: boolean) => {
+vi.mock("@/hooks/useDomainControlRelay", () => ({
+  useDomainControlRelay: (_podKey: string, _paneId: string, active: boolean) => {
     mocks.relayCalls.push(active);
   },
 }));

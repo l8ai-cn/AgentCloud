@@ -1,5 +1,5 @@
 // Proto roundtrip tests — opaque-JSON state schemas
-// (acp / mesh / app / blockstore / auth). These schemas carry a single
+// (mesh / app / blockstore / auth). These schemas carry a single
 // `xxx_json: string` field that the renderer JSON.stringifies and the
 // Rust state deserialises with serde_json. The proto roundtrip verifies
 // the envelope; the payload is opaque to both sides.
@@ -9,13 +9,6 @@
 
 import { describe, it, expect } from "vitest";
 import { create, toBinary, fromBinary } from "@bufbuild/protobuf";
-
-import {
-  UpdateToolCallRequestSchema,
-  UpdatePlanRequestSchema,
-  AddPermissionRequestRequestSchema,
-  UpdateConfigurationRequestSchema,
-} from "@proto/acp_state/v1/acp_state_pb";
 
 import { ReplaceTopologyRequestSchema } from "@proto/mesh_state/v1/mesh_state_pb";
 import { DispatchEventRequestSchema } from "@proto/app_state/v1/app_state_pb";
@@ -28,49 +21,6 @@ import {
 } from "@proto/auth_state/v1/auth_state_pb";
 import { UserSchema } from "@proto/auth/v1/auth_pb";
 import { OrganizationSchema } from "@proto/org/v1/org_pb";
-
-describe("proto roundtrip — acp_state.v1", () => {
-  it("UpdateToolCallRequest carries pod_key + opaque JSON", () => {
-    const blob = JSON.stringify({ id: "tc-1", name: "bash", args: { cmd: "ls" } });
-    const req = create(UpdateToolCallRequestSchema, { podKey: "pod-1", toolCallJson: blob });
-    const decoded = fromBinary(
-      UpdateToolCallRequestSchema,
-      toBinary(UpdateToolCallRequestSchema, req),
-    );
-    expect(decoded.podKey).toBe("pod-1");
-    expect(decoded.toolCallJson).toBe(blob);
-  });
-
-  it("UpdatePlanRequest carries pod_key + steps JSON", () => {
-    const blob = JSON.stringify([{ id: "step-1", text: "do things" }]);
-    const req = create(UpdatePlanRequestSchema, { podKey: "pod-2", stepsJson: blob });
-    const decoded = fromBinary(UpdatePlanRequestSchema, toBinary(UpdatePlanRequestSchema, req));
-    expect(decoded.podKey).toBe("pod-2");
-    expect(decoded.stepsJson).toBe(blob);
-  });
-
-  it("AddPermissionRequestRequest carries pod_key + request JSON", () => {
-    const blob = JSON.stringify({ id: "perm-1", kind: "fs.write", path: "/tmp/x" });
-    const req = create(AddPermissionRequestRequestSchema, { podKey: "pod-3", requestJson: blob });
-    const decoded = fromBinary(
-      AddPermissionRequestRequestSchema,
-      toBinary(AddPermissionRequestRequestSchema, req),
-    );
-    expect(decoded.podKey).toBe("pod-3");
-    expect(decoded.requestJson).toBe(blob);
-  });
-
-  it("UpdateConfigurationRequest carries pod_key + config JSON", () => {
-    const blob = JSON.stringify({ model: "opus-4", permission_mode: "ask" });
-    const req = create(UpdateConfigurationRequestSchema, { podKey: "pod-4", configJson: blob });
-    const decoded = fromBinary(
-      UpdateConfigurationRequestSchema,
-      toBinary(UpdateConfigurationRequestSchema, req),
-    );
-    expect(decoded.podKey).toBe("pod-4");
-    expect(decoded.configJson).toBe(blob);
-  });
-});
 
 describe("proto roundtrip — mesh_state.v1", () => {
   it("ReplaceTopologyRequest carries typed MeshTopology proto", () => {

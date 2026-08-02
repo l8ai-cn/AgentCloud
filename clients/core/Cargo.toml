@@ -53,7 +53,6 @@ members = [
     "crates/proto/runner_api",
     "crates/proto/runner_state",
     "crates/proto/autopilot_state",
-    "crates/proto/acp_state",
     "crates/proto/sso",
     "crates/proto/support_ticket",
     "crates/proto/ticket",
@@ -121,7 +120,6 @@ repo_state_proto = { path = "crates/proto/repo_state" }
 runner_api_proto = { path = "crates/proto/runner_api" }
 runner_state_proto = { path = "crates/proto/runner_state" }
 autopilot_state_proto = { path = "crates/proto/autopilot_state" }
-acp_state_proto = { path = "crates/proto/acp_state" }
 sso_proto = { path = "crates/proto/sso" }
 support_ticket_proto = { path = "crates/proto/support_ticket" }
 ticket_proto = { path = "crates/proto/ticket" }

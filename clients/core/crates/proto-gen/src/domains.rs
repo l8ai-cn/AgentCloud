@@ -118,7 +118,6 @@ pub const DOMAINS: &[Domain] = &[
     domain!("runner_api", ["runner.proto"], []),
     domain!("runner_state", ["runner_state.proto"], ["runner_api"]),
     domain!("autopilot_state", ["autopilot_state.proto"], []),
-    domain!("acp_state", ["acp_state.proto"], []),
     domain!("sso", ["sso.proto", "sso_admin.proto"], []),
     domain!(
         "support_ticket",

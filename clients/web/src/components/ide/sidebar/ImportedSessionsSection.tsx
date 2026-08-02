@@ -4,12 +4,6 @@ import { useCallback, useEffect, useState } from "react";
 import { FileInput, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { listImportedSessions, type ImportedSessionSummary } from "@/lib/api/sessionImportApi";
-import {
-  ACP_SNAPSHOT_MSG_TYPE,
-  codexItemsToAcpSnapshot,
-} from "@/lib/codexItemsToAcpSnapshot";
-import { fetchAllSessionItems } from "@/lib/api/sessionImportApi";
-import { dispatchAcpRelayEvent } from "@/stores/acpEventDispatcher";
 import { usePodStore } from "@/stores/pod";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { readCurrentOrg } from "@/stores/auth";
@@ -72,16 +66,6 @@ export function ImportedSessionsSection({ t }: ImportedSessionsSectionProps) {
       } catch {
         // Opening by pod_key still works when pod metadata fetch fails.
       }
-    }
-
-    try {
-      const items = await fetchAllSessionItems(session.id);
-      if (items.length > 0) {
-        const snapshot = codexItemsToAcpSnapshot(session.id, items);
-        dispatchAcpRelayEvent(podKey, ACP_SNAPSHOT_MSG_TYPE, snapshot);
-      }
-    } catch {
-      // History hydration is best-effort; the pane can still open.
     }
 
     if (!panes.some((p) => p.podKey === podKey)) {

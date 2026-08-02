@@ -31,7 +31,6 @@ import type {
   WasmLoopState,
   WasmMeshState,
   WasmAutopilotService,
-  WasmAcpSessionManager,
   WasmRepoState,
   WasmAppState,
   WasmBlockstoreService,
@@ -194,17 +193,6 @@ type _AutopilotSvc_proto_remove          = _RequiresU8<WasmAutopilotService["rem
 type _AutopilotSvc_proto_replace_iters   = _RequiresU8<WasmAutopilotService["replace_cached_iterations"]>;
 type _AutopilotSvc_proto_append_iter     = _RequiresU8<WasmAutopilotService["append_iteration"]>;
 type _AutopilotSvc_proto_update_think    = _RequiresU8<WasmAutopilotService["update_thinking_proto"]>;
-
-// ── AcpSessionManager proto-bytes mutators (production callers: stores/acpSession.ts) ──
-// 4 mutators carry opaque JSON blobs through ACP state (UI owns the AST).
-type _AcpMgr_update_tool_call         = _Sig<WasmAcpSessionManager["update_tool_call"]>;
-type _AcpMgr_update_plan              = _Sig<WasmAcpSessionManager["update_plan"]>;
-type _AcpMgr_add_permission_request   = _Sig<WasmAcpSessionManager["add_permission_request"]>;
-type _AcpMgr_update_configuration     = _Sig<WasmAcpSessionManager["update_configuration"]>;
-type _AcpMgr_proto_update_tool_call   = _RequiresU8<WasmAcpSessionManager["update_tool_call"]>;
-type _AcpMgr_proto_update_plan        = _RequiresU8<WasmAcpSessionManager["update_plan"]>;
-type _AcpMgr_proto_add_permission     = _RequiresU8<WasmAcpSessionManager["add_permission_request"]>;
-type _AcpMgr_proto_update_config      = _RequiresU8<WasmAcpSessionManager["update_configuration"]>;
 
 // ── RepoState proto-bytes mutators (production callers: stores/repository.ts) ──
 // 5 mutators on the state surface; remove_repository stays string-keyed

@@ -52,7 +52,6 @@ import {
   SetCurrentControllerRequestSchema,
   AutopilotControllerSnapshotSchema, AutopilotIterationSnapshotSchema,
 } from '@proto/autopilot_state/v1/autopilot_state_pb'
-import { createAcpManager } from './wasm-mock-acp'
 
 const h = vi.hoisted(() => {
   const mkStore = () => ({ v: '' as string });
@@ -92,8 +91,6 @@ const h = vi.hoisted(() => {
 
   return { pod, runner, channel, ticket, mesh, workflow, gitProvider, repo, autopilot, reset };
 })
-
-const acpMgr = createAcpManager()
 
 // Mock WASM Core
 vi.mock('@/lib/wasm-core', () => {
@@ -1115,7 +1112,6 @@ vi.mock('@/lib/wasm-core', () => {
     getWorkflowService: fn(() => workflowState),
     getMeshState: fn(() => meshState),
     getMeshService: fn(() => meshState),
-    getAcpManager: fn(() => acpMgr),
     getRepoState: fn(() => repoState),
     getExpertState: fn(() => expertState),
     getAutopilotState: fn(() => autopilotState),
@@ -1453,4 +1449,4 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-afterEach(() => { h.reset(); acpMgr._reset(); vi.clearAllMocks() })
+afterEach(() => { h.reset(); vi.clearAllMocks() })

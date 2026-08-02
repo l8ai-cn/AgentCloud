@@ -177,9 +177,6 @@ pub mod proto_autopilot_state_v1 {
     pub use ::autopilot_state_proto::proto::autopilot_state::v1::*;
 }
 
-pub mod proto_acp_state_v1 {
-    pub use ::acp_state_proto::proto::acp_state::v1::*;
-}
 
 pub mod proto_sso_v1 {
     pub use ::sso_proto::proto::sso::v1::*;

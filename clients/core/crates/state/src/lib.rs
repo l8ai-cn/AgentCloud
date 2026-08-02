@@ -1,5 +1,3 @@
-pub mod acp_session;
-pub mod acp_types;
 mod agent_workbench_artifacts;
 mod agent_workbench_receipts;
 mod agent_workbench_reducer;
@@ -152,7 +150,6 @@ mod agent_workbench_test_fixtures {
 }
 
 #[cfg(test)]
-mod acp_session_tests;
 #[cfg(test)]
 mod agent_workbench_configuration_tests;
 #[cfg(test)]

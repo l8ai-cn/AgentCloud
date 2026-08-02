@@ -12,10 +12,6 @@ const mocks = vi.hoisted(() => ({
   }],
 }));
 
-vi.mock("@/hooks/useAcpRelay", () => ({
-  useAcpRelay: vi.fn(),
-}));
-
 vi.mock("@/hooks/useWorkerControlLease", () => ({
   useWorkerControlLease: () => ({
     acquire: vi.fn(),

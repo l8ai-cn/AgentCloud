@@ -184,7 +184,6 @@ fn digest_window_is_bounded_and_evicted_replay_requires_resync() {
 fn app_state_initializes_workbench_without_replacing_acp() {
     let mut state = AppState::new();
     assert!(state.workbench.get_session("missing").is_none());
-    assert!(state.acp.get_session("missing").is_none());
     state.workbench.apply_snapshot(&snapshot()).unwrap();
     state.reset_for_org_switch();
     assert!(state.workbench.get_session("session-1").is_none());
