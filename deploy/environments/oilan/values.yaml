@@ -2,13 +2,13 @@
 # Cluster pull secret only covers Harbor, so oilan pulls synced CNB builds
 # from repo.aiedulab.cn:8443/agentcloud after crane/CNB→Harbor sync.
 namespace: agentcloud
-imageTag: &releaseTag release-20260802
+imageTag: &releaseTag release-20260803
 image:
   repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260802-embed-model-picker
-  web: oilan-20260802-embed-model-picker
+  backend: oilan-20260803-drop-concurrent-pod-quota
+  web: oilan-20260803-drop-concurrent-pod-quota
   relay: oilan-20260802-model-usage-converge
 rolloutTokenDomain: agentcloud.l8ai.cn
 
@@ -25,8 +25,8 @@ backend:
   secrets:
     - agentcloud-secrets
     - agentcloud-gitea
-  coordinatorOrgSlug: dev-org
-  coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d,e2e-echo=repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:2a53e25bf09427965df58b82793bce38ba06a920bebfeb22c35ae26ea10b972a,seedance-expert=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:2a53e25bf09427965df58b82793bce38ba06a920bebfeb22c35ae26ea10b972a"
+  coordinatorOrgSlug: l8ai
+  coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d,e2e-echo=repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:2a53e25bf09427965df58b82793bce38ba06a920bebfeb22c35ae26ea10b972a,seedance-expert=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:2a53e25bf09427965df58b82793bce38ba06a920bebfeb22c35ae26ea10b972a,codex-cli=repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd"
   strategy:
     type: RollingUpdate
     rollingUpdate:
