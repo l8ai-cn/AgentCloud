@@ -63,7 +63,16 @@ func (t *transport) SendControlRequest(sessionID, subtype string, payload map[st
 	if !ok {
 		return nil, acp.ErrControlNotSupported
 	}
-	return t.callRPC(method, params)
+	result, err := t.callRPC(method, params)
+	if err != nil {
+		return nil, err
+	}
+	if subtype == "set_model" {
+		if model, _ := payload["model"].(string); model != "" {
+			t.setCurrentModel(model)
+		}
+	}
+	return result, nil
 }
 
 func mapControlToRPC(sessionID, subtype string, payload map[string]any) (string, map[string]any, bool) {

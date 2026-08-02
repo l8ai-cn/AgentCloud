@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import { ComposerCapabilityBar } from "./ComposerCapabilityBar";
+import { ComposerConfigurationBar } from "./ComposerConfigurationBar";
 import { ComposerAttachments } from "./ComposerAttachments";
 import { ComposerMentionField } from "./conversation/mentions/ComposerMentionField";
 import { submitComposerMessage } from "./conversation/mentions/composerSubmit";
@@ -144,12 +145,20 @@ export function ConversationComposer({
               runtime={runtime}
               sessionId={snapshot.sessionId}
             />
-            {presentation === "developer" && (
+            {presentation === "developer" ? (
               <ComposerCapabilityBar
                 onError={onError}
                 runtime={runtime}
                 snapshot={snapshot}
               />
+            ) : (
+              <div className="flex min-w-0 flex-wrap items-center gap-0.5 text-muted-foreground">
+                <ComposerConfigurationBar
+                  onError={onError}
+                  runtime={runtime}
+                  snapshot={snapshot}
+                />
+              </div>
             )}
           </div>
           {showInterrupt ? (

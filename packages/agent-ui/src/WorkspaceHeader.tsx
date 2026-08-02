@@ -13,6 +13,7 @@ export function WorkspaceHeader({
 }) {
   const connected = snapshot.connection === "connected";
   const text = useAgentWorkspaceText();
+  const model = currentModelLabel(snapshot);
   return (
     <header className="flex min-h-12 items-center gap-3 border-b border-border px-3">
       <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
@@ -22,6 +23,14 @@ export function WorkspaceHeader({
         <div className="truncate text-sm font-medium">{snapshot.title}</div>
         <div className="flex min-w-0 items-center gap-1.5 overflow-hidden text-xs text-muted-foreground">
           <span className="shrink-0">{snapshot.agentLabel}</span>
+          {presentation === "user" && model && (
+            <span className="contents">
+              <span aria-hidden="true">·</span>
+              <span className="truncate" title={model}>
+                {model}
+              </span>
+            </span>
+          )}
           {presentation === "developer" &&
             (snapshot.metadata ?? []).map((item) => (
               <span className="contents" key={item.id}>
@@ -45,4 +54,14 @@ export function WorkspaceHeader({
       </div>
     </header>
   );
+}
+
+function currentModelLabel(snapshot: AgentSessionSnapshot): string | null {
+  const control = (snapshot.configuration ?? []).find(
+    (item) => item.id === "model",
+  );
+  const value = control?.value?.trim();
+  if (!value) return null;
+  const option = control?.options.find((item) => item.value === value);
+  return option?.label?.trim() || value;
 }

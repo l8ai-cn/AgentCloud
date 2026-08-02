@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"sync"
 
 	"github.com/l8ai-cn/agentcloud/runner/internal/acp"
 )
@@ -18,6 +19,9 @@ type transport struct {
 	handler   *acp.Handler
 	callbacks acp.EventCallbacks
 	permModes []string
+	modelMu   sync.RWMutex
+	models    []string
+	model     string
 
 	ctx    context.Context
 	logger *slog.Logger
@@ -64,6 +68,12 @@ func (t *transport) Handshake(_ context.Context) (string, error) {
 	}
 
 	t.logger.Info("do-agent ACP initialize succeeded")
+	t.loadModels()
+	t.logger.Info(
+		"do-agent models ready",
+		"models", len(t.SupportedModels()),
+		"current", t.CurrentModel(),
+	)
 	return "", nil
 }
 

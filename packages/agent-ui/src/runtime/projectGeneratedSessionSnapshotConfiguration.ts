@@ -38,6 +38,15 @@ function appendControl(
     id,
     label,
     value: value && options.includes(value) ? value : "",
-    options: options.map((option) => ({ value: option, label: option })),
+    options: options.map((option) => ({
+      value: option,
+      label: id === "model" ? modelOptionLabel(option) : option,
+    })),
   });
+}
+
+function modelOptionLabel(model: string): string {
+  const separator = model.lastIndexOf("/");
+  if (separator <= 0 || separator === model.length - 1) return model;
+  return model.slice(separator + 1);
 }

@@ -11,6 +11,29 @@ import {
 import { ConversationComposer } from "./ConversationComposer";
 
 describe("ConversationComposer", () => {
+  it("shows model configuration controls in user presentation", async () => {
+    const snapshot = agentWorkspaceSnapshot();
+    snapshot.status = "idle";
+    snapshot.items = [];
+    const { agentRuntime } = agentWorkspaceRuntime(snapshot);
+
+    render(
+      <AgentWorkspaceLocaleProvider locale="zh-CN">
+        <ConversationComposer
+          onError={vi.fn()}
+          presentation="user"
+          runtime={agentRuntime}
+          snapshot={snapshot}
+        />
+      </AgentWorkspaceLocaleProvider>,
+    );
+
+    expect(screen.getByRole("combobox", { name: "模型" })).toBeVisible();
+    expect(screen.getByRole("combobox", { name: "模型" })).toHaveTextContent(
+      "GPT-5.6",
+    );
+  });
+
   it("sends the uploaded attachment with a regular message", async () => {
     const snapshot = agentWorkspaceSnapshot();
     snapshot.status = "idle";
