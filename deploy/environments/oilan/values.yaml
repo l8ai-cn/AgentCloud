@@ -7,8 +7,8 @@ image:
   repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260802-catalog-model-rebind
-  web: oilan-20260802-model-usage-converge
+  backend: oilan-20260802-embed-model-picker
+  web: oilan-20260802-embed-model-picker
   relay: oilan-20260802-model-usage-converge
 rolloutTokenDomain: agentcloud.l8ai.cn
 
@@ -26,7 +26,7 @@ backend:
     - agentcloud-secrets
     - agentcloud-gitea
   coordinatorOrgSlug: dev-org
-  coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d,e2e-echo=repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd,seedance-expert=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd"
+  coordinatorRunnerImages: "video-studio=repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d,e2e-echo=repo.aiedulab.cn:8443/agentcloud/runner-e2e-echo@sha256:077eb4511113ddb80dd8e09d7b46ffe3668d6b69d1840c1cbe849e97595087fa,do-agent=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:6120326f0bcadfa2fbf29fe853d69530b48aae81cbbb2fea29a4079696feb941,seedance-expert=repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:6120326f0bcadfa2fbf29fe853d69530b48aae81cbbb2fea29a4079696feb941"
   strategy:
     type: RollingUpdate
     rollingUpdate:
