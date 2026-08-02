@@ -68,27 +68,31 @@ func (v *Verifier) Verify(
 	if err := verified.Claims(&claims); err != nil {
 		return claims, fmt.Errorf("%w: %v", ErrClaimsIncomplete, err)
 	}
-	if err := requireIdentityClaims(claims, issuer); err != nil {
+	if err := requireIdentityClaims(claims); err != nil {
 		return claims, err
 	}
 	return claims, nil
 }
 
-func requireIdentityClaims(claims ampauthz.BusinessTokenClaims, issuer string) error {
-	switch {
-	case claims.TokenUse != ampauthz.BusinessTokenUse:
+// The issuer is not re-checked here: go-oidc rejects a token whose `iss`
+// differs from the discovered provider, so only the claims AMP layers on top
+// of OIDC need enforcing.
+func requireIdentityClaims(claims ampauthz.BusinessTokenClaims) error {
+	if claims.TokenUse != ampauthz.BusinessTokenUse {
 		return ErrNotBusinessToken
-	case claims.PrincipalType != ampauthz.PrincipalTypeUserSession:
+	}
+	if claims.PrincipalType != ampauthz.PrincipalTypeUserSession {
 		return fmt.Errorf("%w: principal type %q is not a user session",
 			ErrClaimsIncomplete, claims.PrincipalType)
-	case claims.Issuer != issuer:
-		return fmt.Errorf("%w: issuer changed after verification", ErrClaimsIncomplete)
-	case claims.Subject == "":
-		return fmt.Errorf("%w: subject is empty", ErrClaimsIncomplete)
-	case claims.AppCode == "":
-		return fmt.Errorf("%w: app code is empty", ErrClaimsIncomplete)
-	case claims.Tenant() == "":
-		return fmt.Errorf("%w: tenant is empty", ErrClaimsIncomplete)
+	}
+	for _, required := range []struct{ name, value string }{
+		{"subject", claims.Subject},
+		{"app code", claims.AppCode},
+		{"tenant", claims.Tenant()},
+	} {
+		if required.value == "" {
+			return fmt.Errorf("%w: %s is empty", ErrClaimsIncomplete, required.name)
+		}
 	}
 	return nil
 }
