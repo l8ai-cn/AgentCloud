@@ -163,6 +163,10 @@ func (m *MockCommandSender) SendUpdatePodPolicyRules(ctx context.Context, runner
 	return nil
 }
 
+func (m *MockCommandSender) SendUpdatePodSkills(ctx context.Context, runnerID int64, podKey string, add []*runnerv1.ResourceToDownload, removeTargetPaths []string) error {
+	return nil
+}
+
 func (m *MockCommandSender) SendAcpRelay(ctx context.Context, runnerID int64, podKey, payloadJSON string) error {
 	return nil
 }

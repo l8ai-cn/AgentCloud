@@ -14,6 +14,7 @@ export {
   updatePodAlias,
   updatePodPerpetual,
   updatePodPreviewConfig,
+  updatePodSkills,
   getMobileAccessDescriptor,
   getPodConnection,
   sendPodPrompt,
@@ -21,6 +22,7 @@ export {
   type CreatePodInput,
   type PodConnectionInfo,
   type MobileAccessDescriptor,
+  type PodSkillRemountResult,
 } from "../connect/podConnect";
 
 export {

@@ -132,6 +132,21 @@ impl PodService {
         Ok(resp.encode_to_vec())
     }
 
+    pub async fn update_pod_skills_connect(
+        &self,
+        request_bytes: &[u8],
+    ) -> Result<Vec<u8>, String> {
+        let req = pod_proto::UpdatePodSkillsRequest::decode(request_bytes)
+            .map_err(|e| format!("decode update_pod_skills request: {e}"))?;
+        tracing::info!(target: "pod", org_slug = %req.org_slug, pod_key = %req.pod_key, skills = req.skill_ids.len(), "update pod skills");
+        let resp = self
+            .client
+            .update_pod_skills_connect(&req)
+            .await
+            .map_err(crate::wire)?;
+        Ok(resp.encode_to_vec())
+    }
+
     pub async fn update_pod_preview_config_connect(
         &self,
         request_bytes: &[u8],

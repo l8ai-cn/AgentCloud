@@ -157,6 +157,8 @@ func (c *GRPCConnection) handleServerMessage(ctx context.Context, msg *runnerv1.
 
 	case *runnerv1.ServerMessage_UpdatePodPolicyRules:
 		c.handleUpdatePodPolicyRules(payload.UpdatePodPolicyRules)
+	case *runnerv1.ServerMessage_UpdatePodSkills:
+		c.handleUpdatePodSkills(payload.UpdatePodSkills)
 
 	case *runnerv1.ServerMessage_AcpRelay:
 		c.handleAcpRelay(payload.AcpRelay)

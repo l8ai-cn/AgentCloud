@@ -30,6 +30,8 @@ type RunnerCommandSender interface {
 
 	SendUpdatePodPolicyRules(ctx context.Context, runnerID int64, podKey string, rules []*runnerv1.PolicyRuleSnapshot) error
 
+	SendUpdatePodSkills(ctx context.Context, runnerID int64, podKey string, add []*runnerv1.ResourceToDownload, removeTargetPaths []string) error
+
 	SendAcpRelay(ctx context.Context, runnerID int64, podKey, payloadJSON string) error
 
 	// SendConnectTunnel tells the runner to establish/refresh its outbound HTTP
@@ -107,6 +109,12 @@ func (n *NoOpCommandSender) SendUpdatePodPerpetual(ctx context.Context, runnerID
 
 func (n *NoOpCommandSender) SendUpdatePodPolicyRules(ctx context.Context, runnerID int64, podKey string, rules []*runnerv1.PolicyRuleSnapshot) error {
 	n.logger.Warn("command sender not configured, cannot update pod policy rules",
+		"runner_id", runnerID, "pod_key", podKey)
+	return ErrCommandSenderNotSet
+}
+
+func (n *NoOpCommandSender) SendUpdatePodSkills(ctx context.Context, runnerID int64, podKey string, add []*runnerv1.ResourceToDownload, removeTargetPaths []string) error {
+	n.logger.Warn("command sender not configured, cannot update pod skills",
 		"runner_id", runnerID, "pod_key", podKey)
 	return ErrCommandSenderNotSet
 }

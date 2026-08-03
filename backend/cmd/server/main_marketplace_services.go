@@ -59,6 +59,7 @@ func newExpertAndSkillServices(
 		logger,
 	)
 	skillCatalog := infra.NewSkillCatalogRepository(db)
+	services.skillCatalog = skillCatalog
 	expertService := expertsvc.NewService(expertsvc.Deps{
 		Store:             infra.NewExpertRepository(db),
 		Pods:              services.pod,

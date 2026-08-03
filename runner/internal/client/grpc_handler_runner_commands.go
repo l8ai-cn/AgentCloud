@@ -78,6 +78,17 @@ func (c *GRPCConnection) handleUpdatePodPolicyRules(cmd *runnerv1.UpdatePodPolic
 	}
 }
 
+func (c *GRPCConnection) handleUpdatePodSkills(cmd *runnerv1.UpdatePodSkillsCommand) {
+	log := logger.GRPC()
+	if c.handler == nil {
+		log.Warn("No handler set, ignoring update_pod_skills")
+		return
+	}
+	if err := c.handler.OnUpdatePodSkills(cmd); err != nil {
+		log.Error("Failed to update pod skills", "pod_key", cmd.GetPodKey(), "error", err)
+	}
+}
+
 func (c *GRPCConnection) handleAcpRelay(cmd *runnerv1.AcpRelayCommand) {
 	log := logger.GRPC()
 	if c.handler == nil {

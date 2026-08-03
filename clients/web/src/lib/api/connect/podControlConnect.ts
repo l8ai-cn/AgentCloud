@@ -16,6 +16,8 @@ import {
   UpdatePodPerpetualResponseSchema,
   UpdatePodPreviewConfigRequestSchema,
   UpdatePodPreviewConfigResponseSchema,
+  UpdatePodSkillsRequestSchema,
+  UpdatePodSkillsResponseSchema,
 } from "@proto/pod/v1/pod_pb";
 import type { PodData } from "@/lib/api/facade/pod";
 import { podToCache } from "@/lib/api/projections";
@@ -88,6 +90,35 @@ export async function updatePodPreviewConfig(
   return podToCache(
     fromBinary(UpdatePodPreviewConfigResponseSchema, new Uint8Array(response)).pod!,
   );
+}
+
+export interface PodSkillRemountResult {
+  mounted_slugs: string[];
+  added_slugs: string[];
+  removed_slugs: string[];
+  applied_to_runner: boolean;
+}
+
+export async function updatePodSkills(
+  orgSlug: string,
+  podKey: string,
+  skillIds: number[],
+): Promise<PodSkillRemountResult> {
+  const request = create(UpdatePodSkillsRequestSchema, {
+    orgSlug,
+    podKey,
+    skillIds: skillIds.map((id) => BigInt(id)),
+  });
+  const response = await getPodService().update_pod_skills_connect(
+    toBinary(UpdatePodSkillsRequestSchema, request),
+  );
+  const result = fromBinary(UpdatePodSkillsResponseSchema, new Uint8Array(response));
+  return {
+    mounted_slugs: result.mountedSlugs,
+    added_slugs: result.addedSlugs,
+    removed_slugs: result.removedSlugs,
+    applied_to_runner: result.appliedToRunner,
+  };
 }
 
 export async function getMobileAccessDescriptor(

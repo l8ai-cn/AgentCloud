@@ -86,6 +86,13 @@ impl ApiClient {
         connect_call(self, "/proto.pod.v1.PodService/UpdatePodPreviewConfig", req).await
     }
 
+    pub async fn update_pod_skills_connect(
+        &self,
+        req: &pod_proto::UpdatePodSkillsRequest,
+    ) -> Result<pod_proto::UpdatePodSkillsResponse, ApiError> {
+        connect_call(self, "/proto.pod.v1.PodService/UpdatePodSkills", req).await
+    }
+
     pub async fn get_mobile_access_descriptor_connect(
         &self,
         req: &pod_proto::GetMobileAccessDescriptorRequest,

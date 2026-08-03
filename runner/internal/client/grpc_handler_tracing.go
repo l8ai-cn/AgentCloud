@@ -46,6 +46,8 @@ func extractServerMessageType(msg *runnerv1.ServerMessage) string {
 		return "UpdatePodPerpetual"
 	case *runnerv1.ServerMessage_UpdatePodPolicyRules:
 		return "UpdatePodPolicyRules"
+	case *runnerv1.ServerMessage_UpdatePodSkills:
+		return "UpdatePodSkills"
 	case *runnerv1.ServerMessage_AcpRelay:
 		return "AcpRelay"
 	case *runnerv1.ServerMessage_ConnectTunnel:

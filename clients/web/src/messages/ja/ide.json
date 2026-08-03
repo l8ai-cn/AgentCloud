@@ -63,6 +63,16 @@
         "createdAt": "作成",
         "error": "エラー",
         "relatedPods": "{count} 個の関連Pod"
+      },
+      "workerSettings": {
+        "title": "Worker 設定",
+        "skillsDescription": "この Worker がマウントする Skill を変更します。保存すると現在のバージョンで再固定し、新しい設定スナップショットを作成します。",
+        "edit": "編集",
+        "save": "保存",
+        "saving": "保存中…",
+        "noSkills": "Skill は未マウント",
+        "unresolvedSkills": "利用できない Skill があります。先に選択を解除してください: {slugs}",
+        "appliesOnNextStart": "Worker が停止しているため、次回起動時に反映されます。"
       }
     },
     "createPod": {

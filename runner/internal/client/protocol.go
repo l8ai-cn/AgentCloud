@@ -157,6 +157,7 @@ type MessageHandler interface {
 	OnUpdatePodPerpetual(cmd *runnerv1.UpdatePodPerpetualCommand) error
 
 	OnUpdatePodPolicyRules(cmd *runnerv1.UpdatePodPolicyRulesCommand) error
+	OnUpdatePodSkills(cmd *runnerv1.UpdatePodSkillsCommand) error
 
 	// OnAcpRelay forwards opaque ACP UI commands when Relay WS is absent.
 	OnAcpRelay(cmd *runnerv1.AcpRelayCommand) error

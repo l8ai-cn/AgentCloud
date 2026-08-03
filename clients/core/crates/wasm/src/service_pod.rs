@@ -49,6 +49,13 @@ impl WasmPodService {
         self.0.update_pod_perpetual_connect(request_bytes).await
     }
 
+    pub async fn update_pod_skills_connect(
+        &self,
+        request_bytes: &[u8],
+    ) -> Result<Vec<u8>, String> {
+        self.0.update_pod_skills_connect(request_bytes).await
+    }
+
     pub async fn update_pod_preview_config_connect(
         &self,
         request_bytes: &[u8],

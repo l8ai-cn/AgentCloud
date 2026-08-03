@@ -63,6 +63,16 @@
         "createdAt": "Erstellt",
         "error": "Fehler",
         "relatedPods": "{count} verknüpfte(r) Pod(s)"
+      },
+      "workerSettings": {
+        "title": "Worker-Einstellungen",
+        "skillsDescription": "Ändere, welche Skills dieser Worker einbindet. Beim Speichern werden sie auf ihre aktuelle Version fixiert und ein neuer Spec-Snapshot geschrieben.",
+        "edit": "Bearbeiten",
+        "save": "Speichern",
+        "saving": "Speichern…",
+        "noSkills": "Keine Skills eingebunden",
+        "unresolvedSkills": "Diese Skills sind nicht mehr verfügbar – bitte zuerst abwählen: {slugs}",
+        "appliesOnNextStart": "Der Worker läuft nicht, die Änderung greift beim nächsten Start."
       }
     },
     "createPod": {

@@ -244,6 +244,7 @@ message ServerMessage {
     ConnectTunnelCommand connect_tunnel = 27;
     // Execute a Goal Loop verification command inside the pod workspace
     RunVerificationCommand run_verification = 28;
+    UpdatePodSkillsCommand update_pod_skills = 29;
   }
   int64 timestamp = 15;
 }
@@ -931,6 +932,18 @@ message UpdatePodPolicyRulesCommand {
 // RunVerificationCommand executes a backend-defined acceptance command in the
 // workspace belonging to the referenced pod. The Runner resolves the local
 // workspace from pod_key and never accepts an arbitrary filesystem path.
+// UpdatePodSkillsCommand materializes a skill remount into a live sandbox.
+// Perpetual restarts reuse the same sandbox without re-running setup, so the
+// Runner must add and drop skill directories on command rather than waiting for
+// the next pod build. Both add targets and remove paths are templated by the
+// Backend with the same agent-specific layout used at creation, so the Runner
+// never re-derives skill roots.
+message UpdatePodSkillsCommand {
+  string pod_key = 1;
+  repeated ResourceToDownload add = 2;
+  repeated string remove_target_paths = 3;
+}
+
 message RunVerificationCommand {
   string request_id = 1;
   string pod_key = 2;

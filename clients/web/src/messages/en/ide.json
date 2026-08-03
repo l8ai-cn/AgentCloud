@@ -72,6 +72,16 @@
         "createdAt": "Created",
         "error": "Error",
         "relatedPods": "{count} related pod(s)"
+      },
+      "workerSettings": {
+        "title": "Worker settings",
+        "skillsDescription": "Change which skills this worker mounts. Saving re-pins them at their current version and writes a new spec snapshot.",
+        "edit": "Edit",
+        "save": "Save",
+        "saving": "Saving…",
+        "noSkills": "No skills mounted",
+        "unresolvedSkills": "These skills are no longer available — deselect them first: {slugs}",
+        "appliesOnNextStart": "The worker is not running, so the change applies on its next start."
       }
     },
     "createPod": {

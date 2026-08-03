@@ -63,6 +63,16 @@
         "createdAt": "Créé",
         "error": "Erreur",
         "relatedPods": "{count} pod(s) associé(s)"
+      },
+      "workerSettings": {
+        "title": "Paramètres du worker",
+        "skillsDescription": "Modifiez les skills montées par ce worker. L'enregistrement les fige à leur version actuelle et écrit un nouvel instantané de configuration.",
+        "edit": "Modifier",
+        "save": "Enregistrer",
+        "saving": "Enregistrement…",
+        "noSkills": "Aucune skill montée",
+        "unresolvedSkills": "Ces skills ne sont plus disponibles — désélectionnez-les d'abord : {slugs}",
+        "appliesOnNextStart": "Le worker n'est pas en cours d'exécution, la modification s'appliquera au prochain démarrage."
       }
     },
     "createPod": {

@@ -85,8 +85,10 @@ export {
   updatePodAlias,
   updatePodPerpetual,
   updatePodPreviewConfig,
+  updatePodSkills,
   type MobileAccessDescriptor,
   type PodConnectionInfo,
+  type PodSkillRemountResult,
 } from "./podControlConnect";
 
 export { getPod, listPods, listPodsRaw } from "./podQueryConnect";

@@ -9,6 +9,7 @@ import { getPodStatusInfo } from "@/stores/mesh";
 import { usePods } from "@/stores/pod";
 import { PodInfoGrid } from "./PodInfoGrid";
 import { RelatedPodsList } from "./RelatedPodsList";
+import { WorkerSkillMounts } from "./WorkerSkillMounts";
 import { Terminal } from "lucide-react";
 
 function getRelatedPods(pods: PodData[], pod: PodData | null): PodData[] {
@@ -73,6 +74,8 @@ export function InfoTabContent({
       </div>
 
       <PodInfoGrid pod={pod} orgSlug={orgSlug} t={t} />
+
+      <WorkerSkillMounts pod={pod} orgSlug={orgSlug} t={t} />
 
       {/* Related Pods */}
       {relatedPods.length > 0 && (
