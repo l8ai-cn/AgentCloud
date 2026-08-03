@@ -4,6 +4,7 @@ import {
   projectGeneratedSessionSnapshot,
   type AgentConnectionStatus,
   type AgentSessionSnapshot,
+  type TerminalResource,
 } from "@agent-cloud/agent-ui";
 import {
   SessionSnapshotSchema,
@@ -59,12 +60,12 @@ function ensurePtyTerminalSurface(
   snapshot: AgentSessionSnapshot,
 ): AgentSessionSnapshot {
   if (snapshot.interactionMode !== "pty") return snapshot;
-  const terminals =
+  const terminals: TerminalResource[] =
     snapshot.terminals.length > 0
-      ? snapshot.terminals
+      ? [...snapshot.terminals]
       : [
           {
-            controlMode: "host" as const,
+            controlMode: "host",
             id: "main",
             label: "main:tui",
             status:
