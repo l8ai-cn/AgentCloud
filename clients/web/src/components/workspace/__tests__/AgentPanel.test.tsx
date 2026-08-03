@@ -150,6 +150,10 @@ vi.mock("@/components/mobile-worker/WorkerControlOverlay", () => ({
   WorkerControlOverlay: () => <div data-testid="control-overlay" />,
 }));
 
+vi.mock("../AutopilotOverlay", () => ({
+  AutopilotOverlay: () => null,
+}));
+
 import { AgentPanel } from "../AgentPanel";
 
 describe("AgentPanel worker shell", () => {
