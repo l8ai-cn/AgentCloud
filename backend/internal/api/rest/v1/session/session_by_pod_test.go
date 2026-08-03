@@ -20,7 +20,7 @@ func TestGetSessionByPodKeyUsesNoContentForAbsentAssociation(t *testing.T) {
 	db := setupSessionByPodTestDB(t)
 	deps := &Deps{Sessions: sessionsvc.NewService(db)}
 
-	missing := getSessionByPodKey(t, deps, "missing-pod", 21, 11)
+	missing := getSessionByPodKey(t, deps, "missing-pod", 21, 11, "member")
 
 	assert.Equal(t, http.StatusNoContent, missing.Code)
 	assert.Empty(t, missing.Body.String())
@@ -32,10 +32,22 @@ func TestGetSessionByPodKeyDoesNotExposeAnotherUsersAssociation(t *testing.T) {
 	insertSessionByPodTestRow(t, db, "conv_private", "private-pod", 21, 11)
 	deps := &Deps{Sessions: sessionsvc.NewService(db)}
 
-	response := getSessionByPodKey(t, deps, "private-pod", 21, 12)
+	response := getSessionByPodKey(t, deps, "private-pod", 21, 12, "member")
 
 	assert.Equal(t, http.StatusNoContent, response.Code)
 	assert.Empty(t, response.Body.String())
+}
+
+func TestGetSessionByPodKeyAllowsOrgAdminViaPodPolicy(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db := setupSessionByPodTestDB(t)
+	insertSessionByPodTestRow(t, db, "conv_shared", "admin-visible-pod", 21, 11)
+	deps := &Deps{Sessions: sessionsvc.NewService(db)}
+
+	response := getSessionByPodKey(t, deps, "admin-visible-pod", 21, 12, "admin")
+
+	require.Equal(t, http.StatusOK, response.Code)
+	assert.JSONEq(t, `"conv_shared"`, responseBodyField(t, response, "id"))
 }
 
 func TestGetSessionByPodKeyReturnsVisibleAssociation(t *testing.T) {
@@ -44,7 +56,7 @@ func TestGetSessionByPodKeyReturnsVisibleAssociation(t *testing.T) {
 	insertSessionByPodTestRow(t, db, "conv_owner", "owner-pod", 21, 11)
 	deps := &Deps{Sessions: sessionsvc.NewService(db)}
 
-	response := getSessionByPodKey(t, deps, "owner-pod", 21, 11)
+	response := getSessionByPodKey(t, deps, "owner-pod", 21, 11, "member")
 
 	require.Equal(t, http.StatusOK, response.Code)
 	assert.JSONEq(t, `"conv_owner"`, responseBodyField(t, response, "id"))
@@ -56,7 +68,7 @@ func TestGetSessionByPodKeySurfacesLookupFailure(t *testing.T) {
 	require.NoError(t, db.Exec("DROP TABLE agent_sessions").Error)
 	deps := &Deps{Sessions: sessionsvc.NewService(db)}
 
-	response := getSessionByPodKey(t, deps, "owner-pod", 21, 11)
+	response := getSessionByPodKey(t, deps, "owner-pod", 21, 11, "member")
 
 	assert.Equal(t, http.StatusInternalServerError, response.Code)
 }
@@ -112,13 +124,18 @@ func getSessionByPodKey(
 	podKey string,
 	orgID int64,
 	userID int64,
+	role string,
 ) *httptest.ResponseRecorder {
 	t.Helper()
 	response := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(response)
 	ctx.Request = httptest.NewRequest(http.MethodGet, "/v1/sessions/by-pod/"+podKey, nil)
 	ctx.Params = gin.Params{{Key: "pod_key", Value: podKey}}
-	ctx.Set("tenant", &middleware.TenantContext{OrganizationID: orgID, UserID: userID})
+	ctx.Set("tenant", &middleware.TenantContext{
+		OrganizationID: orgID,
+		UserID:         userID,
+		UserRole:       role,
+	})
 	deps.handleGetSessionByPodKey(ctx)
 	ctx.Writer.WriteHeaderNow()
 	return response

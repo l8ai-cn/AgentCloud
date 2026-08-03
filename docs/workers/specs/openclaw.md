@@ -11,7 +11,9 @@
 
 ## Runtime image
 
-not present in runtime catalog lock
+`openclaw-stable` enabled=true availability=locked_available
+
+`repo.aiedulab.cn:8443/agentsmesh/runner-openclaw@sha256:d63c0ccfffc44bb57623e411f43318f19d9b31301e62e5532fe9ab72dfcef33c`
 
 ## CONFIG fields
 

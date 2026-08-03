@@ -16,8 +16,17 @@ import {
   listKnowledgeBases,
   type KnowledgeBase,
 } from "@/lib/api/facade/knowledgeBaseApi";
+import { getErrorStatus } from "@/lib/errors/serviceError";
+import { safeServiceErrorMessage } from "@/lib/errors/safeServiceErrorMessage";
 import { CreateKnowledgeBaseDialog } from "./CreateKnowledgeBaseDialog";
 import { SOURCE_LABELS, SYNC_STATUS_LABELS, syncStatusVariant } from "./sourceConfig";
+
+function kbServiceErrorMessage(err: unknown, fallback: string): string {
+  if (getErrorStatus(err) === 404) {
+    return "知识库服务未启用：请确认内部 Gitea（KB_GITEA_*）已配置并重启 backend";
+  }
+  return safeServiceErrorMessage(err, fallback);
+}
 
 export function KnowledgeBaseListPanel() {
   const params = useParams();
@@ -34,7 +43,7 @@ export function KnowledgeBaseListPanel() {
         setKbs(items);
         setError(null);
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "加载知识库失败"))
+      .catch((err) => setError(kbServiceErrorMessage(err, "加载知识库失败")))
       .finally(() => setLoading(false));
   }, [orgSlug]);
 
@@ -54,7 +63,7 @@ export function KnowledgeBaseListPanel() {
       await deleteKnowledgeBase(orgSlug, kb.slug);
       setKbs((prev) => prev.filter((k) => k.slug !== kb.slug));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "删除知识库失败");
+      setError(kbServiceErrorMessage(err, "删除知识库失败"));
     }
   };
 

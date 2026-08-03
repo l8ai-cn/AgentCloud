@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useId, useMemo, useRef } from "react";
 import { WorkerClient, type AgentSessionRuntime } from "@agent-cloud/agent-ui";
 
+import { usePodRelaySubscription } from "@/hooks/usePodRelaySubscription";
 import { useWorkerControlLease } from "@/hooks/useWorkerControlLease";
 import { usePod, usePodStore } from "@/stores/pod";
 import { createPodWorkerTransport } from "./podWorkerTransport";
@@ -25,6 +26,11 @@ export function usePodWorkerSession(
   const canReadSession =
     liveSession || podStatus === "completed" || podStatus === "orphaned";
   const workspaceArtifacts = usePodWorkspaceArtifacts(podKey, canReadSession);
+
+  // Without a relay subscription the control lease never leaves "observer", so
+  // the composer would stay read-only with "take control" permanently disabled.
+  // useId keeps split panes on the same pod from sharing a subscription id.
+  usePodRelaySubscription(podKey, `workbench-${useId()}`, liveSession);
 
   const latchRef = useRef({
     controlGranted: false,

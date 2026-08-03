@@ -154,6 +154,7 @@ export function RelayTerminalPanel(props: RelayTerminalPanelProps) {
         hasControl={hasControl}
         connected={connection === "connected"}
         acquiring={control.acquiring}
+        busy={lease.status === "busy"}
         onAcquire={() => void control.acquire()}
       />
       <RelayTerminalOverlay connection={connection} error={error} onReconnect={reconnect} />

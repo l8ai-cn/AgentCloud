@@ -89,12 +89,14 @@ knowledgebase service。org 隔离用 `authenticatePod` 的 `TenantContext`。
 ## 配置与部署依赖
 
 - `KB_GITEA_URL` / `KB_GITEA_TOKEN` / `KB_GITEA_ORG`（默认 `am-kb`）/
-  `KB_GITEA_CLONE_URL` / `KB_GITEA_SSH_CLONE_URL` / `KB_GITEA_KNOWN_HOSTS`：
+  `KB_GITEA_CLONE_URL` / `KB_GITEA_SSH_URL` / `KB_GITEA_KNOWN_HOSTS`：
   任一控制面或 SSH 挂载配置缺失时 KB 服务不启用。Gitea 是 KB 功能的必选生产依赖。
   KB namespace org 在首次建仓时由 provisioner 的 `EnsureNamespace` 自动创建。
 - `KB_SYNC_INTERVAL`：外部源同步周期，默认 1h。
 - dev 环境：`deploy/dev/gitea/init-gitea.sh` 签发 backend token 到
-  `runtime/gitea/backend-token`，`lib/host_services.sh` 据此导出 `KB_GITEA_*`。
+  `runtime/gitea/backend-token`，并 pin SSH host key 到 `runtime/gitea/known_hosts`；
+  `lib/host_services_lite.sh` 的 `export_kb_gitea_env` 据此导出完整 `KB_GITEA_*`
+  （含 `KB_GITEA_SSH_URL=ssh://git@gitea:22`）。
 
 ## 扩展点
 

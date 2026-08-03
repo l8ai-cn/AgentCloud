@@ -28,9 +28,10 @@ type Config struct {
 	PublicWebURL             string // Browser-visible Web origin used for desktop access links
 	MobilePublicURL          string // Browser-visible mobile origin used for Worker access links
 	PreviewPublicOrigin      string
-	WorkerDefinitionsDir     string
-	WorkerRuntimeCatalogFile string
-	UseHTTPS                 bool // Use HTTPS/WSS protocols
+	WorkerDefinitionsDir         string
+	WorkerRuntimeCatalogFile     string
+	WorkerRuntimeCatalogOverride string
+	UseHTTPS                     bool // Use HTTPS/WSS protocols
 }
 
 type MarketplaceConfig struct {
@@ -59,8 +60,9 @@ func Load() (*Config, error) {
 			"WORKER_DEFINITIONS_DIR",
 			"config/worker-types",
 		),
-		WorkerRuntimeCatalogFile: getEnv("WORKER_RUNTIME_CATALOG_FILE", ""),
-		UseHTTPS:                 useHTTPS,
+		WorkerRuntimeCatalogFile:     getEnv("WORKER_RUNTIME_CATALOG_FILE", ""),
+		WorkerRuntimeCatalogOverride: getEnv("WORKER_RUNTIME_CATALOG_OVERRIDE_FILE", ""),
+		UseHTTPS:                     useHTTPS,
 
 		Server: ServerConfig{
 			Address:            getEnv("SERVER_ADDRESS", ":8080"),

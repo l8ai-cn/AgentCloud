@@ -117,6 +117,37 @@ build_mock_agent_binary_go() {
     rm -f "$SCRIPT_DIR/binaries/loopal-binary"
 }
 
+# Export KB_GITEA_* so KnowledgeBase.Enabled() can turn on. Requires the
+# backend service token from init-gitea.sh plus a pinned SSH host key
+# (runners clone as ssh://git@gitea:22 with StrictHostKeyChecking=yes).
+export_kb_gitea_env() {
+    local kb_dir="$SCRIPT_DIR/runtime/gitea"
+    local kb_token_file="$kb_dir/backend-token"
+    local kb_known_hosts_file="$kb_dir/known_hosts"
+    [[ -f "$kb_token_file" ]] || return 0
+
+    if [[ ! -s "$kb_known_hosts_file" ]]; then
+        mkdir -p "$kb_dir"
+        local pinned
+        pinned=$(ssh-keyscan -p "${GITEA_SSH_PORT}" 127.0.0.1 2>/dev/null \
+            | awk '/ssh-ed25519/ {print "gitea",$2,$3; exit}')
+        if [[ -n "$pinned" ]]; then
+            printf '%s\n' "$pinned" > "$kb_known_hosts_file"
+            chmod 644 "$kb_known_hosts_file"
+        fi
+    fi
+    [[ -s "$kb_known_hosts_file" ]] || {
+        warn "Gitea SSH host key missing; knowledge bases remain disabled"
+        return 0
+    }
+
+    export KB_GITEA_URL="http://localhost:${GITEA_HTTP_PORT}"
+    export KB_GITEA_TOKEN="$(cat "$kb_token_file")"
+    export KB_GITEA_CLONE_URL="http://host.lan:${GITEA_HTTP_PORT}"
+    export KB_GITEA_SSH_URL="ssh://git@gitea:22"
+    export KB_GITEA_KNOWN_HOSTS="$(tr -d '\r\n' < "$kb_known_hosts_file")"
+}
+
 start_backend_host_lite() {
     source "$ENV_FILE"
     local repo_root="$SCRIPT_DIR/../.."
@@ -182,12 +213,7 @@ start_backend_host_lite() {
     export OTEL_SERVICE_NAME=agent-cloud-backend
     export OTEL_TRACES_SAMPLER_ARG=1.0
     export AGENTCLOUD_INCLUDE_INTERNAL_AGENTS=true
-    local kb_token_file="$SCRIPT_DIR/runtime/gitea/backend-token"
-    if [[ -f "$kb_token_file" ]]; then
-        export KB_GITEA_URL="http://localhost:${GITEA_HTTP_PORT}"
-        export KB_GITEA_TOKEN="$(cat "$kb_token_file")"
-        export KB_GITEA_CLONE_URL="http://host.lan:${GITEA_HTTP_PORT}"
-    fi
+    export_kb_gitea_env || true
     export COORDINATOR_RUNNER_LAUNCHER=docker
     export COORDINATOR_RUNNER_DOCKER_COMPOSE_DIR="$SCRIPT_DIR"
     export COORDINATOR_RUNNER_DOCKER_COMPOSE_FILES=docker-compose.yml,docker-compose.runners.yml

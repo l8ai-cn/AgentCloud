@@ -6,6 +6,7 @@ import { clearAuthRateLimit } from "../../helpers/redis";
 import { terminateRegisteredE2EPods } from "../../helpers/pod-cleanup";
 import { workspaceUrlForPod } from "../../helpers/mock-agent";
 import { createReadyAutopilotTarget, createAutopilotForPod } from "../../helpers/autopilot";
+import { takeWorkerControl } from "../../helpers/worker-control-lease";
 
 // Opens the workspace, attaches a running controller after the page is live on
 // realtime (the autopilot:created edge is what hydrates the store), and returns
@@ -18,10 +19,7 @@ async function openWorkspaceWithAutopilot(page: Page, api: ApiFixture, monitor: 
   await page.goto(workspaceUrlForPod(pod.podKey));
   await page.waitForLoadState("load");
   await page.waitForTimeout(3000);
-  const takeControl = page.getByRole("button", { name: "Take control" });
-  await expect(takeControl).toBeEnabled({ timeout: 30_000 });
-  await takeControl.click();
-  await expect(takeControl).toBeHidden({ timeout: 30_000 });
+  await takeWorkerControl(page);
 
   await createAutopilotForPod(api, {
     targetPodKey: pod.podKey,

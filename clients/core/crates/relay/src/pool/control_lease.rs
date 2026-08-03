@@ -19,6 +19,19 @@ impl<R: Runtime> RelayConnectionPool<R> {
         )
     }
 
+    pub async fn force_acquire_control(
+        &self,
+        pod_key: &str,
+        client_label: &str,
+    ) -> Result<(), RelayError> {
+        self.send_ready_command(
+            pod_key,
+            Command::ForceAcquireControl {
+                client_label: client_label.to_string(),
+            },
+        )
+    }
+
     pub async fn renew_control(&self, pod_key: &str, lease_id: &str) -> Result<(), RelayError> {
         self.send_ready_command(
             pod_key,

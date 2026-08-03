@@ -36,32 +36,32 @@ type WorkerTypeOption struct {
 	CredentialRequirements     []WorkerCredentialRequirement
 	ConfigDocumentRequirements []WorkerConfigDocumentRequirement
 	Selectable                 bool
-	BlockingReason             string
+	BlockingReason             BlockingReason
 }
 
 type RuntimeImageOption struct {
 	Image          runtimedomain.CatalogRuntimeImage
 	Selectable     bool
-	BlockingReason string
+	BlockingReason BlockingReason
 }
 
 type ComputeTargetOption struct {
 	Target         runtimedomain.CatalogComputeTarget
 	Selectable     bool
-	BlockingReason string
+	BlockingReason BlockingReason
 }
 
 type DeploymentModeOption struct {
 	Value          specdomain.DeploymentMode
 	Name           string
 	Selectable     bool
-	BlockingReason string
+	BlockingReason BlockingReason
 }
 
 type ResourceProfileOption struct {
 	Profile        runtimedomain.CatalogResourceProfile
 	Selectable     bool
-	BlockingReason string
+	BlockingReason BlockingReason
 }
 
 func (service *Service) ListOptions(
@@ -126,7 +126,7 @@ func runtimeImageOptions(
 		}
 		option := RuntimeImageOption{Image: image, Selectable: image.Enabled && workerType.Selectable}
 		if !image.Enabled {
-			option.BlockingReason = "Runtime image is disabled"
+			option.BlockingReason = BlockingRuntimeImageDisabled
 		} else if !workerType.Selectable {
 			option.BlockingReason = workerType.BlockingReason
 		}

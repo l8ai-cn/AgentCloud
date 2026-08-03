@@ -10,6 +10,9 @@
 dist/
 deploy/dev/runtime/
 deploy/dev/.env
+# next build inlines NEXT_PUBLIC_* from .env.local, so a dev file in the build
+# context would bake worktree localhost URLs into a release image.
+**/.env.local
 *.log
 .superpowers/
 docs/

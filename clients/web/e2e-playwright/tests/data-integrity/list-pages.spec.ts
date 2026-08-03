@@ -23,21 +23,13 @@ const isEmptyHint = /no .*(pod|workflow|channel|ticket|run)s?|no .*found|没有.
 test.describe("Data integrity: list pages match API counts", () => {
   test.beforeEach(async () => { clearAuthRateLimit(); });
 
-  test("workspace sidebar pod count matches ListPods API", async ({ page, api, db }) => {
+  test("workspace sidebar pod count matches ListPods API", async ({ page, api }) => {
     const cc = await api.connect();
-    // Mirror the renderer's default sidebar request — "mine" tab maps to
-    // status "running,initializing" + created_by_id = current user
-    // (SIDEBAR_STATUS_MAP in stores/podTypes.ts). Anything else returned
-    // by the API would be filtered out client-side, so testing equality
-    // against an unfiltered API call is structurally wrong.
-    const userId = db.queryValue(
-      `SELECT id FROM users WHERE email = 'dev@agentcloud.local' LIMIT 1`,
-    );
-    expect(userId, "dev seed must include the dev user").toBeTruthy();
+    // Mirror the renderer's default sidebar request — "running" tab maps to
+    // status "running,initializing" for the whole org (SIDEBAR_STATUS_MAP).
     const { items } = await cc.pod.listPods({
       orgSlug: TEST_ORG_SLUG,
       status: "running,initializing",
-      createdById: BigInt(userId as string),
       limit: 50,
       offset: 0,
     }) as { items: Array<{ podKey: string }> };

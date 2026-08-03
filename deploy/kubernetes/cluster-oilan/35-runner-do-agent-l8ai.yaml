@@ -1,3 +1,19 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: runner-do-agent-l8ai-workspace
+  namespace: agentcloud
+  labels:
+    app.kubernetes.io/name: agentsmesh-runner
+    agentsmesh.io/runtime: do-agent
+    agentsmesh.io/org: l8ai
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -49,7 +65,7 @@ spec:
             - name: RELAY_BASE_URL
               value: ws://relay:8090
             - name: MAX_CONCURRENT_PODS
-              value: "10"
+              value: "100000"
             - name: SSL_DIR
               value: /app/ssl
           volumeMounts:
@@ -63,9 +79,10 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 128Mi
+              memory: 2Gi
             limits:
-              memory: 512Mi
+              cpu: "4"
+              memory: 8Gi
       volumes:
         - name: ssl
           secret:
@@ -73,4 +90,5 @@ spec:
         - name: home
           emptyDir: {}
         - name: workspace
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: runner-do-agent-l8ai-workspace

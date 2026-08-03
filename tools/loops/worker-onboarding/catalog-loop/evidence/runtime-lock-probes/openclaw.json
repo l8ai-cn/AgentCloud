@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "worker_slug": "openclaw",
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "image_reference": "repo.aiedulab.cn:8443/agentsmesh/runner-openclaw@sha256:d63c0ccfffc44bb57623e411f43318f19d9b31301e62e5532fe9ab72dfcef33c",
+  "image_digest": "sha256:d63c0ccfffc44bb57623e411f43318f19d9b31301e62e5532fe9ab72dfcef33c",
+  "platform": "linux/amd64",
+  "status": "available",
+  "exit_code": 0,
+  "output": "Pulled the exact digest for linux/amd64 and ran the declared executable offline: /usr/local/bin/openclaw reported OpenClaw 2026.6.11 (e085fa1). Image label org.opencontainers.image.revision=61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d.",
+  "observed_at": "2026-08-03T09:53:22Z"
+}

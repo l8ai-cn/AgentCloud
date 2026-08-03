@@ -12,6 +12,10 @@ type CatalogRuntimeImage struct {
 	Enabled         bool     `json:"enabled"`
 }
 
+// Cross-module contract: DisabledReason carries a stable code that front-ends
+// localize, never prose.
+const ComputeTargetDedicatedNotConfigured = "dedicated-provisioning-not-configured"
+
 type CatalogComputeTarget struct {
 	ID                int64
 	Slug              string
@@ -65,7 +69,7 @@ func catalogFromLock(lock runtimeCatalogLock) Catalog {
 				Name:              "Managed Kubernetes",
 				Kind:              workerspec.ComputeTargetKindKubernetes,
 				SupportsDedicated: true,
-				DisabledReason:    "Dedicated managed Kubernetes provisioning is not configured",
+				DisabledReason:    ComputeTargetDedicatedNotConfigured,
 			},
 		},
 		profiles: []CatalogResourceProfile{

@@ -23,9 +23,6 @@ spec:
                 port:
                   number: 8080
 ---
-# Until web ships host middleware, edge-redirect the whole host. After the next
-# web release, drop permanent-redirect so /apps|/listings path mapping in
-# clients/web/src/middleware.ts can preserve listing slugs.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

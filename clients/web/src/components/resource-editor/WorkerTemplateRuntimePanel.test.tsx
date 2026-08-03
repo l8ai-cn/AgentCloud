@@ -32,7 +32,7 @@ describe("WorkerTemplateRuntimePanel", () => {
     })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Worker type" }));
     expect(screen.getByRole("option", {
-      name: /Gemini CLI.*No online Runner/i,
+      name: /Gemini CLI.*No online cluster supports this Worker type/i,
     })).toHaveAttribute("aria-disabled", "true");
   });
 
@@ -130,7 +130,7 @@ function workerOptions(): WorkerCreateOptions {
         1,
         ["acp"],
         false,
-        "No online Runner currently supports this worker type",
+        "no-online-runner",
       ),
       workerType("minimax-cli", "MiniMax CLI", 3, ["pty"], true),
     ],

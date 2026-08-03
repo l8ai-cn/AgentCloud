@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
   "worker_slug": "seedance-expert",
-  "runtime_catalog_revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
   "image_reference": "repo.aiedulab.cn:8443/agentcloud/runner-do-agent@sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
   "image_digest": "sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
+  "platform": "linux/amd64",
   "status": "available",
   "exit_code": 0,
-  "output": "sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
-  "observed_at": "2026-07-30T01:10:39Z"
+  "output": "Pulled the exact digest for linux/amd64 and ran the declared executable offline: /usr/local/bin/do-agent reported do-agent 0.2.0 (shares the Do Agent runtime digest). Image label org.opencontainers.image.revision=61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d.",
+  "observed_at": "2026-08-03T09:53:22Z"
 }

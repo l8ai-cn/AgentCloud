@@ -58,7 +58,7 @@ export function WorkerControlOverlay({
             {busy ? t("busy") : t("observer")}
           </p>
           <p className="text-xs text-muted-foreground">
-            {lease.connected ? t("takeHint") : t("waiting")}
+            {lease.connected ? t("unlockHint") : t("waiting")}
           </p>
           {lease.error && <p className="text-xs text-danger">{lease.error}</p>}
         </div>
@@ -66,10 +66,10 @@ export function WorkerControlOverlay({
           type="button"
           className={cn("h-11", blocking ? "w-full" : "shrink-0")}
           disabled={!lease.connected || lease.acquiring}
-          onClick={() => void lease.acquire()}
+          onClick={() => void lease.forceAcquire()}
         >
           {lease.acquiring && <Loader2 className="h-4 w-4 animate-spin" />}
-          {t("takeControl")}
+          {t("unlock")}
         </Button>
       </div>
     </div>

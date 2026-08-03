@@ -44,14 +44,14 @@ describe("resolveWorkerCreateNlIntent", () => {
     options.worker_types[0] = {
       ...options.worker_types[0],
       selectable: false,
-      blocking_reason: "No online Runner currently supports this worker type",
+      blocking_reason: "no-online-runner",
     };
     const intent = resolveWorkerCreateNlIntent(
       "create a kimi codex",
       options,
       [kimiModel()],
     );
-    expect(intent.blockingReason).toContain("No online Runner");
+    expect(intent.blockingReason).toBe("no-online-runner");
   });
 
   it("blocks when kimi model is missing", () => {

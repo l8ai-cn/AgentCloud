@@ -18,6 +18,10 @@ pub(crate) fn encode_acquire(client_label: &str) -> Option<Vec<u8>> {
     encode_request("acquire", None, Some(client_label))
 }
 
+pub(crate) fn encode_force_acquire(client_label: &str) -> Option<Vec<u8>> {
+    encode_request("force_acquire", None, Some(client_label))
+}
+
 pub(crate) fn encode_renew(lease_id: &str) -> Option<Vec<u8>> {
     encode_request("renew", Some(lease_id), None)
 }

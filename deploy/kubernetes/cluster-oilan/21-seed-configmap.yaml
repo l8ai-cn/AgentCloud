@@ -67,7 +67,7 @@ data:
         WHERE NOT EXISTS (SELECT 1 FROM runner_grpc_registration_tokens WHERE organization_id = v_org_id AND description = 'Cluster Runner Token');
 
         INSERT INTO runners (organization_id, cluster_id, node_id, description, status, max_concurrent_pods)
-        SELECT v_org_id, v_online_cluster_id, r.node_id, r.description, 'offline', 10
+        SELECT v_org_id, v_online_cluster_id, r.node_id, r.description, 'offline', 100000
         FROM (VALUES
             ('dev-runner', 'K8s Runner (e2e-echo)')
         ) AS r(node_id, description)
@@ -79,7 +79,7 @@ data:
         INSERT INTO runners (organization_id, cluster_id, node_id, description, status, max_concurrent_pods)
         SELECT v_org_id, v_online_cluster_id,
                'coord-runner-amesh-runner-' || v_org_id || '-' || a.agent,
-               'Coordinator dynamic runner (' || a.agent || ')', 'offline', 10
+               'Coordinator dynamic runner (' || a.agent || ')', 'offline', 100000
         FROM (VALUES
             ('e2e-echo'),
             ('do-agent'),

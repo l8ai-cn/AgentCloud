@@ -44,7 +44,7 @@ export function projectWebAgentWorkbenchSnapshot(
   const projected = projectGeneratedSessionSnapshot(raw, {
     agentLabel: context.agentLabel,
     connection,
-    hasOlderItems: raw.capabilities?.history ?? false,
+    hasOlderItems: false,
     interactionMode: context.interactionMode,
     title: context.title,
   });

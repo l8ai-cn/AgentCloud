@@ -63,7 +63,6 @@ func ProjectAcceptedCommand(
 	delta.Digest = deltaDigest
 	snapshot.Revision = revision
 	snapshot.LatestSequence = lastSequence
-	snapshot.ActiveTurnId = stringPointer(command.CommandId)
 	snapshot.Digest = nil
 	snapshotDigest, err := deterministicDigest(snapshot)
 	if err != nil {

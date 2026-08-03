@@ -11,7 +11,9 @@
 
 ## Runtime image
 
-not present in runtime catalog lock
+`grok-build-stable` enabled=true availability=locked_available
+
+`repo.aiedulab.cn:8443/agentsmesh/runner-grok-build@sha256:b9dd3a16b508e07641ec5ae50ceb191e61196234d9ce9d99c4aec374a038d103`
 
 ## CONFIG fields
 

@@ -1,4 +1,5 @@
 import type { WorkerRuntimeSelectOption } from "./WorkerRuntimeSelectField";
+import { localizeWorkerBlockingReason } from "./workerBlockingReasonLabels";
 
 type RuntimeOptionKind =
   | "workerType"
@@ -23,22 +24,6 @@ const workerTypeLabels: Record<string, string> = {
   cursor: "workerCreate.runtime.options.cursor",
 };
 
-const reasonKeys: Record<string, string> = {
-  "No runtime image is available for this worker type":
-    "workerCreate.runtime.options.noRuntimeImage",
-  "Dedicated managed Kubernetes provisioning is not configured":
-    "workerCreate.runtime.options.dedicatedUnavailable",
-  "Compute target is disabled": "workerCreate.runtime.options.computeTargetDisabled",
-  "No enabled compute target supports this deployment mode":
-    "workerCreate.runtime.options.noTargetForMode",
-  "Selected compute target is unavailable":
-    "workerCreate.runtime.options.selectedTargetUnavailable",
-  "Selected compute target does not support this deployment mode":
-    "workerCreate.runtime.options.targetDoesNotSupportMode",
-  "Resource profile is disabled": "workerCreate.runtime.options.resourceDisabled",
-  "Dedicated provisioning is disabled":
-    "workerCreate.runtime.options.dedicatedUnavailable",
-};
 
 export function localizeWorkerRuntimeOption(
   kind: RuntimeOptionKind,
@@ -94,6 +79,5 @@ function labelKey(kind: RuntimeOptionKind, value: string): string | undefined {
 }
 
 function localizeReason(reason: string, t: Translate): string {
-  const key = reasonKeys[reason];
-  return key ? t(key) : reason;
+  return localizeWorkerBlockingReason(reason, (key) => t(`workerCreate.${key}`));
 }

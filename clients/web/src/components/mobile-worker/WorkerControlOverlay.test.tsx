@@ -4,6 +4,7 @@ import { WorkerControlOverlay } from "./WorkerControlOverlay";
 
 const mocks = vi.hoisted(() => ({
   acquire: vi.fn(),
+  forceAcquire: vi.fn(),
   lease: {
     status: "observer",
     connected: true,
@@ -13,7 +14,11 @@ const mocks = vi.hoisted(() => ({
 }));
 
 function lease() {
-  return { ...mocks.lease, acquire: mocks.acquire };
+  return {
+    ...mocks.lease,
+    acquire: mocks.acquire,
+    forceAcquire: mocks.forceAcquire,
+  };
 }
 
 describe("WorkerControlOverlay", () => {
@@ -27,12 +32,13 @@ describe("WorkerControlOverlay", () => {
     };
   });
 
-  it("requests control from observer mode", () => {
+  it("force-acquires control from observer mode", () => {
     render(<WorkerControlOverlay lease={lease()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Take control" }));
+    fireEvent.click(screen.getByRole("button", { name: "Unlock" }));
 
-    expect(mocks.acquire).toHaveBeenCalledTimes(1);
+    expect(mocks.forceAcquire).toHaveBeenCalledTimes(1);
+    expect(mocks.acquire).not.toHaveBeenCalled();
   });
 
   it("disables control while the relay is disconnected", () => {
@@ -40,16 +46,19 @@ describe("WorkerControlOverlay", () => {
 
     render(<WorkerControlOverlay lease={lease()} />);
 
-    expect(screen.getByRole("button", { name: "Take control" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Unlock" })).toBeDisabled();
     expect(screen.getByText("Waiting for the Worker connection.")).toBeInTheDocument();
   });
 
-  it("shows the current controller conflict", () => {
+  it("force-acquires control when another device is busy", () => {
     mocks.lease.status = "busy";
 
     render(<WorkerControlOverlay lease={lease()} />);
 
     expect(screen.getByText("Another device has control")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Unlock" }));
+    expect(mocks.forceAcquire).toHaveBeenCalledTimes(1);
+    expect(mocks.acquire).not.toHaveBeenCalled();
   });
 
   it("does not cover a client that owns the lease", () => {

@@ -86,7 +86,6 @@ function dependencies(
     state: {
       projectionStatus: vi.fn(() => "ready"),
       resyncReason: vi.fn(() => undefined),
-      revision: vi.fn(() => current.revision),
       snapshotBytes: vi.fn(() => toBinary(SessionSnapshotSchema, current)),
     },
   };
@@ -258,10 +257,18 @@ describe("WebAgentWorkbenchRuntime", () => {
     const firstReconnect = new Promise<void>((resolve) => {
       resumeFirstReconnect = resolve;
     });
-    const sleep = vi
-      .fn<WebAgentWorkbenchRuntimeDeps["sleep"]>()
-      .mockImplementationOnce(() => firstReconnect)
-      .mockResolvedValue(undefined);
+    let heldFirstReconnect = false;
+    // Only the leading reconnect delay is held; the stream stability timer also
+    // goes through sleep and must not be the one that blocks.
+    const sleep = vi.fn<WebAgentWorkbenchRuntimeDeps["sleep"]>(
+      (milliseconds) => {
+        if (milliseconds === 0 && !heldFirstReconnect) {
+          heldFirstReconnect = true;
+          return firstReconnect;
+        }
+        return Promise.resolve();
+      },
+    );
     const { closeRemote, deps, service } = dependencies(sleep);
     const runtime = new WebAgentWorkbenchRuntime({
       agentLabel: "Codex",
@@ -273,7 +280,7 @@ describe("WebAgentWorkbenchRuntime", () => {
 
     await runtime.open(runtime.sessionId);
     closeRemote();
-    await vi.waitFor(() => expect(sleep).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(sleep).toHaveBeenCalledWith(0));
 
     runtime.close(runtime.sessionId);
     await runtime.open(runtime.sessionId);
@@ -283,6 +290,28 @@ describe("WebAgentWorkbenchRuntime", () => {
     await vi.waitFor(() => {
       expect(service.getSessionSnapshotConnect).toHaveBeenCalledTimes(3);
     });
+  });
+
+  it("survives more idle stream drops than the retry budget", async () => {
+    const { closeRemote, deps, service } = dependencies();
+    deps.maxReconnectAttempts = 1;
+    const runtime = new WebAgentWorkbenchRuntime({
+      agentLabel: "Codex",
+      deps,
+      interactionMode: "acp",
+      sessionId: "session-real-1",
+      title: "Idle drops",
+    });
+    await runtime.open(runtime.sessionId);
+
+    for (const streams of [2, 3]) {
+      closeRemote();
+      await vi.waitFor(() => {
+        expect(service.streamSessionDeltasConnect).toHaveBeenCalledTimes(streams);
+      });
+    }
+
+    expect(runtime.getSnapshot(runtime.sessionId).connection).toBe("connected");
   });
 
   it("opens a read-only completed session without a live delta stream", async () => {

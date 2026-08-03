@@ -13,6 +13,7 @@ export interface WorkerControlLease {
   acquiring: boolean;
   error: string | null;
   acquire: () => Promise<void>;
+  forceAcquire: () => Promise<void>;
 }
 
 export function useWorkerControlLease(
@@ -34,17 +35,19 @@ export function useWorkerControlLease(
     leaseIdRef.current = relay.controlLease.leaseId;
   }
 
-  const acquire = useCallback(async () => {
+  const forceAcquire = useCallback(async () => {
     setAcquiring(true);
     setError(null);
     try {
-      await relayPool.acquireControl(podKey, clientLabel);
+      await relayPool.forceAcquireControl(podKey, clientLabel);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
       setAcquiring(false);
     }
   }, [clientLabel, podKey]);
+
+  const acquire = forceAcquire;
 
   useEffect(() => {
     const leaseId = relay.controlLease.leaseId;
@@ -79,5 +82,5 @@ export function useWorkerControlLease(
     };
   }, [podKey]);
 
-  return { status, connected, acquiring, error, acquire };
+  return { status, connected, acquiring, error, acquire, forceAcquire };
 }

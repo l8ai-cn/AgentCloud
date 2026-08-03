@@ -678,9 +678,8 @@
     "podCreated": "Worker 已创建！等待启动中…",
     "podOpened": "Worker 已打开",
     "filters": {
-      "mine": "我创建的",
-      "org": "组织",
-      "completed": "已完成",
+      "running": "运行中",
+      "stopped": "已停止",
       "error": "错误"
     },
     "emptyState": {
@@ -841,8 +840,10 @@
       "observer": "当前为只读观察模式",
       "busy": "另一台设备正在控制",
       "takeHint": "取得控制权后才能输入或发送命令。",
+      "unlockHint": "解锁后即可控制此 Worker。",
       "waiting": "正在等待 Worker 连接。",
-      "takeControl": "取得控制权"
+      "takeControl": "取得控制权",
+      "unlock": "解锁"
     },
     "workers": {
       "tab": "Workers",

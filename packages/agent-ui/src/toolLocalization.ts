@@ -18,6 +18,18 @@ const zhToolText: Record<string, string> = {
   Request: "请求",
   "Video generation": "视频生成",
   Input: "输入",
+  Shell: "执行命令",
+  "Write file": "写入文件",
+  "Fetch page": "抓取网页",
+  "Web search": "网页搜索",
+  "Ask user": "询问用户",
+  "Computer use": "计算机操作",
+  "MCP call": "MCP 调用",
+  "MCP tools": "MCP 工具列表",
+  "Run code": "运行代码",
+  Code: "代码",
+  Plan: "计划",
+  "Publish artifact": "发布成果",
 };
 
 export function localizeToolText(value: string) {

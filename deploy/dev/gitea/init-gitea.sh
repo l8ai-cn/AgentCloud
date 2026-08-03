@@ -271,6 +271,27 @@ ensure_backend_token() {
 }
 ensure_backend_token
 
+# Pin the Gitea SSH host key for knowledge-base mounts. Runners clone via
+# hostname "gitea" on the compose network; host key is rewritten accordingly.
+ensure_known_hosts() {
+    local token_dir="${SCRIPT_DIR}/../runtime/gitea"
+    local kh_file="${token_dir}/known_hosts"
+    mkdir -p "$token_dir"
+
+    local pub
+    pub=$(docker exec "$GITEA_CONTAINER" cat /data/ssh/ssh_host_ed25519_key.pub | tr -d '\r\n')
+    local key_type key_material
+    read -r key_type key_material _ <<<"$pub"
+    if [[ "$key_type" != "ssh-ed25519" || -z "$key_material" ]]; then
+        error "Failed to read Gitea SSH host key"
+        return 1
+    fi
+    printf 'gitea %s %s\n' "$key_type" "$key_material" > "$kh_file"
+    chmod 644 "$kh_file"
+    success "Pinned Gitea SSH host key (runtime/gitea/known_hosts)"
+}
+ensure_known_hosts
+
 success "Gitea initialization complete!"
 info "  Admin:  http://localhost:${GITEA_HTTP_PORT} (${ADMIN_USER} / ${ADMIN_PASS})"
 info "  Repos:  ${ORG_NAME}/demo-webapp, ${ORG_NAME}/demo-api"

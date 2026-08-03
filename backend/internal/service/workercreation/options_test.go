@@ -57,7 +57,7 @@ func TestServiceListOptionsReturnsSelectableRuntimeAndBlockingReasons(t *testing
 		options.WorkerTypes[0].ModelProtocolAdapters,
 	)
 	assert.False(t, options.WorkerTypes[1].Selectable)
-	assert.Contains(t, options.WorkerTypes[1].BlockingReason, "runtime image")
+	assert.Equal(t, BlockingRuntimeImageMissing, options.WorkerTypes[1].BlockingReason)
 	require.Len(t, options.RuntimeImages, 1)
 	assert.True(t, options.RuntimeImages[0].Selectable)
 	assert.Contains(t, options.RuntimeImages, RuntimeImageOption{
@@ -70,7 +70,7 @@ func TestServiceListOptionsReturnsSelectableRuntimeAndBlockingReasons(t *testing
 	assert.NotEmpty(t, options.ComputeTargets[1].BlockingReason)
 	require.Len(t, options.DeploymentModes, 2)
 	assert.False(t, options.DeploymentModes[1].Selectable)
-	assert.Contains(t, options.DeploymentModes[1].BlockingReason, "compute target")
+	assert.Equal(t, BlockingTargetModeUnsupported, options.DeploymentModes[1].BlockingReason)
 	require.Len(t, options.ResourceProfiles, 2)
 	assert.True(t, options.ResourceProfiles[0].Selectable)
 }
@@ -212,11 +212,7 @@ func TestServiceListOptionsBlocksEnabledImageWithoutOnlineRunner(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, options.WorkerTypes, 1)
 	assert.False(t, options.WorkerTypes[0].Selectable)
-	assert.Equal(
-		t,
-		"No online Runner currently supports this worker type",
-		options.WorkerTypes[0].BlockingReason,
-	)
+	assert.Equal(t, BlockingNoOnlineRunner, options.WorkerTypes[0].BlockingReason)
 }
 
 func TestServiceListOptionsAllowsProvisionableWorkerWithoutOnlineRunner(t *testing.T) {

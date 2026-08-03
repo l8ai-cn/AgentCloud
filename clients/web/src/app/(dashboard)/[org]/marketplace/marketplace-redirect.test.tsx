@@ -8,7 +8,13 @@ vi.mock("@/components/marketplace/MarketplaceCatalogPage", () => ({
 }));
 
 vi.mock("@/components/marketplace/MarketplaceDetailPage", () => ({
-  MarketplaceDetailPage: ({ orgSlug, listingSlug }: { orgSlug: string; listingSlug: string }) => ({
+  MarketplaceDetailPage: ({
+    orgSlug,
+    listingSlug,
+  }: {
+    orgSlug: string;
+    listingSlug: string;
+  }) => ({
     type: "detail",
     orgSlug,
     listingSlug,

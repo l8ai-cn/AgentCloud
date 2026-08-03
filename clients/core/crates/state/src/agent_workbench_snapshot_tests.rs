@@ -1,7 +1,7 @@
 use agentcloud_types::proto_agent_workbench_v2 as v2;
 
 use crate::agent_workbench_state::{AgentWorkbenchError, AgentWorkbenchState};
-use crate::agent_workbench_test_fixtures::snapshot;
+use crate::agent_workbench_test_fixtures::{batch, receipt_event, snapshot, timeline_event};
 
 #[test]
 fn same_cursor_refreshes_session_grants() {
@@ -50,6 +50,43 @@ fn same_cursor_still_rejects_canonical_content_changes() {
             reason: "snapshot_cursor_conflict"
         })
     ));
+}
+
+#[test]
+fn replayed_deltas_carry_active_turn_id_so_reconnect_snapshots_agree() {
+    let mut state = AgentWorkbenchState::new();
+    state.apply_snapshot(&snapshot()).unwrap();
+    let events = vec![
+        with_turn(timeline_event(10, "message:command-1", 5, false), "command-1"),
+        with_turn(
+            receipt_event(11, 5, "command-1", v2::CommandReceiptState::Accepted),
+            "command-1",
+        ),
+    ];
+
+    state
+        .apply_delta_batch(&batch(4, 5, 10, events, "batch-1"))
+        .unwrap();
+
+    let replayed = state.get_session("session-1").unwrap().snapshot.clone();
+    assert_eq!(replayed.active_turn_id.as_deref(), Some("command-1"));
+    state.apply_snapshot(&replayed).unwrap();
+
+    let mut without_turn = replayed.clone();
+    without_turn.active_turn_id = None;
+    assert!(matches!(
+        state.apply_snapshot(&without_turn),
+        Err(AgentWorkbenchError::InvalidPayload {
+            reason: "snapshot_cursor_conflict"
+        })
+    ));
+}
+
+fn with_turn(mut event: v2::AgentEvent, turn_id: &str) -> v2::AgentEvent {
+    let envelope = event.envelope.as_mut().unwrap();
+    envelope.turn_id = Some(turn_id.into());
+    envelope.causation_command_id = Some(turn_id.into());
+    event
 }
 
 fn session_grant(id: &str, action: &str) -> v2::AuthorizationGrant {

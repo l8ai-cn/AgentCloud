@@ -13,6 +13,7 @@ const mgr = {
   send_resize: vi.fn().mockResolvedValue(undefined),
   force_resize: vi.fn().mockResolvedValue(undefined),
   acquire_control: vi.fn().mockResolvedValue(undefined),
+  force_acquire_control: vi.fn().mockResolvedValue(undefined),
   renew_control: vi.fn().mockResolvedValue(undefined),
   release_control: vi.fn().mockResolvedValue(undefined),
   send_acp_command: vi.fn().mockResolvedValue(undefined),
@@ -122,10 +123,12 @@ describe("relayConnection adapter", () => {
 
     it("delegates explicit control lease commands", async () => {
       await pool.acquireControl("pod-1", "mobile");
+      await pool.forceAcquireControl("pod-1", "mobile");
       await pool.renewControl("pod-1", "lease-1");
       await pool.releaseControl("pod-1", "lease-1");
 
       expect(mgr.acquire_control).toHaveBeenCalledWith("pod-1", "mobile");
+      expect(mgr.force_acquire_control).toHaveBeenCalledWith("pod-1", "mobile");
       expect(mgr.renew_control).toHaveBeenCalledWith("pod-1", "lease-1");
       expect(mgr.release_control).toHaveBeenCalledWith("pod-1", "lease-1");
     });

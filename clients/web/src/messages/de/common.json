@@ -37,7 +37,8 @@
     "disconnected": "Disconnected",
     "pageNotFound": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
     "backToHome": "Zurück zur Startseite",
-    "undo": "Rückgängig"
+    "undo": "Rückgängig",
+    "manage": "Verwalten"
   },
   "apiErrors": {
     "ACCESS_DENIED": "Access denied",

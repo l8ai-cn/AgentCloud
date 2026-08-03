@@ -41,7 +41,7 @@ func workerCreateOptionsToProto(
 				option.ConfigDocumentRequirements,
 			),
 			Selectable:     option.Selectable,
-			BlockingReason: option.BlockingReason,
+			BlockingReason: string(option.BlockingReason),
 		})
 	}
 	for _, option := range options.RuntimeImages {
@@ -53,7 +53,7 @@ func workerCreateOptionsToProto(
 			Digest:          option.Image.Digest,
 			WorkerTypeSlugs: append([]string{}, option.Image.WorkerTypeSlugs...),
 			Selectable:      option.Selectable,
-			BlockingReason:  option.BlockingReason,
+			BlockingReason:  string(option.BlockingReason),
 		})
 	}
 	for _, option := range options.ComputeTargets {
@@ -65,7 +65,7 @@ func workerCreateOptionsToProto(
 			SupportsPooled:    option.Target.SupportsPooled,
 			SupportsDedicated: option.Target.SupportsDedicated,
 			Selectable:        option.Selectable,
-			BlockingReason:    option.BlockingReason,
+			BlockingReason:    string(option.BlockingReason),
 		})
 	}
 	for _, option := range options.DeploymentModes {
@@ -73,7 +73,7 @@ func workerCreateOptionsToProto(
 			Value:          string(option.Value),
 			Name:           option.Name,
 			Selectable:     option.Selectable,
-			BlockingReason: option.BlockingReason,
+			BlockingReason: string(option.BlockingReason),
 		})
 	}
 	for _, option := range options.ResourceProfiles {
@@ -91,7 +91,7 @@ func workerCreateOptionsToProto(
 			GpuRequest:          cloneUint32Pointer(resources.GPURequest),
 			GpuLimit:            cloneUint32Pointer(resources.GPULimit),
 			Selectable:          option.Selectable,
-			BlockingReason:      option.BlockingReason,
+			BlockingReason:      string(option.BlockingReason),
 		})
 	}
 	return response, nil

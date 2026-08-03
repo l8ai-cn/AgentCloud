@@ -48,19 +48,19 @@ func (d *Deps) sessionAccessLevel(c *gin.Context, row *domain.Session) int {
 	if row.UserID == tenant.UserID {
 		return levelOwner
 	}
-	if d.SessionPermissions == nil {
-		return 0
+	if d.SessionPermissions != nil {
+		email := d.viewerEmail(c)
+		principals := []string{"__public__"}
+		if email != "" {
+			principals = append(principals, email)
+		}
+		if level, ok := d.SessionPermissions.EffectiveLevel(c.Request.Context(), row.ID, principals...); ok {
+			return level
+		}
 	}
-	email := d.viewerEmail(c)
-	principals := []string{"__public__"}
-	if email != "" {
-		principals = append(principals, email)
-	}
-	level, ok := d.SessionPermissions.EffectiveLevel(c.Request.Context(), row.ID, principals...)
-	if !ok {
-		return 0
-	}
-	return level
+	// Worker URLs are pod-scoped; org admins / pod readers must resolve the
+	// linked agent_sessions row or the workbench dies with a false "not created".
+	return d.sessionAccessLevelFromPod(c, tenant, row)
 }
 
 func (d *Deps) authorizeSessionByPodKey(c *gin.Context, podKey string) (*domain.Session, *podDomain.Pod, bool) {

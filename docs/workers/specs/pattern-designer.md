@@ -13,7 +13,7 @@
 
 `pattern-designer-stable` enabled=true availability=locked_available
 
-`repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd`
+`repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd`
 
 ## CONFIG fields
 

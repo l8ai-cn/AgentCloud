@@ -143,14 +143,9 @@ const nextConfig: NextConfig = {
   async rewrites() {
     if (process.env.NODE_ENV === "development") {
       const proxyTarget = getDevProxyTarget();
-      const marketplaceTarget =
-        process.env.MARKETPLACE_API_PROXY_TARGET || "http://localhost:10022";
+      // Marketplace HTTP is mounted on backend (no standalone marketplace host).
       console.log(`[Next.js] API proxy enabled: /api/* + /v1/* + /proto.* + /health → ${proxyTarget}`);
       return [
-        {
-          source: "/api/marketplace/v1/:path*",
-          destination: `${marketplaceTarget}/api/marketplace/v1/:path*`,
-        },
         {
           source: "/api/:path*",
           destination: `${proxyTarget}/api/:path*`,

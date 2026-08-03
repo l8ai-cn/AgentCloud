@@ -12,6 +12,8 @@ func (c *Channel) handleControlLeaseRequest(subscriberID string, request protoco
 	switch request.Action {
 	case protocol.ControlLeaseActionAcquire:
 		c.acquireControlLease(subscriberID)
+	case protocol.ControlLeaseActionForceAcquire:
+		c.forceAcquireControlLease(subscriberID)
 	case protocol.ControlLeaseActionRenew:
 		c.renewControlLease(subscriberID, request.LeaseID)
 	case protocol.ControlLeaseActionRelease:

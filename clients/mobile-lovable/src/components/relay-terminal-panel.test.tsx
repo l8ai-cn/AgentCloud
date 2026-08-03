@@ -7,6 +7,7 @@ const relayState = vi.hoisted(() => ({
   statusListener: undefined as ((value: unknown) => void) | undefined,
   relay: {
     acquire_control: vi.fn().mockResolvedValue(undefined),
+    force_acquire_control: vi.fn().mockResolvedValue(undefined),
     disconnect: vi.fn().mockResolvedValue(undefined),
     get_status: vi.fn().mockResolvedValue("disconnected"),
     remove_status_listener: vi.fn(),
@@ -99,7 +100,7 @@ describe("RelayTerminalPanel", () => {
       expect.any(Function),
     );
     expect(screen.getByText("正在连接 Worker…")).not.toBeNull();
-    expect((screen.getByRole("button", { name: "接管输入" }) as HTMLButtonElement).disabled).toBe(
+    expect((screen.getByRole("button", { name: "解锁" }) as HTMLButtonElement).disabled).toBe(
       true,
     );
 
@@ -109,7 +110,7 @@ describe("RelayTerminalPanel", () => {
 
     await waitFor(() => {
       expect(screen.queryByText("正在连接 Worker…")).toBeNull();
-      expect((screen.getByRole("button", { name: "接管输入" }) as HTMLButtonElement).disabled).toBe(
+      expect((screen.getByRole("button", { name: "解锁" }) as HTMLButtonElement).disabled).toBe(
         false,
       );
     });

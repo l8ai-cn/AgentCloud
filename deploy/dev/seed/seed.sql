@@ -698,4 +698,89 @@ BEGIN
     ('memory', 'Memory', 'Persistent memory storage for context across sessions', 'brain', 'stdio', 'npx', '["-y", "@modelcontextprotocol/server-memory"]'::jsonb, '[]'::jsonb, 'utility')
     ON CONFLICT (slug) DO NOTHING;
 
+    -- =========================================================================
+    -- 12. Default Agent Cloud marketplace (storefront host = localhost)
+    -- =========================================================================
+    IF NOT EXISTS (
+        SELECT 1 FROM marketplace.marketplaces WHERE slug = 'agent-cloud-market'
+    ) THEN
+        INSERT INTO marketplace.marketplaces (
+            slug, name, summary, description, status, visibility, template_key,
+            default_locale, registration_mode, owner_platform_org_id,
+            created_by_platform_user_id, published_at
+        ) VALUES (
+            'agent-cloud-market',
+            'Agent Cloud 专家应用市场',
+            '面向真实工作的开箱即用 AI 专家应用',
+            '汇集经过验证的专家应用、Skill、系统连接与资源。',
+            'published', 'public', 'enterprise', 'zh-CN', 'public',
+            v_org_id, v_admin_id, NOW()
+        );
+    END IF;
+
+    INSERT INTO marketplace.marketplace_domains (
+        marketplace_id, host, kind, status, verification_token, is_primary, verified_at
+    )
+    SELECT m.id, 'localhost', 'platform', 'active', 'platform-market-local', TRUE, NOW()
+    FROM marketplace.marketplaces m
+    WHERE m.slug = 'agent-cloud-market'
+      AND NOT EXISTS (
+          SELECT 1 FROM marketplace.marketplace_domains d
+          WHERE d.marketplace_id = m.id AND d.host = 'localhost'
+      );
+
+    INSERT INTO marketplace.marketplace_quota_plans (
+        marketplace_id, slug, name, description, period, grant_credits,
+        charge_scope, status
+    )
+    SELECT m.id, 'organization-starter', '组织起步额度',
+           '用于专家应用启用和运行的市场额度。', 'total', 100.000000,
+           'organization', 'active'
+    FROM marketplace.marketplaces m
+    WHERE m.slug = 'agent-cloud-market'
+      AND NOT EXISTS (
+          SELECT 1 FROM marketplace.marketplace_quota_plans qp
+          WHERE qp.marketplace_id = m.id AND qp.slug = 'organization-starter'
+      );
+
+    UPDATE marketplace.marketplaces m
+    SET default_quota_plan_id = qp.id,
+        updated_at = NOW()
+    FROM marketplace.marketplace_quota_plans qp
+    WHERE m.slug = 'agent-cloud-market'
+      AND qp.marketplace_id = m.id
+      AND qp.slug = 'organization-starter'
+      AND (m.default_quota_plan_id IS DISTINCT FROM qp.id);
+
+    INSERT INTO marketplace.marketplace_publishers (
+        slug, publisher_type, display_name, summary, verification_status
+    )
+    SELECT 'agent-cloud', 'platform', 'Agent Cloud',
+           'Agent Cloud 官方发布方', 'verified'
+    WHERE NOT EXISTS (
+        SELECT 1 FROM marketplace.marketplace_publishers WHERE slug = 'agent-cloud'
+    );
+
+    INSERT INTO marketplace.marketplace_spaces (
+        marketplace_id, slug, name, summary, description, status, sort_order,
+        created_by_platform_user_id, published_at
+    )
+    SELECT m.id, space.slug, space.name, space.summary, space.description,
+           'published', space.sort_order, v_admin_id, NOW()
+    FROM marketplace.marketplaces m
+    CROSS JOIN (
+        VALUES
+            ('expert-applications', '专家应用', '经过审核的可安装专家',
+             '面向团队真实工作场景的专家应用。', 20),
+            ('software-delivery', '软件交付', '软件工程交付场景',
+             '覆盖研发、交付与运维协作的应用。', 10)
+    ) AS space(slug, name, summary, description, sort_order)
+    WHERE m.slug = 'agent-cloud-market'
+      AND NOT EXISTS (
+          SELECT 1 FROM marketplace.marketplace_spaces s
+          WHERE s.marketplace_id = m.id AND s.slug = space.slug
+      );
+
+    RAISE NOTICE '  - Marketplace: agent-cloud-market';
+
 END $$;

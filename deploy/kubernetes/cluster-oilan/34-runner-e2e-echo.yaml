@@ -47,7 +47,7 @@ spec:
             - name: RELAY_BASE_URL
               value: ws://relay:8090
             - name: MAX_CONCURRENT_PODS
-              value: "10"
+              value: "100000"
             - name: SSL_DIR
               value: /app/ssl
           volumeMounts:

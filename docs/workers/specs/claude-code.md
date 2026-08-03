@@ -11,9 +11,9 @@
 
 ## Runtime image
 
-`claude-code-stable` enabled=false availability=invalid_published_digest
+`claude-code-stable` enabled=true availability=locked_available
 
-`repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f`
+`repo.aiedulab.cn:8443/agentsmesh/runner-claude-code@sha256:20c2ab259b813f3f5187ebe8afc382d19da2e7f68fe9916191f9626fe69fa119`
 
 ## CONFIG fields
 

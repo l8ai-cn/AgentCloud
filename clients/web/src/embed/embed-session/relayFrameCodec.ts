@@ -33,7 +33,7 @@ export type DecodedRelayFrame =
   | { kind: "other"; type: number };
 
 interface ControlLeaseRequest {
-  action: "acquire" | "renew" | "release";
+  action: "acquire" | "force_acquire" | "renew" | "release";
   clientLabel?: string;
   leaseId?: string;
 }

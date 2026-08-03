@@ -232,9 +232,8 @@
     "podCreated": "Pod created! Waiting for it to start...",
     "podOpened": "Pod opened",
     "filters": {
-      "mine": "Meus",
-      "org": "Org",
-      "completed": "Concluídos",
+      "running": "Em execução",
+      "stopped": "Parados",
       "error": "Erro"
     },
     "emptyState": {
@@ -383,8 +382,10 @@
       "observer": "Visualizando no modo observador",
       "busy": "Outro dispositivo está no controle",
       "takeHint": "Assuma o controle para digitar ou enviar comandos.",
+      "unlockHint": "Desbloqueie para assumir o controle deste Worker.",
       "waiting": "Aguardando a conexão do Worker.",
-      "takeControl": "Assumir controle"
+      "takeControl": "Assumir controle",
+      "unlock": "Desbloquear"
     },
     "workers": {
       "tab": "Workers",
@@ -712,37 +713,102 @@
     }
   },
   "loopal": {
-    "activity": { "heading": "Atividade" },
+    "activity": {
+      "heading": "Atividade"
+    },
     "status": {
       "title": "Loopal",
       "thinking": "Pensando: {value}",
       "topology": "Topologia",
-      "mode": { "act": "Agir", "plan": "Planejar" },
-      "goal": { "pause": "Pausar", "resume": "Retomar", "complete": "Concluir", "reopen": "Reabrir", "clear": "Limpar" }
+      "mode": {
+        "act": "Agir",
+        "plan": "Planejar"
+      },
+      "goal": {
+        "pause": "Pausar",
+        "resume": "Retomar",
+        "complete": "Concluir",
+        "reopen": "Reabrir",
+        "clear": "Limpar"
+      }
     },
-    "thinking": { "auto": "Auto", "off": "Desativado", "low": "Baixo", "med": "Médio", "high": "Alto", "max": "Máx" },
+    "thinking": {
+      "auto": "Auto",
+      "off": "Desativado",
+      "low": "Baixo",
+      "med": "Médio",
+      "high": "Alto",
+      "max": "Máx"
+    },
     "dock": {
-      "tabs": { "bgShell": "Shell em segundo plano", "cron": "Cron", "tasks": "Tarefas", "agents": "Agentes", "mcp": "MCP" },
-      "agents": { "expand": "Expandir topologia" },
-      "bgShell": { "kill": "Encerrar", "killConfirmTitle": "Encerrar a tarefa em segundo plano?" },
-      "cron": { "due": "vencida", "inMinutes": "em {m} min", "inHours": "em {h} h", "inDays": "em {d} d", "recurring": "recorrente", "once": "única", "durable": "persistente", "delete": "Excluir", "deleteConfirmTitle": "Excluir o trabalho cron?" },
-      "tasks": { "blockedBy": "bloqueada por {count}" },
-      "mcp": { "refresh": "atualizar", "toolCount": "{count} ferramentas", "reconnect": "Reconectar", "disconnect": "Desconectar", "disconnectConfirmTitle": "Desconectar o servidor MCP?" }
+      "tabs": {
+        "bgShell": "Shell em segundo plano",
+        "cron": "Cron",
+        "tasks": "Tarefas",
+        "agents": "Agentes",
+        "mcp": "MCP"
+      },
+      "agents": {
+        "expand": "Expandir topologia"
+      },
+      "bgShell": {
+        "kill": "Encerrar",
+        "killConfirmTitle": "Encerrar a tarefa em segundo plano?"
+      },
+      "cron": {
+        "due": "vencida",
+        "inMinutes": "em {m} min",
+        "inHours": "em {h} h",
+        "inDays": "em {d} d",
+        "recurring": "recorrente",
+        "once": "única",
+        "durable": "persistente",
+        "delete": "Excluir",
+        "deleteConfirmTitle": "Excluir o trabalho cron?"
+      },
+      "tasks": {
+        "blockedBy": "bloqueada por {count}"
+      },
+      "mcp": {
+        "refresh": "atualizar",
+        "toolCount": "{count} ferramentas",
+        "reconnect": "Reconectar",
+        "disconnect": "Desconectar",
+        "disconnectConfirmTitle": "Desconectar o servidor MCP?"
+      }
     },
     "prompt": {
       "placeholder": "Envie uma mensagem ao Loopal, ou / para comandos",
       "interrupt": "Interromper",
-      "rewindTitle": "Retroceder até o turno", "rewindPlaceholder": "turno #",
-      "resumeTitle": "Retomar sessão", "resumePlaceholder": "id da sessão",
-      "model": "Modelo", "thinking": "Pensamento"
+      "rewindTitle": "Retroceder até o turno",
+      "rewindPlaceholder": "turno #",
+      "resumeTitle": "Retomar sessão",
+      "resumePlaceholder": "id da sessão",
+      "model": "Modelo",
+      "thinking": "Pensamento"
     },
     "commands": {
-      "act": "Mudar para o modo Agir", "plan": "Mudar para o modo Planejar", "model": "Modelo e nível de pensamento", "thinking": "Nível de esforço de pensamento",
-      "compact": "Compactar o contexto da conversa", "clear": "Limpar todo o histórico da conversa", "rewind": "Retroceder a um turno anterior",
-      "resume": "Retomar uma sessão por id", "suspend": "Suspender cron / reativação", "unsuspend": "Retomar cron / reativação",
-      "goal": "Definir um objetivo de thread (/goal [objetivo])", "mcpRefresh": "Atualizar o status do MCP",
-      "goalPause": "Pausar o objetivo", "goalResume": "Retomar o objetivo", "goalComplete": "Marcar o objetivo como concluído", "goalReopen": "Reabrir o objetivo", "goalClear": "Limpar o objetivo"
+      "act": "Mudar para o modo Agir",
+      "plan": "Mudar para o modo Planejar",
+      "model": "Modelo e nível de pensamento",
+      "thinking": "Nível de esforço de pensamento",
+      "compact": "Compactar o contexto da conversa",
+      "clear": "Limpar todo o histórico da conversa",
+      "rewind": "Retroceder a um turno anterior",
+      "resume": "Retomar uma sessão por id",
+      "suspend": "Suspender cron / reativação",
+      "unsuspend": "Retomar cron / reativação",
+      "goal": "Definir um objetivo de thread (/goal [objetivo])",
+      "mcpRefresh": "Atualizar o status do MCP",
+      "goalPause": "Pausar o objetivo",
+      "goalResume": "Retomar o objetivo",
+      "goalComplete": "Marcar o objetivo como concluído",
+      "goalReopen": "Reabrir o objetivo",
+      "goalClear": "Limpar o objetivo"
     },
-    "topology": { "sheetTitle": "Topologia de agentes", "root": "raiz" }
+    "topology": {
+      "sheetTitle": "Topologia de agentes",
+      "root": "raiz"
+    }
   }
 }

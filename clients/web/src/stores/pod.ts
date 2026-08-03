@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { create as protoCreate, toBinary, fromBinary } from "@bufbuild/protobuf";
 import { ApiError } from "@/lib/api/api-types";
 import { reconnectRegistry } from "@/lib/realtime";
-import { readCurrentOrg, readCurrentUser } from "@/stores/auth";
+import { readCurrentOrg } from "@/stores/auth";
 import { getErrorMessage } from "@/lib/utils";
 import { deleteTerminalPod as deleteTerminalPodRequest } from "@/lib/api/podDeletionApi";
 import { initWasmCore, getPodState } from "@/lib/wasm-core";
@@ -80,7 +80,7 @@ let sidebarLoadingSeq = 0;
 
 export const usePodStore = create<PodState>((set, get) => ({
   _tick: 0, loading: false, error: null, initProgress: {},
-  podTotal: 0, podHasMore: false, loadingMore: false, currentSidebarFilter: "mine", sidebarLoadedCount: 0,
+  podTotal: 0, podHasMore: false, loadingMore: false, currentSidebarFilter: "running", sidebarLoadedCount: 0,
 
   fetchPods: async (filters) => {
     await initWasmCore();
@@ -101,7 +101,11 @@ export const usePodStore = create<PodState>((set, get) => ({
     const promise = (async () => {
       await initWasmCore();
       try {
-        const pod = await getPodConnect(orgSlug(), podKey);
+        const slug = orgSlug();
+        if (!slug) {
+          throw new Error("Organization not ready");
+        }
+        const pod = await getPodConnect(slug, podKey);
         const req = protoCreate(InsertCreatedPodRequestSchema, {
           pod: podToProtoPod(pod), clientTimestampMs: BigInt(Date.now()),
         });
@@ -126,10 +130,8 @@ export const usePodStore = create<PodState>((set, get) => ({
     await initWasmCore();
     if (!silent) set({ error: null, currentSidebarFilter: statusFilter, loading: true });
     try {
-      const uid = statusFilter === "mine" ? readCurrentUser()?.id ?? null : null;
       const respBytes = await listPodsRaw(orgSlug(), {
         status: sidebarStatusParam(statusFilter),
-        created_by_id: uid ?? undefined,
         limit: SIDEBAR_PAGE_SIZE, offset: 0,
       });
       // Decode the wire response once for the pagination counters (total /
@@ -169,14 +171,12 @@ export const usePodStore = create<PodState>((set, get) => ({
     set({ loadingMore: true });
     await initWasmCore();
     try {
-      const uid = currentSidebarFilter === "mine" ? readCurrentUser()?.id ?? null : null;
       // Page from how many we've actually pulled for THIS filter, not the cache
       // length: realtime insert_created_pod upserts org-wide pods (incl. ones the
       // active filter hides) into the shared cache, so cache length drifts from
       // the server's filtered offset and would skip or duplicate rows.
       const respBytes = await listPodsRaw(orgSlug(), {
         status: sidebarStatusParam(currentSidebarFilter),
-        created_by_id: uid ?? undefined,
         limit: SIDEBAR_PAGE_SIZE, offset: sidebarLoadedCount,
       });
       const resp = fromBinary(ListPodsResponseSchema, respBytes);

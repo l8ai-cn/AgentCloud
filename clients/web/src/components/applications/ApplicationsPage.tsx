@@ -119,7 +119,7 @@ function ApplicationsEmpty({
       size="full"
       icon={<AppWindow className="h-12 w-12" />}
       title={focused ? "找不到这个已启用应用" : "还没有已启用的应用"}
-      description={focused ? "该应用可能已移除，或你没有当前组织的访问权限。" : "请先在公开应用市场选择应用，完成启用后会显示在这里。"}
+      description={focused ? "该应用可能已移除，或你没有当前组织的访问权限。" : "请先在应用市场选择应用，完成启用后会显示在这里。"}
       actions={(
         <Button asChild>
           <Link href={`/${orgSlug}/marketplace`}>前往应用市场</Link>

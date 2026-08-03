@@ -56,6 +56,28 @@ func TestProjectAcceptedCommandRejectsMismatchedReceipt(t *testing.T) {
 	require.ErrorIs(t, err, ErrInvalidCommand)
 }
 
+func TestProjectAcceptedCommandKeepsActiveTurnReplayable(t *testing.T) {
+	current := initialSnapshot("conv_1", "stream-1")
+	command := &agentworkbenchv2.CommandEnvelope{
+		SessionId: "conv_1", StreamEpoch: "stream-1",
+		CommandId: "command-1", PayloadDigest: validDigest("1"),
+		IssuedAt: "2026-07-16T10:00:00Z",
+		Command: &agentworkbenchv2.CommandEnvelope_SendPrompt{
+			SendPrompt: &agentworkbenchv2.SendPromptCommand{Text: "分析财报"},
+		},
+	}
+
+	projected, err := ProjectAcceptedCommand(current, command, acceptedReceipt(command))
+	require.NoError(t, err)
+	require.Equal(t, "command-1", projected.Snapshot.GetActiveTurnId())
+
+	replayed := initialSnapshot("conv_1", "stream-1")
+	for _, event := range projected.Delta.Events {
+		require.NoError(t, applyProjectedEvent(replayed, event))
+	}
+	require.Equal(t, projected.Snapshot.GetActiveTurnId(), replayed.GetActiveTurnId())
+}
+
 func acceptedReceipt(
 	command *agentworkbenchv2.CommandEnvelope,
 ) *agentworkbenchv2.CommandReceipt {

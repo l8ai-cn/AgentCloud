@@ -212,6 +212,7 @@ func TestHandler_ToolCallUpdate(t *testing.T) {
 			"toolCallId":    "tc-1",
 			"title":         "read_file",
 			"status":        "running",
+			"rawInput":      map[string]any{"path": "/tmp/a"},
 		},
 	})
 	h.HandleNotification("session/update", params)
@@ -229,6 +230,9 @@ func TestHandler_ToolCallUpdate(t *testing.T) {
 	}
 	if received[0].Status != "running" {
 		t.Errorf("Status = %q, want %q", received[0].Status, "running")
+	}
+	if received[0].ArgumentsJSON != `{"path":"/tmp/a"}` {
+		t.Errorf("ArgumentsJSON = %q, want rawInput JSON", received[0].ArgumentsJSON)
 	}
 }
 

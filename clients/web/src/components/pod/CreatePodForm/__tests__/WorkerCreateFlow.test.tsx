@@ -276,7 +276,7 @@ function createOptions(): WorkerCreateOptions {
         supports_pooled: false,
         supports_dedicated: true,
         selectable: false,
-        blocking_reason: "Dedicated provisioning is disabled",
+        blocking_reason: "dedicated-provisioning-not-configured",
       },
     ],
     deployment_modes: [
@@ -290,7 +290,7 @@ function createOptions(): WorkerCreateOptions {
         value: "dedicated",
         name: "Dedicated",
         selectable: false,
-        blocking_reason: "Selected target does not support dedicated mode",
+        blocking_reason: "selected-target-mode-unsupported",
       },
     ],
     resource_profiles: [

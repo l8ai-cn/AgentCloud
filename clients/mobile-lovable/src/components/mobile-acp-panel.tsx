@@ -40,6 +40,7 @@ export function MobileAcpPanel({ podKey }: { podKey: string }) {
       <AcpConnectionBar
         connected={relay.connection === "connected"}
         hasControl={hasControl}
+        busy={relay.lease.status === "busy"}
         acquiring={relay.control.acquiring}
         onAcquire={() => void relay.control.acquire()}
         onReconnect={relay.reconnect}
@@ -70,6 +71,7 @@ export function MobileAcpPanel({ podKey }: { podKey: string }) {
 function AcpConnectionBar(props: {
   connected: boolean;
   hasControl: boolean;
+  busy?: boolean;
   acquiring: boolean;
   onAcquire: () => void;
   onReconnect: () => void;
@@ -94,14 +96,16 @@ function AcpConnectionBar(props: {
   }
   return (
     <div className="flex min-h-12 items-center justify-between border-b border-border/60 px-3">
-      <span className="text-xs text-muted-foreground">只读观察</span>
+      <span className="text-xs text-muted-foreground">
+        {props.busy ? "另一台设备正在控制" : "只读观察"}
+      </span>
       <button
         onClick={props.onAcquire}
         disabled={props.acquiring}
         className="flex min-h-9 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-semibold text-primary-foreground disabled:opacity-50"
       >
         {props.acquiring && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-        接管输入
+        解锁
       </button>
     </div>
   );

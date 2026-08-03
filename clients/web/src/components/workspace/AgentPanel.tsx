@@ -13,6 +13,7 @@ import { useWorkspaceStore, type SplitDirection } from "@/stores/workspace";
 import { AgentPanelHeader } from "./AgentPanelHeader";
 import { PodSelectorModal } from "./PodSelectorModal";
 import { WorkerControlOverlay } from "@/components/mobile-worker/WorkerControlOverlay";
+import { AutopilotOverlay } from "./AutopilotOverlay";
 import { usePodWorkerSession } from "./agent-ui/usePodWorkerSession";
 
 const AGENT_CONTENT_RENDERERS = createBuiltinContentRenderers();
@@ -84,6 +85,8 @@ export function AgentPanel({
           onClose={onClose}
         />
       )}
+
+      <AutopilotOverlay podKey={podKey} />
 
       <WorkerProvider client={session.workerClient}>
         <WorkerConversation

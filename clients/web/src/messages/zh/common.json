@@ -46,7 +46,8 @@
     "timeInDays": "{count}天后",
     "pageNotFound": "您访问的页面不存在或已被移动。",
     "backToHome": "返回首页",
-    "undo": "撤销"
+    "undo": "撤销",
+    "manage": "管理"
   },
   "apiErrors": {
     "ACCESS_DENIED": "访问被拒绝",

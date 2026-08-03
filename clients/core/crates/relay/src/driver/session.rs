@@ -209,6 +209,11 @@ impl<R: Runtime> Driver<R> {
                     let _ = sender.send_binary(msg);
                 }
             }
+            Command::ForceAcquireControl { client_label } => {
+                if let Some(msg) = crate::control_lease::encode_force_acquire(&client_label) {
+                    let _ = sender.send_binary(msg);
+                }
+            }
             Command::RenewControl { lease_id } => {
                 if let Some(msg) = crate::control_lease::encode_renew(&lease_id) {
                     let _ = sender.send_binary(msg);

@@ -15,6 +15,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import type { AsyncState } from "@/components/pod/hooks/workerCreateDraft";
 import type { WorkerCreateOptions } from "@/lib/api/facade/podConnect";
+import { localizeWorkerBlockingReasons } from "@/components/pod/CreatePodForm/workerBlockingReasonLabels";
 import type { WorkerTemplatePanelProps } from "./worker-template-panel-props";
 import { WorkerTemplateOptionSelectField } from "./WorkerTemplateOptionSelectField";
 import {
@@ -58,7 +59,10 @@ export function WorkerTemplateRuntimeChoices({
           id="worker-type"
           label={t("fields.workerType")}
           value={draft.spec.workerType}
-          options={workerTemplateTypeOptions(options.data)}
+          options={localizeWorkerBlockingReasons(
+            workerTemplateTypeOptions(options.data),
+            runtimeT,
+          )}
           onChange={(workerType) => {
             const next = selectWorkerTemplateType(
               draft,
@@ -72,9 +76,9 @@ export function WorkerTemplateRuntimeChoices({
           id="runtime-image"
           label={runtimeT("runtime.runtimeImage")}
           value={numberValue(draft.spec.runtime.runtimeImageId)}
-          options={workerTemplateRuntimeImageOptions(
-            options.data,
-            draft.spec.workerType,
+          options={localizeWorkerBlockingReasons(
+            workerTemplateRuntimeImageOptions(options.data, draft.spec.workerType),
+            runtimeT,
           )}
           disabled={!selectedType?.selectable}
           onChange={(value) => onChange({

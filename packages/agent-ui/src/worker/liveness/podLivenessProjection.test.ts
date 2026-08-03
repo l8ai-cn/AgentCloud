@@ -43,7 +43,7 @@ describe("projectPodLiveness", () => {
     ).toEqual({ state: "online", readOnly: null });
   });
 
-  it("marks running pods without control as permission-read-only", () => {
+  it("keeps running pods interactive without a terminal control lease", () => {
     expect(
       projectPodLiveness({
         podStatus: "running",
@@ -52,7 +52,7 @@ describe("projectPodLiveness", () => {
         podError: null,
         controlGranted: false,
       }),
-    ).toEqual({ state: "online", readOnly: "permission" });
+    ).toEqual({ state: "online", readOnly: null });
   });
 
   it("maps cold boot to starting", () => {
@@ -65,5 +65,17 @@ describe("projectPodLiveness", () => {
         controlGranted: false,
       }),
     ).toEqual({ state: "starting", progress: "Cloning workspace" });
+  });
+
+  it("keeps cache-miss unknown readable instead of fake starting", () => {
+    expect(
+      projectPodLiveness({
+        podStatus: "unknown",
+        isPodReady: false,
+        initProgress: null,
+        podError: null,
+        controlGranted: false,
+      }),
+    ).toEqual({ state: "unknown" });
   });
 });

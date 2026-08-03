@@ -35,7 +35,6 @@ export interface WebAgentWorkbenchService {
 export interface WebAgentWorkbenchState {
   projectionStatus(sessionId: string): string | undefined;
   resyncReason(sessionId: string): string | undefined;
-  revision(sessionId: string): bigint | undefined;
   snapshotBytes(sessionId: string): Uint8Array | undefined;
 }
 

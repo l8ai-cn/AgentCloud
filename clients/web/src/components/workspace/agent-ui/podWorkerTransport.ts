@@ -109,8 +109,40 @@ export function createPodWorkerTransport(
       const { podKey } = ref;
       const emit = () => listener(readPodLiveness(podKey, options));
       emit();
-      void usePodStore.getState().fetchPod(podKey).catch(() => undefined);
-      return usePodStore.subscribe(emit);
+      let cancelled = false;
+      void (async () => {
+        let lastError: unknown;
+        for (let attempt = 0; attempt < 8 && !cancelled; attempt += 1) {
+          try {
+            await usePodStore.getState().fetchPod(podKey);
+            if (!cancelled) emit();
+            return;
+          } catch (error) {
+            lastError = error;
+            await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
+            if (!cancelled) emit();
+          }
+        }
+        if (cancelled) return;
+        const current = readPodLiveness(podKey, options);
+        if (current.state === "online") return;
+        listener({
+          state: "unreachable",
+          cause: {
+            reason: "launch-failed",
+            detail:
+              lastError instanceof Error
+                ? lastError.message
+                : "Failed to load Worker status",
+          },
+          recovery: [],
+        });
+      })();
+      const unsub = usePodStore.subscribe(emit);
+      return () => {
+        cancelled = true;
+        unsub();
+      };
     },
   };
 }

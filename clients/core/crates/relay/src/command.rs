@@ -15,6 +15,7 @@ pub(crate) enum Command {
     Resize { cols: u16, rows: u16, force: bool },
     SendAcp { command: Value },
     AcquireControl { client_label: String },
+    ForceAcquireControl { client_label: String },
     RenewControl { lease_id: String },
     ReleaseControl { lease_id: String },
     Disconnect,
