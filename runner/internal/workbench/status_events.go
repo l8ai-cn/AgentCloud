@@ -49,37 +49,6 @@ func (m *Mapper) Permission(
 	})
 }
 
-func (m *Mapper) Log(
-	level, message string,
-) *agentworkbenchv2.RunnerWorkbenchEventBatch {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	itemID := m.nextItemIDLocked("log")
-	block := &agentworkbenchv2.ContentBlock{
-		ContentId: itemID + ":log",
-		Identity:  contentIdentity("content.log"),
-		Content: &agentworkbenchv2.ContentBlock_Log{
-			Log: &agentworkbenchv2.LogContent{Level: level, Message: message},
-		},
-	}
-	content := &agentworkbenchv2.TimelineItemContent{
-		Content: &agentworkbenchv2.TimelineItemContent_System{
-			System: &agentworkbenchv2.SystemTimelineItem{
-				Content: []*agentworkbenchv2.ContentBlock{block},
-			},
-		},
-	}
-	source := map[string]string{"level": level, "message": message}
-	return m.batchLocked(
-		source,
-		timelineMutation(
-			agentworkbenchv2.RunnerTimelineOperation_RUNNER_TIMELINE_OPERATION_APPEND,
-			itemID,
-			content,
-		),
-	)
-}
-
 func (m *Mapper) completeActiveTimelineLocked() []*agentworkbenchv2.RunnerWorkbenchMutation {
 	mutations := make([]*agentworkbenchv2.RunnerWorkbenchMutation, 0, len(m.messages)+1)
 	for role, state := range m.messages {

@@ -40,7 +40,7 @@ export default function DoAgentConsolePage() {
           domainPanel={<DoAgentGoalBar podKey={podKey} />}
           headerActions={<DoAgentWorkspaceLink podKey={podKey} />}
           locale={locale === "zh" ? "zh-CN" : "en-US"}
-          presentation="developer"
+          presentation="user"
           toolRenderers={TOOL_RENDERERS}
           workerRef={session.workerRef}
           workspaceArtifacts={session.workspaceArtifacts}
