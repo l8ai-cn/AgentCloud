@@ -7,9 +7,9 @@ image:
   repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260803-hide-system-noise
-  web: oilan-20260803-hide-system-noise
-  relay: oilan-20260803-hide-system-noise
+  backend: oilan-20260803-pty-agent-ui
+  web: oilan-20260803-pty-agent-ui
+  relay: oilan-20260803-pty-agent-ui
 rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
