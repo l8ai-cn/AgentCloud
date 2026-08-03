@@ -193,6 +193,7 @@ func (r *Runner) recoverSingleSession(state *poddaemon.PodDaemonState) (*Pod, er
 
 	// Subscribe to VT state detection events, bridge to gRPC (shared with OnCreatePod)
 	pod.SubscribeAgentStatusBridge(r.conn.SendAgentStatus)
+	wirePTYWorkbench(pod, "", r.conn, state.Agent, state.Command)
 
 	return pod, nil
 }

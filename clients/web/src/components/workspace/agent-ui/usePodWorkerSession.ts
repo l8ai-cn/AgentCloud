@@ -4,6 +4,8 @@ import { WorkerClient, type AgentSessionRuntime } from "@agent-cloud/agent-ui";
 import { useWorkerControlLease } from "@/hooks/useWorkerControlLease";
 import { usePod, usePodStore } from "@/stores/pod";
 import { createPodWorkerTransport } from "./podWorkerTransport";
+import { PodTerminalRuntime } from "./PodTerminalRuntime";
+import { subscribePodWorkbenchControlRelay } from "./podWorkbenchControlRelay";
 import { usePodWorkspaceArtifacts } from "./usePodWorkspaceArtifacts";
 
 export type PodRuntimeDecorator = (
@@ -34,6 +36,21 @@ export function usePodWorkerSession(
     () => ({ transport: "pod" as const, podKey }),
     [podKey],
   );
+
+  const terminalRuntime = useMemo(
+    () => new PodTerminalRuntime(podKey, `workbench-${controlClientLabel}`),
+    [podKey, controlClientLabel],
+  );
+
+  useEffect(() => () => terminalRuntime.close(), [terminalRuntime]);
+
+  useEffect(() => {
+    if (!liveSession) return;
+    return subscribePodWorkbenchControlRelay(
+      podKey,
+      `workbench-control-${controlClientLabel}`,
+    );
+  }, [liveSession, podKey, controlClientLabel]);
 
   /* Transport getters close over a stable latch updated in the effect below. */
   /* eslint-disable react-hooks/refs */
@@ -68,6 +85,7 @@ export function usePodWorkerSession(
   return {
     controlLease,
     liveSession,
+    terminalRuntime,
     workerClient,
     workerRef,
     workspaceArtifacts: workspaceArtifacts.artifacts,

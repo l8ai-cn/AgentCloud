@@ -98,6 +98,30 @@ describe("AgentWorkspace", () => {
     expect(screen.getByRole("tab", { name: "Terminal" })).toBeEnabled();
   });
 
+  it("opens a PTY session on its terminal and keeps the viewer's choice", async () => {
+    const snapshot = sessionSnapshot();
+    snapshot.interactionMode = "pty";
+    const { agentRuntime, terminalRuntime } = runtime(snapshot);
+
+    render(
+      <AgentWorkspace
+        runtime={agentRuntime}
+        terminalRuntime={terminalRuntime}
+        sessionId={snapshot.sessionId}
+      />,
+    );
+
+    expect(
+      await screen.findByRole("tab", { name: "Terminal", selected: true }),
+    ).toBeVisible();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Conversation" }));
+
+    expect(
+      screen.getByRole("tab", { name: "Conversation", selected: true }),
+    ).toBeVisible();
+  });
+
   it("moves artifacts into a persistent results surface", async () => {
     const snapshot = sessionSnapshot();
     snapshot.status = "idle";

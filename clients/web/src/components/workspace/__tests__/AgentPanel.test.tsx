@@ -52,6 +52,15 @@ vi.mock("@/stores/pod", () => ({
 }));
 
 vi.mock("@/stores/workspace", () => ({
+  relayPool: {
+    acquireControl: vi.fn(),
+    onStatusChange: vi.fn(() => () => undefined),
+    releaseControl: vi.fn(),
+    renewControl: vi.fn(),
+    sendResize: vi.fn(),
+    subscribe: vi.fn(async () => ({ send: vi.fn(), unsubscribe: vi.fn() })),
+    unsubscribe: vi.fn(),
+  },
   useWorkspaceStore: (
     selector: (state: {
       panes: unknown[];

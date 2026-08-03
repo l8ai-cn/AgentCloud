@@ -4,9 +4,8 @@ import { TerminalGrid } from "../TerminalGrid";
 import { useWorkspaceStore } from "@/stores/workspace";
 import type { SplitTreeNode } from "@/stores/workspace";
 
-// Mock TerminalPane component
-vi.mock("../TerminalPane", () => ({
-  TerminalPane: ({
+vi.mock("../AgentPanel", () => ({
+  AgentPanel: ({
     paneId,
     podKey,
     isActive,
@@ -336,7 +335,7 @@ describe("TerminalGrid", () => {
       expect(screen.queryByTestId("popout-pane-1")).not.toBeInTheDocument();
     });
 
-    it("should pass correct isActive prop to TerminalPane", () => {
+    it("should pass correct isActive prop to the pane", () => {
       render(<TerminalGrid />);
 
       const pane1 = screen.getByTestId("terminal-pane-pane-1");

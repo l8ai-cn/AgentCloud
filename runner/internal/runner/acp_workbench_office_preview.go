@@ -9,7 +9,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/runner/internal/workbench"
 )
 
-func (f *acpWorkbenchForwarder) queueOfficePreview(
+func (f *podWorkbenchForwarder) queueOfficePreview(
 	artifact *workbench.ArtifactDescriptor,
 ) {
 	source, ok := workbench.ResolveOfficePreviewSource(artifact)
@@ -34,7 +34,7 @@ func (f *acpWorkbenchForwarder) queueOfficePreview(
 	})
 }
 
-func (f *acpWorkbenchForwarder) convertAndPublishOfficePreview(
+func (f *podWorkbenchForwarder) convertAndPublishOfficePreview(
 	processing *workbench.ArtifactDescriptor,
 	source workbench.OfficePreviewSource,
 ) {
@@ -76,7 +76,7 @@ func (f *acpWorkbenchForwarder) convertAndPublishOfficePreview(
 	f.send(f.mapper.Artifacts([]*workbench.ArtifactDescriptor{ready}))
 }
 
-func (f *acpWorkbenchForwarder) failOfficePreview(
+func (f *podWorkbenchForwarder) failOfficePreview(
 	processing *workbench.ArtifactDescriptor,
 	err error,
 ) {
@@ -92,7 +92,7 @@ func (f *acpWorkbenchForwarder) failOfficePreview(
 	}))
 }
 
-func (f *acpWorkbenchForwarder) recordArtifactRevision(
+func (f *podWorkbenchForwarder) recordArtifactRevision(
 	artifact *workbench.ArtifactDescriptor,
 ) {
 	f.previewMu.Lock()
@@ -100,7 +100,7 @@ func (f *acpWorkbenchForwarder) recordArtifactRevision(
 	f.previewMu.Unlock()
 }
 
-func (f *acpWorkbenchForwarder) isCurrentArtifact(
+func (f *podWorkbenchForwarder) isCurrentArtifact(
 	artifact *workbench.ArtifactDescriptor,
 ) bool {
 	f.previewMu.Lock()
@@ -108,7 +108,7 @@ func (f *acpWorkbenchForwarder) isCurrentArtifact(
 	return f.latestRevision[artifact.GetArtifactId()] == artifact.GetRevision()
 }
 
-func (f *acpWorkbenchForwarder) finishOfficePreview(key string) {
+func (f *podWorkbenchForwarder) finishOfficePreview(key string) {
 	f.previewMu.Lock()
 	delete(f.converting, key)
 	f.previewMu.Unlock()

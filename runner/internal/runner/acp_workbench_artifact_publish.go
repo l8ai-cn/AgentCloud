@@ -8,7 +8,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/runner/internal/workbench"
 )
 
-func (f *acpWorkbenchForwarder) artifactPublishStarted(
+func (f *podWorkbenchForwarder) artifactPublishStarted(
 	executionID string,
 	declaration json.RawMessage,
 ) {
@@ -20,7 +20,7 @@ func (f *acpWorkbenchForwarder) artifactPublishStarted(
 	})
 }
 
-func (f *acpWorkbenchForwarder) artifactPublishFailed(
+func (f *podWorkbenchForwarder) artifactPublishFailed(
 	executionID string,
 	err error,
 ) {
@@ -32,7 +32,7 @@ func (f *acpWorkbenchForwarder) artifactPublishFailed(
 	})
 }
 
-func (f *acpWorkbenchForwarder) artifactPublished(
+func (f *podWorkbenchForwarder) artifactPublished(
 	executionID string,
 	published *workbench.PublishedArtifactDeclaration,
 ) error {

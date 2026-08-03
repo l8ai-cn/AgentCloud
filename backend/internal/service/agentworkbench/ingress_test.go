@@ -29,11 +29,27 @@ func (resolver ingressPodResolver) GetByKeyAndRunner(
 	return resolver.pod, resolver.err
 }
 
-func (resolver ingressSessionResolver) GetByPodKey(
+func (resolver ingressSessionResolver) EnsureForPod(
 	context.Context,
-	string,
+	*poddomain.Pod,
 ) (*sessiondomain.Session, error) {
 	return resolver.session, resolver.err
+}
+
+type ingressSessionEnsurer struct {
+	pod *poddomain.Pod
+}
+
+func (resolver *ingressSessionEnsurer) EnsureForPod(
+	_ context.Context,
+	pod *poddomain.Pod,
+) (*sessiondomain.Session, error) {
+	resolver.pod = pod
+	return &sessiondomain.Session{
+		ID:             "conv_ensured",
+		PodKey:         pod.PodKey,
+		OrganizationID: pod.OrganizationID,
+	}, nil
 }
 
 type ingressRepository struct {
@@ -287,6 +303,32 @@ func TestIngressRejectsRunnerThatDoesNotOwnPod(t *testing.T) {
 	require.Zero(t, materialized)
 	require.Empty(t, repo.requests)
 	require.Zero(t, publisher.count)
+}
+
+func TestIngressEnsuresSessionForAuthorizedPod(t *testing.T) {
+	repo := &ingressRepository{
+		result: domainworkbench.AppendResult{Applied: true},
+	}
+	resolver := &ingressSessionEnsurer{}
+	service, err := NewIngress(
+		resolver,
+		ingressPodResolver{pod: &poddomain.Pod{
+			PodKey: "pod-1", RunnerID: 17, OrganizationID: 9,
+		}},
+		repo,
+		&ingressPublisher{},
+		ingressArtifactMaterializer{},
+		func() string { return "stream-1" },
+	)
+	require.NoError(t, err)
+
+	err = service.Ingest(context.Background(), 17, runnerBatch(
+		statusMutation("source:1", 1, agentworkbenchv2.SessionStatus_SESSION_STATUS_RUNNING),
+	))
+
+	require.NoError(t, err)
+	require.Equal(t, "pod-1", resolver.pod.PodKey)
+	require.Equal(t, "conv_ensured", repo.request.SessionID)
 }
 
 func TestIngressRejectsPodFromAnotherOrganization(t *testing.T) {

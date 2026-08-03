@@ -144,6 +144,14 @@ func (h *RunnerMessageHandler) wireAndStartPTYPod(
 		agentMon.RegisterPod(cmd.PodKey, pod.IO.GetPID())
 	}
 	pod.SubscribeAgentStatusBridge(h.conn.SendAgentStatus)
+	wirePTYWorkbench(
+		pod,
+		cmd.Prompt,
+		h.conn,
+		cmd.AdapterId,
+		pod.Agent,
+		cmd.LaunchCommand,
+	)
 	h.sendPodCreated(cmd.PodKey, pod.IO.GetPID(), pod.SandboxPath, pod.Branch, uint16(cols), uint16(rows))
 	logger.Pod().Info(
 		"Pod created (PTY)",
