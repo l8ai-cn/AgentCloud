@@ -74,7 +74,7 @@ describe("DoAgentConsolePage", () => {
 
     const workspace = await screen.findByTestId("agent-workspace");
     expect(workspace).toHaveAttribute("data-worker-ref", "pod:pod-1");
-    expect(workspace).toHaveAttribute("data-presentation", "developer");
+    expect(workspace).toHaveAttribute("data-presentation", "user");
   });
 
   it("mounts the goal bar as a domain panel inside the workbench", async () => {

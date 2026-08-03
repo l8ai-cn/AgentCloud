@@ -18,6 +18,7 @@ import {
   permissionTitle,
   planDetail,
   projectPlanStep,
+  conversationFacingSystemBlocks,
   statusActivity,
   unsupportedTimeline,
 } from "./projectGeneratedSessionSnapshotTimelineHelpers";
@@ -133,7 +134,17 @@ export function projectTimeline(
       return;
     }
     if (content.case === "system") {
-      const blocks = projectTimelineContent(content.value.content, id, catalog);
+      const facing = conversationFacingSystemBlocks(content.value.content);
+      // Pure stderr/info log rows (tools registered, Persist retries, restore)
+      // stay on the relay channel; replaying them would re-pollute old sessions.
+      if (facing.length === 0 && content.value.content.length > 0) {
+        return;
+      }
+      const blocks = projectTimelineContent(
+        facing.length > 0 ? facing : content.value.content,
+        id,
+        catalog,
+      );
       projection.items.push({
         id,
         kind: "system",

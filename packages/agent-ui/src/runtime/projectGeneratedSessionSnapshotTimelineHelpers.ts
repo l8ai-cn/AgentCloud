@@ -1,3 +1,4 @@
+import type { ContentBlock } from "@agent-cloud/proto/agent_workbench/v2/content_pb";
 import { MessageRole } from "@agent-cloud/proto/agent_workbench/v2/session_state_pb";
 import type { PermissionRequest, PlanStep } from "@agent-cloud/proto/agent_workbench/v2/session_pb";
 
@@ -6,6 +7,18 @@ import {
   projectPlanStepStatus,
   projectSessionStatus,
 } from "./projectGeneratedSessionSnapshotStatuses";
+
+// Mirrors runner conversationFacingLogLevel — stderr/info bootstrap and
+// persistence noise must not become System rows in the conversation.
+export function conversationFacingSystemBlocks(
+  blocks: readonly ContentBlock[],
+): ContentBlock[] {
+  return blocks.filter((block) => {
+    if (block.content.case !== "log") return true;
+    const level = (block.content.value.level || "").toLowerCase();
+    return level === "warn" || level === "warning" || level === "error";
+  });
+}
 
 export function projectPlanStep(step: PlanStep): AgentPlanStep {
   return {
