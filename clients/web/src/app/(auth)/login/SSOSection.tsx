@@ -4,19 +4,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { SSODiscoverConfig } from "@/lib/api/connect/ssoConnect";
-import { getOAuthBaseUrl } from "@/lib/env";
+import { buildSsoAuthUrl } from "@/lib/preferred-sso";
 import { useTranslations } from "next-intl";
 
 interface SSOSectionProps {
   ssoConfigs: SSODiscoverConfig[];
   onLdapSubmit: (username: string, password: string) => void;
   ldapLoading: boolean;
-}
-
-function getSSOAuthURL(domain: string, protocol: string, redirect?: string): string {
-  const base = getOAuthBaseUrl();
-  const params = redirect ? `?redirect=${encodeURIComponent(redirect)}` : "";
-  return `${base}/api/v1/auth/sso/${encodeURIComponent(domain)}/${encodeURIComponent(protocol)}${params}`;
 }
 
 export function SSOSection({ ssoConfigs, onLdapSubmit, ldapLoading }: SSOSectionProps) {
@@ -31,7 +25,7 @@ export function SSOSection({ ssoConfigs, onLdapSubmit, ldapLoading }: SSOSection
   );
 
   const handleSSORedirect = (config: SSODiscoverConfig) => {
-    window.location.assign(getSSOAuthURL(config.domain, config.protocol));
+    window.location.assign(buildSsoAuthUrl(config.domain, config.protocol));
   };
 
   return (
