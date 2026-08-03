@@ -52,8 +52,6 @@ export const defaultWebAgentWorkbenchRuntimeDeps:
         getAgentWorkbenchState().projectionStatus(sessionId),
       resyncReason: (sessionId) =>
         getAgentWorkbenchState().resyncReason(sessionId),
-      revision: (sessionId) =>
-        getAgentWorkbenchState().revision(sessionId),
       snapshotBytes: (sessionId) =>
         getAgentWorkbenchState().snapshotBytes(sessionId),
     },

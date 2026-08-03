@@ -6,15 +6,25 @@ const mocks = vi.hoisted(() => ({
   podStatus: "initializing",
   resolveCalls: 0,
   lastReadOnly: null as boolean | null,
+  relaySubscribe: vi.fn(async () => undefined),
+  relayUnsubscribe: vi.fn(),
   workspaceArtifacts: [{
     artifactId: "workspace:output/final.mp4",
     filename: "final.mp4",
   }],
 }));
 
+vi.mock("@/stores/relayConnection", () => ({
+  relayPool: {
+    subscribe: mocks.relaySubscribe,
+    unsubscribe: mocks.relayUnsubscribe,
+  },
+}));
+
 vi.mock("@/hooks/useWorkerControlLease", () => ({
   useWorkerControlLease: () => ({
     acquire: vi.fn(),
+    forceAcquire: vi.fn(),
     acquiring: false,
     connected: false,
     error: null,
@@ -148,6 +158,8 @@ describe("AgentPanel worker shell", () => {
     mocks.podStatus = "initializing";
     mocks.resolveCalls = 0;
     mocks.lastReadOnly = null;
+    mocks.relaySubscribe.mockClear();
+    mocks.relayUnsubscribe.mockClear();
   });
 
   it.each(["completed", "orphaned"])(
@@ -170,6 +182,7 @@ describe("AgentPanel worker shell", () => {
       expect(workspace).toHaveAttribute("data-worker-ref", "pod:pod-1");
       expect(mocks.presentation).toBe("developer");
       expect(screen.queryByTestId("control-overlay")).not.toBeInTheDocument();
+      expect(mocks.relaySubscribe).not.toHaveBeenCalled();
     },
   );
 
@@ -188,6 +201,12 @@ describe("AgentPanel worker shell", () => {
     await screen.findByTestId("agent-workspace");
     expect(mocks.presentation).toBe("developer");
     expect(screen.getByTestId("control-overlay")).toBeInTheDocument();
+    // Without this subscription the control lease can never be acquired.
+    expect(mocks.relaySubscribe).toHaveBeenCalledWith(
+      "pod-1",
+      expect.stringContaining("workbench-"),
+      expect.any(Function),
+    );
   });
 
   it("keeps the loading state before the Worker is readable", async () => {

@@ -109,6 +109,12 @@ fn apply_event(
             snapshot.history.push(timeline_item(envelope, &content));
         }
     }
+    // The backend derives active_turn_id from the same envelope field; a reducer
+    // that skipped it would rebuild a snapshot that conflicts with the server's
+    // at an identical cursor, which wedges the session on every reconnect.
+    if let Some(turn_id) = envelope.turn_id.as_ref().filter(|value| !value.is_empty()) {
+        snapshot.active_turn_id = Some(turn_id.clone());
+    }
     Ok(())
 }
 

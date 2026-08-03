@@ -129,7 +129,9 @@ export class WebAgentWorkbenchRuntime implements AgentSessionRuntime {
 
   loadOlder(sessionId: string): Promise<void> {
     this.assertSession(sessionId);
-    return Promise.reject(new Error("agent_workbench_history_not_implemented"));
+    // Workbench snapshots already ship the retained timeline; pagination is
+    // not wired yet. Resolve so auto-load-older does not paint a fatal banner.
+    return Promise.resolve();
   }
 
   private async execute(

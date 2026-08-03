@@ -6,6 +6,9 @@ import type {
 } from "./webAgentWorkbenchRuntimeTypes";
 
 const RECONNECT_DELAYS = [0, 250, 1_000, 2_000, 4_000];
+// A stream that survives this long counts as a healthy connection rather than
+// one more failure, so idle proxy cuts cannot exhaust the retry budget.
+const STABLE_STREAM_MS = 10_000;
 
 export interface WebAgentWorkbenchConnectionState {
   connection: AgentConnectionStatus;
@@ -22,7 +25,6 @@ export class WebAgentWorkbenchConnection {
     generation: number;
     promise: Promise<void>;
   } | null = null;
-  private lastProgressRevision = BigInt(0);
 
   constructor(
     private readonly deps: WebAgentWorkbenchRuntimeDeps,
@@ -62,9 +64,11 @@ export class WebAgentWorkbenchConnection {
       this.sessionId,
     );
     if (!this.isCurrent(generation)) return;
-    this.recordProgress();
     this.update("connected", null);
-    if (!this.live) return;
+    if (!this.live) {
+      this.reconnectAttempts = 0;
+      return;
+    }
     const cycle = ++this.streamCycle;
     const stream = await this.deps.service.streamSessionDeltasConnect(
       access.orgSlug,
@@ -81,6 +85,16 @@ export class WebAgentWorkbenchConnection {
       return;
     }
     this.stream = stream;
+    void this.clearRetryBudgetWhenStable(generation, cycle);
+  }
+
+  private async clearRetryBudgetWhenStable(
+    generation: number,
+    cycle: number,
+  ): Promise<void> {
+    await this.deps.sleep(STABLE_STREAM_MS);
+    if (!this.isStreamCurrent(generation, cycle)) return;
+    this.reconnectAttempts = 0;
   }
 
   private handleCommit(generation: number, cycle: number): void {
@@ -93,7 +107,6 @@ export class WebAgentWorkbenchConnection {
       );
       return;
     }
-    this.recordProgress();
     this.update("connected", null);
   }
 
@@ -144,13 +157,6 @@ export class WebAgentWorkbenchConnection {
       }
     }
     if (this.isCurrent(generation)) this.update("disconnected", error);
-  }
-
-  private recordProgress(): void {
-    const revision = this.deps.state.revision(this.sessionId) ?? BigInt(0);
-    if (revision <= this.lastProgressRevision) return;
-    this.lastProgressRevision = revision;
-    this.reconnectAttempts = 0;
   }
 
   private update(

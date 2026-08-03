@@ -15,13 +15,7 @@ func (m *Mapper) ToolUpdate(
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.setExternalSessionLocked(sessionID)
-	identity, category, ok := resolveToolIdentity(m.sourceProtocol, update.ToolName)
-	if !ok {
-		return m.batchLocked(
-			update,
-			m.unsupportedMutationLocked("tool.unknown", stringPayload(update)),
-		)
-	}
+	identity, category := resolveToolIdentity(m.sourceProtocol, update.ToolName)
 	phase, ok := toolPhase(update.Status)
 	if !ok {
 		return m.batchLocked(
@@ -59,13 +53,7 @@ func (m *Mapper) ToolResult(
 	m.setExternalSessionLocked(sessionID)
 	execution := m.tools[result.ToolCallID]
 	if execution == nil {
-		identity, category, ok := resolveToolIdentity(m.sourceProtocol, result.ToolName)
-		if !ok {
-			return m.batchLocked(
-				result,
-				m.unsupportedMutationLocked("tool.unknown", stringPayload(result)),
-			)
-		}
+		identity, category := resolveToolIdentity(m.sourceProtocol, result.ToolName)
 		execution = &agentworkbenchv2.ToolExecution{
 			ExecutionId: result.ToolCallID,
 			Identity:    identity,

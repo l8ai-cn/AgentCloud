@@ -23,6 +23,7 @@ import {
   unsupportedTimeline,
 } from "./projectGeneratedSessionSnapshotTimelineHelpers";
 import { projectToolExecution } from "./projectGeneratedSessionSnapshotTool";
+import { projectUnsupportedTimeline } from "./projectGeneratedSessionSnapshotUnsupported";
 export interface TimelineProjection {
   items: AgentTimelineItem[];
   latestUserCommandId?: string;
@@ -155,7 +156,9 @@ export function projectTimeline(
       projection.items.push(...blocks.attachments, ...blocks.artifacts, ...blocks.evidence);
       return;
     }
-    projection.items.push(unsupportedTimeline(id, formatUnsupported(content.value)));
+    if (content.case === "unsupported") {
+      projection.items.push(...projectUnsupportedTimeline(id, content.value));
+    }
   });
   return projection;
 }

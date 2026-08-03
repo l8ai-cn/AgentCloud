@@ -81,6 +81,12 @@ func applyProjectedEvent(
 	default:
 		return ErrInvalidBatch
 	}
+	// Every snapshot field must be reachable from the delta stream, otherwise a
+	// client that replays the events rebuilds a snapshot that conflicts with
+	// this one at the same cursor.
+	if turnID := envelope.GetTurnId(); turnID != "" {
+		snapshot.ActiveTurnId = stringPointer(turnID)
+	}
 	return nil
 }
 
