@@ -392,6 +392,8 @@
         "standard": "Standard size",
         "large": "Large size",
         "noRuntimeImage": "No runtime environment is available",
+        "runtimeImageDisabled": "This runtime environment is disabled",
+        "noOnlineRunner": "No online cluster supports this Worker type",
         "dedicatedUnavailable": "Dedicated resources require an additional node",
         "computeTargetDisabled": "This run location is unavailable",
         "noTargetForMode": "No run location supports this resource mode",

@@ -37,7 +37,8 @@
     "disconnected": "Disconnected",
     "pageNotFound": "お探しのページは存在しないか、移動されました。",
     "backToHome": "ホームに戻る",
-    "undo": "元に戻す"
+    "undo": "元に戻す",
+    "manage": "管理"
   },
   "apiErrors": {
     "ACCESS_DENIED": "Access denied",

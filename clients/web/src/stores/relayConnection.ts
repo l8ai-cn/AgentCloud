@@ -80,6 +80,10 @@ class RelayConnectionPool {
     await this.mgr().acquire_control(podKey, clientLabel);
   }
 
+  async forceAcquireControl(podKey: string, clientLabel: string): Promise<void> {
+    await this.mgr().force_acquire_control(podKey, clientLabel);
+  }
+
   async renewControl(podKey: string, leaseId: string): Promise<void> {
     await this.mgr().renew_control(podKey, leaseId);
   }

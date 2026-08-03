@@ -11,7 +11,6 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/knowledgebase"
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra/gitea"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/crypto"
-	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
 )
 
 var (
@@ -58,12 +57,9 @@ func (s *Service) Create(ctx context.Context, p *CreateParams) (*knowledgebase.K
 		return nil, fmt.Errorf("%w: unknown source_type %q", ErrInvalidInput, sourceType)
 	}
 
-	slug, err := slugkit.GenerateUnique(ctx, p.Name, slugkit.FromExistsCheck(
-		func(ctx context.Context, candidate string) (bool, error) {
-			return s.repo.SlugExists(ctx, p.OrganizationID, candidate)
-		}))
+	slug, err := s.EnsureUniqueSlug(ctx, p.OrganizationID, p.Name)
 	if err != nil {
-		return nil, fmt.Errorf("%w: cannot derive slug from name: %v", ErrInvalidInput, err)
+		return nil, err
 	}
 
 	const branch = "main"

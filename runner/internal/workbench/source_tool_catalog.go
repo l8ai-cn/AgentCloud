@@ -20,6 +20,10 @@ var commonTools = map[string]toolDescriptor{
 	"fileChange":                 {"filesystem.change", "filesystem"},
 	"Grep":                       {"filesystem.search", "filesystem"},
 	"grep":                       {"filesystem.search", "filesystem"},
+	"Glob":                       {"filesystem.search", "filesystem"},
+	"glob":                       {"filesystem.search", "filesystem"},
+	"LS":                         {"filesystem.search", "filesystem"},
+	"list_files":                 {"filesystem.search", "filesystem"},
 	"WebFetch":                   {"web.fetch", "web"},
 	"WebSearch":                  {"web.search", "web"},
 	"AskUserQuestion":            {"interaction.question", "interaction"},
@@ -34,7 +38,6 @@ var commonTools = map[string]toolDescriptor{
 	"image_generation_call":      {"media.image.generate", "media"},
 	"workbench.publish_artifact": {"artifact.publish", "artifact"},
 	"TodoWrite":                  {"plan.todo", "plan"},
-	"glob":                       {"filesystem.search", "filesystem"},
 	"ExecuteCode":                {"code.interpret", "code"},
 }
 

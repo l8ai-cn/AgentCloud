@@ -8,9 +8,10 @@ import (
 const (
 	ControlLeaseType = "control_lease"
 
-	ControlLeaseActionAcquire = "acquire"
-	ControlLeaseActionRenew   = "renew"
-	ControlLeaseActionRelease = "release"
+	ControlLeaseActionAcquire      = "acquire"
+	ControlLeaseActionForceAcquire = "force_acquire"
+	ControlLeaseActionRenew        = "renew"
+	ControlLeaseActionRelease      = "release"
 
 	ControlLeaseStatusGranted  = "granted"
 	ControlLeaseStatusBusy     = "busy"

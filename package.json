@@ -8,6 +8,7 @@
     "worker-specs:sync": "node scripts/generate-worker-type-specs.mjs",
     "worker-specs:check": "node scripts/generate-worker-type-specs.mjs --check",
     "worker-runtime:check": "node scripts/verify-managed-worker-runtime-config.mjs",
+    "worker-runtime:verify-digests": "node scripts/verify-runtime-catalog-digests.mjs",
     "proto:gen-ts": "buf generate",
     "proto:gen-go": "bash scripts/proto-gen-go.sh",
     "proto:gen-amesh": "bash scripts/sync-amesh-convert.sh",

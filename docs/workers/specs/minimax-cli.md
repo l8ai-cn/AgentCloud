@@ -11,7 +11,9 @@
 
 ## Runtime image
 
-not present in runtime catalog lock
+`minimax-cli-stable` enabled=true availability=locked_available
+
+`repo.aiedulab.cn:8443/agentsmesh/runner-minimax-cli@sha256:2dc2c7cfa8be8eb0d095a4af9a1a1eda9ce4f1a190dd11493ae26cb1d04fbf6f`
 
 ## CONFIG fields
 

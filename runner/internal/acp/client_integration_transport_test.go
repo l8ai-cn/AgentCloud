@@ -55,6 +55,43 @@ func TestACPTransport_WaitResponse_Timeout(t *testing.T) {
 	}
 }
 
+func TestACPTransport_WaitPromptResponse_NoTimeoutIdle(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	transport := NewACPTransport(EventCallbacks{}, slog.Default())
+	transport.Initialize(ctx, os.Stdout, os.Stdin, nil)
+
+	pr := &PendingRequest{
+		ID: NextRequestID(),
+		ch: make(chan *JSONRPCResponse, 1),
+	}
+	transport.tracker.pendingMu.Lock()
+	transport.tracker.pending[pr.ID] = pr.ch
+	transport.tracker.pendingMu.Unlock()
+
+	done := make(chan error, 1)
+	go func() {
+		_, err := transport.tracker.WaitPromptResponse(pr)
+		done <- err
+	}()
+
+	select {
+	case <-done:
+		t.Fatal("WaitPromptResponse returned before context cancel")
+	case <-time.After(50 * time.Millisecond):
+	}
+	cancel()
+	err := <-done
+	if err == nil {
+		t.Fatal("expected context cancel error")
+	}
+	transport.tracker.pendingMu.Lock()
+	_, stillPending := transport.tracker.pending[pr.ID]
+	transport.tracker.pendingMu.Unlock()
+	if stillPending {
+		t.Fatal("pending request should be cleared after context cancel")
+	}
+}
+
 func TestACPTransport_WaitResponse_ContextCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	transport := NewACPTransport(EventCallbacks{}, slog.Default())

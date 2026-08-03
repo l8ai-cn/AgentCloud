@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "worker_slug": "video-studio",
-  "runtime_catalog_revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
   "image_reference": "repo.aiedulab.cn:8443/agentcloud/runner-video-studio@sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d",
   "image_digest": "sha256:4f243b28b02b105659cf31af0f53aa49c01effc20df60080e5334cebafce8b5d",
   "status": "available",

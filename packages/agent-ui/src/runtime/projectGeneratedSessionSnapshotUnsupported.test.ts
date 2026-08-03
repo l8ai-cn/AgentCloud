@@ -40,7 +40,40 @@ describe("projectUnsupportedTimeline", () => {
         title: payload.toolName,
         detail: "FOUND",
         status: "completed",
-        identity: expect.objectContaining({ semanticKey: "tool.custom" }),
+        identity: expect.objectContaining({ semanticKey: "shell.execute" }),
+      }),
+    ]);
+  });
+
+  it("maps historical list_files unknowns onto filesystem.search", () => {
+    const payload = {
+      toolCallId: "call-2",
+      toolName: "list_files",
+      status: "failed",
+      argumentsJson: "",
+    };
+    const value = create(UnsupportedValueSchema, {
+      identity: create(ContentIdentitySchema, {
+        namespace: "agentcloud.acp",
+        semanticKey: "tool.unknown",
+        schemaVersion: "1",
+      }),
+      reason: UnsupportedReason.UNKNOWN,
+      payload: create(StructuredPayloadSchema, {
+        mediaType: "text/plain",
+        data: new TextEncoder().encode(JSON.stringify(payload)),
+      }),
+    });
+
+    const items = projectUnsupportedTimeline("item-list", value);
+    expect(items).toEqual([
+      expect.objectContaining({
+        kind: "tool",
+        title: "list_files",
+        status: "failed",
+        identity: expect.objectContaining({
+          semanticKey: "filesystem.search",
+        }),
       }),
     ]);
   });

@@ -41,7 +41,7 @@ func (service *Service) listWorkerTypeOptions(
 			if !errors.Is(err, specservice.ErrInvalidDraft) {
 				return nil, err
 			}
-			option.BlockingReason = err.Error()
+			option.BlockingReason = BlockingReason(err.Error())
 			options = append(options, option)
 			continue
 		}
@@ -65,7 +65,7 @@ func (service *Service) listWorkerTypeOptions(
 		option.CredentialRequirements, option.ConfigDocumentRequirements =
 			workerDefinitionRequirements(definition)
 		if !hasEnabledRuntimeImage(service.catalog, agent.Slug) {
-			option.BlockingReason = "No runtime image is available for this worker type"
+			option.BlockingReason = BlockingRuntimeImageMissing
 			options = append(options, option)
 			continue
 		}
@@ -79,7 +79,7 @@ func (service *Service) listWorkerTypeOptions(
 			)
 		}
 		if !available {
-			option.BlockingReason = "No online Runner currently supports this worker type"
+			option.BlockingReason = BlockingNoOnlineRunner
 			options = append(options, option)
 			continue
 		}

@@ -392,6 +392,8 @@
         "standard": "标准规格",
         "large": "大规格",
         "noRuntimeImage": "没有可用的运行环境",
+        "runtimeImageDisabled": "该运行环境已停用",
+        "noOnlineRunner": "没有在线集群支持该 Worker 类型",
         "dedicatedUnavailable": "独占资源需要额外部署节点",
         "computeTargetDisabled": "这个运行位置当前不可用",
         "noTargetForMode": "没有运行位置支持这种资源使用方式",

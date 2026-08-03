@@ -5,6 +5,7 @@ interface RelayTerminalControlBarProps {
   hasControl: boolean;
   connected: boolean;
   acquiring: boolean;
+  busy?: boolean;
   onAcquire: () => void;
 }
 
@@ -12,12 +13,13 @@ export function RelayTerminalControlBar({
   hasControl,
   connected,
   acquiring,
+  busy = false,
   onAcquire,
 }: RelayTerminalControlBarProps) {
   return (
     <div className="safe-bottom flex min-h-12 items-center justify-between border-t border-border/60 px-3 py-2">
       <span className="text-xs text-muted-foreground">
-        {hasControl ? "正在控制此 Worker" : "只读观察"}
+        {hasControl ? "正在控制此 Worker" : busy ? "另一台设备正在控制" : "只读观察"}
       </span>
       {hasControl ? (
         <span className="text-xs font-medium text-success">输入已启用</span>
@@ -33,7 +35,7 @@ export function RelayTerminalControlBar({
           ) : (
             <LockKeyhole className="h-3.5 w-3.5" />
           )}
-          接管输入
+          解锁
         </button>
       )}
     </div>

@@ -10,6 +10,7 @@ jq -r '.revision' "$LOCK" | grep -Eq '.+'
 jq -c '.images[]' "$LOCK" | while IFS= read -r image; do
   reference="$(jq -r '.reference' <<<"$image")"
   digest="$(jq -r '.digest' <<<"$image")"
+  enabled="$(jq -r '.enabled' <<<"$image")"
   jq -r '.worker_type_slugs[]' <<<"$image" | while IFS= read -r slug; do
     probe="${PROBES}/${slug}.json"
     jq -e --arg slug "$slug" --arg reference "$reference" --arg digest "$digest" '
@@ -22,6 +23,14 @@ jq -c '.images[]' "$LOCK" | while IFS= read -r image; do
       (.output | type == "string") and
       (.observed_at | type == "string" and length > 0)
     ' "$probe" >/dev/null
+    # Release gate: an enabled entry with an unpullable digest fails only when a
+    # user creates a Pod, so the lock may not enable a digest without evidence.
+    if [[ "$enabled" == "true" ]]; then
+      jq -e '.status == "available"' "$probe" >/dev/null || {
+        printf '%s: enabled runtime image has no available probe\n' "$slug" >&2
+        exit 1
+      }
+    fi
     printf '%s: runtime lock probe verified\n' "$slug"
   done
 done

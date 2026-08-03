@@ -130,6 +130,17 @@ export class EmbeddedTerminalRuntime implements TerminalRuntime {
     ) as Promise<TerminalControlLease>;
   }
 
+  forceAcquireControl(
+    resourceId: string,
+    clientLabel: string,
+  ): Promise<TerminalControlLease> {
+    return this.requestControl(
+      resourceId,
+      "force_acquire",
+      clientLabel,
+    ) as Promise<TerminalControlLease>;
+  }
+
   renewControl(resourceId: string, leaseId: string): Promise<void> {
     this.requireLease(resourceId, leaseId);
     return this.requestControl(resourceId, "renew", leaseId) as Promise<void>;
@@ -142,7 +153,7 @@ export class EmbeddedTerminalRuntime implements TerminalRuntime {
 
   private requestControl(
     resourceId: string,
-    action: "acquire" | "renew" | "release",
+    action: "acquire" | "force_acquire" | "renew" | "release",
     value: string,
   ): Promise<TerminalControlLease | void> {
     const connection = this.requireConnected(resourceId);

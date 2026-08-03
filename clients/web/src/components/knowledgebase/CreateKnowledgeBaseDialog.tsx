@@ -23,6 +23,8 @@ import {
   syncKnowledgeBase,
   type KnowledgeBase,
 } from "@/lib/api/facade/knowledgeBaseApi";
+import { getErrorStatus } from "@/lib/errors/serviceError";
+import { safeServiceErrorMessage } from "@/lib/errors/safeServiceErrorMessage";
 import { SourceConfigFields } from "./SourceConfigFields";
 import {
   KB_SOURCE_OPTIONS,
@@ -105,7 +107,11 @@ export function CreateKnowledgeBaseDialog({
       onOpenChange(false);
       onCreated(kb);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "创建知识库失败");
+      if (getErrorStatus(err) === 404) {
+        setError("知识库服务未启用：请确认内部 Gitea（KB_GITEA_*）已配置并重启 backend");
+      } else {
+        setError(safeServiceErrorMessage(err, "创建知识库失败"));
+      }
     } finally {
       setSubmitting(false);
     }

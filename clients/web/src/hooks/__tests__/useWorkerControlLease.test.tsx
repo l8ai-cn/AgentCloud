@@ -4,6 +4,7 @@ import { useWorkerControlLease } from "../useWorkerControlLease";
 
 const mocks = vi.hoisted(() => ({
   acquireControl: vi.fn(),
+  forceAcquireControl: vi.fn(),
   renewControl: vi.fn(),
   releaseControl: vi.fn(),
   relay: {
@@ -16,6 +17,7 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/stores/relayConnection", () => ({
   relayPool: {
     acquireControl: mocks.acquireControl,
+    forceAcquireControl: mocks.forceAcquireControl,
     renewControl: mocks.renewControl,
     releaseControl: mocks.releaseControl,
   },
@@ -35,6 +37,7 @@ describe("useWorkerControlLease", () => {
       controlLease: { status: "observer" },
     };
     mocks.acquireControl.mockResolvedValue(undefined);
+    mocks.forceAcquireControl.mockResolvedValue(undefined);
     mocks.renewControl.mockResolvedValue(undefined);
     mocks.releaseControl.mockResolvedValue(undefined);
   });
@@ -44,10 +47,22 @@ describe("useWorkerControlLease", () => {
       useWorkerControlLease("pod-1", "mobile"),
     );
 
-    expect(mocks.acquireControl).not.toHaveBeenCalled();
+    expect(mocks.forceAcquireControl).not.toHaveBeenCalled();
     await act(() => result.current.acquire());
 
-    expect(mocks.acquireControl).toHaveBeenCalledWith("pod-1", "mobile");
+    expect(mocks.forceAcquireControl).toHaveBeenCalledWith("pod-1", "mobile");
+    expect(mocks.acquireControl).not.toHaveBeenCalled();
+  });
+
+  it("force-acquires control after an explicit unlock action", async () => {
+    const { result } = renderHook(() =>
+      useWorkerControlLease("pod-1", "mobile"),
+    );
+
+    await act(() => result.current.forceAcquire());
+
+    expect(mocks.forceAcquireControl).toHaveBeenCalledWith("pod-1", "mobile");
+    expect(mocks.acquireControl).not.toHaveBeenCalled();
   });
 
   it("renews a granted lease before it expires", async () => {

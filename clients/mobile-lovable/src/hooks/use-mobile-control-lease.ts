@@ -4,13 +4,14 @@ const RENEW_AHEAD_MS = 10_000;
 const MIN_RENEW_DELAY_MS = 5_000;
 
 export interface RelayLease {
-  status: "observer" | "acquiring" | "granted";
+  status: "observer" | "acquiring" | "granted" | "busy";
   leaseId?: string;
   expiresAt?: number;
 }
 
 export interface MobileRelayControl {
   acquire_control(podKey: string, clientLabel: string): Promise<void>;
+  force_acquire_control(podKey: string, clientLabel: string): Promise<void>;
   renew_control(podKey: string, leaseId: string): Promise<void>;
   release_control(podKey: string, leaseId: string): Promise<void>;
 }
@@ -40,7 +41,7 @@ export function useMobileControlLease(
     setAcquiring(true);
     setError(null);
     try {
-      await relay.acquire_control(podKey, "mobile");
+      await relay.force_acquire_control(podKey, "mobile");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "无法接管输入");
     } finally {

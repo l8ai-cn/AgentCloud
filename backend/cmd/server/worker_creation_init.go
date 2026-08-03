@@ -43,6 +43,14 @@ func initializeWorkerServices(
 	if err != nil {
 		return workerServices{}, fmt.Errorf("load Worker runtime catalog: %w", err)
 	}
+	override, err := workerruntime.LoadCatalogOverride(cfg.WorkerRuntimeCatalogOverride)
+	if err != nil {
+		return workerServices{}, fmt.Errorf("load Worker runtime catalog override: %w", err)
+	}
+	catalog, err = catalog.WithOverride(override)
+	if err != nil {
+		return workerServices{}, fmt.Errorf("apply Worker runtime catalog override: %w", err)
+	}
 	creation := initializeWorkerCreationService(
 		db,
 		definitions,

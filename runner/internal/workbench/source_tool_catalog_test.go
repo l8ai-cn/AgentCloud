@@ -30,6 +30,12 @@ func TestResolveToolIdentity_UnknownFallsBackToCustom(t *testing.T) {
 	require.Equal(t, "agentcloud.acp", identity.GetNamespace())
 }
 
+func TestResolveToolIdentity_ListFiles(t *testing.T) {
+	identity, category := resolveToolIdentity("acp", "list_files")
+	require.Equal(t, "filesystem", category)
+	require.Equal(t, "filesystem.search", identity.GetSemanticKey())
+}
+
 func TestResolveToolIdentity_CaseInsensitive(t *testing.T) {
 	identity, category := resolveToolIdentity("codex", "bash")
 	require.Equal(t, "shell", category)

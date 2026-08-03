@@ -70,12 +70,14 @@ func (t *ACPTransport) SendPrompt(sessionID, prompt string) error {
 
 	// Wait for the RPC response in the background;
 	// actual content arrives via session/update notifications.
-	// When the response arrives, transition to idle (standard ACP has no session/complete).
+	// Only a real prompt reply ends the turn — never a wall-clock timeout.
 	go func() {
-		resp, err := t.tracker.WaitResponse(pr, 5*time.Minute)
+		resp, err := t.tracker.WaitPromptResponse(pr)
 		if err != nil {
 			t.logger.Error("prompt response error", "error", err)
-		} else if resp.Error != nil {
+			return
+		}
+		if resp.Error != nil {
 			t.logger.Error("prompt error",
 				"code", resp.Error.Code, "message", resp.Error.Message)
 		} else {
@@ -83,7 +85,6 @@ func (t *ACPTransport) SendPrompt(sessionID, prompt string) error {
 			// accumulated usage on the processing→idle transition.
 			t.emitPromptUsage(sessionID, resp.Result)
 		}
-		// Prompt response means the agent finished this turn.
 		if t.handler.callbacks.OnStateChange != nil {
 			t.handler.callbacks.OnStateChange(StateIdle)
 		}

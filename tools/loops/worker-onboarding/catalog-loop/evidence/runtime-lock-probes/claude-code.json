@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
   "worker_slug": "claude-code",
-  "runtime_catalog_revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
-  "image_reference": "repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f",
-  "image_digest": "sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f",
-  "status": "not_found",
-  "exit_code": 1,
-  "output": "Error response from daemon: failed to resolve reference \"repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f\": repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f: not found",
-  "observed_at": "2026-07-13T00:28:42.106Z"
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "image_reference": "repo.aiedulab.cn:8443/agentsmesh/runner-claude-code@sha256:20c2ab259b813f3f5187ebe8afc382d19da2e7f68fe9916191f9626fe69fa119",
+  "image_digest": "sha256:20c2ab259b813f3f5187ebe8afc382d19da2e7f68fe9916191f9626fe69fa119",
+  "status": "available",
+  "exit_code": 0,
+  "output": "Pulled the exact digest for linux/amd64 and ran the declared executable offline: /usr/local/bin/claude reported 2.1.212 (Claude Code). Image label org.opencontainers.image.revision=61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d.",
+  "observed_at": "2026-08-03T09:18:40Z",
+  "platform": "linux/amd64"
 }

@@ -3,9 +3,8 @@ import type { PodData } from "@/lib/api";
 export type Pod = PodData;
 
 export const SIDEBAR_STATUS_MAP: Record<string, string> = {
-  mine: "running,initializing",
-  org: "running,initializing",
-  completed: "terminated,failed,paused,completed,error",
+  running: "running,initializing",
+  stopped: "terminated,failed,paused,completed,error,orphaned",
 };
 export const SIDEBAR_PAGE_SIZE = 20;
 

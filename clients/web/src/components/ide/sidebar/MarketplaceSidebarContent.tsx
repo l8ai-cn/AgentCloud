@@ -1,13 +1,12 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, Blocks, Store } from "lucide-react";
+import { Blocks } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useCurrentOrg } from "@/stores/auth";
 
 const links = [
-  { icon: Store, label: "应用市场", path: "marketplace" },
   { icon: Blocks, label: "组织技能库", path: "skills" },
 ];
 
@@ -20,9 +19,9 @@ export function MarketplaceSidebarContent({ className }: { className?: string })
   return (
     <div className={cn("flex h-full flex-col", className)}>
       <div className="border-b border-border p-3">
-        <h2 className="text-sm font-semibold">市场</h2>
+        <h2 className="text-sm font-semibold">Skill 市场</h2>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          为当前组织启用开箱即用的伙伴应用与能力组件。
+          浏览并安装 Agent 可用的 Skill。
         </p>
       </div>
       <div className="flex-1 space-y-0.5 p-2">

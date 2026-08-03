@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "worker_slug": "hermes",
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "image_reference": "repo.aiedulab.cn:8443/agentsmesh/runner-hermes@sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196",
+  "image_digest": "sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196",
+  "platform": "linux/amd64",
+  "status": "available",
+  "exit_code": 0,
+  "output": "Pulled the exact digest for linux/amd64 and ran the declared executable offline: /usr/local/bin/hermes reported Hermes Agent v0.18.2 (2026.7.7.2). Image label org.opencontainers.image.revision=61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d.",
+  "observed_at": "2026-08-03T09:53:22Z"
+}

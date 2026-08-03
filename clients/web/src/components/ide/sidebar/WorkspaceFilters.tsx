@@ -2,17 +2,16 @@
 
 import { cn } from "@/lib/utils";
 
-export type FilterType = "mine" | "org" | "completed";
+export type FilterType = "running" | "stopped";
 
 interface WorkspaceFiltersProps {
   filter: FilterType;
   onFilterChange: (filter: FilterType) => void;
   t: (key: string) => string;
-  isAdmin?: boolean;
 }
 
-export function WorkspaceFilters({ filter, onFilterChange, t, isAdmin }: WorkspaceFiltersProps) {
-  const filters: FilterType[] = isAdmin ? ["mine", "org", "completed"] : ["mine", "completed"];
+export function WorkspaceFilters({ filter, onFilterChange, t }: WorkspaceFiltersProps) {
+  const filters: FilterType[] = ["running", "stopped"];
 
   return (
     <div className="flex items-center gap-1 px-2 py-1 bg-surface-muted/30">

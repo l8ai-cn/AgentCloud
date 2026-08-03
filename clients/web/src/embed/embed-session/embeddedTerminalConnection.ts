@@ -1,6 +1,6 @@
 import type { TerminalControlLease } from "@agent-cloud/agent-ui";
 
-export type ControlAction = "acquire" | "renew" | "release";
+export type ControlAction = "acquire" | "force_acquire" | "renew" | "release";
 
 export interface PendingControl {
   action: ControlAction;

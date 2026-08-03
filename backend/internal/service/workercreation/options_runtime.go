@@ -11,9 +11,9 @@ func computeTargetOptions(catalog runtimedomain.Catalog) []ComputeTargetOption {
 	for _, target := range targets {
 		option := ComputeTargetOption{Target: target, Selectable: target.Enabled}
 		if !target.Enabled {
-			option.BlockingReason = target.DisabledReason
+			option.BlockingReason = BlockingReason(target.DisabledReason)
 			if option.BlockingReason == "" {
-				option.BlockingReason = "Compute target is disabled"
+				option.BlockingReason = BlockingComputeTargetDisabled
 			}
 		}
 		options = append(options, option)
@@ -55,17 +55,17 @@ func deploymentModeOption(
 				return option
 			}
 		}
-		option.BlockingReason = "No enabled compute target supports this deployment mode"
+		option.BlockingReason = BlockingNoTargetForMode
 		return option
 	}
 	target := catalog.Target(*computeTargetID)
 	if target == nil || !target.Enabled {
-		option.BlockingReason = "Selected compute target is unavailable"
+		option.BlockingReason = BlockingSelectedTargetMissing
 		return option
 	}
 	option.Selectable = supportsDeploymentMode(*target, mode)
 	if !option.Selectable {
-		option.BlockingReason = "Selected compute target does not support this deployment mode"
+		option.BlockingReason = BlockingTargetModeUnsupported
 	}
 	return option
 }
@@ -76,7 +76,7 @@ func resourceProfileOptions(catalog runtimedomain.Catalog) []ResourceProfileOpti
 	for _, profile := range profiles {
 		option := ResourceProfileOption{Profile: profile, Selectable: profile.Enabled}
 		if !profile.Enabled {
-			option.BlockingReason = "Resource profile is disabled"
+			option.BlockingReason = BlockingResourceProfileDisabled
 		}
 		options = append(options, option)
 	}

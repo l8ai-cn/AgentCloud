@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "worker_slug": "minimax-cli",
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "image_reference": "repo.aiedulab.cn:8443/agentsmesh/runner-minimax-cli@sha256:2dc2c7cfa8be8eb0d095a4af9a1a1eda9ce4f1a190dd11493ae26cb1d04fbf6f",
+  "image_digest": "sha256:2dc2c7cfa8be8eb0d095a4af9a1a1eda9ce4f1a190dd11493ae26cb1d04fbf6f",
+  "platform": "linux/amd64",
+  "status": "available",
+  "exit_code": 0,
+  "output": "Pulled the exact digest for linux/amd64 and ran the declared executable offline: /usr/local/bin/mmx reported mmx 1.0.16. Image label org.opencontainers.image.revision=61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d.",
+  "observed_at": "2026-08-03T09:53:22Z"
+}

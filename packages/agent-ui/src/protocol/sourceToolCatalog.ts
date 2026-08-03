@@ -19,6 +19,9 @@ const sourceToolCatalog = new Map<string, ReadonlyMap<string, SourceToolDescript
       ["Write", { semanticKey: "filesystem.write", schemaVersion: "1" }],
       ["Edit", { semanticKey: "filesystem.edit", schemaVersion: "1" }],
       ["Grep", { semanticKey: "filesystem.search", schemaVersion: "1" }],
+      ["Glob", { semanticKey: "filesystem.search", schemaVersion: "1" }],
+      ["LS", { semanticKey: "filesystem.search", schemaVersion: "1" }],
+      ["list_files", { semanticKey: "filesystem.search", schemaVersion: "1" }],
       ["WebFetch", { semanticKey: "web.fetch", schemaVersion: "1" }],
       [
         "AskUserQuestion",
@@ -26,6 +29,7 @@ const sourceToolCatalog = new Map<string, ReadonlyMap<string, SourceToolDescript
       ],
       ["shell", { semanticKey: "shell.execute", schemaVersion: "1" }],
       ["fileChange", { semanticKey: "filesystem.change", schemaVersion: "1" }],
+      ["ExecuteCode", { semanticKey: "code.interpret", schemaVersion: "1" }],
       [
         "image_generation",
         { semanticKey: "media.image.generate", schemaVersion: "1" },
@@ -40,7 +44,11 @@ const sourceToolCatalog = new Map<string, ReadonlyMap<string, SourceToolDescript
       ["Write", { semanticKey: "filesystem.write", schemaVersion: "1" }],
       ["Edit", { semanticKey: "filesystem.edit", schemaVersion: "1" }],
       ["Grep", { semanticKey: "filesystem.search", schemaVersion: "1" }],
+      ["Glob", { semanticKey: "filesystem.search", schemaVersion: "1" }],
+      ["LS", { semanticKey: "filesystem.search", schemaVersion: "1" }],
+      ["list_files", { semanticKey: "filesystem.search", schemaVersion: "1" }],
       ["WebFetch", { semanticKey: "web.fetch", schemaVersion: "1" }],
+      ["ExecuteCode", { semanticKey: "code.interpret", schemaVersion: "1" }],
       [
         "AskUserQuestion",
         { semanticKey: "interaction.question", schemaVersion: "1" },

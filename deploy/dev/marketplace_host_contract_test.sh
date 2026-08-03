@@ -10,3 +10,7 @@ SCRIPT_DIR="$ROOT/deploy/dev"
 ! test -e "$SCRIPT_DIR/air/marketplace.toml"
 ! test -e "$ROOT/marketplace/cmd/server/main.go"
 grep -q 'marketplace/httpapi' "$ROOT/backend/internal/api/rest/marketplace_module.go"
+# Dev web must proxy /api/marketplace through the same backend target.
+! grep -q 'MARKETPLACE_API_PROXY_TARGET' "$ROOT/clients/web/next.config.ts"
+! grep -q 'localhost:10022' "$ROOT/clients/web/next.config.ts"
+grep -Fq "agent-cloud-market" "$SCRIPT_DIR/seed/seed.sql"

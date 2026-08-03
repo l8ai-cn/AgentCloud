@@ -23,13 +23,6 @@ spec:
     - host: {{ $host }}
       http:
         paths:
-          - path: /api/marketplace/v1
-            pathType: Prefix
-            backend:
-              service:
-                name: marketplace
-                port:
-                  number: 8080
           - path: /api
             pathType: Prefix
             backend:

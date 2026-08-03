@@ -70,6 +70,21 @@ func (rt *RequestTracker) WaitResponse(pr *PendingRequest, timeout time.Duration
 	}
 }
 
+// WaitPromptResponse waits until session/prompt (or equivalent) completes or
+// the transport context ends. Unlike WaitResponse it never times out into a
+// false idle — long tool loops must stay executing until the agent replies.
+func (rt *RequestTracker) WaitPromptResponse(pr *PendingRequest) (*JSONRPCResponse, error) {
+	select {
+	case resp := <-pr.ch:
+		return resp, nil
+	case <-rt.Ctx():
+		rt.pendingMu.Lock()
+		delete(rt.pending, pr.ID)
+		rt.pendingMu.Unlock()
+		return nil, fmt.Errorf("context cancelled")
+	}
+}
+
 // HandleResponse matches an inbound response to a pending request.
 func (rt *RequestTracker) HandleResponse(msg *JSONRPCMessage) {
 	id, ok := msg.GetID()

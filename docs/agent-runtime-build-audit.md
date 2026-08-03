@@ -28,6 +28,23 @@ a digest appears in a lock file. It needs all of the following:
 missing image, unpullable digest, missing authorized model resource, upstream
 artifact, or failed build is an explicit blocker, never a fallback.
 
+## Availability planes
+
+Three separate planes decide whether a Worker type is selectable. Conflating
+them is what let an enabled catalog entry keep a digest the registry had already
+dropped.
+
+| Plane | Owner | Artifact |
+| --- | --- | --- |
+| Trusted digest | Review + git | `runtime_catalog.lock.json` |
+| Environment exposure | Operations | `WORKER_RUNTIME_CATALOG_OVERRIDE_FILE` |
+| Registry liveness | Release gate | `pnpm run worker-runtime:verify-digests` |
+
+The override may only toggle worker types the lock already pins; it can never
+introduce a digest. Toggling changes the catalog revision so cached create
+options and drafts are invalidated. `verify-runtime-lock-probes.sh` refuses an
+`enabled` entry whose committed probe is not `available`.
+
 ## Current release state
 
 No Worker type is formally deployable at this time.
@@ -100,6 +117,7 @@ never an immutable runtime lock.
 ```bash
 node scripts/probe-local-worker-images.mjs
 node scripts/probe-worker-runtime-locks.mjs
+pnpm run worker-runtime:verify-digests
 node scripts/generate-worker-loop-inventory.mjs
 pnpm run worker-docs:sync
 

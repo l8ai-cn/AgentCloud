@@ -11,9 +11,9 @@
 
 ## Runtime image
 
-`gemini-cli-stable` enabled=false availability=invalid_published_digest
+`gemini-cli-stable` enabled=true availability=locked_available
 
-`repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4`
+`repo.aiedulab.cn:8443/agentsmesh/runner-gemini-cli@sha256:c75bc17c29e9c6b85a7e4ae89347e5fa93ff82fdff296a925de44513082b0e7d`
 
 ## CONFIG fields
 

@@ -25,6 +25,7 @@ func (dispatcher *CommandDispatcher) deliverPermission(
 			return ErrInvalidCommand
 		}
 	}
+	normalizePermissionAnswers(updatedInput)
 	return dispatcher.sendACP(ctx, runnerID, podKey, map[string]any{
 		"type": "permission_response", "requestId": value.PermissionRequestId,
 		"approved":     value.Decision == agentworkbenchv2.PermissionDecision_PERMISSION_DECISION_ACCEPT,

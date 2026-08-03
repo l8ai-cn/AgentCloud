@@ -27,7 +27,7 @@ func TestValidateManagedRunnerImagesAllowsReleasedFormalWorker(t *testing.T) {
 		workerruntime.DefaultCatalog(),
 		[]string{"codex-cli"},
 		map[string]string{
-			"codex-cli": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+			"codex-cli": "repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
 		},
 	)
 

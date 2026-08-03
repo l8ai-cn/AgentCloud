@@ -5,6 +5,7 @@ import type {
   AgentToolActivityItem,
   AgentToolStatus,
 } from "../contracts";
+import { resolveSourceTool } from "../protocol/sourceToolCatalog";
 import {
   decodeStructuredPayload,
   formatUnsupported,
@@ -36,23 +37,54 @@ function recoverUnknownTool(
     typeof record.toolName === "string" && record.toolName.trim()
       ? record.toolName.trim()
       : "Tool";
+  const identity = resolveRecoveredToolIdentity(
+    value.identity?.namespace,
+    toolName,
+    value.identity?.schemaVersion,
+  );
   const status = projectRecoveredToolStatus(record);
   const detailParts = [
     typeof record.resultText === "string" ? record.resultText : "",
     typeof record.errorMessage === "string" ? record.errorMessage : "",
   ].filter(Boolean);
+  const args =
+    typeof record.argumentsJson === "string" ? record.argumentsJson.trim() : "";
   return {
     id,
     kind: "tool",
-    identity: {
-      namespace: value.identity?.namespace || "agentcloud.acp",
-      semanticKey: "tool.custom",
-      schemaVersion: value.identity?.schemaVersion || "1",
-    },
+    identity,
     title: toolName,
     detail: detailParts.join("\n") || undefined,
+    input: args && args !== "{}" ? args : undefined,
+    inputValue: args ? parseJSONValue(args) : undefined,
     results: [],
     status,
+  };
+}
+
+function resolveRecoveredToolIdentity(
+  namespace: string | undefined,
+  toolName: string,
+  schemaVersion: string | undefined,
+) {
+  const protocol = namespace?.replace(/^agentcloud\./, "") || "acp";
+  const baseName = toolName.split(/\s+/, 1)[0] || toolName;
+  const resolved =
+    resolveSourceTool(protocol, baseName) ||
+    resolveSourceTool("acp", baseName) ||
+    resolveSourceTool("claude", baseName) ||
+    resolveSourceTool("codex", baseName);
+  if (resolved) {
+    return {
+      namespace: resolved.namespace || namespace || "agentcloud.acp",
+      semanticKey: resolved.semanticKey,
+      schemaVersion: resolved.schemaVersion || schemaVersion || "1",
+    };
+  }
+  return {
+    namespace: namespace || "agentcloud.acp",
+    semanticKey: "tool.custom",
+    schemaVersion: schemaVersion || "1",
   };
 }
 
@@ -66,6 +98,14 @@ function parseJsonRecord(text: string): Record<string, unknown> | null {
     return asRecord(JSON.parse(text));
   } catch {
     return null;
+  }
+}
+
+function parseJSONValue(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
   }
 }
 

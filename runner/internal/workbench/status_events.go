@@ -32,19 +32,9 @@ func (m *Mapper) Permission(
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	m.setExternalSessionLocked(request.SessionID)
-	permission := &agentworkbenchv2.PermissionRequest{
-		PermissionRequestId: request.RequestID,
-		State:               agentworkbenchv2.PermissionRequestState_PERMISSION_REQUEST_STATE_PENDING,
-		Request: &agentworkbenchv2.PermissionRequest_Approval{
-			Approval: &agentworkbenchv2.PermissionApproval{
-				Title:       request.ToolName,
-				Description: stringPointer(request.Description),
-			},
-		},
-	}
 	return m.batchLocked(request, &agentworkbenchv2.RunnerWorkbenchMutation{
 		Mutation: &agentworkbenchv2.RunnerWorkbenchMutation_PermissionRequest{
-			PermissionRequest: permission,
+			PermissionRequest: permissionRequestFromACP(request),
 		},
 	})
 }

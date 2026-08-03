@@ -1,6 +1,6 @@
 use agentcloud_protocol::{decode_message, MsgType};
 
-use crate::control_lease::{encode_acquire, encode_release, encode_renew};
+use crate::control_lease::{encode_acquire, encode_force_acquire, encode_release, encode_renew};
 use crate::dispatch::{dispatch_message, DispatchAction};
 use crate::pool::RelayConnectionPool;
 use crate::types::{ControlLeaseInfo, ControlLeaseState, StatusSnapshot};
@@ -60,6 +60,14 @@ fn encodes_explicit_control_lease_commands() {
             }),
         ),
         (
+            encode_force_acquire("mobile").unwrap(),
+            serde_json::json!({
+                "type": "control_lease",
+                "action": "force_acquire",
+                "client_label": "mobile",
+            }),
+        ),
+        (
             encode_renew("lease-1").unwrap(),
             serde_json::json!({
                 "type": "control_lease",
@@ -103,6 +111,7 @@ fn control_commands_fail_when_link_is_not_ready() {
     let (pool, _rx) = RelayConnectionPool::new();
     futures::executor::block_on(async {
         assert!(pool.acquire_control("missing", "mobile").await.is_err());
+        assert!(pool.force_acquire_control("missing", "mobile").await.is_err());
         assert!(pool.renew_control("missing", "lease").await.is_err());
         assert!(pool.release_control("missing", "lease").await.is_err());
     });

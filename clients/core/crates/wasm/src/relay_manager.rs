@@ -68,6 +68,17 @@ impl WasmRelayManager {
             .map_err(agentcloud_services::wire)
     }
 
+    pub async fn force_acquire_control(
+        &self,
+        pod_key: String,
+        client_label: String,
+    ) -> Result<(), String> {
+        self.pool
+            .force_acquire_control(&pod_key, &client_label)
+            .await
+            .map_err(agentcloud_services::wire)
+    }
+
     pub async fn renew_control(&self, pod_key: String, lease_id: String) -> Result<(), String> {
         self.pool
             .renew_control(&pod_key, &lease_id)

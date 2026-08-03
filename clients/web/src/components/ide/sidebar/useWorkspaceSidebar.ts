@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { toast } from "sonner";
-import { useCurrentUser, useCurrentOrg } from "@/stores/auth";
+import { useCurrentOrg } from "@/stores/auth";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { usePodStore, usePods, Pod, SIDEBAR_STATUS_MAP } from "@/stores/pod";
 import { useRunnerStore, useRunners } from "@/stores/runner";
@@ -14,8 +14,6 @@ export function useWorkspaceSidebar(
   onTerminatePod?: () => void,
 ) {
   const currentOrg = useCurrentOrg();
-  const user = useCurrentUser();
-  const isAdmin = currentOrg?.role === "owner" || currentOrg?.role === "admin";
   const pods = usePods();
   const loading = usePodStore((s) => s.loading);
   const fetchSidebarPods = usePodStore((s) => s.fetchSidebarPods);
@@ -34,7 +32,7 @@ export function useWorkspaceSidebar(
   const removePaneByPodKey = useWorkspaceStore((s) => s.removePaneByPodKey);
   const panes = useWorkspaceStore((s) => s.panes);
 
-  const [filter, setFilter] = useState<FilterType>("mine");
+  const [filter, setFilter] = useState<FilterType>("running");
   const [searchQuery, setSearchQuery] = useState("");
   const [runnersExpanded, setRunnersExpanded] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -61,14 +59,13 @@ export function useWorkspaceSidebar(
     const statusSet = allowedStatuses ? new Set(allowedStatuses.split(",")) : null;
     return pods.filter((pod) => {
       if (statusSet && !statusSet.has(pod.status)) return false;
-      if (filter === "mine" && user?.id && pod.created_by?.id !== user.id) return false;
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         return pod.pod_key.toLowerCase().includes(q) || !!pod.ticket?.slug?.toLowerCase().includes(q) || !!pod.runner?.node_id?.toLowerCase().includes(q);
       }
       return true;
     });
-  }, [pods, searchQuery, filter, user?.id]);
+  }, [pods, searchQuery, filter]);
 
   const sortedPods = useMemo(() => {
     const priority: Record<string, number> = { running: 0, initializing: 1, paused: 2, terminated: 3, failed: 3 };
@@ -126,7 +123,7 @@ export function useWorkspaceSidebar(
   }, [updatePodPerpetual]);
 
   return {
-    currentOrg, loading, runners, runnersLoading, isAdmin,
+    currentOrg, loading, runners, runnersLoading,
     filter, searchQuery, setSearchQuery, runnersExpanded, setRunnersExpanded, refreshing,
     renamePod, setRenamePod, dialogProps, sortedPods, podHasMore, loadingMore,
     handleFilterChange, handleRefresh, isPodOpen, handleOpenTerminal,

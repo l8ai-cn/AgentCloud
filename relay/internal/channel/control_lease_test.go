@@ -80,6 +80,25 @@ func TestChannel_ControlLeaseIsExclusiveAndValidatesLeaseID(t *testing.T) {
 	}
 }
 
+func TestChannel_ForceAcquireStealsActiveLease(t *testing.T) {
+	_, publisher, first, second := controlLeaseChannel(t, 2*time.Second)
+	acquireControl(t, first)
+
+	writeControl(t, second, protocol.ControlLeaseRequest{
+		Type:   protocol.ControlLeaseType,
+		Action: protocol.ControlLeaseActionForceAcquire,
+	})
+	requireControlStatus(t, first, protocol.ControlLeaseStatusReleased)
+	requireControlStatus(t, second, protocol.ControlLeaseStatusReleased)
+	status := requireControlStatus(t, second, protocol.ControlLeaseStatusGranted)
+	if status.LeaseID == "" {
+		t.Fatal("force acquire did not grant a lease id")
+	}
+
+	writeBinary(t, second, protocol.EncodeInput([]byte("stolen")))
+	requireMessageType(t, publisher, protocol.MsgTypeInput)
+}
+
 func TestChannel_ControlLeaseExpiresAndAllowsAnotherController(t *testing.T) {
 	_, _, first, second := controlLeaseChannel(t, 40*time.Millisecond)
 	acquireControl(t, first)

@@ -73,10 +73,12 @@ func (t *transport) SendPrompt(sessionID, prompt string) error {
 	}
 
 	go func() {
-		resp, err := t.tracker.WaitResponse(pr, 5*time.Minute)
+		resp, err := t.tracker.WaitPromptResponse(pr)
 		if err != nil {
 			t.logger.Error("prompt response error", "error", err)
-		} else if resp.Error != nil {
+			return
+		}
+		if resp.Error != nil {
 			t.logger.Error("prompt error", "code", resp.Error.Code, "message", resp.Error.Message)
 		}
 		if t.callbacks.OnStateChange != nil {

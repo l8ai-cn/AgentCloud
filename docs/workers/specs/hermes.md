@@ -11,7 +11,9 @@
 
 ## Runtime image
 
-not present in runtime catalog lock
+`hermes-stable` enabled=true availability=locked_available
+
+`repo.aiedulab.cn:8443/agentsmesh/runner-hermes@sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196`
 
 ## CONFIG fields
 

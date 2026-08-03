@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
+  "revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
   "images": [
     {
       "id": 1,
       "slug": "codex-cli-stable",
       "name": "Codex CLI",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "digest": "sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "worker_type_slugs": [
         "codex-cli"
@@ -17,23 +17,23 @@
       "id": 2,
       "slug": "claude-code-stable",
       "name": "Claude Code",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f",
-      "digest": "sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-claude-code@sha256:20c2ab259b813f3f5187ebe8afc382d19da2e7f68fe9916191f9626fe69fa119",
+      "digest": "sha256:20c2ab259b813f3f5187ebe8afc382d19da2e7f68fe9916191f9626fe69fa119",
       "worker_type_slugs": [
         "claude-code"
       ],
-      "enabled": false
+      "enabled": true
     },
     {
       "id": 3,
       "slug": "gemini-cli-stable",
       "name": "Gemini CLI",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
-      "digest": "sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-gemini-cli@sha256:c75bc17c29e9c6b85a7e4ae89347e5fa93ff82fdff296a925de44513082b0e7d",
+      "digest": "sha256:c75bc17c29e9c6b85a7e4ae89347e5fa93ff82fdff296a925de44513082b0e7d",
       "worker_type_slugs": [
         "gemini-cli"
       ],
-      "enabled": false
+      "enabled": true
     },
     {
       "id": 4,
@@ -61,7 +61,7 @@
       "id": 6,
       "slug": "pattern-designer-stable",
       "name": "Pattern Designer",
-      "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "digest": "sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
       "worker_type_slugs": [
         "pattern-designer"
@@ -76,6 +76,50 @@
       "digest": "sha256:66338b96672152530f9a9c4611af9958d63f22b888598d857614f8974cb26ccd",
       "worker_type_slugs": [
         "seedance-expert"
+      ],
+      "enabled": true
+    },
+    {
+      "id": 8,
+      "slug": "minimax-cli-stable",
+      "name": "MiniMax CLI",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-minimax-cli@sha256:2dc2c7cfa8be8eb0d095a4af9a1a1eda9ce4f1a190dd11493ae26cb1d04fbf6f",
+      "digest": "sha256:2dc2c7cfa8be8eb0d095a4af9a1a1eda9ce4f1a190dd11493ae26cb1d04fbf6f",
+      "worker_type_slugs": [
+        "minimax-cli"
+      ],
+      "enabled": true
+    },
+    {
+      "id": 9,
+      "slug": "openclaw-stable",
+      "name": "OpenClaw",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-openclaw@sha256:d63c0ccfffc44bb57623e411f43318f19d9b31301e62e5532fe9ab72dfcef33c",
+      "digest": "sha256:d63c0ccfffc44bb57623e411f43318f19d9b31301e62e5532fe9ab72dfcef33c",
+      "worker_type_slugs": [
+        "openclaw"
+      ],
+      "enabled": true
+    },
+    {
+      "id": 12,
+      "slug": "grok-build-stable",
+      "name": "Grok Build",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-grok-build@sha256:b9dd3a16b508e07641ec5ae50ceb191e61196234d9ce9d99c4aec374a038d103",
+      "digest": "sha256:b9dd3a16b508e07641ec5ae50ceb191e61196234d9ce9d99c4aec374a038d103",
+      "worker_type_slugs": [
+        "grok-build"
+      ],
+      "enabled": true
+    },
+    {
+      "id": 13,
+      "slug": "hermes-stable",
+      "name": "Hermes",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-hermes@sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196",
+      "digest": "sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196",
+      "worker_type_slugs": [
+        "hermes"
       ],
       "enabled": true
     }

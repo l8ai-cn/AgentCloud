@@ -22,17 +22,17 @@ export function requestTerminalControl(
   const socket = connection.socket;
   if (!socket) throw new Error("Terminal socket is not available");
   return new Promise((resolve, reject) => {
-    const leaseId = action === "acquire" ? undefined : value;
+    const usesClientLabel = action === "acquire" || action === "force_acquire";
+    const leaseId = usesClientLabel ? undefined : value;
     const timer = window.setTimeout(() => {
       if (connection.pending?.timer !== timer) return;
       connection.pending = null;
       reject(new Error("Terminal control request timed out"));
     }, CONTROL_REQUEST_TIMEOUT_MS);
     connection.pending = { action, leaseId, reject, resolve, timer };
-    const request =
-      action === "acquire"
-        ? { action, clientLabel: value }
-        : { action, leaseId: value };
+    const request = usesClientLabel
+      ? { action, clientLabel: value }
+      : { action, leaseId: value };
     try {
       socket.send(encodeControlLeaseFrame(request));
     } catch (cause) {
@@ -53,17 +53,28 @@ export function applyTerminalControlStatus(
   const lease = controlLeaseFromStatus(frame);
   if (lease) connection.lease = lease;
   else if (frame.status !== "busy") connection.lease = null;
-  const pending = clearPendingControl(connection);
+  const pending = connection.pending;
   if (!pending) return;
+  // force_acquire steals via a Released broadcast before Granted
+  if (pending.action === "force_acquire" && frame.status === "released") {
+    return;
+  }
+  clearPendingControl(connection);
   if (frame.status === "busy") {
     pending.reject(new Error("Terminal control is busy"));
   } else if (pending.action === "release" && frame.status === "released") {
     pending.resolve();
   } else if (
     lease &&
-    (pending.action === "acquire" || pending.leaseId === lease.leaseId)
+    (pending.action === "acquire" ||
+      pending.action === "force_acquire" ||
+      pending.leaseId === lease.leaseId)
   ) {
-    pending.resolve(pending.action === "acquire" ? lease : undefined);
+    pending.resolve(
+      pending.action === "acquire" || pending.action === "force_acquire"
+        ? lease
+        : undefined,
+    );
   } else {
     pending.reject(new Error(`Relay rejected terminal control (${frame.status})`));
   }

@@ -59,7 +59,7 @@ export function WorkspaceSidebarContent({ className, onCreatePod, onTerminatePod
         </Button>
       </div>
 
-      <WorkspaceFilters filter={s.filter} onFilterChange={s.handleFilterChange} t={t} isAdmin={s.isAdmin} />
+      <WorkspaceFilters filter={s.filter} onFilterChange={s.handleFilterChange} t={t} />
 
       <div className="flex-1 overflow-y-auto">
         {s.loading ? (
@@ -71,10 +71,10 @@ export function WorkspaceSidebarContent({ className, onCreatePod, onTerminatePod
             <Terminal className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
               {s.searchQuery ? t("workspace.emptyState.noMatch")
-                : s.filter === "mine" ? t("workspace.emptyState.title")
+                : s.filter === "running" ? t("workspace.emptyState.title")
                 : t("workspace.emptyState.noFiltered", { filter: t(`workspace.filters.${s.filter}`) })}
             </p>
-            {!s.searchQuery && s.filter === "mine" && (
+            {!s.searchQuery && s.filter === "running" && (
               <Button size="sm" variant="outline" className="mt-3" onClick={handleCreatePod}>
                 {t("workspace.emptyState.createFirst")}
               </Button>

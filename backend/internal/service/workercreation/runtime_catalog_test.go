@@ -65,7 +65,7 @@ func TestRuntimeCatalogResolverRejectsInvalidOrUnavailableSelections(t *testing.
 				selection.ComputeTargetID = 2
 				selection.DeploymentMode = specdomain.DeploymentModeDedicated
 			},
-			match: "Dedicated managed Kubernetes provisioning is not configured",
+			match: runtimedomain.ComputeTargetDedicatedNotConfigured,
 		},
 		{
 			name:       "runner pool does not support dedicated mode",

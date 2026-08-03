@@ -138,11 +138,11 @@
       "runtimeImage": {
         "id": 2,
         "slug": "claude-code-stable",
-        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-claude-code@sha256:a9a02976dec14907be8eb6a7f68cd1adc5158099645244be733546b0f3e7041f",
-        "enabled": false,
-        "availability": "invalid_published_digest"
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-claude-code@sha256:20c2ab259b813f3f5187ebe8afc382d19da2e7f68fe9916191f9626fe69fa119",
+        "enabled": true,
+        "availability": "locked_available"
       },
-      "runtimeAvailable": false
+      "runtimeAvailable": true
     },
     {
       "slug": "codex-cli",
@@ -196,7 +196,7 @@
       "runtimeImage": {
         "id": 1,
         "slug": "codex-cli-stable",
-        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
         "enabled": true,
         "availability": "locked_available"
       },
@@ -431,11 +431,11 @@
       "runtimeImage": {
         "id": 3,
         "slug": "gemini-cli-stable",
-        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
-        "enabled": false,
-        "availability": "invalid_published_digest"
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-gemini-cli@sha256:c75bc17c29e9c6b85a7e4ae89347e5fa93ff82fdff296a925de44513082b0e7d",
+        "enabled": true,
+        "availability": "locked_available"
       },
-      "runtimeAvailable": false
+      "runtimeAvailable": true
     },
     {
       "slug": "grok-build",
@@ -491,8 +491,14 @@
         }
       ],
       "configDocuments": [],
-      "runtimeImage": null,
-      "runtimeAvailable": false
+      "runtimeImage": {
+        "id": 12,
+        "slug": "grok-build-stable",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-grok-build@sha256:b9dd3a16b508e07641ec5ae50ceb191e61196234d9ce9d99c4aec374a038d103",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
     },
     {
       "slug": "hermes",
@@ -526,8 +532,14 @@
         }
       ],
       "configDocuments": [],
-      "runtimeImage": null,
-      "runtimeAvailable": false
+      "runtimeImage": {
+        "id": 13,
+        "slug": "hermes-stable",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-hermes@sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
     },
     {
       "slug": "kimi-code",
@@ -704,8 +716,14 @@
         }
       ],
       "configDocuments": [],
-      "runtimeImage": null,
-      "runtimeAvailable": false
+      "runtimeImage": {
+        "id": 8,
+        "slug": "minimax-cli-stable",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-minimax-cli@sha256:2dc2c7cfa8be8eb0d095a4af9a1a1eda9ce4f1a190dd11493ae26cb1d04fbf6f",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
     },
     {
       "slug": "openclaw",
@@ -751,8 +769,14 @@
           "required": false
         }
       ],
-      "runtimeImage": null,
-      "runtimeAvailable": false
+      "runtimeImage": {
+        "id": 9,
+        "slug": "openclaw-stable",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-openclaw@sha256:d63c0ccfffc44bb57623e411f43318f19d9b31301e62e5532fe9ab72dfcef33c",
+        "enabled": true,
+        "availability": "locked_available"
+      },
+      "runtimeAvailable": true
     },
     {
       "slug": "opencode",
@@ -876,7 +900,7 @@
       "runtimeImage": {
         "id": 6,
         "slug": "pattern-designer-stable",
-        "reference": "repo.aiedulab.cn:8443/agentcloud/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-codex-cli@sha256:854952254d5f7ce25db3258034bc71a07169a5730dfe0670243fc10ea437bacd",
         "enabled": true,
         "availability": "locked_available"
       },

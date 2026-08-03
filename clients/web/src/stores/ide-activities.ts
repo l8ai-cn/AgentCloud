@@ -21,7 +21,6 @@ export const ACTIVITIES: ActivityConfig[] = [
   { id: "experts", label: "Experts", icon: "bot", group: "build", mobileVisible: false },
   { id: "knowledge", label: "Knowledge Base", icon: "book-open", group: "ops", mobileVisible: false },
   { id: "infra", label: "Infra", icon: "layers", group: "ops", mobileVisible: false },
-  { id: "marketplace", label: "Marketplace", icon: "store", group: "ops", mobileVisible: false },
   { id: "skills", label: "Skills", icon: "sparkles", group: "ops", mobileVisible: false },
   { id: "settings", label: "Settings", icon: "settings", group: "system", mobileVisible: false },
 ];

@@ -12,7 +12,9 @@ export function relayLeaseFromStatus(raw: unknown): RelayLease {
   if (!raw || typeof raw !== "object") return observerRelayLease;
   const value = raw as Record<string, unknown>;
   const status = value.controlLeaseStatus;
-  if (status !== "acquiring" && status !== "granted") return observerRelayLease;
+  if (status !== "acquiring" && status !== "granted" && status !== "busy") {
+    return observerRelayLease;
+  }
   return {
     status,
     leaseId: typeof value.controlLeaseId === "string" ? value.controlLeaseId : undefined,

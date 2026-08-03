@@ -1,11 +1,12 @@
 {
   "schema_version": 1,
   "worker_slug": "gemini-cli",
-  "runtime_catalog_revision": "runtime-catalog-2026-07-16-61b505bd1dcd",
-  "image_reference": "repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
-  "image_digest": "sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4",
-  "status": "not_found",
-  "exit_code": 1,
-  "output": "Error response from daemon: failed to resolve reference \"repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4\": repo.aiedulab.cn:8443/agentcloud/runner-gemini-cli@sha256:852dba55bcc3213c72a7ee94e9c2da29a44e2ba0d5a9c0a8c15fea5adb8c6cd4: not found",
-  "observed_at": "2026-07-13T00:28:44.218Z"
+  "runtime_catalog_revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "image_reference": "repo.aiedulab.cn:8443/agentsmesh/runner-gemini-cli@sha256:c75bc17c29e9c6b85a7e4ae89347e5fa93ff82fdff296a925de44513082b0e7d",
+  "image_digest": "sha256:c75bc17c29e9c6b85a7e4ae89347e5fa93ff82fdff296a925de44513082b0e7d",
+  "status": "available",
+  "exit_code": 0,
+  "output": "Pulled the exact digest for linux/amd64 and ran the declared executable offline: /usr/local/bin/gemini reported 0.51.0. Image label org.opencontainers.image.revision=61b505bd1dcd4fb02c1d4c8bff603b59bcd36a6d.",
+  "observed_at": "2026-08-03T09:18:40Z",
+  "platform": "linux/amd64"
 }

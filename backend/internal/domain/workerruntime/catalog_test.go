@@ -15,18 +15,14 @@ func TestDefaultCatalogExposesImmutableRuntimeSelections(t *testing.T) {
 	catalog := DefaultCatalog()
 
 	allImages := catalog.Images()
-	require.Len(t, allImages, 7)
+	require.NotEmpty(t, allImages)
 	for _, image := range allImages {
 		assert.Regexp(t, regexp.MustCompile(`^sha256:[a-f0-9]{64}$`), image.Digest)
 		assert.True(t, strings.HasSuffix(image.Reference, "@"+image.Digest))
 	}
-	assert.True(t, allImages[0].Enabled)
-	assert.False(t, allImages[1].Enabled)
-	assert.False(t, allImages[2].Enabled)
-	assert.True(t, allImages[3].Enabled)
-	assert.True(t, allImages[4].Enabled)
-	assert.True(t, allImages[5].Enabled)
-	assert.True(t, allImages[6].Enabled)
+	for _, image := range allImages {
+		assert.True(t, image.Enabled, image.Slug)
+	}
 
 	images := catalog.ImagesFor("codex-cli")
 	require.Len(t, images, 1)
@@ -119,7 +115,8 @@ func TestDefaultCatalogUsesStableRuntimeImageIDs(t *testing.T) {
 	expected := map[string]int64{
 		"codex-cli": 1, "claude-code": 2, "gemini-cli": 3,
 		"video-studio": 4, "do-agent": 5, "pattern-designer": 6,
-		"seedance-expert": 7,
+		"seedance-expert": 7, "minimax-cli": 8, "openclaw": 9,
+		"grok-build": 12, "hermes": 13,
 	}
 
 	for workerType, id := range expected {

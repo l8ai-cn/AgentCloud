@@ -91,7 +91,7 @@ export function resetPodStore() {
     podTotal: 0,
     podHasMore: false,
     loadingMore: false,
-    currentSidebarFilter: "mine",
+    currentSidebarFilter: "running",
     sidebarLoadedCount: 0,
   });
 }
