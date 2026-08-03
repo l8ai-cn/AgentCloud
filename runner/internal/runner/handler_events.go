@@ -90,6 +90,9 @@ func (h *RunnerMessageHandler) cleanupPodExit(podKey string, exitCode int, stopI
 	}
 
 	pod.SetStatus(PodStatusStopped)
+	if !pod.IsACPMode() && pod.workbenchForwarder != nil {
+		pod.workbenchForwarder.terminalState(detectorStatusExited)
+	}
 	pod.StopStateDetector()
 
 	// Mode-specific infrastructure cleanup (aggregator, loggers, etc.).

@@ -65,7 +65,7 @@ export function AgentWorkspace({
   );
   const snapshot = useAgentSessionSnapshot(activeRuntime, sessionId, runtime);
   const text = agentWorkspaceText(locale);
-  const [view, setView] = useState<WorkspaceView>("conversation");
+  const [selectedView, setSelectedView] = useState<WorkspaceView | null>(null);
   const tabId = useId();
   const conversationTabId = `${tabId}-conversation-tab`;
   const conversationPanelId = `${tabId}-conversation-panel`;
@@ -81,6 +81,13 @@ export function AgentWorkspace({
     snapshot.capabilities.terminal &&
     terminalRuntime !== undefined &&
     terminal !== undefined;
+  // A PTY agent is driven from its terminal, so that view leads until the
+  // viewer picks one; ACP agents lead with the conversation.
+  const view =
+    selectedView ??
+    (terminalEnabled && snapshot.interactionMode === "pty"
+      ? "terminal"
+      : "conversation");
 
   return (
     <AgentWorkspaceLocaleProvider locale={locale}>
@@ -110,7 +117,7 @@ export function AgentWorkspace({
             <WorkspaceViewTabs
               conversationPanelId={conversationPanelId}
               conversationTabId={conversationTabId}
-              onViewChange={setView}
+              onViewChange={setSelectedView}
               terminalEnabled={terminalEnabled}
               terminalPanelId={terminalPanelId}
               terminalTabId={terminalTabId}

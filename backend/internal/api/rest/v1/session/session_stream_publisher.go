@@ -5,8 +5,6 @@ import (
 	"errors"
 	"time"
 
-	podDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentpod"
-	sessionDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentsession"
 	sessionsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/agentsession"
 	itemsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/conversationitem"
 	sessionusagesvc "github.com/l8ai-cn/agentcloud/backend/internal/service/sessionusage"
@@ -59,31 +57,14 @@ func (p *SessionStreamPublisher) createSessionForPod(
 		return "", false
 	}
 	pod, err := p.Pods.GetByKey(ctx, podKey)
-	if err != nil || pod == nil || pod.InteractionMode != podDomain.InteractionModeACP {
+	if err != nil || pod == nil {
 		return "", false
 	}
-	id, err := sessionsvc.NewID()
-	if err != nil {
+	row, err := p.Sessions.EnsureForPod(ctx, pod)
+	if err != nil || row == nil {
 		return "", false
 	}
-	title := pod.Alias
-	if title == nil {
-		title = pod.Title
-	}
-	now := time.Now()
-	row := &sessionDomain.Session{
-		ID: id, OrganizationID: pod.OrganizationID, UserID: pod.CreatedByID,
-		PodKey: pod.PodKey, AgentSlug: pod.AgentSlug, Title: title,
-		Status: "idle", CreatedAt: now, UpdatedAt: now,
-	}
-	if err := p.Sessions.Create(ctx, row); err == nil {
-		return row.ID, true
-	}
-	existing, err := p.Sessions.GetByPodKey(ctx, podKey)
-	if err != nil || existing == nil {
-		return "", false
-	}
-	return existing.ID, true
+	return row.ID, true
 }
 
 func (p *SessionStreamPublisher) sessionForRunnerPod(

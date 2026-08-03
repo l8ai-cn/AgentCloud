@@ -17,7 +17,7 @@ var ErrIngressConfiguration = errors.New("invalid agent workbench ingress config
 const ingressAppendAttempts = 8
 
 type SessionResolver interface {
-	GetByPodKey(context.Context, string) (*sessiondomain.Session, error)
+	EnsureForPod(context.Context, *poddomain.Pod) (*sessiondomain.Session, error)
 }
 
 type PodResolver interface {
@@ -81,20 +81,19 @@ func (ingress *Ingress) Ingest(
 	if runnerID <= 0 || batch == nil || batch.PodKey == "" {
 		return ErrInvalidBatch
 	}
-	session, err := ingress.sessions.GetByPodKey(ctx, batch.PodKey)
-	if err != nil {
-		return fmt.Errorf("resolve agent session for pod %q: %w", batch.PodKey, err)
-	}
-	if session == nil || session.ID == "" || session.PodKey != batch.PodKey {
-		return ErrInvalidBatch
-	}
 	pod, err := ingress.pods.GetByKeyAndRunner(ctx, batch.PodKey, runnerID)
 	if err != nil {
 		return fmt.Errorf("authorize agent workbench runner: %w", err)
 	}
-	if pod == nil || pod.PodKey != batch.PodKey ||
-		pod.RunnerID != runnerID ||
-		pod.OrganizationID != session.OrganizationID {
+	if pod == nil || pod.PodKey != batch.PodKey || pod.RunnerID != runnerID {
+		return ErrInvalidBatch
+	}
+	session, err := ingress.sessions.EnsureForPod(ctx, pod)
+	if err != nil {
+		return fmt.Errorf("resolve agent session for pod %q: %w", batch.PodKey, err)
+	}
+	if session == nil || session.ID == "" || session.PodKey != batch.PodKey ||
+		session.OrganizationID != pod.OrganizationID {
 		return ErrInvalidBatch
 	}
 	materialized, err := ingress.materializer.Materialize(

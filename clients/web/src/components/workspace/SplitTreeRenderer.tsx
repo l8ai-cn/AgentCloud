@@ -5,21 +5,11 @@ import { Group, Panel, Separator } from "react-resizable-panels";
 import { cn } from "@/lib/utils";
 import { useWorkspaceStore } from "@/stores/workspace";
 import type { SplitTreeNode } from "@/stores/workspace";
-import { usePod } from "@/stores/pod";
-import { POD_MODE_ACP, type PodMode } from "@/lib/pod-modes";
-import { TerminalPane } from "./TerminalPane";
 import { AgentPanel } from "./AgentPanel";
 
 interface SplitTreeRendererProps {
   node: SplitTreeNode;
   onPopout?: (paneId: string) => void;
-}
-
-export function shouldRenderAgentPanel(
-  interactionMode: PodMode | undefined,
-  agentSlug: string | undefined,
-): boolean {
-  return interactionMode === POD_MODE_ACP || agentSlug === "video-studio";
 }
 
 function ResizeHandle({ direction }: { direction: "horizontal" | "vertical" }) {
@@ -94,23 +84,18 @@ function LeafPane({
   onPopout?: (paneId: string) => void;
 }) {
   const podKey = useWorkspaceStore((s) => s.panes.find((p) => p.id === paneId)?.podKey);
-  const pod = usePod(podKey);
-  const interactionMode = pod?.interaction_mode;
   if (!podKey) return null;
 
-  const sharedProps = {
-    paneId,
-    podKey,
-    isActive: paneId === activePane,
-    onClose: () => onClose(paneId),
-    onPopout: onPopout ? () => onPopout(paneId) : undefined,
-    showHeader: true,
-  };
-
-  if (shouldRenderAgentPanel(interactionMode, pod?.agent?.slug)) {
-    return <AgentPanel {...sharedProps} />;
-  }
-  return <TerminalPane {...sharedProps} />;
+  return (
+    <AgentPanel
+      isActive={paneId === activePane}
+      onClose={() => onClose(paneId)}
+      onPopout={onPopout ? () => onPopout(paneId) : undefined}
+      paneId={paneId}
+      podKey={podKey}
+      showHeader
+    />
+  );
 }
 
 export default SplitTreeRenderer;

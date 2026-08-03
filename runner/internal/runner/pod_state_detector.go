@@ -39,15 +39,8 @@ func (p *Pod) SubscribeAgentStatusBridge(sendStatus func(podKey, status string) 
 	podKey := p.PodKey
 
 	p.SubscribeStateChange("grpc-agent-status", func(event detector.StateChangeEvent) {
-		var backendStatus string
-		switch event.NewState {
-		case detector.StateExecuting:
-			backendStatus = "executing"
-		case detector.StateWaiting:
-			backendStatus = "waiting"
-		case detector.StateNotRunning:
-			backendStatus = "idle"
-		default:
+		backendStatus, ok := detectorStatus(event.NewState)
+		if !ok {
 			return
 		}
 		statusMu.Lock()

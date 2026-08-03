@@ -92,6 +92,7 @@ export function AgentPanel({
           contentRenderers={AGENT_CONTENT_RENDERERS}
           locale={locale === "zh" ? "zh-CN" : "en-US"}
           presentation="developer"
+          terminalRuntime={session.terminalRuntime}
           toolRenderers={AGENT_TOOL_RENDERERS}
           workerRef={session.workerRef}
           workspaceArtifacts={session.workspaceArtifacts}
