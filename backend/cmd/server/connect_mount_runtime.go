@@ -90,6 +90,9 @@ func mountPodService(
 	}
 	if svc.workerSpecs != nil {
 		serverOpts = append(serverOpts, podconnect.WithWorkerSpecSnapshotLoader(svc.workerSpecs))
+		if remounter := newSkillRemounter(svc, rest); remounter != nil {
+			serverOpts = append(serverOpts, podconnect.WithSkillRemounter(remounter))
+		}
 	}
 	srv := podconnect.NewServer(svc.pod, svc.org, serverOpts...)
 	podconnect.Mount(mux, srv, opts...)

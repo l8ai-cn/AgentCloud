@@ -113,6 +113,7 @@ type Server struct {
 	workerCreation    WorkerCreationAPI
 	workerDraftFiller WorkerDraftFiller
 	workerSpecs       WorkerSpecSnapshotLoader
+	skillRemounter    SkillRemounter
 	conversationItems itemservice.PositionedAppender
 	mobileBaseURL     string
 }
@@ -178,6 +179,10 @@ func WithWorkerDraftFiller(filler WorkerDraftFiller) Option {
 
 func WithWorkerSpecSnapshotLoader(loader WorkerSpecSnapshotLoader) Option {
 	return func(server *Server) { server.workerSpecs = loader }
+}
+
+func WithSkillRemounter(remounter SkillRemounter) Option {
+	return func(server *Server) { server.skillRemounter = remounter }
 }
 
 func WithConversationItems(items itemservice.PositionedAppender) Option {

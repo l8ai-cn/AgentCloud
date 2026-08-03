@@ -105,13 +105,13 @@ func TestSkillTargetPathMatchesAgentDiscoveryRoots(t *testing.T) {
 	assert.Equal(
 		t,
 		"{{.sandbox.root_path}}/codex-home/skills/pattern-generate",
-		skillTargetPath("pattern-designer", "pattern-generate"),
+		SkillTargetPath("pattern-designer", "pattern-generate"),
 	)
 	for _, agentSlug := range []string{"do-agent", "seedance-expert"} {
 		assert.Equal(
 			t,
 			"{{.sandbox.work_dir}}/.agent/skills/seedance-expert",
-			skillTargetPath(agentSlug, "seedance-expert"),
+			SkillTargetPath(agentSlug, "seedance-expert"),
 			agentSlug,
 		)
 	}

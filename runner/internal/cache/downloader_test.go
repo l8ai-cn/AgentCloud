@@ -68,7 +68,7 @@ func TestResolveResourcePath(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := resolveResourcePath(tt.pathTmpl, tt.sandboxRoot, tt.workDir)
+			got, err := ResolveResourcePath(tt.pathTmpl, tt.sandboxRoot, tt.workDir)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

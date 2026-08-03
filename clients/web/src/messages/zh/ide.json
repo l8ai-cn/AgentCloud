@@ -72,6 +72,16 @@
         "createdAt": "创建时间",
         "error": "错误",
         "relatedPods": "{count} 个关联环境"
+      },
+      "workerSettings": {
+        "title": "Worker 设置",
+        "skillsDescription": "调整该 Worker 挂载的 Skill。保存后按当前版本重新固定，并写入新的配置快照。",
+        "edit": "修改",
+        "save": "保存",
+        "saving": "保存中…",
+        "noSkills": "未挂载 Skill",
+        "unresolvedSkills": "这些 Skill 已不在可用列表中，请先取消勾选：{slugs}",
+        "appliesOnNextStart": "Worker 当前未运行，改动将在下次启动时生效。"
       }
     },
     "createPod": {

@@ -12,7 +12,6 @@ import {
   Terminal,
   Ticket,
   User,
-  Wrench,
 } from "lucide-react";
 import { InfoRow } from "./InfoRow";
 
@@ -37,16 +36,6 @@ export function PodInfoGrid({ pod, orgSlug, t }: PodInfoGridProps) {
           icon={<Bot className="w-3 h-3" />}
           label={t("ide.bottomPanel.infoTab.agent")}
           value={pod.agent.name}
-        />
-      )}
-
-      {pod.worker_skill_slugs && pod.worker_skill_slugs.length > 0 && (
-        <InfoRow
-          icon={<Wrench className="w-3 h-3" />}
-          label={t("ide.bottomPanel.infoTab.skills")}
-          value={pod.worker_skill_slugs.join(", ")}
-          mono
-          className="col-span-2"
         />
       )}
 

@@ -45,6 +45,7 @@ service PodService {
   rpc UpdatePodAlias(UpdatePodAliasRequest) returns (UpdatePodAliasResponse);
   rpc UpdatePodPerpetual(UpdatePodPerpetualRequest) returns (UpdatePodPerpetualResponse);
   rpc UpdatePodPreviewConfig(UpdatePodPreviewConfigRequest) returns (UpdatePodPreviewConfigResponse);
+  rpc UpdatePodSkills(UpdatePodSkillsRequest) returns (UpdatePodSkillsResponse);
   rpc GetMobileAccessDescriptor(GetMobileAccessDescriptorRequest) returns (MobileAccessDescriptor);
   rpc GetPodConnection(GetPodConnectionRequest) returns (PodConnectionInfo);
   rpc SendPodPrompt(SendPodPromptRequest) returns (SendPodPromptResponse);
@@ -335,6 +336,23 @@ message UpdatePodPerpetualRequest {
 
 message UpdatePodPerpetualResponse {
   string message = 1;
+}
+
+// Skills are pinned by content_sha at creation, so remounting rewrites the
+// worker spec snapshot rather than editing it in place.
+message UpdatePodSkillsRequest {
+  string org_slug = 1;
+  string pod_key = 2;
+  repeated int64 skill_ids = 3;
+}
+
+message UpdatePodSkillsResponse {
+  repeated string mounted_slugs = 1;
+  repeated string added_slugs = 2;
+  repeated string removed_slugs = 3;
+  // False when the pod has no live runner to materialize the change, so the
+  // caller can tell the user the files land on the next worker start.
+  bool applied_to_runner = 4;
 }
 
 message UpdatePodPreviewConfigRequest {

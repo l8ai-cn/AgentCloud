@@ -4,6 +4,7 @@ import (
 	agentpodDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentpod"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/extension"
 	runnerDomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/runner"
+	skilldomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra/database"
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra/email"
 	adminservice "github.com/l8ai-cn/agentcloud/backend/internal/service/admin"
@@ -86,6 +87,7 @@ type serviceContainer struct {
 	email               email.Service
 	extension           *extensionservice.Service
 	extensionRepo       extension.Repository
+	skillCatalog        skilldomain.Repository
 	marketplaceWorker   *extensionservice.MarketplaceWorker
 	workflow            *workflow.WorkflowService
 	workflowRun         *workflow.WorkflowRunService

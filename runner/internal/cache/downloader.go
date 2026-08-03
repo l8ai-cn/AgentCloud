@@ -94,7 +94,7 @@ func (d *Downloader) DownloadAndExtract(ctx context.Context, res *runnerv1.Resou
 	}
 
 	// 3. Resolve target path and extract
-	targetPath, err := resolveResourcePath(res.TargetPath, sandboxRoot, workDir)
+	targetPath, err := ResolveResourcePath(res.TargetPath, sandboxRoot, workDir)
 	if err != nil {
 		return nil, fmt.Errorf("invalid resource target path: %w", err)
 	}
@@ -148,9 +148,11 @@ func (d *Downloader) download(ctx context.Context, sha, url string) (int64, erro
 	return cr.n, nil
 }
 
-// resolveResourcePath resolves template variables in resource target paths.
-// Returns an error if the resolved path escapes the sandbox root.
-func resolveResourcePath(pathTemplate, sandboxRoot, workDir string) (string, error) {
+// ResolveResourcePath resolves template variables in resource target paths.
+// Returns an error if the resolved path escapes the sandbox root. Skill removal
+// during a remount must resolve through here too, so an unmount can never be
+// tricked into deleting outside the sandbox.
+func ResolveResourcePath(pathTemplate, sandboxRoot, workDir string) (string, error) {
 	path := pathTemplate
 	path = strings.ReplaceAll(path, "{{.sandbox.root_path}}", sandboxRoot)
 	path = strings.ReplaceAll(path, "{{.sandbox.work_dir}}", workDir)

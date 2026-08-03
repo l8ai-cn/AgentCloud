@@ -83,6 +83,10 @@ func (h *mockHandlerWithRelayConnections) OnUpdatePodPolicyRules(cmd *runnerv1.U
 	return nil
 }
 
+func (h *mockHandlerWithRelayConnections) OnUpdatePodSkills(cmd *runnerv1.UpdatePodSkillsCommand) error {
+	return nil
+}
+
 func (h *mockHandlerWithRelayConnections) OnAcpRelay(cmd *runnerv1.AcpRelayCommand) error {
 	return nil
 }

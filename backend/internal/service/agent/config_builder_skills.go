@@ -107,7 +107,7 @@ func skillResources(
 		resources = append(resources, &runnerv1.ResourceToDownload{
 			Sha:          skill.ContentSha,
 			DownloadUrl:  skill.DownloadURL,
-			TargetPath:   skillTargetPath(agentSlug, skill.Slug),
+			TargetPath:   SkillTargetPath(agentSlug, skill.Slug),
 			ResourceType: "skill_package",
 			SizeBytes:    skill.PackageSize,
 		})
@@ -151,7 +151,10 @@ func filterSkillsBySlugSet(
 	return filtered
 }
 
-func skillTargetPath(agentSlug, skillSlug string) string {
+// SkillTargetPath is the cross-module contract for where a skill package lands
+// in a sandbox. Remounting an existing worker must reuse it, otherwise the new
+// files miss the directory the agent actually scans.
+func SkillTargetPath(agentSlug, skillSlug string) string {
 	switch agentSlug {
 	case "codex-cli", "codex", "pattern-designer", "video-studio":
 		return "{{.sandbox.root_path}}/codex-home/skills/" + skillSlug

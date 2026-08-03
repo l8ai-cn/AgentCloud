@@ -126,7 +126,8 @@ describe("InfoTabContent", () => {
           t={mockT}
         />
       );
-      expect(screen.getByText("seedance-expert, video-delivery-qa")).toBeInTheDocument();
+      expect(screen.getByText("seedance-expert")).toBeInTheDocument();
+      expect(screen.getByText("video-delivery-qa")).toBeInTheDocument();
     });
   });
 

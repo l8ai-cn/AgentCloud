@@ -63,6 +63,16 @@
         "createdAt": "Criado",
         "error": "Erro",
         "relatedPods": "{count} pod(s) relacionado(s)"
+      },
+      "workerSettings": {
+        "title": "Configurações do worker",
+        "skillsDescription": "Altere as skills que este worker monta. Ao salvar, elas são fixadas na versão atual e um novo snapshot de configuração é gravado.",
+        "edit": "Editar",
+        "save": "Salvar",
+        "saving": "Salvando…",
+        "noSkills": "Nenhuma skill montada",
+        "unresolvedSkills": "Estas skills não estão mais disponíveis — desmarque-as primeiro: {slugs}",
+        "appliesOnNextStart": "O worker não está em execução, então a alteração será aplicada na próxima inicialização."
       }
     },
     "createPod": {

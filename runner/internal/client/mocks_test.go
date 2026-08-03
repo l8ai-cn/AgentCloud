@@ -120,6 +120,10 @@ func (h *mockHandler) OnUpdatePodPolicyRules(cmd *runnerv1.UpdatePodPolicyRulesC
 	return nil
 }
 
+func (h *mockHandler) OnUpdatePodSkills(cmd *runnerv1.UpdatePodSkillsCommand) error {
+	return nil
+}
+
 func (h *mockHandler) OnAcpRelay(cmd *runnerv1.AcpRelayCommand) error { return nil }
 func (h *mockHandler) OnSandboxFs(cmd *runnerv1.SandboxFsCommand) error {
 	if h.sandboxFsStarted != nil {
@@ -206,6 +210,10 @@ func (h *mockHandlerWithError) OnUpdatePodPerpetual(cmd *runnerv1.UpdatePodPerpe
 }
 
 func (h *mockHandlerWithError) OnUpdatePodPolicyRules(cmd *runnerv1.UpdatePodPolicyRulesCommand) error {
+	return nil
+}
+
+func (h *mockHandlerWithError) OnUpdatePodSkills(cmd *runnerv1.UpdatePodSkillsCommand) error {
 	return nil
 }
 
