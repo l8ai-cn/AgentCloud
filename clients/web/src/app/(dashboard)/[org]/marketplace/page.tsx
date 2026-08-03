@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { MarketplaceCatalogPage } from "@/components/marketplace/MarketplaceCatalogPage";
 
 export default async function MarketplacePage({
   params,
@@ -6,5 +6,5 @@ export default async function MarketplacePage({
   params: Promise<{ org: string }>;
 }) {
   const { org } = await params;
-  redirect(`/${org}/skills`);
+  return <MarketplaceCatalogPage orgSlug={org} />;
 }

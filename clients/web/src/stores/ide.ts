@@ -101,9 +101,6 @@ export const useIDEStore = create<IDEState>()(
         bottomPanelTab: state.bottomPanelTab,
       }),
       onRehydrateStorage: () => (state) => {
-        if (state?.activeActivity === "marketplace") {
-          state.setActiveActivity("skills");
-        }
         state?.setHasHydrated(true);
       },
     }

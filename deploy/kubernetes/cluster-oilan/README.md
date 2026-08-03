@@ -169,7 +169,7 @@ validate the existing `agentcloud` Secret.
 | _(removed)_ | Marketplace API is mounted on backend (`/api/marketplace/v1`) |
 | `release/kustomization` | immutable platform image digests |
 | `40-ingress` | dowork / admin / relay / tunnel ingress |
-| `41-marketplace-ingress` | market API → backend; UI host redirects to `agents.l8ai.cn` |
+| `41-marketplace-ingress` | market API → backend; UI host redirects to `agents.l8ai.cn/marketplace` |
 | `44-preview-ingress` | isolated HTTPS pod preview gateway |
 | `60-prepull-daemonset` | warm agent-runtime image cache |
 

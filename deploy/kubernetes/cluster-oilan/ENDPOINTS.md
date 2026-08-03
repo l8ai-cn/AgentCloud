@@ -7,10 +7,11 @@
   [`docs/integrations/im-worker-connect.md`](../../../docs/integrations/im-worker-connect.md)
 - Isolated Pod preview: `https://<pod-key>.l8ai.cn` (`/preview` only)
 - Mobile Worker entry: https://mobile.l8ai.cn
-- Marketplace UI host: https://market.l8ai.cn → https://agents.l8ai.cn
-- Marketplace API: https://market.l8ai.cn/api/marketplace/v1 (backend)
+- Marketplace UI host: https://market.l8ai.cn → https://agents.l8ai.cn/marketplace
+- Marketplace API: https://agents.l8ai.cn/api/marketplace/v1 (backend; also on market.l8ai.cn)
+- Organization marketplace: https://agents.l8ai.cn/<org>/marketplace
 - Organization Skill catalog: https://agents.l8ai.cn/<org>/skills
-  (`/<org>/marketplace` redirects here while the storefront is retired)
+- Organization applications: https://agents.l8ai.cn/<org>/applications
 - Admin console: https://agents.l8ai.cn/admin
 - Object storage (presigned URLs): https://minio.dowork.l8ai.cn
 - Test account: `admin@agentcloud.local / Ab123456`

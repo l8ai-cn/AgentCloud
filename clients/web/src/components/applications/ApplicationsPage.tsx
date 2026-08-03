@@ -98,9 +98,9 @@ function ApplicationsHeader({ orgSlug }: { orgSlug: string }) {
         </p>
       </div>
       <Button asChild variant="outline" className="gap-2">
-        <Link href={`/${orgSlug}/skills`}>
+        <Link href={`/${orgSlug}/marketplace`}>
           <Store className="h-4 w-4" />
-          浏览 Skill 市场
+          浏览应用市场
         </Link>
       </Button>
     </header>
@@ -119,10 +119,10 @@ function ApplicationsEmpty({
       size="full"
       icon={<AppWindow className="h-12 w-12" />}
       title={focused ? "找不到这个已启用应用" : "还没有已启用的应用"}
-      description={focused ? "该应用可能已移除，或你没有当前组织的访问权限。" : "请先在 Skill 市场安装能力，完成启用后会显示在这里。"}
+      description={focused ? "该应用可能已移除，或你没有当前组织的访问权限。" : "请先在应用市场选择应用，完成启用后会显示在这里。"}
       actions={(
         <Button asChild>
-          <Link href={`/${orgSlug}/skills`}>前往 Skill 市场</Link>
+          <Link href={`/${orgSlug}/marketplace`}>前往应用市场</Link>
         </Button>
       )}
     />

@@ -30,7 +30,7 @@ metadata:
   namespace: agentcloud
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/permanent-redirect: "https://agents.l8ai.cn"
+    nginx.ingress.kubernetes.io/permanent-redirect: "https://agents.l8ai.cn/marketplace"
 spec:
   ingressClassName: nginx
   tls:
