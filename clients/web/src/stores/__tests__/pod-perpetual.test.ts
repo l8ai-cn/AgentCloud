@@ -25,8 +25,8 @@ const okBytes = () =>
     create(UpdatePodPerpetualResponseSchema, { message: "ok" }),
   );
 
-beforeEach(() => {
-  resetPodStore();
+beforeEach(async () => {
+  await resetPodStore();
   vi.mocked(svc().update_pod_perpetual_connect).mockResolvedValue(okBytes());
 });
 

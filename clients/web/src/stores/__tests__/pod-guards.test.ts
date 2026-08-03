@@ -52,8 +52,8 @@ describe("Pod Store — defaults", () => {
     expect(SIDEBAR_STATUS_MAP).not.toHaveProperty("all");
   });
 
-  it("should have running as default currentSidebarFilter after reset", () => {
-    resetPodStore();
+  it("should have running as default currentSidebarFilter after reset", async () => {
+    await resetPodStore();
     expect(usePodStore.getState().currentSidebarFilter).toBe("running");
   });
 });

@@ -7,6 +7,7 @@ import {
 } from "@proto/pod_state/v1/pod_state_pb";
 import { ListPodsResponseSchema } from "@proto/pod/v1/pod_pb";
 import { usePodStore, usePods, useCurrentPod, Pod } from "../pod";
+import { useAuthStore } from "@/stores/auth";
 import { getPodState } from "@/lib/wasm-core";
 import { fromProtoPod } from "@/lib/api/facade/podConnect";
 
@@ -72,7 +73,7 @@ export function podStateMock(): PodStateMock {
   return getPodState() as unknown as PodStateMock;
 }
 
-export function resetPodStore() {
+export async function resetPodStore() {
   vi.clearAllMocks();
   // After clearAllMocks: re-prime read-side defaults so tests that don't
   // explicitly seed start with empty cache and a working get-by-key.
@@ -83,6 +84,7 @@ export function resetPodStore() {
     const p = list.find((x) => x.pod_key === key);
     return p ? JSON.stringify(p) : undefined;
   });
+  await useAuthStore.getState().setCurrentOrg({ id: 1, name: "Dev", slug: "dev-org" });
   usePodStore.setState({
     _tick: 0,
     loading: false,
