@@ -35,7 +35,11 @@ export function projectWebAgentWorkbenchSnapshot(
   connection: AgentConnectionStatus,
   transportError: string | null,
 ): AgentSessionSnapshot {
-  if (!raw) return emptySnapshot(context, connection, transportError);
+  if (!raw) {
+    return ensurePtyTerminalSurface(
+      emptySnapshot(context, connection, transportError),
+    );
+  }
   const projected = projectGeneratedSessionSnapshot(raw, {
     agentLabel: context.agentLabel,
     connection,
@@ -43,9 +47,36 @@ export function projectWebAgentWorkbenchSnapshot(
     interactionMode: context.interactionMode,
     title: context.title,
   });
-  return transportError && !projected.error
+  const withError = transportError && !projected.error
     ? { ...projected, error: transportError }
     : projected;
+  return ensurePtyTerminalSurface(withError);
+}
+
+// PTY bytes stay on the relay data plane; the workbench resource can lag the
+// first paint, so keep a host-controlled main terminal available for the tab.
+function ensurePtyTerminalSurface(
+  snapshot: AgentSessionSnapshot,
+): AgentSessionSnapshot {
+  if (snapshot.interactionMode !== "pty") return snapshot;
+  const terminals =
+    snapshot.terminals.length > 0
+      ? snapshot.terminals
+      : [
+          {
+            controlMode: "host" as const,
+            id: "main",
+            label: "main:tui",
+            status:
+              snapshot.connection === "connected" ? "connected" : "connecting",
+            writable: true,
+          },
+        ];
+  return {
+    ...snapshot,
+    capabilities: { ...snapshot.capabilities, terminal: true },
+    terminals,
+  };
 }
 
 function emptySnapshot(
