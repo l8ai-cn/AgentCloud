@@ -35,6 +35,12 @@ AgentFiles on a live cluster. Backend loads the canonical catalog from the
 image at startup and rejects DB projections that do not match byte-for-byte.
 Ship AgentFile / worker-type changes only via an immutable image release.
 
+When editing `config/worker-types/<slug>/AgentFile` or `definition.json`, update
+`definition_hash` in `config/worker-types/catalog.json` (and the matching
+catalog-loop `worker.json`) to `sha256(definition.json + NUL + AgentFile)`
+before pushing — otherwise backend boot fails with
+`worker definition "<slug>" hash does not match catalog`.
+
 ### Checklist (required before any push/deploy script)
 
 1. Clean tree on `main`, commit is pushed to `origin/main` (and `cnb-agentcloud`
