@@ -3,7 +3,9 @@ AGENT do-agent
 EXECUTABLE do-agent
 
 # === Mode ===
-MODE pty
+# ACP is the workbench conversation path. Bare PTY launch rejects PROMPT argv
+# (do-agent treats free-text as an unknown subcommand and exits 2).
+MODE acp
 MODE acp "acp"
 
 # === Configuration ===
@@ -23,7 +25,7 @@ ENV MINIMAX_VIDEO_BASE_URL TEXT OPTIONAL
 ENV MINIMAX_VIDEO_MODEL TEXT OPTIONAL
 
 # === Prompt ===
-PROMPT_POSITION prepend
+PROMPT_POSITION none
 
 # === Capabilities ===
 MCP ON

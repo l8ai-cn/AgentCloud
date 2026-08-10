@@ -7,7 +7,7 @@ export function useCreatePodInteractionMode(
   availableAgents: AgentData[],
   automationLevel: string,
 ) {
-  const [requestedInteractionMode, setInteractionMode] = useState<PodMode>(POD_MODE_PTY);
+  const [requestedInteractionMode, setInteractionMode] = useState<PodMode | null>(null);
   const supportedModes = useMemo(() => {
     if (!selectedAgent) return [POD_MODE_PTY];
     const agent = availableAgents.find((a) => a.slug === selectedAgent);
@@ -23,7 +23,17 @@ export function useCreatePodInteractionMode(
     if (automationLevel === "autonomous" && supportedModes.includes(POD_MODE_ACP)) {
       return POD_MODE_ACP;
     }
-    if (supportedModes.includes(requestedInteractionMode)) return requestedInteractionMode;
+    if (
+      requestedInteractionMode &&
+      supportedModes.includes(requestedInteractionMode)
+    ) {
+      return requestedInteractionMode;
+    }
+    // Prefer ACP when available: workbench conversation is the primary path for
+    // agents like do-agent; bare PTY + PROMPT argv is not a valid launch.
+    if (supportedModes.includes(POD_MODE_ACP)) {
+      return POD_MODE_ACP;
+    }
     return (supportedModes[0] ?? POD_MODE_PTY) as PodMode;
   }, [automationLevel, requestedInteractionMode, selectedAgent, supportedModes]);
 

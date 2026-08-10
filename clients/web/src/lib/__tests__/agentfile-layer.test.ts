@@ -7,9 +7,9 @@ describe('buildAgentfileLayer', () => {
     expect(result).toContain('MODE acp')
   })
 
-  it('omits MODE for pty (default)', () => {
+  it('emits MODE for pty so ACP-default agents can be overridden', () => {
     const result = buildAgentfileLayer({ configValues: {}, interactionMode: 'pty' })
-    expect(result).not.toContain('MODE')
+    expect(result).toContain('MODE pty')
   })
 
   it('generates PROMPT declaration', () => {

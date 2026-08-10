@@ -3,8 +3,6 @@
  * An AgentFile Layer is a DSL fragment that configures a Pod's environment.
  */
 
-import { POD_MODE_PTY } from "@/lib/pod-modes";
-
 /** POSIX-style env var name: uppercase letters, digits, underscores. */
 const ENV_NAME_PATTERN = /^[A-Z_][A-Z0-9_]*$/;
 
@@ -66,8 +64,10 @@ export function buildAgentfileLayer(params: {
 }): string {
   const lines: string[] = [];
 
-  // MODE declaration (if not default PTY)
-  if (params.interactionMode && params.interactionMode !== POD_MODE_PTY) {
+  // Always emit MODE so ACP-default AgentFiles (e.g. do-agent) are not silently
+  // overridden when the form selects PTY, and PTY-default agents still get ACP
+  // when the form selects it.
+  if (params.interactionMode) {
     lines.push(`MODE ${params.interactionMode}`);
   }
 
