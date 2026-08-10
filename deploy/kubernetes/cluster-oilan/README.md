@@ -39,11 +39,14 @@ Ship AgentFile / worker-type changes only via an immutable image release.
 
 1. Clean tree on `main`, commit is pushed to `origin/main` (and `cnb-agentcloud`
    if CNB must rebuild).
-2. Required CI checks green for that commit (see `release_source_guard.sh`).
+2. Required CI checks green for that commit (`Runtime release contracts`,
+   `Loop and sandbox security regressions` on `l8ai-cn/AgentCloud`; override with
+   `RELEASE_REPOSITORY` only if mirroring elsewhere).
 3. `docker login repo.aiedulab.cn:8443` on the operator machine.
 4. Harbor upload token lifetime ≥ 120 minutes:
-   `DOOPS_SESSION=<s> ./configure-harbor-upload-token.sh`
-5. Target online: `doops targets --target gw-oilan-node`
+   `DOOPS_SESSION=$(doops session) ./configure-harbor-upload-token.sh`
+   (requires prior `doops login` against the oilan gateway).
+5. Target online: `DOOPS_SESSION=<s> doops targets --target gw-oilan-node`
 
 ### Backend + Web only (typical product fix)
 
