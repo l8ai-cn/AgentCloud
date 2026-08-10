@@ -45,9 +45,12 @@ before pushing — otherwise backend boot fails with
 
 1. Clean tree on `main`, commit is pushed to `origin/main` (and `cnb-agentcloud`
    if CNB must rebuild).
-2. Required CI checks green for that commit (`Runtime release contracts`,
-   `Loop and sandbox security regressions` on `l8ai-cn/AgentCloud`; override with
-   `RELEASE_REPOSITORY` only if mirroring elsewhere).
+2. Full GitHub CI green for that commit on `l8ai-cn/AgentCloud` (not only the
+   two named release gates). Confirm with:
+   `gh run list --commit <sha> --branch main` — the `CI` workflow must be
+   `success`. Override repo with `RELEASE_REPOSITORY` only if mirroring elsewhere.
+   Do not run `push-images.sh` while `CI` is still `pending`/`in_progress` even
+   if the two named checks already passed.
 3. `docker login repo.aiedulab.cn:8443` on the operator machine.
 4. Harbor upload token lifetime ≥ 120 minutes:
    `DOOPS_SESSION=$(doops session) ./configure-harbor-upload-token.sh`
