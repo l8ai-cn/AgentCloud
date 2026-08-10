@@ -30,6 +30,42 @@ Because Harbor is node-local, runner + backend-launcher image pull policy is `Al
 
 ## Deploy / reseed
 
+Do **not** hot-patch `agents.agentfile_source` or ConfigMap-mount Worker
+AgentFiles on a live cluster. Backend loads the canonical catalog from the
+image at startup and rejects DB projections that do not match byte-for-byte.
+Ship AgentFile / worker-type changes only via an immutable image release.
+
+### Checklist (required before any push/deploy script)
+
+1. Clean tree on `main`, commit is pushed to `origin/main` (and `cnb-agentcloud`
+   if CNB must rebuild).
+2. Required CI checks green for that commit (see `release_source_guard.sh`).
+3. `docker login repo.aiedulab.cn:8443` on the operator machine.
+4. Harbor upload token lifetime ≥ 120 minutes:
+   `DOOPS_SESSION=<s> ./configure-harbor-upload-token.sh`
+5. Target online: `doops targets --target gw-oilan-node`
+
+### Backend + Web only (typical product fix)
+
+```bash
+# from repo root, clean main @ origin/main
+cd deploy/kubernetes/cluster-oilan
+DOOPS_SESSION=<release-session> ./configure-harbor-upload-token.sh
+./push-images.sh marketplace-core   # builds+pushes backend+web, updates release locks
+git status --short
+git add release 30-backend.yaml 60-prepull-daemonset.yaml \
+  ../../environments/oilan/values.yaml 2>/dev/null || true
+# also stage any other files push-images.sh rewrote (digest pins / provenance)
+git add -u release 30-backend.yaml 60-prepull-daemonset.yaml
+git commit -m "Roll oilan to release-YYYYMMDD (backend+web)"
+git push origin HEAD:main
+git push cnb-agentcloud HEAD:main
+DOOPS_SESSION=<release-session> DOOPS_TARGET=gw-oilan-node ./deploy.sh
+# deploy.sh rolls backend and runs worker-definition-sync against the new image
+```
+
+### Full platform + runners
+
 ```bash
 docker login repo.aiedulab.cn:8443           # one-time
 DOOPS_SESSION=<release-session> ./configure-harbor-upload-token.sh
@@ -42,8 +78,9 @@ git add deploy/kubernetes/cluster-oilan/release \
   backend/internal/domain/workerruntime/runtime_catalog.lock.json \
   config/worker-types tools/loops/worker-onboarding/catalog-loop
 git commit
+git push origin HEAD:main
 git push cnb-agentcloud HEAD:main
-# wait for CNB release-image build on https://cnb.cool/l8ai/agentcloud
+# wait for CNB release-image build on https://cnb.cool/l8ai/agentcloud when used
 DOOPS_SESSION=<release-session> \
   DOOPS_TARGET=gw-oilan-node ./deploy.sh
 ```
