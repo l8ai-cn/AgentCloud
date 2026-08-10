@@ -47,6 +47,8 @@ Ship AgentFile / worker-type changes only via an immutable image release.
    `DOOPS_SESSION=$(doops session) ./configure-harbor-upload-token.sh`
    (requires prior `doops login` against the oilan gateway).
 5. Target online: `DOOPS_SESSION=<s> doops targets --target gw-oilan-node`
+   (must report online — Harbor token configure + `deploy.sh` both exec on that node.
+   If offline, wait; do not bypass with DB/ConfigMap AgentFile hotfixes.)
 
 ### Backend + Web only (typical product fix)
 
