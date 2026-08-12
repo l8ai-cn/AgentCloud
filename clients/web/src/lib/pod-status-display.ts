@@ -12,6 +12,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import type { PodStatus } from "@/lib/pod-status";
+
 export interface PodStatusDisplay {
   label: string;
   color: string;
@@ -29,7 +31,9 @@ const UNKNOWN_POD_STATUS: PodStatusDisplay = {
   icon: CircleHelp,
 };
 
-const POD_STATUS_DISPLAY: Record<string, PodStatusDisplay> = {
+// Keyed by PodStatus so a new status fails typecheck here instead of silently
+// rendering as Unknown.
+const POD_STATUS_DISPLAY: Record<PodStatus, PodStatusDisplay> = {
   queued: {
     label: "Queued",
     color: "text-warning",
@@ -98,5 +102,5 @@ const POD_STATUS_DISPLAY: Record<string, PodStatusDisplay> = {
 };
 
 export function getPodStatusDisplay(status: string): PodStatusDisplay {
-  return POD_STATUS_DISPLAY[status] ?? UNKNOWN_POD_STATUS;
+  return POD_STATUS_DISPLAY[status as PodStatus] ?? UNKNOWN_POD_STATUS;
 }

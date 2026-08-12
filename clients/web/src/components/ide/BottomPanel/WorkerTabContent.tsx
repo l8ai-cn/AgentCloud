@@ -15,6 +15,7 @@ import {
   updatePodPreviewConfig,
 } from "@/lib/api/facade/podConnect";
 import type { PodData } from "@/lib/api/facade/pod";
+import { isPodActive } from "@/lib/pod-status";
 import { usePodStore } from "@/stores/pod";
 
 const VIDEO_PREVIEW_PORT = 4173;
@@ -29,10 +30,6 @@ function videoDeliveryContract(task: string): string {
 3. 创建 delivery/oilan-video/index.html，页面必须包含可见标题“OILAN 视频成片”、原生 video controls 播放器，并加载 ../oilan-video-preview.mp4。
 4. 重启预览服务：若 delivery/preview-server.pid 存在则终止旧进程；随后执行 nohup python3 -m http.server ${VIDEO_PREVIEW_PORT} --bind 127.0.0.1 --directory delivery > delivery/preview-server.log 2>&1 &，把 PID 写入 delivery/preview-server.pid。
 5. 确认 http://127.0.0.1:${VIDEO_PREVIEW_PORT}/ 可访问后，报告成片规格、校验结果和预览入口已就绪。`;
-}
-
-function isActivePod(status: PodData["status"]): boolean {
-  return ["initializing", "running", "paused", "disconnected"].includes(status);
 }
 
 interface WorkerTabContentProps {
@@ -76,7 +73,7 @@ export function WorkerTabContent({
   }, [orgSlug, pod?.worker_spec_snapshot_id, selectedPodKey]);
 
   const canSend = useMemo(
-    () => Boolean(pod && orgSlug && task.trim() && isActivePod(pod.status)),
+    () => Boolean(pod && orgSlug && task.trim() && isPodActive(pod.status)),
     [orgSlug, pod, task],
   );
 
@@ -170,7 +167,7 @@ export function WorkerTabContent({
           onChange={(event) => setTask(event.target.value)}
           placeholder={t("videoWorker.taskPlaceholder")}
           className="mt-2 min-h-20 flex-1 resize-none text-sm"
-          disabled={sending || !isActivePod(pod.status)}
+          disabled={sending || !isPodActive(pod.status)}
         />
         <div className="mt-2 flex justify-end">
           <Button size="sm" onClick={handleSubmit} disabled={!canSend || sending}>

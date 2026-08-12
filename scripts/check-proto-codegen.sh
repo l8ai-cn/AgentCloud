@@ -11,6 +11,9 @@ generated_paths=(
   proto/gen/go
   backend/internal/api/connect
   clients/core/crates/proto
+  backend/internal/domain/agentpod/pod_status.gen.go
+  clients/core/crates/state/src/pod_status.rs
+  packages/service-interface/src/view-models/pod-status.gen.ts
 )
 
 if ! git diff --quiet -- "${generated_paths[@]}"; then

@@ -674,5 +674,6 @@ export {
 export * from "./view-models/workflow";
 export * from "./view-models/ticket";
 export * from "./view-models/pod";
+export * from "./view-models/pod-status.gen";
 export * from "./view-models/runner";
 export * from "./view-models/repository";

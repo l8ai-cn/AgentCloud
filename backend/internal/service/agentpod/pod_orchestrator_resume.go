@@ -20,9 +20,7 @@ func (o *PodOrchestrator) handleResumeMode(ctx context.Context, req *Orchestrate
 		return nil, "", ErrSourcePodAccessDenied
 	}
 
-	if sourcePod.Status != podDomain.StatusTerminated &&
-		sourcePod.Status != podDomain.StatusCompleted &&
-		sourcePod.Status != podDomain.StatusOrphaned {
+	if !podDomain.IsPodStatusResumableSource(sourcePod.Status) {
 		return nil, "", ErrSourcePodNotTerminated
 	}
 

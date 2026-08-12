@@ -199,6 +199,7 @@ describe("Pod Store — basic reads", () => {
         status: "initializing" as const,
       };
       mockWakePodConnect(resumedPod);
+      mockListPodsConnect([resumedPod], 1);
 
       let result: typeof resumedPod | undefined;
       await act(async () => {
@@ -217,6 +218,8 @@ describe("Pod Store — basic reads", () => {
       });
       expect(result?.pod_key).toBe("pod-resumed-789");
       expect(lastInsertCreatedPod()?.pod_key).toBe("pod-resumed-789");
+      expect(svc().list_pods_connect).toHaveBeenCalled();
+      expect(usePodStore.getState().currentSidebarFilter).toBe("running");
     });
   });
 

@@ -13,7 +13,7 @@ import {
   Clock,
 } from "lucide-react";
 
-interface InitProgress {
+export interface InitProgress {
   progress: number;
   phase: string;
   message: string;
@@ -120,10 +120,12 @@ export function PaneLoadingState({ podStatus, initProgress, onClose, onWake }: P
 
 interface PaneReconnectingStateProps {
   onClose?: () => void;
+  onWake?: () => void;
 }
 
-export function PaneReconnectingState({ onClose }: PaneReconnectingStateProps) {
+export function PaneReconnectingState({ onClose, onWake }: PaneReconnectingStateProps) {
   const t = useTranslations("workspace.reconnecting");
+  const tWorkspace = useTranslations("workspace");
   return (
     <div className="flex-1 flex items-center justify-center bg-terminal-bg">
       <div className="text-center p-4 max-w-sm">
@@ -134,6 +136,12 @@ export function PaneReconnectingState({ onClose }: PaneReconnectingStateProps) {
         <p className="text-sm text-terminal-text-muted mb-4">
           {t("description")}
         </p>
+        {onWake && (
+          <Button variant="outline" size="sm" className="mb-2 mr-2" onClick={onWake}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            {tWorkspace("contextMenu.wake")}
+          </Button>
+        )}
         {onClose && (
           <Button
             variant="outline"

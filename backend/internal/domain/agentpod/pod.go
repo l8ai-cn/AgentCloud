@@ -10,18 +10,8 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/user"
 )
 
-// Pod status constants
-const (
-	StatusInitializing = "initializing"
-	StatusRunning      = "running"
-	StatusPaused       = "paused"
-	StatusDisconnected = "disconnected" // User closed browser
-	StatusOrphaned     = "orphaned"     // Lost due to runner restart
-	StatusCompleted    = "completed"
-	StatusTerminated   = "terminated"
-	StatusError        = "error"
-	StatusQueued       = "queued"
-)
+// Pod status constants and their lifecycle groupings live in pod_status.gen.go,
+// generated from proto/pod/v1/pod_status.proto.
 
 // Agent status constants
 const (

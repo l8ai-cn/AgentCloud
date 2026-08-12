@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { toast } from "sonner";
 import { useCurrentOrg } from "@/stores/auth";
 import { useWorkspaceStore } from "@/stores/workspace";
-import { usePodStore, usePods, Pod, SIDEBAR_STATUS_MAP } from "@/stores/pod";
+import { usePodStore, usePods, Pod } from "@/stores/pod";
+import { filterSidebarPods } from "@/stores/podSidebarFilter";
 import { useRunnerStore, useRunners } from "@/stores/runner";
 import { useConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useWakeWorker } from "@/hooks/useWakeWorker";
 import type { FilterType } from "./WorkspaceFilters";
 
 export function useWorkspaceSidebar(
@@ -19,12 +20,12 @@ export function useWorkspaceSidebar(
   const fetchSidebarPods = usePodStore((s) => s.fetchSidebarPods);
   const loadMorePods = usePodStore((s) => s.loadMorePods);
   const terminatePod = usePodStore((s) => s.terminatePod);
-  const wakePod = usePodStore((s) => s.wakePod);
   const deleteTerminalPod = usePodStore((s) => s.deleteTerminalPod);
   const updatePodAlias = usePodStore((s) => s.updatePodAlias);
   const updatePodPerpetual = usePodStore((s) => s.updatePodPerpetual);
   const podHasMore = usePodStore((s) => s.podHasMore);
   const loadingMore = usePodStore((s) => s.loadingMore);
+  const filter = (usePodStore((s) => s.currentSidebarFilter) as FilterType) || "running";
   const runners = useRunners();
   const runnersLoading = useRunnerStore((s) => s.loading);
   const fetchRunners = useRunnerStore((s) => s.fetchRunners);
@@ -32,7 +33,6 @@ export function useWorkspaceSidebar(
   const removePaneByPodKey = useWorkspaceStore((s) => s.removePaneByPodKey);
   const panes = useWorkspaceStore((s) => s.panes);
 
-  const [filter, setFilter] = useState<FilterType>("running");
   const [searchQuery, setSearchQuery] = useState("");
   const [runnersExpanded, setRunnersExpanded] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -46,7 +46,7 @@ export function useWorkspaceSidebar(
   }, [currentOrg, fetchSidebarPods, fetchRunners]);
 
   const handleFilterChange = useCallback((f: FilterType) => {
-    setFilter(f); fetchSidebarPods(f);
+    fetchSidebarPods(f);
   }, [fetchSidebarPods]);
 
   const handleRefresh = useCallback(async () => {
@@ -54,23 +54,19 @@ export function useWorkspaceSidebar(
     try { await Promise.all([fetchSidebarPods(filter, { silent: true }), fetchRunners()]); } finally { setRefreshing(false); }
   }, [fetchSidebarPods, filter, fetchRunners]);
 
-  const filteredPods = useMemo(() => {
-    const allowedStatuses = SIDEBAR_STATUS_MAP[filter];
-    const statusSet = allowedStatuses ? new Set(allowedStatuses.split(",")) : null;
-    return pods.filter((pod) => {
-      if (statusSet && !statusSet.has(pod.status)) return false;
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        return pod.pod_key.toLowerCase().includes(q) || !!pod.ticket?.slug?.toLowerCase().includes(q) || !!pod.runner?.node_id?.toLowerCase().includes(q);
-      }
-      return true;
-    });
-  }, [pods, searchQuery, filter]);
+  const filteredPods = useMemo(
+    () => filterSidebarPods(pods, filter, searchQuery),
+    [pods, searchQuery, filter],
+  );
 
   const sortedPods = useMemo(() => {
-    const priority: Record<string, number> = { running: 0, initializing: 1, paused: 2, terminated: 3, failed: 3 };
+    // Liveliest first; every finished status shares the last bucket and falls
+    // back to newest-first.
+    const priority: Record<string, number> = {
+      running: 0, initializing: 1, queued: 1, paused: 2, disconnected: 2,
+    };
     return [...filteredPods].sort((a, b) => {
-      const diff = (priority[a.status] ?? 4) - (priority[b.status] ?? 4);
+      const diff = (priority[a.status] ?? 3) - (priority[b.status] ?? 3);
       if (diff !== 0) return diff;
       return new Date(b.created_at ?? '').getTime() - new Date(a.created_at ?? '').getTime();
     });
@@ -102,15 +98,7 @@ export function useWorkspaceSidebar(
     if (confirmed) await deleteTerminalPod(podKey);
   }, [confirm, deleteTerminalPod, t]);
 
-  const handleWakeClick = useCallback(async (podKey: string) => {
-    try {
-      const resumedPod = await wakePod(podKey);
-      removePaneByPodKey(podKey);
-      addPane(resumedPod.pod_key);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to wake Worker");
-    }
-  }, [addPane, removePaneByPodKey, wakePod]);
+  const handleWakeClick = useWakeWorker();
 
   const handleRenameConfirm = useCallback(async (newName: string) => {
     if (!renamePod) return;

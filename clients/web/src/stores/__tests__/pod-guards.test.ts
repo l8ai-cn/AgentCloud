@@ -58,41 +58,6 @@ describe("Pod Store — defaults", () => {
   });
 });
 
-describe("Pod Store — SIDEBAR_STATUS_MAP client-side guard", () => {
-  function applyClientFilter(pods: Pod[], filter: string): Pod[] {
-    const allowedStatuses = SIDEBAR_STATUS_MAP[filter];
-    const statusSet = allowedStatuses
-      ? new Set(allowedStatuses.split(","))
-      : null;
-
-    return pods.filter((pod) => {
-      if (statusSet && !statusSet.has(pod.status)) return false;
-      return true;
-    });
-  }
-
-  const runningPod: Pod = { ...mockPod, status: "running" };
-  const otherRunning: Pod = { ...mockPod2, status: "running" };
-  const terminatedPod: Pod = { ...mockPod, pod_key: "pod-term", status: "terminated" };
-
-  it("running filter shows org pods regardless of creator", () => {
-    const result = applyClientFilter([runningPod, otherRunning, terminatedPod], "running");
-    expect(result).toHaveLength(2);
-    expect(result.map((p) => p.pod_key)).toEqual([runningPod.pod_key, otherRunning.pod_key]);
-  });
-
-  it("stopped filter should only show terminal status pods", () => {
-    const failedPod: Pod = {
-      ...mockPod,
-      pod_key: "pod-failed",
-      status: "failed",
-      agent_status: "idle",
-      created_at: "2024-01-03T00:00:00Z",
-    };
-    const result = applyClientFilter([runningPod, terminatedPod, failedPod], "stopped");
-    expect(result).toHaveLength(2);
-  });
-});
 
 describe("Pod Store — fetchSidebarPods", () => {
   beforeEach(resetPodStore);

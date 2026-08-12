@@ -8,6 +8,7 @@ use serde_json::Value;
 use crate::app_state::{AppState, NotificationSpec, ToastSpec};
 use crate::autopilot_state::{AutopilotController, AutopilotIteration};
 use crate::channel_types::{ChannelMessage, SenderAgentInfo, SenderPodInfo, SenderUser};
+use crate::pod_status;
 use crate::workflow_state::{workflow_run_status, WorkflowRunData};
 
 /// Extract an int64 from a protojson event field. The backend serializes
@@ -130,13 +131,15 @@ pub fn dispatch(state: &mut AppState, event: &RealtimeEvent) {
             if let Some(key) = event.data.get("pod_key").and_then(|v| v.as_str()) {
                 state.pods.update_pod_status(
                     key,
-                    "terminated",
+                    pod_status::TERMINATED,
                     None,
                     None,
                     None,
                     Some(event.timestamp),
                 );
-                state.mesh.update_node_status(key, "terminated", None);
+                state
+                    .mesh
+                    .update_node_status(key, pod_status::TERMINATED, None);
             }
         }
         EventType::PodTitleChanged => {
