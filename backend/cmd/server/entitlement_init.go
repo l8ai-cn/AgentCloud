@@ -4,6 +4,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/infra"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	entitlementsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/entitlement"
+	extensionsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
 	"gorm.io/gorm"
 )
 
@@ -26,6 +27,6 @@ func wireEntitlements(services *serviceContainer, db *gorm.DB) {
 		services.workerCreation.SetEntitlements(services.entitlement)
 	}
 	if services.extension != nil {
-		services.extension.SetEntitlements(services.entitlement)
+		services.extension.SetEntitlements(extensionsvc.AdaptEntitlementService(services.entitlement))
 	}
 }

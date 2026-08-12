@@ -6,11 +6,8 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
-	"path"
-	"time"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/extension"
-	"github.com/google/uuid"
 )
 
 // InstallSkillFromMarket installs a unified-catalog skill (skills table row)
@@ -91,112 +88,6 @@ func (s *Service) InstallSkillFromUpload(ctx context.Context, orgID, repoID, use
 	}
 
 	return s.packager.CompleteUploadInstall(ctx, orgID, repoID, userID, reader, filename, scope)
-}
-
-// PresignSkillUploadResponse carries the presigned PUT URL + opaque storage_key
-// the client needs to upload a skill archive directly to S3.
-type PresignSkillUploadResponse struct {
-	PutURL     string
-	StorageKey string
-	Filename   string
-}
-
-// presignedSkillUploadExpiry bounds how long the client has to PUT.
-const presignedSkillUploadExpiry = 15 * time.Minute
-
-// maxSkillUploadBytes mirrors the legacy multipart REST limit.
-const maxSkillUploadBytes = 50 * 1024 * 1024
-
-// PresignSkillUpload mints an opaque storage_key + presigned PUT URL for the
-// 2-step Connect upload-install flow. Mirrors support_ticket.PresignAttachment.
-func (s *Service) PresignSkillUpload(ctx context.Context, orgID, repoID, userID int64, filename, contentType string, size int64) (*PresignSkillUploadResponse, error) {
-	if err := s.requireRepositoryAccess(ctx, orgID, repoID, userID); err != nil {
-		return nil, err
-	}
-	if s.storage == nil {
-		return nil, fmt.Errorf("%w: storage not configured", ErrInvalidInput)
-	}
-	if size <= 0 {
-		return nil, fmt.Errorf("%w: size must be > 0", ErrInvalidInput)
-	}
-	if size > maxSkillUploadBytes {
-		return nil, fmt.Errorf("%w: upload exceeds maximum size of %d bytes", ErrInvalidInput, maxSkillUploadBytes)
-	}
-	if filename == "" {
-		return nil, fmt.Errorf("%w: filename required", ErrInvalidInput)
-	}
-
-	storageKey := newSkillUploadKey(orgID, userID, filename)
-	putURL, err := s.storage.PresignPutURL(ctx, storageKey, contentType, presignedSkillUploadExpiry)
-	if err != nil {
-		return nil, fmt.Errorf("failed to presign upload: %w", err)
-	}
-
-	slog.InfoContext(ctx, "skill upload presigned",
-		"org_id", orgID, "repo_id", repoID, "user_id", userID,
-		"storage_key", storageKey, "size", size)
-
-	return &PresignSkillUploadResponse{
-		PutURL:     putURL,
-		StorageKey: storageKey,
-		Filename:   filename,
-	}, nil
-}
-
-// InstallSkillFromUploadedKey downloads the previously-uploaded archive at
-// storageKey, then drives the same packaging pipeline the multipart REST
-// handler used. The opaque key carries the original upload session — callers
-// must not mutate it.
-func (s *Service) InstallSkillFromUploadedKey(ctx context.Context, orgID, repoID, userID int64, storageKey, filename, scope string) (*extension.InstalledSkill, error) {
-	if err := validateScope(scope); err != nil {
-		return nil, err
-	}
-	if s.storage == nil {
-		return nil, fmt.Errorf("%w: storage not configured", ErrInvalidInput)
-	}
-	if s.packager == nil {
-		return nil, fmt.Errorf("skill packager not configured")
-	}
-	if storageKey == "" {
-		return nil, fmt.Errorf("%w: storage_key required", ErrInvalidInput)
-	}
-	exists, err := s.storage.Exists(ctx, storageKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to verify upload: %w", err)
-	}
-	if !exists {
-		return nil, fmt.Errorf("%w: uploaded file at storage_key not found", ErrNotFound)
-	}
-
-	body, _, err := s.storage.Download(ctx, storageKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to download upload: %w", err)
-	}
-	defer body.Close()
-	// Limit-read defends against runaway downloads even if the client lied
-	// about size at presign-time (S3 enforces the body length, but a hostile
-	// uploader could PUT a different key entirely).
-	reader := io.LimitReader(body, maxSkillUploadBytes+1)
-
-	skill, installErr := s.packager.CompleteUploadInstall(ctx, orgID, repoID, userID, reader, filename, scope)
-	// Always cleanup the staging blob — install pipeline copies it into the
-	// canonical skills/direct/{slug}/{sha}.tar.gz key.
-	if delErr := s.storage.Delete(ctx, storageKey); delErr != nil {
-		slog.WarnContext(ctx, "failed to delete skill upload staging blob",
-			"storage_key", storageKey, "error", delErr)
-	}
-	if installErr != nil {
-		return nil, installErr
-	}
-	return skill, nil
-}
-
-func newSkillUploadKey(orgID, userID int64, filename string) string {
-	ext := path.Ext(filename)
-	if ext == "" {
-		ext = ".tar.gz"
-	}
-	return fmt.Sprintf("skill-uploads/%d/%d/%s%s", orgID, userID, uuid.New().String(), ext)
 }
 
 func (s *Service) UpdateSkill(ctx context.Context, orgID, repoID, installID, userID int64, userRole string, enabled *bool, pinnedVersion *int) (*extension.InstalledSkill, error) {
