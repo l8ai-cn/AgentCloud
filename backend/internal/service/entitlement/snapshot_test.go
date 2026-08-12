@@ -201,6 +201,18 @@ func (m *memoryRepo) ListByOrg(_ context.Context, orgID int64) ([]entitlementdom
 	return out, nil
 }
 
+func (m *memoryRepo) ListByResource(_ context.Context, kind, key string) ([]entitlementdom.Entitlement, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	var out []entitlementdom.Entitlement
+	for _, row := range m.rows {
+		if row.ResourceKind == kind && row.ResourceKey == key {
+			out = append(out, row)
+		}
+	}
+	return out, nil
+}
+
 func (m *memoryRepo) PlatformSkillDefaults(_ context.Context) (map[string]string, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

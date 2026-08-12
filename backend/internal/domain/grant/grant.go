@@ -14,6 +14,7 @@ const (
 	TypeSkill           = "skill"
 	TypeModelConnection = "model_connection"
 	TypeKnowledgeBase   = "knowledge_base"
+	TypeExpert          = "expert"
 )
 
 func IntResourceID(id int64) string {

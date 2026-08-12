@@ -66,7 +66,9 @@ func (s *Service) CleanupByResource(ctx context.Context, resourceType, resourceI
 
 func isValidType(t string) bool {
 	switch t {
-	case grant.TypePod, grant.TypeRunner, grant.TypeRepository, grant.TypeModelConnection, grant.TypeKnowledgeBase:
+	case grant.TypePod, grant.TypeRunner, grant.TypeRepository,
+		grant.TypeModelConnection, grant.TypeKnowledgeBase,
+		grant.TypeSkill, grant.TypeExpert:
 		return true
 	}
 	return false

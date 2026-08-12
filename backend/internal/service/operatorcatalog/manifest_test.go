@@ -11,8 +11,8 @@ import (
 func TestOperatorPartnerManifestIsCompleteAndInternallyConsistent(t *testing.T) {
 	skills, err := Skills()
 	require.NoError(t, err)
-	require.Len(t, skills, 20)
-	require.Len(t, Experts(), 8)
+	require.Len(t, skills, 22)
+	require.Len(t, Experts(), 10)
 
 	requiredBundleFiles := map[string][]string{
 		"learning-companion": {"bin/start-domain-server.sh", "program/server.py"},
@@ -24,6 +24,20 @@ func TestOperatorPartnerManifestIsCompleteAndInternallyConsistent(t *testing.T) 
 			"references/course-package-schema.md",
 			"references/platform-publish-contract.md",
 			"scripts/course_package_cli.py",
+		},
+		"official-vehicle-booking": {
+			"references/booking-schema.md",
+			"references/rules.md",
+			"references/hitl-gates.md",
+			"references/submit-adapter.md",
+			"references/workspace-contract.md",
+		},
+		"campus-daily-brief": {
+			"references/episode-contract.md",
+			"references/news-window.md",
+			"references/script-rules.md",
+			"references/adapters.md",
+			"references/workspace-contract.md",
 		},
 	}
 	skillSlugs := make(map[string]struct{}, len(skills))

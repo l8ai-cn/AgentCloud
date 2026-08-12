@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const Revision = "operator-partners-2026-07-28-course-skills-v2"
+const Revision = "operator-partners-2026-08-13-campus-digital-employees"
 
 //go:embed assets/skills
 var skillAssets embed.FS

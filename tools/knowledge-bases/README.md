@@ -27,12 +27,30 @@ tools/knowledge-bases/
 
 ## 当前知识库
 
-| slug | 院校 | 官方来源 |
-|---|---|---|
-| `zhejiang-conservatory-of-music` | 浙江音乐学院 | https://www.zjcm.edu.cn |
-| `zstu-keyi-college` | 浙江理工大学科技与艺术学院 | https://zs.ky.zstu.edu.cn |
+按**内容域 × 更新节奏**拆库，而不是一所院校一个大库。事实型与时序型内容混在
+同一个库里，agent 检索时会互相干扰：查办学定位时被上周的演出通知淹没，查近期
+动态时又被沿革史料稀释。
 
-校名易错点：第二所的正式名是「科技与艺术学院」，不是「科学与艺术学院」。
+| slug | 院校 | 内容域 | 更新节奏 |
+|---|---|---|---|
+| `zhejiang-conservatory-of-music` | 浙江音乐学院 | 院校事实（沿革、院系、专业、学科、设施、话语体系） | 低频，学年级 |
+| `zhejiang-conservatory-of-music-news` | 浙江音乐学院 | 新闻公告、演出活动、通知 | 高频，周级 |
+| `zstu-keyi-college` | 浙江理工大学科技与艺术学院 | 院校事实 | 低频，学年级 |
+| `zstu-keyi-college-news` | 浙江理工大学科技与艺术学院 | 新闻公告、通知 | 高频，周级 |
+
+校名易错点：后者的正式名是「科技与艺术学院」，不是「科学与艺术学院」。
+
+事实库与新闻库的差别不只是内容，还包括契约：事实库要求逐字照录与矛盾登记，
+新闻库额外要求每条带发布日期、保留时序、并明确区分「已发生」与「预告」。
+
+## 新鲜度的现实约束
+
+平台的知识库 connector 只支持 `git` / `feishu` / `dingtalk` / `google`
+（见 `backend/internal/domain/knowledgebase` 的 `SourceType*` 与
+`service/knowledgebase/connector/`），**没有网站抓取或 RSS 类 connector**。
+
+因此新闻库的 `source_type` 只能是 `git`，新鲜度靠定期跑一次 ingest agent 往
+`raw/` 追加快照来维持，而不是 `sync_worker` 自动拉取。周期性触发需要外部调度。
 
 ## Provision 到平台
 

@@ -49,6 +49,7 @@ grep -q "HERMES_AGENT_VERSION" "$DOCKERFILE"
 grep -q "@earendil-works/pi-coding-agent" "$DOCKERFILE"
 grep -q "PI_CODING_AGENT_VERSION" "$DOCKERFILE"
 grep -q "pi-agent-wrapper.sh" "$DOCKERFILE"
+grep -q "pi-agent-wrapper.sh" lib/host_services_lite.sh
 grep -q "runner-claude-code" docker-compose.runners.yml
 grep -q "runner-codex-cli" docker-compose.runners.yml
 grep -q "runner-cursor-cli" docker-compose.runners.yml

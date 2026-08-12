@@ -10,6 +10,7 @@ import { PodSchema } from "@proto/pod/v1/pod_pb";
 
 import { fromProtoPod } from "@/lib/api/podProtoMap";
 import { derivePodLiveness } from "@/lib/pod-liveness";
+import { dropUnreadablePodPane, isPodUnreadableForever } from "@/lib/unreadable-pod-pane";
 import { getAgentWorkbenchState, getPodState } from "@/lib/wasm-core";
 import { usePodStore, type Pod } from "@/stores/pod";
 
@@ -113,6 +114,7 @@ export function createPodWorkerTransport(
       let cancelled = false;
       void (async () => {
         let lastError: unknown;
+        let unreadable = false;
         for (let attempt = 0; attempt < 8 && !cancelled; attempt += 1) {
           try {
             await usePodStore.getState().fetchPod(podKey);
@@ -120,6 +122,10 @@ export function createPodWorkerTransport(
             return;
           } catch (error) {
             lastError = error;
+            if (isPodUnreadableForever(error)) {
+              unreadable = true;
+              break;
+            }
             await new Promise((r) => setTimeout(r, 250 * (attempt + 1)));
             if (!cancelled) emit();
           }
@@ -127,6 +133,11 @@ export function createPodWorkerTransport(
         if (cancelled) return;
         const current = readPodLiveness(podKey, options);
         if (current.state === "online") return;
+        if (unreadable) {
+          dropUnreadablePodPane(podKey);
+          listener({ state: "unreachable", cause: { reason: "forbidden" }, recovery: [] });
+          return;
+        }
         listener({
           state: "unreachable",
           cause: {

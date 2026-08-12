@@ -9,6 +9,7 @@ export type WorkerReadOnlyReason =
 export type WorkerUnreachable =
   | { reason: "stranded" }
   | { reason: "launch-failed"; detail: string | null }
+  | { reason: "forbidden" }
   | { reason: "orphaned" };
 
 export type WorkerLiveness =

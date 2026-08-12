@@ -80,6 +80,11 @@ pub const DOMAINS: &[Domain] = &[
         ["channel_state.proto", "mutations.proto"],
         ["pod"]
     ),
+    domain!(
+        "entitlement",
+        ["entitlement.proto", "entitlement_admin.proto"],
+        []
+    ),
     domain!("env_bundle", ["env_bundle.proto"], []),
     domain!(
         "extension",

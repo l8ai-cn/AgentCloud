@@ -79,6 +79,10 @@ func (s *Service) ListForOrg(ctx context.Context, orgID int64) ([]entitlementdom
 	return s.repo.ListByOrg(ctx, orgID)
 }
 
+func (s *Service) ListForResource(ctx context.Context, kind, key string) ([]entitlementdom.Entitlement, error) {
+	return s.repo.ListByResource(ctx, kind, key)
+}
+
 func newGrantRow(req GrantRequest) (*entitlementdom.Entitlement, error) {
 	if req.Kind != entitlementdom.KindWorkerType && req.Kind != entitlementdom.KindSkill {
 		return nil, fmt.Errorf("%w: resource kind", ErrInvalid)

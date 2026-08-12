@@ -19,9 +19,15 @@ const (
 	policyActionWrite policyAction = 1
 )
 
+var errInvalidResourceType = errors.New(
+	"resource_type must be pod / runner / repository / model_connection / knowledge_base / skill / expert",
+)
+
 func isValidResourceType(t string) bool {
 	switch t {
-	case grant.TypePod, grant.TypeRunner, grant.TypeRepository, grant.TypeModelConnection, grant.TypeKnowledgeBase:
+	case grant.TypePod, grant.TypeRunner, grant.TypeRepository,
+		grant.TypeModelConnection, grant.TypeKnowledgeBase,
+		grant.TypeSkill, grant.TypeExpert:
 		return true
 	}
 	return false
@@ -44,6 +50,10 @@ func (s *Server) authorizeAccess(
 		return s.authorizeModelConnectionAccess(ctx, tenant, resourceID)
 	case grant.TypeKnowledgeBase:
 		return s.authorizeKnowledgeBaseAccess(ctx, sub, tenant.OrganizationID, resourceID)
+	case grant.TypeSkill:
+		return s.authorizeSkillAccess(ctx, sub, tenant.OrganizationID, resourceID)
+	case grant.TypeExpert:
+		return s.authorizeExpertAccess(ctx, sub, tenant.OrganizationID, resourceID)
 	}
 	return nil
 }

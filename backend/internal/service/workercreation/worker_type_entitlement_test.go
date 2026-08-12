@@ -298,6 +298,18 @@ func (repo *entitlementTestRepo) ListByOrg(_ context.Context, orgID int64) ([]en
 	return out, nil
 }
 
+func (repo *entitlementTestRepo) ListByResource(_ context.Context, kind, key string) ([]entitlementdom.Entitlement, error) {
+	repo.mu.Lock()
+	defer repo.mu.Unlock()
+	var out []entitlementdom.Entitlement
+	for _, row := range repo.rows {
+		if row.ResourceKind == kind && row.ResourceKey == key {
+			out = append(out, row)
+		}
+	}
+	return out, nil
+}
+
 func (repo *entitlementTestRepo) PlatformSkillDefaults(context.Context) (map[string]string, error) {
 	return map[string]string{}, nil
 }

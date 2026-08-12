@@ -19,6 +19,14 @@ vi.mock("@/components/infra/InfraRunnerDetail", () => ({
   InfraRunnerDetail: () => <div data-testid="runner-detail" />,
 }));
 
+vi.mock("@/components/infra/InfraClusterDetail", () => ({
+  InfraClusterDetail: () => <div data-testid="cluster-detail" />,
+}));
+
+vi.mock("@/lib/api/facade/executionClusterApi", () => ({
+  listExecutionClusters: vi.fn(async () => []),
+}));
+
 vi.mock("@/components/ide/modals/AddRunnerModal", () => ({
   AddRunnerModal: ({ open, onClose }: { open: boolean; onClose: () => void }) =>
     open ? (
@@ -69,14 +77,14 @@ describe("InfraPage — Runner empty state", () => {
     render(<InfraPage />);
 
     expect(screen.queryByTestId("add-runner-modal")).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Add Runner" }));
+    fireEvent.click(screen.getByRole("button", { name: /Register node|注册节点|Add Runner/i }));
     expect(screen.getByTestId("add-runner-modal")).toBeInTheDocument();
   });
 
   it("closes the Add Runner modal via onClose", () => {
     render(<InfraPage />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Add Runner" }));
+    fireEvent.click(screen.getByRole("button", { name: /Register node|注册节点|Add Runner/i }));
     expect(screen.getByTestId("add-runner-modal")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "close-add-runner" }));

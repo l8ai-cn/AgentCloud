@@ -8,4 +8,8 @@ var (
 	RepositoryPolicy = ResourcePolicy{Read: ReadVisibility, Write: WriteAdminOnly}
 
 	KnowledgeBasePolicy = ResourcePolicy{Read: ReadVisibility, Write: WriteCreatorAdmin}
+
+	SkillPolicy = ResourcePolicy{Read: ReadOrgOpen, Write: WriteCreatorAdmin}
+
+	ExpertPolicy = ResourcePolicy{Read: ReadOrgOpen, Write: WriteCreatorAdmin}
 )

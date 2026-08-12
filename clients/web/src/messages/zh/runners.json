@@ -1,8 +1,8 @@
 {
   "runners": {
     "title": "集群",
-    "searchPlaceholder": "搜索集群...",
-    "addRunner": "添加集群",
+    "searchPlaceholder": "搜索集群或镜像...",
+    "addRunner": "注册节点",
     "registrationTokens": "注册令牌",
     "runnerCount": "个集群",
     "disabled": "已禁用",
@@ -18,10 +18,20 @@
     },
     "emptyState": {
       "title": "暂无集群",
-      "description": "部署一个集群后，即可在其上创建 Agent 环境",
-      "deployRunner": "部署集群",
+      "description": "一个执行集群可托管多种 Agent 镜像；注册节点后即可在其上创建 Worker",
+      "deployRunner": "注册节点",
       "noMatch": "没有匹配的集群"
     },
+    "clusterStatus": {
+      "online": "在线",
+      "offline": "离线",
+      "pending": "待接入"
+    },
+    "clusterNodesOnline": "个节点在线",
+    "clusterAgentsHint": "同一集群下所有在线节点的可用镜像合集；创建 Worker 时按镜像自动调度到兼容节点。",
+    "clusterNoAgents": "暂无可用镜像",
+    "clusterNodesTitle": "执行节点",
+    "clusterNoNodes": "该集群还没有执行节点",
     "runner": {
       "status": "状态",
       "version": "版本",
@@ -38,17 +48,17 @@
     },
     "page": {
       "title": "集群",
-      "subtitle": "管理托管 Agent 环境的计算集群（一个集群可运行多个环境）",
+      "subtitle": "管理执行集群：一个集群可运行多种 Agent 镜像，节点按镜像自动调度",
       "refresh": "刷新",
-      "addRunner": "添加集群",
-      "totalRunners": "集群总数",
+      "addRunner": "注册节点",
+      "totalRunners": "节点总数",
       "online": "在线",
       "activePods": "活跃环境",
       "totalCapacity": "总容量",
-      "activeRunners": "活跃集群",
-      "noRunners": "暂无注册的集群。",
-      "noRunnersHint": "添加集群后，即可在其上部署 Agent 环境。",
-      "runnerColumn": "集群",
+      "activeRunners": "活跃节点",
+      "noRunners": "暂无注册的执行节点。",
+      "noRunnersHint": "向执行集群注册节点后，即可部署多种 Agent 镜像。",
+      "runnerColumn": "节点",
       "statusColumn": "状态",
       "podsColumn": "环境",
       "hostInfoColumn": "主机信息",

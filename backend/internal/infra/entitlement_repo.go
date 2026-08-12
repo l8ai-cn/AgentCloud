@@ -76,6 +76,15 @@ func (r *entitlementRepo) ListByOrg(ctx context.Context, orgID int64) ([]entitle
 	return rows, err
 }
 
+func (r *entitlementRepo) ListByResource(ctx context.Context, kind, key string) ([]entitlement.Entitlement, error) {
+	var rows []entitlement.Entitlement
+	err := r.db.WithContext(ctx).
+		Where("resource_kind = ? AND resource_key = ?", kind, key).
+		Order("organization_id ASC, id ASC").
+		Find(&rows).Error
+	return rows, err
+}
+
 func (r *entitlementRepo) PlatformSkillDefaults(ctx context.Context) (map[string]string, error) {
 	type skillDefault struct {
 		Slug               string

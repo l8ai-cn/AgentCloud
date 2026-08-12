@@ -1,13 +1,20 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { fetchPod } = vi.hoisted(() => ({ fetchPod: vi.fn() }));
+const { fetchPod, removePaneByPodKey } = vi.hoisted(() => ({
+  fetchPod: vi.fn(),
+  removePaneByPodKey: vi.fn(),
+}));
 let storedPod: { status: string; error_message?: string } | undefined;
 
 vi.mock("@/stores/pod", () => ({
   usePod: vi.fn(() => storedPod),
   usePodStore: (selector: (state: { fetchPod: typeof fetchPod }) => unknown) =>
     selector({ fetchPod }),
+}));
+
+vi.mock("@/stores/workspace", () => ({
+  useWorkspaceStore: { getState: () => ({ removePaneByPodKey }) },
 }));
 
 import { usePodStatus } from "../usePodStatus";
@@ -17,6 +24,7 @@ describe("usePodStatus", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     fetchPod.mockReset();
+    removePaneByPodKey.mockReset();
     storedPod = undefined;
   });
 
@@ -74,6 +82,24 @@ describe("usePodStatus", () => {
 
     await act(async () => {});
     expect(result.current.podError).toBe("Pod not found");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    expect(fetchPod).toHaveBeenCalledTimes(1);
+  });
+
+  // Regression: panes persist across sign-ins, so a restored pane pointing at
+  // another user's pod retried a hard 403 and flooded the console.
+  it("does not retry a worker the caller has no access to, and drops its pane", async () => {
+    fetchPod.mockRejectedValueOnce(
+      new Error('{"kind":"http","status":403,"code":"permission_denied","message":"forbidden"}'),
+    );
+    const { result } = renderHook(() => usePodStatus("3-standalone-90f0e7e6"));
+
+    await act(async () => {});
+    expect(result.current.podError).toBe("No access to this Worker");
+    expect(removePaneByPodKey).toHaveBeenCalledWith("3-standalone-90f0e7e6");
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000);

@@ -245,6 +245,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch {
       try { mgr().clear_session(); } catch { /* noop */ }
     }
+    // Panes are keyed by pod_key alone, and pod reads are owner-scoped. Leaving
+    // them behind meant the next account to sign in on this browser restored the
+    // previous user's Workers and got 403 on every one of them.
+    try {
+      useWorkspaceStore.getState().clearAllPanes();
+      useWorkspaceStore.persist.clearStorage?.();
+    } catch { /* noop */ }
     set({ error: null });
     bump();
     notifyLightSessionChanged();

@@ -2,8 +2,12 @@
 
 import { useEffect, useRef, useMemo, useState } from "react";
 import { usePod, usePodStore } from "@/stores/pod";
-import { ApiError } from "@/lib/api/api-types";
 import { derivePodLiveness, type PodLiveness } from "@/lib/pod-liveness";
+import {
+  dropUnreadablePodPane,
+  isPodUnreadableForever,
+  unreadablePodMessage,
+} from "@/lib/unreadable-pod-pane";
 
 interface FetchError {
   podKey: string;
@@ -48,9 +52,10 @@ export function usePodStatus(podKey: string): PodLiveness {
       })
       .catch((error) => {
         if (cancelled) return;
-        if (error instanceof ApiError && error.status === 404) {
+        if (isPodUnreadableForever(error)) {
           initialFetchDone.current = true;
-          setFetchError({ podKey, message: "Pod not found" });
+          setFetchError({ podKey, message: unreadablePodMessage(error) });
+          dropUnreadablePodPane(podKey);
         } else if (retryCount.current >= MAX_FETCH_ATTEMPTS) {
           setFetchError({ podKey, message: "Failed to load pod" });
         } else {

@@ -81,6 +81,9 @@ build_runner_binary_go() {
     cp "$repo_root/docker/agent-runtime/minimax-cli-wrapper.sh" \
         "$SCRIPT_DIR/minimax-cli-wrapper.sh"
     chmod +x "$SCRIPT_DIR/minimax-cli-wrapper.sh"
+    cp "$repo_root/docker/agent-runtime/pi-agent-wrapper.sh" \
+        "$SCRIPT_DIR/pi-agent-wrapper.sh"
+    chmod +x "$SCRIPT_DIR/pi-agent-wrapper.sh"
     success "Runner binary 已编译 (go build → deploy/dev/runner-binary)"
 }
 

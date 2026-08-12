@@ -5,6 +5,7 @@ interface LivenessCopy {
   starting: string;
   orphaned: string;
   launchFailed: string;
+  forbidden: string;
   stranded: string;
   reconnectCli: string;
 }
@@ -14,6 +15,7 @@ const COPY: Record<AgentWorkspaceLocale, LivenessCopy> = {
     starting: "Waiting for Worker to be ready…",
     orphaned: "Worker is reconnecting. Please wait.",
     launchFailed: "The Worker failed to start. Please try again.",
+    forbidden: "You no longer have access to this Worker.",
     stranded: "Session offline — reconnect to continue.",
     reconnectCli: "Reconnect with:",
   },
@@ -21,6 +23,7 @@ const COPY: Record<AgentWorkspaceLocale, LivenessCopy> = {
     starting: "正在等待 Worker 就绪…",
     orphaned: "Worker 正在重连，请稍候。",
     launchFailed: "Worker 启动失败，请稍后重试。",
+    forbidden: "你没有访问该 Worker 的权限。",
     stranded: "会话离线 — 请重连后继续。",
     reconnectCli: "使用以下命令重连：",
   },
@@ -76,6 +79,7 @@ function messageFor(liveness: WorkerLiveness, copy: LivenessCopy): string {
   if (liveness.state === "unreachable") {
     if (liveness.cause.reason === "orphaned") return copy.orphaned;
     if (liveness.cause.reason === "stranded") return copy.stranded;
+    if (liveness.cause.reason === "forbidden") return copy.forbidden;
     return copy.launchFailed;
   }
   return copy.starting;

@@ -15,5 +15,6 @@ type Repository interface {
 		subjectUserID *int64,
 	) (*Entitlement, error)
 	ListByOrg(ctx context.Context, orgID int64) ([]Entitlement, error)
+	ListByResource(ctx context.Context, kind, key string) ([]Entitlement, error)
 	PlatformSkillDefaults(ctx context.Context) (map[string]string, error)
 }

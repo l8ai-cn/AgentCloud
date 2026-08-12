@@ -22,8 +22,7 @@ func (s *Server) ListGrants(
 	resourceType := req.Msg.GetResourceType()
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
-		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository / model_connection / knowledge_base"))
+		return nil, connect.NewError(connect.CodeInvalidArgument, errInvalidResourceType)
 	}
 	if resourceID == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -63,8 +62,7 @@ func (s *Server) CreateGrant(
 	resourceType := req.Msg.GetResourceType()
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
-		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository / model_connection / knowledge_base"))
+		return nil, connect.NewError(connect.CodeInvalidArgument, errInvalidResourceType)
 	}
 	if resourceID == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -100,8 +98,7 @@ func (s *Server) DeleteGrant(
 	resourceType := req.Msg.GetResourceType()
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
-		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository / model_connection / knowledge_base"))
+		return nil, connect.NewError(connect.CodeInvalidArgument, errInvalidResourceType)
 	}
 	if resourceID == "" || req.Msg.GetGrantId() == 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
