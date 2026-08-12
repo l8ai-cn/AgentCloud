@@ -29,7 +29,49 @@ func (b *ConfigBuilder) buildPinnedWorkerSkillResources(
 	if err := validatePinnedWorkerSkills(req.RequiredSkillPackages, skills); err != nil {
 		return nil, err
 	}
+	skills, err = b.filterPinnedWorkerSkills(ctx, req, skills)
+	if err != nil {
+		return nil, err
+	}
 	return skillResources(agentSlug, skills, true)
+}
+
+// A pinned package is part of an immutable worker snapshot, but revocation has
+// to outrank snapshot replayability: relaunching a worker must not remount a
+// skill the owner has since lost access to. Failing loudly beats silently
+// dropping a skill the agent depends on.
+func (b *ConfigBuilder) filterPinnedWorkerSkills(
+	ctx context.Context,
+	req *ConfigBuildRequest,
+	skills []*extensionservice.ResolvedSkill,
+) ([]*extensionservice.ResolvedSkill, error) {
+	filtered, err := b.filterAuthorizedResolvedSkills(ctx, req, skills)
+	if err != nil {
+		return nil, err
+	}
+	if len(filtered) == len(skills) {
+		return filtered, nil
+	}
+	allowed := make(map[int64]struct{}, len(filtered))
+	for _, skill := range filtered {
+		if skill != nil {
+			allowed[skill.CatalogSkillID] = struct{}{}
+		}
+	}
+	for _, skill := range skills {
+		if skill == nil {
+			continue
+		}
+		if _, ok := allowed[skill.CatalogSkillID]; !ok {
+			return nil, fmt.Errorf(
+				"pinned worker skill %q (%d) is no longer authorized for user %d",
+				skill.Slug,
+				skill.CatalogSkillID,
+				req.UserID,
+			)
+		}
+	}
+	return filtered, nil
 }
 
 func validatePinnedWorkerSkills(

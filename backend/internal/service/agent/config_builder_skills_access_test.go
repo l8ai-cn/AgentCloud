@@ -4,7 +4,9 @@ import (
 	"context"
 	"testing"
 
+	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
+	runnerv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/runner/v1"
 	"github.com/stretchr/testify/require"
 )
 
@@ -34,13 +36,22 @@ func (s stubSkillAccessGate) AllowedCatalogSkillIDs(
 type workerSkillAccessProvider struct {
 	mockSkillExtensionProvider
 	stubSkillAccessGate
-	skillsByID []*extensionservice.ResolvedSkill
+	skillsByID       []*extensionservice.ResolvedSkill
+	skillsByPackages []*extensionservice.ResolvedSkill
 }
 
+var _ WorkerSkillProvider = (*workerSkillAccessProvider)(nil)
+
 func (m *workerSkillAccessProvider) GetWorkerSkillsByIDs(
-	_ context.Context, _, _ int64, _ []int64, _ string,
+	_ context.Context, _ int64, _ []int64, _ string,
 ) ([]*extensionservice.ResolvedSkill, error) {
 	return m.skillsByID, nil
+}
+
+func (m *workerSkillAccessProvider) GetWorkerSkillsByPackages(
+	_ context.Context, _ []specdomain.SkillPackageBinding, _ string,
+) ([]*extensionservice.ResolvedSkill, error) {
+	return m.skillsByPackages, nil
 }
 
 func TestBuildWorkerSpecSkillResources_RevokedSkillNotMounted(t *testing.T) {
@@ -62,7 +73,62 @@ func TestBuildWorkerSpecSkillResources_RevokedSkillNotMounted(t *testing.T) {
 		&ConfigBuildRequest{OrganizationID: 1, UserID: 2, RequiredSkillIDs: []int64{3}},
 		"claude-code",
 	)
-	require.Error(t, err)
+	require.ErrorContains(t, err, "incomplete")
+}
+
+func pinnedBinding() specdomain.SkillPackageBinding {
+	return specdomain.SkillPackageBinding{
+		SkillID:     7,
+		Slug:        "pinned",
+		ContentSHA:  "sha7",
+		PackageSize: 70,
+	}
+}
+
+func pinnedResolvedSkill() *extensionservice.ResolvedSkill {
+	return &extensionservice.ResolvedSkill{
+		CatalogSkillID: 7,
+		Slug:           "pinned",
+		ContentSha:     "sha7",
+		DownloadURL:    "https://example/7",
+		PackageSize:    70,
+	}
+}
+
+func buildPinned(t *testing.T, allowed map[int64]struct{}) ([]*runnerv1.ResourceToDownload, error) {
+	t.Helper()
+	builder := NewConfigBuilder(nilAgentConfigProvider{}, stubEnvBundleLoader{})
+	builder.SetExtensionProvider(&workerSkillAccessProvider{
+		stubSkillAccessGate: stubSkillAccessGate{allowed: allowed},
+		skillsByPackages:    []*extensionservice.ResolvedSkill{pinnedResolvedSkill()},
+	})
+	return builder.buildPinnedWorkerSkillResources(
+		context.Background(),
+		&ConfigBuildRequest{
+			OrganizationID:        1,
+			UserID:                2,
+			RequiredSkillPackages: []specdomain.SkillPackageBinding{pinnedBinding()},
+		},
+		"claude-code",
+	)
+}
+
+func TestBuildPinnedWorkerSkillResources_RevokedSkillBlocksRelaunch(t *testing.T) {
+	_, err := buildPinned(t, map[int64]struct{}{})
+	require.ErrorContains(t, err, "no longer authorized")
+}
+
+func TestBuildPinnedWorkerSkillResources_AuthorizedSkillStillMounts(t *testing.T) {
+	resources, err := buildPinned(t, map[int64]struct{}{7: {}})
+	require.NoError(t, err)
+	require.Len(t, resources, 1)
+	require.Equal(t, "sha7", resources[0].Sha)
+}
+
+func TestBuildPinnedWorkerSkillResources_NilGateMountsUnchanged(t *testing.T) {
+	resources, err := buildPinned(t, nil)
+	require.NoError(t, err)
+	require.Len(t, resources, 1)
 }
 
 func TestBuildSkillResources_FiltersRevokedInstalledSkills(t *testing.T) {
