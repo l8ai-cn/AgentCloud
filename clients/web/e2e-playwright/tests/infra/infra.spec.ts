@@ -44,8 +44,8 @@ uiTest.describe("Infra page — UI", () => {
     await page.waitForLoadState("load");
     await uiExpect
       .poll(async () => {
-        if (page.url().includes("id=")) return true;
-        return await page.getByText(/no runners|还没有|empty/i).isVisible({ timeout: 100 }).catch(() => false);
+        if (/[?&](id|cluster)=/.test(page.url())) return true;
+        return await page.getByText(/no runners|no clusters|还没有|empty/i).isVisible({ timeout: 100 }).catch(() => false);
       }, { timeout: 8_000 })
       .toBe(true);
   });
@@ -82,6 +82,10 @@ uiTest.describe("Infra empty state — CTA opens modal", () => {
       });
     await page.route("**/proto.runner_api.v1.RunnerService/ListRunners", fulfillEmptyProto);
     await page.route("**/proto.runner_api.v1.RunnerService/ListAvailableRunners", fulfillEmptyProto);
+    await page.route(
+      "**/proto.execution_cluster.v1.ExecutionClusterService/ListExecutionClusters",
+      fulfillEmptyProto,
+    );
     await page.route("**/proto.repository.v1.RepositoryService/ListRepositories", fulfillEmptyProto);
   });
 
@@ -90,22 +94,22 @@ uiTest.describe("Infra empty state — CTA opens modal", () => {
     // Two "Add Runner" buttons exist on the empty page: the always-present
     // list-header button (left sidebar) and the empty-state CTA in <main>.
     // The spec asserts the latter — scope to main to avoid strict-mode hits.
-    const addBtn = page.getByRole("main").getByRole("button", { name: /^add runner$/i });
+    const addBtn = page.getByRole("main").getByRole("button", { name: /register node|add runner|注册节点/i });
     await uiExpect(addBtn).toBeVisible({ timeout: 15_000 });
     await addBtn.click();
     await new AddRunnerModal(page).waitForOpen();
-    await uiExpect(page.getByRole("heading", { name: /^add runner$/i })).toBeVisible();
+    await uiExpect(page.getByRole("heading", { name: /register node|add runner|注册节点/i })).toBeVisible();
   });
 
   uiTest("Add Runner modal closes via cancel", async ({ page }) => {
     await page.goto(`/${TEST_ORG_SLUG}/infra?tab=runners`);
-    const addBtn = page.getByRole("main").getByRole("button", { name: /^add runner$/i });
+    const addBtn = page.getByRole("main").getByRole("button", { name: /register node|add runner|注册节点/i });
     await uiExpect(addBtn).toBeVisible({ timeout: 15_000 });
     await addBtn.click();
     const modal = new AddRunnerModal(page);
     await modal.waitForOpen();
     await modal.close();
-    await uiExpect(page.getByRole("heading", { name: /^add runner$/i })).toBeHidden();
+    await uiExpect(page.getByRole("heading", { name: /register node|add runner|注册节点/i })).toBeHidden();
   });
 
   uiTest("Import Repository empty-state button opens the Import modal", async ({ page }) => {

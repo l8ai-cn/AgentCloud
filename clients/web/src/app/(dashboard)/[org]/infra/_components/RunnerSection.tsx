@@ -51,7 +51,9 @@ export function RunnerSection({
   }, [currentOrg, fetchRunners]);
 
   useEffect(() => {
-    void reload();
+    Promise.resolve().then(() => {
+      void reload();
+    });
   }, [reload]);
 
   const summaries = useMemo(
