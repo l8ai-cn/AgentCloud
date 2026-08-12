@@ -13,10 +13,12 @@ type openAIDraftFillMessage struct {
 	Content string `json:"content"`
 }
 
+// Temperature is deliberately absent: several OpenAI-compatible models
+// (kimi-k3, the OpenAI reasoning series) reject any value other than 1 with a
+// 400, so pinning it here made draft fill unusable for them.
 type openAIDraftFillRequest struct {
-	Model       string                   `json:"model"`
-	Messages    []openAIDraftFillMessage `json:"messages"`
-	Temperature float64                  `json:"temperature"`
+	Model    string                   `json:"model"`
+	Messages []openAIDraftFillMessage `json:"messages"`
 }
 
 type openAIDraftFillResponse struct {
@@ -50,7 +52,6 @@ func (generator *ProviderDraftGenerator) generateOpenAICompatible(
 				{Role: "system", Content: systemPrompt},
 				{Role: "user", Content: userPrompt},
 			},
-			Temperature: 0,
 		},
 	)
 	if err != nil {

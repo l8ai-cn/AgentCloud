@@ -32,6 +32,7 @@ func TestProviderDraftGeneratorSupportsWorkerModelProtocols(t *testing.T) {
 			assert: func(t *testing.T, request *http.Request, body map[string]any) {
 				assert.Equal(t, "Bearer secret", request.Header.Get("Authorization"))
 				assert.Equal(t, "model-v1", body["model"])
+				assert.NotContains(t, body, "temperature")
 			},
 		},
 		{
@@ -43,6 +44,7 @@ func TestProviderDraftGeneratorSupportsWorkerModelProtocols(t *testing.T) {
 				assert.Equal(t, "secret", request.Header.Get("x-api-key"))
 				assert.Equal(t, "2023-06-01", request.Header.Get("anthropic-version"))
 				assert.Equal(t, "model-v1", body["model"])
+				assert.NotContains(t, body, "temperature")
 			},
 		},
 		{

@@ -8,12 +8,13 @@ import (
 	resourceservice "github.com/l8ai-cn/agentcloud/backend/internal/service/airesource"
 )
 
+// Temperature is omitted for the same reason as the OpenAI-compatible request:
+// models with extended thinking enabled only accept 1.
 type anthropicDraftFillRequest struct {
-	Model       string                   `json:"model"`
-	MaxTokens   uint32                   `json:"max_tokens"`
-	Temperature float64                  `json:"temperature"`
-	System      string                   `json:"system"`
-	Messages    []openAIDraftFillMessage `json:"messages"`
+	Model     string                   `json:"model"`
+	MaxTokens uint32                   `json:"max_tokens"`
+	System    string                   `json:"system"`
+	Messages  []openAIDraftFillMessage `json:"messages"`
 }
 
 type anthropicDraftFillResponse struct {
@@ -44,10 +45,9 @@ func (generator *ProviderDraftGenerator) generateAnthropic(
 			"anthropic-version": "2023-06-01",
 		},
 		anthropicDraftFillRequest{
-			Model:       resource.Resource.ModelID,
-			MaxTokens:   2048,
-			Temperature: 0,
-			System:      systemPrompt,
+			Model:     resource.Resource.ModelID,
+			MaxTokens: 2048,
+			System:    systemPrompt,
 			Messages: []openAIDraftFillMessage{{
 				Role: "user", Content: userPrompt,
 			}},
