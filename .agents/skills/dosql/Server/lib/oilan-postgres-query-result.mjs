@@ -66,6 +66,29 @@ export function parseOilanPostgresQueryResult(queryName, line) {
     };
   }
 
+  if (queryName === "bundle-temperature-audit") {
+    requireFieldCount(fields, 4, queryName);
+    const [countText, namesText, bindingsText, variablesText] = fields;
+    if (!/^(?:0|[1-9][0-9]*)$/.test(countText)) {
+      throw new Error("Oilan PostgreSQL config bundle count is invalid");
+    }
+    if (!/^[a-z0-9,-]*$/.test(namesText)) {
+      throw new Error("Oilan PostgreSQL config bundle names are invalid");
+    }
+    if (!/^[a-z0-9,=.+-]*$/.test(bindingsText)) {
+      throw new Error("Oilan PostgreSQL config bundle temperatures are invalid");
+    }
+    if (!/^[A-Za-z0-9,._-]*$/.test(variablesText)) {
+      throw new Error("Oilan PostgreSQL temperature variable names are invalid");
+    }
+    return {
+      configBundleCount: Number(countText),
+      configBundleNames: splitList(namesText),
+      temperatureBindings: splitList(bindingsText),
+      temperatureVariables: splitList(variablesText),
+    };
+  }
+
   throw new Error(`unsupported Oilan PostgreSQL query result: ${queryName}`);
 }
 
@@ -95,6 +118,21 @@ export function assertOilanPostgresQueryResult(queryName, result) {
     }
     return true;
   }
+  if (queryName === "bundle-temperature-audit") {
+    const parsed = parseOilanPostgresQueryResult(
+      queryName,
+      [
+        result.configBundleCount,
+        joinList(result.configBundleNames),
+        joinList(result.temperatureBindings),
+        joinList(result.temperatureVariables),
+      ].join("|"),
+    );
+    if (Object.keys(result).sort().join(",") !== Object.keys(parsed).sort().join(",")) {
+      throw new Error("Oilan PostgreSQL config bundle audit has unexpected fields");
+    }
+    return true;
+  }
   throw new Error(`unsupported Oilan PostgreSQL query result: ${queryName}`);
 }
 
@@ -116,6 +154,17 @@ function resultLines(stdout) {
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+function splitList(text) {
+  return text ? text.split(",") : [];
+}
+
+function joinList(values) {
+  if (!Array.isArray(values)) {
+    throw new Error("Oilan PostgreSQL config bundle audit expects string lists");
+  }
+  return values.join(",");
 }
 
 function requireFieldCount(fields, expected, queryName) {

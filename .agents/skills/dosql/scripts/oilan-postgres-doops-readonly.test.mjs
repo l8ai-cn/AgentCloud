@@ -76,6 +76,61 @@ test("runs the fixed Oilan PostgreSQL probe through DoOps and writes redacted ev
   }
 });
 
+test("audits config bundle temperature bindings without carrying the document body", async () => {
+  const auditRoot = await mkdtemp(join(tmpdir(), "dosql-oilan-readonly-"));
+  const input = {
+    operationId: "dbop-oilan-config-temperature-001",
+    session: "oilan-read-20260813-001",
+    queryName: "bundle-temperature-audit",
+  };
+  try {
+    const evidence = await executeOilanPostgresReadOnly(input, {
+      auditRoot,
+      registration: await loadOilanPostgresRegistration(),
+      now: clock(),
+      execute: () => ({
+        status: 0,
+        stdout: doopsOutput(
+          "2|do-agent-settings,openclaw-json|do-agent-settings=0.7|kimi-runtime.DO_AGENT_TEMPERATURE",
+        ),
+      }),
+    });
+
+    assert.deepEqual(evidence.result, {
+      configBundleCount: 2,
+      configBundleNames: ["do-agent-settings", "openclaw-json"],
+      temperatureBindings: ["do-agent-settings=0.7"],
+      temperatureVariables: ["kimi-runtime.DO_AGENT_TEMPERATURE"],
+    });
+    assert.equal(verifyOilanPostgresReadOnlyEvidence(evidence), true);
+  } finally {
+    await rm(auditRoot, { recursive: true, force: true });
+  }
+});
+
+test("rejects a config bundle audit row that smuggles document content", async () => {
+  const auditRoot = await mkdtemp(join(tmpdir(), "dosql-oilan-readonly-"));
+  try {
+    await assert.rejects(
+      executeOilanPostgresReadOnly({
+        operationId: "dbop-oilan-config-temperature-002",
+        session: "oilan-read-20260813-002",
+        queryName: "bundle-temperature-audit",
+      }, {
+        auditRoot,
+        registration: await loadOilanPostgresRegistration(),
+        execute: () => ({
+          status: 0,
+          stdout: doopsOutput('1|do-agent-settings|{"apiKey":"leaked"}|'),
+        }),
+      }),
+      /Oilan PostgreSQL read-only query failed/,
+    );
+  } finally {
+    await rm(auditRoot, { recursive: true, force: true });
+  }
+});
+
 test("fails closed for unavailable DoOps and only persists redacted failure evidence", async () => {
   const auditRoot = await mkdtemp(join(tmpdir(), "dosql-oilan-readonly-"));
   try {
@@ -227,7 +282,15 @@ test("CLI keeps probe and query command scopes fixed", async () => {
     });
     const output = JSON.parse(await readFile(outputPath, "utf8"));
     assert.equal(result.status, 1);
-    assert.match(output.error.message, /queryName must be schema-fingerprint/);
+    assert.match(output.error.message, /queryName must not be asset-probe/);
+
+    await writeFile(inputPath, JSON.stringify({ ...INPUT, queryName: "select 1" }));
+    const rawSQLResult = spawnSync(process.execPath, [CLI, "query", "--input", inputPath, "--output", outputPath], {
+      encoding: "utf8",
+    });
+    const rawSQLOutput = JSON.parse(await readFile(outputPath, "utf8"));
+    assert.equal(rawSQLResult.status, 1);
+    assert.match(rawSQLOutput.error.message, /unsupported Oilan PostgreSQL read-only query/);
 
     await writeFile(inputPath, JSON.stringify({ ...INPUT, queryName: "schema-fingerprint" }));
     const probeResult = spawnSync(process.execPath, [CLI, "probe", "--input", inputPath, "--output", outputPath], {
