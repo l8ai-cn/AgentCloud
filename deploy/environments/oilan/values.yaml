@@ -2,14 +2,14 @@
 # Cluster pull secret only covers Harbor, so oilan pulls synced CNB builds
 # from repo.aiedulab.cn:8443/agentcloud after crane/CNB→Harbor sync.
 namespace: agentcloud
-imageTag: &releaseTag release-20260803
+imageTag: &releaseTag release-20260813
 image:
   repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260803-pty-agent-ui
-  web: oilan-20260803-pty-agent-ui
-  relay: oilan-20260803-pty-agent-ui
+  backend: oilan-20260813-mainline
+  web: oilan-20260813-mainline
+  relay: oilan-20260813-mainline
 rolloutTokenDomain: agentcloud.l8ai.cn
 
 imagePullSecrets:
