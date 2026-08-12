@@ -17,6 +17,7 @@ import (
 	blockstoreservice "github.com/l8ai-cn/agentcloud/backend/internal/service/blockstore"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/channel"
 	goalloopService "github.com/l8ai-cn/agentcloud/backend/internal/service/goalloop"
+	grantservice "github.com/l8ai-cn/agentcloud/backend/internal/service/grant"
 	knowledgebaseservice "github.com/l8ai-cn/agentcloud/backend/internal/service/knowledgebase"
 	workerplanner "github.com/l8ai-cn/agentcloud/backend/internal/service/orchestrationworker"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/repository"
@@ -96,6 +97,7 @@ type GRPCRunnerAdapter struct {
 	goalLoopService      *goalloopService.Service
 	blockstoreService    *blockstoreservice.Service
 	knowledgebaseService *knowledgebaseservice.Service
+	grantService         *grantservice.Service
 	workerPlanAuthorizer WorkerPlanAuthorizer
 	workerPlanApplier    WorkerPlanApplier
 	workerPodReader      WorkerPodReader
@@ -118,6 +120,7 @@ type MCPDependencies struct {
 	GoalLoopService      *goalloopService.Service
 	BlockstoreService    *blockstoreservice.Service
 	KnowledgebaseService *knowledgebaseservice.Service
+	GrantService         *grantservice.Service
 	WorkerPlanAuthorizer WorkerPlanAuthorizer
 	WorkerPlanApplier    WorkerPlanApplier
 }
@@ -161,6 +164,7 @@ func NewGRPCRunnerAdapter(
 		adapter.goalLoopService = mcpDeps.GoalLoopService
 		adapter.blockstoreService = mcpDeps.BlockstoreService
 		adapter.knowledgebaseService = mcpDeps.KnowledgebaseService
+		adapter.grantService = mcpDeps.GrantService
 		adapter.workerPlanAuthorizer = mcpDeps.WorkerPlanAuthorizer
 		adapter.workerPlanApplier = mcpDeps.WorkerPlanApplier
 		adapter.workerPodReader = mcpDeps.PodService

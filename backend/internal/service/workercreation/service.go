@@ -8,6 +8,8 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/workerdependency"
 	runtimedomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerruntime"
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
+	entitlementsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/entitlement"
+	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
 )
 
@@ -22,6 +24,8 @@ type Service struct {
 	toolModels     specservice.ToolModelResolver
 	runners        RunnerAvailabilityResolver
 	workspaceDeps  workspaceResolverDeps
+	entitlements   *entitlementsvc.Service
+	memberRoles    MemberRoleReader
 }
 
 func NewService(deps Deps) *Service {
@@ -32,11 +36,11 @@ func NewService(deps Deps) *Service {
 		EnvBundles:   deps.EnvBundles,
 		Definitions:  deps.Definitions,
 		Commits:      deps.Commits,
-		Entitlements: deps.Entitlements,
+		Entitlements: extensionservice.AdaptEntitlementService(deps.Entitlements),
 		Grants:       deps.Grants,
 		MemberRoles:  deps.MemberRoles,
 	}
-	workerTypes := newWorkerTypeResolver(deps.Agents, deps.Definitions)
+	workerTypes := newWorkerTypeResolver(deps.Agents, deps.Definitions, nil, deps.MemberRoles)
 	models := newModelResolver(deps.Models)
 	return &Service{
 		revision:       deps.Catalog.Revision(),
@@ -49,6 +53,8 @@ func NewService(deps Deps) *Service {
 		toolModels:     models,
 		runners:        deps.Runners,
 		workspaceDeps:  workspaceDeps,
+		entitlements:   deps.Entitlements,
+		memberRoles:    deps.MemberRoles,
 	}
 }
 

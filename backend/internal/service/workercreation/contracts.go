@@ -10,6 +10,7 @@ import (
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workerdefinition"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workerdependencyartifact"
+	entitlementsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/entitlement"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
 )
@@ -20,6 +21,10 @@ type WorkerDefinitionProvider interface {
 
 type RunnerAvailabilityResolver interface {
 	HasAvailableRunnerForAgent(context.Context, int64, int64, string) (bool, error)
+}
+
+type MemberRoleReader interface {
+	GetMemberRole(context.Context, int64, int64) (string, error)
 }
 
 type Deps struct {
@@ -33,7 +38,7 @@ type Deps struct {
 	Knowledge    KnowledgeLookup
 	EnvBundles   EnvBundleLookup
 	Commits      WorkspaceCommitResolver
-	Entitlements SkillEntitlementGate
+	Entitlements *entitlementsvc.Service
 	Grants       SkillGrantReader
 	MemberRoles  MemberRoleReader
 }

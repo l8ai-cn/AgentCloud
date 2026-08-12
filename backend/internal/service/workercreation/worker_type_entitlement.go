@@ -55,7 +55,7 @@ func requireWorkerTypeEntitlement(
 	if gate == nil || scope.OrgID <= 0 {
 		return nil
 	}
-	role := memberRoleForScope(ctx, memberRoles, scope)
+	role := memberRoleFromScope(ctx, memberRoles, scope)
 	if err := gate.Require(
 		ctx,
 		scope.OrgID,
@@ -73,7 +73,7 @@ func requireWorkerTypeEntitlement(
 	return nil
 }
 
-func memberRoleForScope(
+func memberRoleFromScope(
 	ctx context.Context,
 	memberRoles MemberRoleReader,
 	scope specservice.Scope,

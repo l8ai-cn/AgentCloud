@@ -10,10 +10,6 @@ type SkillEntitlementGate = extensionservice.SkillEntitlementGate
 
 type SkillGrantReader = extensionservice.SkillGrantReader
 
-type MemberRoleReader interface {
-	GetMemberRole(ctx context.Context, orgID, userID int64) (string, error)
-}
-
 func (r *Remounter) SetEntitlements(gate SkillEntitlementGate) {
 	if r == nil {
 		return

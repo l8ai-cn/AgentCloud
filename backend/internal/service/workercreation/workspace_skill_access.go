@@ -6,13 +6,7 @@ import (
 	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
 )
 
-type SkillEntitlementGate = extensionservice.SkillEntitlementGate
-
 type SkillGrantReader = extensionservice.SkillGrantReader
-
-type MemberRoleReader interface {
-	GetMemberRole(ctx context.Context, orgID, userID int64) (string, error)
-}
 
 func memberRoleForScope(
 	ctx context.Context,

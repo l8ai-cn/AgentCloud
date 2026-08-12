@@ -17,6 +17,9 @@ import (
 // into a repository. skillID is the catalog row id (surfaced to clients as
 // the market item id).
 func (s *Service) InstallSkillFromMarket(ctx context.Context, orgID, repoID, userID, skillID int64, scope string) (*extension.InstalledSkill, error) {
+	if err := s.requireRepositoryAccess(ctx, orgID, repoID, userID); err != nil {
+		return nil, err
+	}
 	if err := validateScope(scope); err != nil {
 		return nil, err
 	}
@@ -107,6 +110,9 @@ const maxSkillUploadBytes = 50 * 1024 * 1024
 // PresignSkillUpload mints an opaque storage_key + presigned PUT URL for the
 // 2-step Connect upload-install flow. Mirrors support_ticket.PresignAttachment.
 func (s *Service) PresignSkillUpload(ctx context.Context, orgID, repoID, userID int64, filename, contentType string, size int64) (*PresignSkillUploadResponse, error) {
+	if err := s.requireRepositoryAccess(ctx, orgID, repoID, userID); err != nil {
+		return nil, err
+	}
 	if s.storage == nil {
 		return nil, fmt.Errorf("%w: storage not configured", ErrInvalidInput)
 	}

@@ -104,7 +104,7 @@ func mountGrantService(mux *http.ServeMux, svc *serviceContainer, opts []connect
 	if svc.grant == nil {
 		return
 	}
-	srv := grantconnect.NewServer(svc.grant, svc.org, svc.pod, svc.runner, svc.repository)
+	srv := grantconnect.NewServer(svc.grant, svc.org, svc.pod, svc.runner, svc.repository, svc.aiResource, svc.knowledgeBase)
 	grantconnect.Mount(mux, srv, opts...)
 }
 

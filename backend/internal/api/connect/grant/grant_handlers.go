@@ -7,20 +7,10 @@ import (
 	"connectrpc.com/connect"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/api/connect/interceptors"
-	"github.com/l8ai-cn/agentcloud/backend/internal/domain/grant"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	grantv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/grant/v1"
 )
 
-// ListGrants — REST analogues:
-//   GET /api/v1/orgs/:slug/pods/:key/grants
-//   GET /api/v1/orgs/:slug/runners/:id/grants
-//   GET /api/v1/orgs/:slug/repositories/:id/grants
-//
-// Per-resource policy:
-//   pod        — PodPolicy.AllowWrite (creator/admin/owner)
-//   runner     — AllowAdmin (org admin only)
-//   repository — AllowAdmin (org admin only)
 func (s *Server) ListGrants(
 	ctx context.Context, req *connect.Request[grantv1.ListGrantsRequest],
 ) (*connect.Response[grantv1.ListGrantsResponse], error) {
@@ -33,7 +23,7 @@ func (s *Server) ListGrants(
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository / model_connection"))
+			errors.New("resource_type must be pod / runner / repository / model_connection / knowledge_base"))
 	}
 	if resourceID == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -61,10 +51,6 @@ func (s *Server) ListGrants(
 	}), nil
 }
 
-// CreateGrant — REST analogues:
-//   POST /api/v1/orgs/:slug/pods/:key/grants
-//   POST /api/v1/orgs/:slug/runners/:id/grants
-//   POST /api/v1/orgs/:slug/repositories/:id/grants
 func (s *Server) CreateGrant(
 	ctx context.Context, req *connect.Request[grantv1.CreateGrantRequest],
 ) (*connect.Response[grantv1.ResourceGrant], error) {
@@ -78,7 +64,7 @@ func (s *Server) CreateGrant(
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository / model_connection"))
+			errors.New("resource_type must be pod / runner / repository / model_connection / knowledge_base"))
 	}
 	if resourceID == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -103,10 +89,6 @@ func (s *Server) CreateGrant(
 	return connect.NewResponse(toProtoGrant(g)), nil
 }
 
-// DeleteGrant — REST analogues:
-//   DELETE /api/v1/orgs/:slug/pods/:key/grants/:grant_id
-//   DELETE /api/v1/orgs/:slug/runners/:id/grants/:grant_id
-//   DELETE /api/v1/orgs/:slug/repositories/:id/grants/:grant_id
 func (s *Server) DeleteGrant(
 	ctx context.Context, req *connect.Request[grantv1.DeleteGrantRequest],
 ) (*connect.Response[grantv1.DeleteGrantResponse], error) {
@@ -119,7 +101,7 @@ func (s *Server) DeleteGrant(
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository / model_connection"))
+			errors.New("resource_type must be pod / runner / repository / model_connection / knowledge_base"))
 	}
 	if resourceID == "" || req.Msg.GetGrantId() == 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -134,15 +116,4 @@ func (s *Server) DeleteGrant(
 		return nil, connect.NewError(connect.CodeNotFound, errors.New("grant not found"))
 	}
 	return connect.NewResponse(&grantv1.DeleteGrantResponse{Message: "Grant revoked"}), nil
-}
-
-type policyAction int
-
-const (
-	policyActionRead  policyAction = 0
-	policyActionWrite policyAction = 1
-)
-
-func isValidResourceType(t string) bool {
-	return t == grant.TypePod || t == grant.TypeRunner || t == grant.TypeRepository || t == grant.TypeModelConnection
 }

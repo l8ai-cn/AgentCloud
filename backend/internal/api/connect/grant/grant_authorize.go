@@ -20,7 +20,11 @@ const (
 )
 
 func isValidResourceType(t string) bool {
-	return t == grant.TypePod || t == grant.TypeRunner || t == grant.TypeRepository || t == grant.TypeKnowledgeBase
+	switch t {
+	case grant.TypePod, grant.TypeRunner, grant.TypeRepository, grant.TypeModelConnection, grant.TypeKnowledgeBase:
+		return true
+	}
+	return false
 }
 
 func (s *Server) authorizeAccess(
@@ -33,9 +37,11 @@ func (s *Server) authorizeAccess(
 	case grant.TypePod:
 		return s.authorizePodAccess(ctx, sub, resourceID)
 	case grant.TypeRunner:
-		return s.authorizeRunnerAccess(ctx, sub, tenant.OrganizationID, resourceID, action)
+		return s.authorizeRunnerAccess(ctx, sub, tenant, resourceID, action)
 	case grant.TypeRepository:
-		return s.authorizeRepositoryAccess(ctx, sub, tenant.OrganizationID, resourceID, action)
+		return s.authorizeRepositoryAccess(ctx, sub, tenant, resourceID, action)
+	case grant.TypeModelConnection:
+		return s.authorizeModelConnectionAccess(ctx, tenant, resourceID)
 	case grant.TypeKnowledgeBase:
 		return s.authorizeKnowledgeBaseAccess(ctx, sub, tenant.OrganizationID, resourceID)
 	}
@@ -55,7 +61,7 @@ func (s *Server) authorizePodAccess(ctx context.Context, sub policy.Subject, res
 }
 
 func (s *Server) authorizeRunnerAccess(
-	ctx context.Context, sub policy.Subject, orgID int64, resourceID string, action policyAction,
+	ctx context.Context, sub policy.Subject, tenant *middleware.TenantContext, resourceID string, action policyAction,
 ) error {
 	runnerID, err := strconv.ParseInt(resourceID, 10, 64)
 	if err != nil {
@@ -65,7 +71,7 @@ func (s *Server) authorizeRunnerAccess(
 	if err != nil {
 		return connect.NewError(connect.CodeNotFound, errors.New("runner not found"))
 	}
-	if !policy.AllowAdmin(sub, orgID) {
+	if !policy.AllowAdmin(sub, tenant.OrganizationID) {
 		return connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
 	}
 	check := policy.RunnerPolicy.AllowRead
@@ -79,7 +85,7 @@ func (s *Server) authorizeRunnerAccess(
 }
 
 func (s *Server) authorizeRepositoryAccess(
-	ctx context.Context, sub policy.Subject, orgID int64, resourceID string, action policyAction,
+	ctx context.Context, sub policy.Subject, tenant *middleware.TenantContext, resourceID string, action policyAction,
 ) error {
 	repoID, err := strconv.ParseInt(resourceID, 10, 64)
 	if err != nil {
@@ -89,7 +95,7 @@ func (s *Server) authorizeRepositoryAccess(
 	if err != nil {
 		return connect.NewError(connect.CodeNotFound, errors.New("repository not found"))
 	}
-	if !policy.AllowAdmin(sub, orgID) {
+	if !policy.AllowAdmin(sub, tenant.OrganizationID) {
 		return connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
 	}
 	check := policy.RepositoryPolicy.AllowRead
@@ -98,6 +104,20 @@ func (s *Server) authorizeRepositoryAccess(
 	}
 	if !check(sub, policy.VisibleResource(repo.OrganizationID, repo.ImportedByUserID, repo.Visibility)) {
 		return connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
+	}
+	return nil
+}
+
+func (s *Server) authorizeModelConnectionAccess(ctx context.Context, tenant *middleware.TenantContext, resourceID string) error {
+	if s.modelConnSvc == nil {
+		return connect.NewError(connect.CodeInternal, errors.New("model connection grant authorizer unavailable"))
+	}
+	connectionID, err := strconv.ParseInt(resourceID, 10, 64)
+	if err != nil {
+		return connect.NewError(connect.CodeInvalidArgument, errors.New("invalid model connection id"))
+	}
+	if err := s.modelConnSvc.AuthorizeConnectionGrantManagement(ctx, tenant.UserID, tenant.OrganizationID, connectionID); err != nil {
+		return connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
 	}
 	return nil
 }

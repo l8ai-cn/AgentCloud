@@ -55,13 +55,14 @@ type RepositoryLookup interface {
 	GetByID(ctx context.Context, id int64) (*gitprovider.Repository, error)
 }
 
-// ModelConnectionGrantAuthorizer verifies org admin ownership before model-connection grants mutate.
+type KnowledgeBaseLookup interface {
+	Get(ctx context.Context, orgID, id int64) (*kbdom.KnowledgeBase, error)
+}
+
 type ModelConnectionGrantAuthorizer interface {
 	AuthorizeConnectionGrantManagement(ctx context.Context, userID, orgID, connectionID int64) error
 }
 
-// Server implements GrantService. Dependencies mirror the REST handlers'
-// thread of pod/runner/repository services + the grant service itself.
 type Server struct {
 	grantSvc     *grantsvc.Service
 	orgSvc       middleware.OrganizationService
@@ -69,6 +70,7 @@ type Server struct {
 	runnerSvc    RunnerLookup
 	repoSvc      RepositoryLookup
 	modelConnSvc ModelConnectionGrantAuthorizer
+	kbSvc        KnowledgeBaseLookup
 }
 
 func NewServer(
@@ -78,10 +80,16 @@ func NewServer(
 	runnerSvc RunnerLookup,
 	repoSvc RepositoryLookup,
 	modelConnSvc ModelConnectionGrantAuthorizer,
+	kbSvc KnowledgeBaseLookup,
 ) *Server {
 	return &Server{
-		grantSvc: grantSvc, orgSvc: orgSvc, podSvc: podSvc, runnerSvc: runnerSvc,
-		repoSvc: repoSvc, modelConnSvc: modelConnSvc,
+		grantSvc:     grantSvc,
+		orgSvc:       orgSvc,
+		podSvc:       podSvc,
+		runnerSvc:    runnerSvc,
+		repoSvc:      repoSvc,
+		modelConnSvc: modelConnSvc,
+		kbSvc:        kbSvc,
 	}
 }
 

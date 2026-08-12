@@ -4,13 +4,14 @@ import (
 	"context"
 	"slices"
 
+	entitlementdom "github.com/l8ai-cn/agentcloud/backend/internal/domain/entitlement"
 	grantdom "github.com/l8ai-cn/agentcloud/backend/internal/domain/grant"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/organization"
 	skilldom "github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 )
 
-const skillEntitlementKind = "skill"
+const skillEntitlementKind = entitlementdom.KindSkill
 
 type SkillGrantReader interface {
 	GetGrantedUserIDs(ctx context.Context, resourceType, resourceID string) ([]int64, error)
