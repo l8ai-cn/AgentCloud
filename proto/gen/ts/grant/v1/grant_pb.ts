@@ -1,4 +1,4 @@
-// GrantService — resource grants for pod / runner / repository.
+// GrantService — resource grants for pod / runner / repository / knowledge_base.
 //
 // Migrated from REST handlers in:
 //   backend/internal/api/rest/v1/pod_grants.go
@@ -6,7 +6,7 @@
 //   backend/internal/api/rest/v1/repository_grants.go
 // per .claude/plans/proto-naming-conventions.md.
 //
-// One service with `resource_type` ("pod" / "runner" / "repository") +
+// One service with `resource_type` ("pod" / "runner" / "repository" / "knowledge_base") +
 // `resource_id` (the string-encoded resource key — int64 for runner/repo,
 // pod_key for pod). Matches the existing grant.Repository contract; the
 // per-resource REST splits were policy-checks only — the wire shape was
@@ -131,7 +131,7 @@ export type ListGrantsRequest = Message<"proto.grant.v1.ListGrantsRequest"> & {
   orgSlug: string;
 
   /**
-   * "pod" / "runner" / "repository". Anything else fails handler validation.
+   * "pod" / "runner" / "repository" / "knowledge_base". Anything else fails handler validation.
    *
    * @generated from field: string resource_type = 2;
    */
