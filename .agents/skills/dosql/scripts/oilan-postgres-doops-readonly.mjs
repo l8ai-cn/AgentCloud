@@ -49,8 +49,8 @@ function resolveQueryName(command, input) {
     }
     return "asset-probe";
   }
-  if (input.queryName !== "migration-version") {
-    throw new Error("queryName must be migration-version");
+  if (input.queryName !== "schema-fingerprint") {
+    throw new Error("queryName must be schema-fingerprint");
   }
   return input.queryName;
 }

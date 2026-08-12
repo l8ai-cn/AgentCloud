@@ -1,4 +1,4 @@
-import { ApplicationsPage } from "@/components/applications/ApplicationsPage";
+import { redirect } from "next/navigation";
 
 export default async function ApplicationsRoute({
   params,
@@ -6,5 +6,5 @@ export default async function ApplicationsRoute({
   params: Promise<{ org: string }>;
 }) {
   const { org } = await params;
-  return <ApplicationsPage orgSlug={org} />;
+  redirect(`/${org}/experts`);
 }

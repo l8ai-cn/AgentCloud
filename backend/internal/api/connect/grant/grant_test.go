@@ -23,7 +23,7 @@ func connectCodeOf(t *testing.T, err error) connect.Code {
 // --- Validation guards (org_slug missing) ---
 
 func TestListGrants_NoOrgSlug_InvalidArgument(t *testing.T) {
-	srv := NewServer(nil, nil, nil, nil, nil)
+	srv := NewServer(nil, nil, nil, nil, nil, nil)
 	_, err := srv.ListGrants(context.Background(),
 		connect.NewRequest(&grantv1.ListGrantsRequest{}))
 	require.Error(t, err)
@@ -31,7 +31,7 @@ func TestListGrants_NoOrgSlug_InvalidArgument(t *testing.T) {
 }
 
 func TestCreateGrant_NoOrgSlug_InvalidArgument(t *testing.T) {
-	srv := NewServer(nil, nil, nil, nil, nil)
+	srv := NewServer(nil, nil, nil, nil, nil, nil)
 	_, err := srv.CreateGrant(context.Background(),
 		connect.NewRequest(&grantv1.CreateGrantRequest{}))
 	require.Error(t, err)
@@ -39,7 +39,7 @@ func TestCreateGrant_NoOrgSlug_InvalidArgument(t *testing.T) {
 }
 
 func TestDeleteGrant_NoOrgSlug_InvalidArgument(t *testing.T) {
-	srv := NewServer(nil, nil, nil, nil, nil)
+	srv := NewServer(nil, nil, nil, nil, nil, nil)
 	_, err := srv.DeleteGrant(context.Background(),
 		connect.NewRequest(&grantv1.DeleteGrantRequest{}))
 	require.Error(t, err)
@@ -75,6 +75,7 @@ func TestIsValidResourceType(t *testing.T) {
 	assert.False(t, isValidResourceType(""))
 	assert.False(t, isValidResourceType("file"))
 	assert.False(t, isValidResourceType("POD"))
+	assert.True(t, isValidResourceType("model_connection"))
 }
 
 // --- procedure constant identity (conventions §12) ---

@@ -31,7 +31,7 @@ func TestDiscoverAndImportAgainstOpenAIShapedGateway(t *testing.T) {
 	require.NoError(t, err)
 	service, err := NewService(Dependencies{
 		Repository: f.repo, Cipher: f.cipher, Members: f.members, Prober: f.prober,
-		Lister: lister, Mutations: f.mutations, Endpoints: allowingEndpoints{},
+		Lister: lister, Mutations: f.mutations, Endpoints: allowingEndpoints{}, Grants: f.grants,
 	})
 	require.NoError(t, err)
 

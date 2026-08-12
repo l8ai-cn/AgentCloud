@@ -26,6 +26,7 @@ func TestLoadLoadsEveryFormalWorkerDefinition(t *testing.T) {
 		assert.NotEmpty(t, definition.AdapterID)
 		assert.NotEmpty(t, definition.Image.Runtime)
 		assert.NotEmpty(t, definition.Image.VersionProbe)
+		assert.Empty(t, definition.Entitlement.Default, slug)
 		program, parseErrors := parser.Parse(definition.AgentFile)
 		require.Empty(t, parseErrors, slug)
 		assert.Equal(t, definition.Executable, extract.Extract(program).Agent.Command, slug)

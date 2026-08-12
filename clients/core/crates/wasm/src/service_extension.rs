@@ -112,4 +112,22 @@ impl WasmExtensionService {
     pub async fn uninstall_mcp_server_connect(&self, request: &[u8]) -> Result<Vec<u8>, String> {
         self.0.uninstall_mcp_server_connect(request).await
     }
+
+    // -- MyCapabilitiesService --
+
+    #[wasm_bindgen(js_name = listMyInstalledSkillsConnect)]
+    pub async fn list_my_installed_skills_connect(
+        &self,
+        request: &[u8],
+    ) -> Result<Vec<u8>, String> {
+        self.0.list_my_installed_skills_connect(request).await
+    }
+
+    #[wasm_bindgen(js_name = listMyInstalledMcpServersConnect)]
+    pub async fn list_my_installed_mcp_servers_connect(
+        &self,
+        request: &[u8],
+    ) -> Result<Vec<u8>, String> {
+        self.0.list_my_installed_mcp_servers_connect(request).await
+    }
 }

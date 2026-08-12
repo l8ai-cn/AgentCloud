@@ -31,6 +31,7 @@ type InstalledMcpRepository interface {
 	UpdateInstalledMcpServer(ctx context.Context, server *InstalledMcpServer) error
 	DeleteInstalledMcpServer(ctx context.Context, id int64) error
 	GetEffectiveMcpServers(ctx context.Context, orgID, userID, repoID int64) ([]*InstalledMcpServer, error)
+	ListUserInstalledMcpServers(ctx context.Context, orgID, userID int64) ([]*UserInstalledMcpServer, error)
 }
 
 // InstalledSkillRepository owns per-repository installations of skills.
@@ -41,6 +42,7 @@ type InstalledSkillRepository interface {
 	UpdateInstalledSkill(ctx context.Context, skill *InstalledSkill) error
 	DeleteInstalledSkill(ctx context.Context, id int64) error
 	GetEffectiveSkills(ctx context.Context, orgID, userID, repoID int64) ([]*InstalledSkill, error)
+	ListUserInstalledSkills(ctx context.Context, orgID, userID int64) ([]*UserInstalledSkill, error)
 }
 
 // Repository is the union of the focused sub-interfaces. Callers should

@@ -36,7 +36,7 @@ func (o *PodOrchestrator) resolveKnowledgeMounts(
 		requested = append(requested, kbservice.MountRequest{KBSlug: m.Slug, Mode: m.Mode})
 	}
 
-	mounts, err := o.knowledgeBases.ResolveMountsForPod(ctx, req.OrganizationID, req.AgentSlug, requested)
+	mounts, err := o.knowledgeBases.ResolveMountsForPod(ctx, req.OrganizationID, req.UserID, req.AgentSlug, requested)
 	if err != nil {
 		return nil, err
 	}

@@ -31,8 +31,11 @@ func (s *Service) resolveMetadata(ctx context.Context, actor Actor, orgID, resou
 	if orgID < 0 {
 		return nil, ErrInvalidOwner
 	}
+	orgCanManage := false
 	if orgID > 0 {
-		if _, err := s.authorizeOwner(ctx, actor, domain.OwnerScopeOrg, orgID, false); err != nil {
+		var err error
+		orgCanManage, err = s.authorizeOwner(ctx, actor, domain.OwnerScopeOrg, orgID, false)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -42,6 +45,9 @@ func (s *Service) resolveMetadata(ctx context.Context, actor Actor, orgID, resou
 	}
 	if connection.OwnerScope == domain.OwnerScopeOrg && orgID != connection.OwnerID {
 		return nil, ErrForbidden
+	}
+	if err := s.authorizeConnectionUse(ctx, actor, connection, orgCanManage && connection.OwnerScope == domain.OwnerScopeOrg && connection.OwnerID == orgID); err != nil {
+		return nil, err
 	}
 	if !connection.IsEnabled || !resource.IsEnabled {
 		return nil, ErrDisabled
@@ -99,6 +105,8 @@ func blockingReasonError(reason BlockingReason) error {
 		return ErrUnchecked
 	case BlockingConnectionInvalid, BlockingResourceInvalid:
 		return ErrUnhealthy
+	case BlockingNotGranted:
+		return ErrNotGranted
 	default:
 		return ErrUnhealthy
 	}

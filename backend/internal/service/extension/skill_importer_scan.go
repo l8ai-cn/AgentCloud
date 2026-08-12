@@ -19,10 +19,11 @@ type SkillInfo struct {
 	Description   string
 	License       string
 	Compatibility string
+	AgentFilter   []string
 	AllowedTools  string
 	Category      string
 	Tags          []string
-	DirPath       string // absolute path to the skill directory
+	DirPath       string
 }
 
 func detectRepoType(repoDir string) string {
@@ -119,6 +120,7 @@ func parseSkillDir(dirPath string) (*SkillInfo, error) {
 		Description:   fm["description"],
 		License:       fm["license"],
 		Compatibility: fm["compatibility"],
+		AgentFilter:   agentFilterFromFrontmatter(fm),
 		AllowedTools:  fm["allowed-tools"],
 		Category:      fm["category"],
 		Tags:          tags,

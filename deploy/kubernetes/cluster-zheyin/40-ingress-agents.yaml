@@ -1,0 +1,137 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentcloud-agents
+  namespace: doworker
+  annotations:
+    kubernetes.io/ingress.class: nginx-ingress-controller
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  tls:
+    - hosts: ["agents.zjcm.edu.cn"]
+      secretName: zjcm-edu-cn-tls
+  rules:
+    - host: agents.zjcm.edu.cn
+      http:
+        paths:
+          - path: /agentcloud
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000
+          - path: /api/marketplace/v1
+            pathType: Prefix
+            backend:
+              service:
+                name: marketplace
+                port:
+                  number: 8080
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+          - path: /health
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+          - path: /proto.
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+          - path: /.well-known
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentcloud-agents-relay
+  namespace: doworker
+  annotations:
+    kubernetes.io/ingress.class: nginx-ingress-controller
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+    - hosts: ["agents.zjcm.edu.cn"]
+      secretName: zjcm-edu-cn-tls
+  rules:
+    - host: agents.zjcm.edu.cn
+      http:
+        paths:
+          - path: /relay(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: relay
+                port:
+                  number: 8090
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: agentcloud-agents-tunnel
+  namespace: doworker
+  annotations:
+    kubernetes.io/ingress.class: nginx-ingress-controller
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  tls:
+    - hosts: ["agents.zjcm.edu.cn"]
+      secretName: zjcm-edu-cn-tls
+  rules:
+    - host: agents.zjcm.edu.cn
+      http:
+        paths:
+          - path: /runner/tunnel
+            pathType: Prefix
+            backend:
+              service:
+                name: relay
+                port:
+                  number: 8090

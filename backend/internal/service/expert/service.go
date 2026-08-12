@@ -92,6 +92,7 @@ type Service struct {
 	workerSpecs       WorkerSpecSnapshotLoader
 	workerSpecWriter  WorkerSpecSnapshotWriter
 	marketWorkerSpecs MarketWorkerSpecPreparer
+	workerTypes       WorkerTypeLookup
 	marketInstallLock MarketInstallationLocker
 	market            expertmarket.Repository
 	marketSkills      MarketSkillLoader
@@ -116,6 +117,7 @@ type Deps struct {
 	WorkerSpecs       WorkerSpecSnapshotLoader
 	WorkerSpecWriter  WorkerSpecSnapshotWriter
 	MarketWorkerSpecs MarketWorkerSpecPreparer
+	WorkerTypes       WorkerTypeLookup
 	MarketInstallLock MarketInstallationLocker
 	Market            expertmarket.Repository
 	MarketSkills      MarketSkillLoader
@@ -134,6 +136,12 @@ func NewService(deps Deps) *Service {
 	if logger == nil {
 		logger = slog.Default()
 	}
+	workerTypes := deps.WorkerTypes
+	if workerTypes == nil {
+		if lookup, ok := deps.MarketWorkerSpecs.(WorkerTypeLookup); ok {
+			workerTypes = lookup
+		}
+	}
 	return &Service{
 		store:             deps.Store,
 		pods:              deps.Pods,
@@ -142,6 +150,7 @@ func NewService(deps Deps) *Service {
 		workerSpecs:       deps.WorkerSpecs,
 		workerSpecWriter:  deps.WorkerSpecWriter,
 		marketWorkerSpecs: deps.MarketWorkerSpecs,
+		workerTypes:       workerTypes,
 		marketInstallLock: deps.MarketInstallLock,
 		market:            deps.Market,
 		marketSkills:      deps.MarketSkills,

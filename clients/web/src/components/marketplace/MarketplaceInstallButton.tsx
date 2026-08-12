@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ export function MarketplaceInstallButton({
   applicationSlug: string;
   agentSlug: string;
 }) {
+  const t = useTranslations("marketplace");
   const router = useRouter();
   const { session, hydrated } = useLightSession();
 
@@ -22,7 +24,7 @@ export function MarketplaceInstallButton({
     return (
       <Button className="w-full gap-2" disabled>
         <Loader2 className="h-4 w-4 animate-spin" />
-        检查账户
+        {t("checkingAccount")}
       </Button>
     );
   }
@@ -33,7 +35,7 @@ export function MarketplaceInstallButton({
         className="w-full gap-2"
         onClick={() => router.push("/login?redirect=%2Fmarketplace")}
       >
-        登录后启用
+        {t("signInToEnable")}
         <ArrowRight className="h-4 w-4" />
       </Button>
     );
@@ -45,7 +47,7 @@ export function MarketplaceInstallButton({
       agentSlug={agentSlug}
       orgSlug={session.currentOrgSlug}
       onInstalled={(orgSlug, expertSlug, alreadyInstalled) => {
-        toast.success(alreadyInstalled ? "伙伴应用已在组织中" : "伙伴应用已启用");
+        toast.success(alreadyInstalled ? t("alreadyInstalled") : t("installed"));
         router.push(`/${orgSlug}/experts/${expertSlug}`);
       }}
       onNeedsOrganization={() => router.push("/onboarding/create-org")}

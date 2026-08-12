@@ -40,6 +40,7 @@ func (p *SkillPackager) CompleteGitHubInstall(ctx context.Context, orgID, repoID
 		StorageKey:     pkg.StorageKey,
 		PackageSize:    pkg.PackageSize,
 		IsEnabled:      true,
+		AgentFilter:    marshalPackedAgentFilter(pkg.AgentFilter),
 	}
 
 	if err := p.repo.CreateInstalledSkill(ctx, skill); err != nil {
@@ -76,6 +77,7 @@ func (p *SkillPackager) CompleteUploadInstall(ctx context.Context, orgID, repoID
 		StorageKey:     pkg.StorageKey,
 		PackageSize:    pkg.PackageSize,
 		IsEnabled:      true,
+		AgentFilter:    marshalPackedAgentFilter(pkg.AgentFilter),
 	}
 
 	if err := p.repo.CreateInstalledSkill(ctx, skill); err != nil {

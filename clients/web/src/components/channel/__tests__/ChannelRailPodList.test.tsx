@@ -11,7 +11,7 @@ const pods: ChannelPodSummary[] = [
   { pod_key: "pk-run", alias: "Runner", status: "running" },
   { pod_key: "pk-pause", alias: "Paused", status: "paused" },
   { pod_key: "pk-term", alias: "Terminated", status: "terminated" },
-  { pod_key: "pk-fail", alias: "Failed", status: "failed" },
+  { pod_key: "pk-err", alias: "Errored", status: "error" },
 ];
 
 describe("ChannelRailPodList", () => {
@@ -21,7 +21,7 @@ describe("ChannelRailPodList", () => {
     expect(screen.getByText("Runner")).toBeDefined();
     expect(screen.getByText("Paused")).toBeDefined();
     expect(screen.queryByText("Terminated")).toBeNull();
-    expect(screen.queryByText("Failed")).toBeNull();
+    expect(screen.queryByText("Errored")).toBeNull();
   });
 
   it("shows the destroyed toggle with the terminal-state count", () => {

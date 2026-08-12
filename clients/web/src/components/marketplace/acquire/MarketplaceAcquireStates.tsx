@@ -1,137 +1,9 @@
 import Link from "next/link";
-import { CheckCircle2, Loader2, Settings2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import type { LightOrganization } from "@/lib/light-auth";
-import type { MarketplaceModelResource } from "@/lib/marketplace-model-resources";
-import type { MarketplaceToolModelGroup } from "@/lib/marketplace-tool-model-resources";
-import { MarketplaceToolModelFields } from "../MarketplaceToolModelFields";
-import { MarketplaceModelResourceField } from "./MarketplaceModelResourceField";
-
-export function OrganizationStep({
-  organizations,
-  loadingOrganizations,
-  value,
-  onChange,
-  onContinue,
-  fixedOrganization,
-  modelResources,
-  modelResourceID,
-  onModelChange,
-  toolModelGroups = [],
-  toolModelResourceIDs = {},
-  onToolModelChange = () => {},
-  toolSelectionComplete = true,
-  missingCompatibleResource = false,
-  loadingModels,
-  modelError,
-  incompatibleListing,
-  onReloadModels,
-  settingsHref,
-}: {
-  organizations: LightOrganization[];
-  loadingOrganizations: boolean;
-  value: string;
-  onChange: (value: string) => void;
-  onContinue: () => void;
-  fixedOrganization?: LightOrganization;
-  modelResources: MarketplaceModelResource[];
-  modelResourceID: string;
-  onModelChange: (value: string) => void;
-  toolModelGroups?: MarketplaceToolModelGroup[];
-  toolModelResourceIDs?: Record<string, string>;
-  onToolModelChange?: (role: string, value: string) => void;
-  toolSelectionComplete?: boolean;
-  missingCompatibleResource?: boolean;
-  loadingModels: boolean;
-  modelError: boolean;
-  incompatibleListing: boolean;
-  onReloadModels: () => void;
-  settingsHref: string;
-}) {
-  return (
-    <section className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground">
-          {fixedOrganization ? "检查当前组织的启用条件" : "选择使用组织"}
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          {fixedOrganization
-            ? `应用会安装到「${fixedOrganization.name}」，创建后不能直接移动。`
-            : "应用会安装到你选择的组织，创建后不能直接移动。"}
-        </p>
-      </div>
-      {loadingOrganizations ? (
-        <LoadingState label="正在加载组织" />
-      ) : fixedOrganization ? (
-        <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 text-sm text-foreground">
-          启用目标：{fixedOrganization.name}
-        </div>
-      ) : organizations.length === 0 ? (
-        <ErrorState message="当前账户还没有可用组织，请先创建组织。" />
-      ) : (
-        <select
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="h-12 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring"
-          aria-label="选择使用组织"
-        >
-          <option value="">请选择组织</option>
-          {organizations.map((organization) => (
-            <option key={organization.id} value={organization.id}>
-              {organization.name}
-            </option>
-          ))}
-        </select>
-      )}
-      {value ? (
-        <div className="space-y-4">
-          <MarketplaceModelResourceField
-            resources={modelResources}
-            value={modelResourceID}
-            onChange={onModelChange}
-            loading={loadingModels}
-            error={modelError}
-            incompatibleListing={incompatibleListing}
-            onReload={onReloadModels}
-            settingsHref={settingsHref}
-          />
-          {!loadingModels && !missingCompatibleResource ? (
-            <MarketplaceToolModelFields
-              groups={toolModelGroups}
-              values={toolModelResourceIDs}
-              onChange={onToolModelChange}
-            />
-          ) : null}
-          {!loadingModels &&
-          missingCompatibleResource &&
-          modelResources.length > 0 ? (
-            <Button asChild className="w-full gap-2" variant="outline">
-              <Link href={settingsHref}>
-                <Settings2 className="h-4 w-4" />
-                配置兼容工具模型
-              </Link>
-            </Button>
-          ) : null}
-        </div>
-      ) : null}
-      <Button
-        className="w-full"
-        size="lg"
-        disabled={
-          !value ||
-          !modelResourceID ||
-          !toolSelectionComplete ||
-          loadingModels ||
-          missingCompatibleResource
-        }
-        onClick={onContinue}
-      >
-        检查启用条件
-      </Button>
-    </section>
-  );
-}
 
 export function AcquireShell({ children }: { children: React.ReactNode }) {
   return (
@@ -143,15 +15,12 @@ export function AcquireShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function LoadingState({
-  label = "正在加载启用信息",
-}: {
-  label?: string;
-}) {
+export function LoadingState({ label }: { label?: string }) {
+  const t = useTranslations("marketplace");
   return (
     <div className="flex min-h-40 items-center justify-center gap-3 text-sm text-muted-foreground">
       <Loader2 className="h-5 w-5 animate-spin" />
-      {label}
+      {label ?? t("acquire.loadingAcquire")}
     </div>
   );
 }
@@ -174,20 +43,24 @@ export function InlineError({ message }: { message: string }) {
 
 export function SuccessState({
   organization,
-  installationID,
+  expertSlug,
 }: {
   organization: LightOrganization;
-  installationID: string;
+  expertSlug?: string;
 }) {
+  const t = useTranslations("marketplace");
+  const href = expertSlug
+    ? `/${organization.slug}/experts/${expertSlug}`
+    : `/${organization.slug}/experts`;
   return (
     <section className="py-4 text-center">
       <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
-      <h2 className="mt-4 text-2xl font-semibold text-foreground">应用已启用</h2>
+      <h2 className="mt-4 text-2xl font-semibold text-foreground">{t("acquire.enabledTitle")}</h2>
       <p className="mt-2 text-sm text-muted-foreground">
-        已在「{organization.name}」创建可用实例。
+        {t("acquire.enabledBody", { name: organization.name })}
       </p>
       <Button asChild className="mt-6">
-        <Link href={`/${organization.slug}/applications/${installationID}`}>去应用中心开始第一个任务</Link>
+        <Link href={href}>{t("acquire.startFirstTask")}</Link>
       </Button>
     </section>
   );

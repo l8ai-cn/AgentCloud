@@ -70,6 +70,7 @@ export interface McpMarketItem {
   default_http_url?: string;
   default_http_headers?: McpHeaderSchemaEntry[] | null;
   env_var_schema?: EnvVarSchemaEntry[] | null;
+  agent_filter?: string[];
   category: string;
   source?: string;
   registry_name?: string;

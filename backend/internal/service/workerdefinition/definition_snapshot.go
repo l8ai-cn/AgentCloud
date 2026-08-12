@@ -54,6 +54,10 @@ func ParseSnapshot(source []byte, agentFile string) (Definition, error) {
 	if err != nil {
 		return Definition{}, err
 	}
+	entitlement, err := decodeEntitlement(document.Entitlement)
+	if err != nil {
+		return Definition{}, err
+	}
 	return Definition{
 		Slug: document.Slug, Version: document.DefinitionVersion,
 		Internal:   document.Internal,
@@ -67,6 +71,7 @@ func ParseSnapshot(source []byte, agentFile string) (Definition, error) {
 		CredentialRequirementGroups: credentialGroups,
 		ConfigDocuments:             configDocuments,
 		Image:                       image,
+		Entitlement:                 entitlement,
 	}, nil
 }
 

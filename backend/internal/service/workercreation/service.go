@@ -32,6 +32,9 @@ func NewService(deps Deps) *Service {
 		EnvBundles:   deps.EnvBundles,
 		Definitions:  deps.Definitions,
 		Commits:      deps.Commits,
+		Entitlements: deps.Entitlements,
+		Grants:       deps.Grants,
+		MemberRoles:  deps.MemberRoles,
 	}
 	workerTypes := newWorkerTypeResolver(deps.Agents, deps.Definitions)
 	models := newModelResolver(deps.Models)

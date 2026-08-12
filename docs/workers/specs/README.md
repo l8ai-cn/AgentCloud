@@ -12,12 +12,13 @@ Generated from `config/worker-types/*/definition.json` + AgentFile. Do not edit 
 | `gemini-cli` | Gemini CLI | locked_available | [spec](./gemini-cli.md) |
 | `grok-build` | Grok Build | locked_available | [spec](./grok-build.md) |
 | `hermes` | Hermes | locked_available | [spec](./hermes.md) |
-| `kimi-code` | Kimi Code | missing | [spec](./kimi-code.md) |
+| `kimi-code` | Kimi Code | locked_available | [spec](./kimi-code.md) |
 | `loopal` | Loopal | missing | [spec](./loopal.md) |
 | `minimax-cli` | MiniMax CLI | locked_available | [spec](./minimax-cli.md) |
 | `openclaw` | OpenClaw | locked_available | [spec](./openclaw.md) |
 | `opencode` | OpenCode | missing | [spec](./opencode.md) |
 | `pattern-designer` | Pattern Designer | locked_available | [spec](./pattern-designer.md) |
+| `pi-agent` | Pi Agent | missing | [spec](./pi-agent.md) |
 | `seedance-expert` | Seedance Expert | locked_available | [spec](./seedance-expert.md) |
 | `video-studio` | Video Studio | locked_available | [spec](./video-studio.md) |
 

@@ -9,6 +9,7 @@ import { MarketplaceSidebarContent } from "./sidebar/MarketplaceSidebarContent";
 import { RepositoriesSidebarContent } from "./sidebar/RepositoriesSidebarContent";
 import { RunnersSidebarContent } from "./sidebar/RunnersSidebarContent";
 import { SettingsSidebarContent } from "./sidebar/SettingsSidebarContent";
+import { ConnectionsSidebarContent } from "./sidebar/ConnectionsSidebarContent";
 import { SkillsSidebarContent } from "./sidebar/SkillsSidebarContent";
 import { TicketsSidebarContent } from "./sidebar/TicketsSidebarContent";
 import { WorkflowsSidebarContent } from "./sidebar/WorkflowsSidebarContent";
@@ -52,6 +53,8 @@ export function getSidebarContent(
       return <RunnersSidebarContent onAddRunner={callbacks.onAddRunner} />;
     case "skills":
       return <SkillsSidebarContent />;
+    case "connections":
+      return <ConnectionsSidebarContent />;
     case "marketplace":
       return <MarketplaceSidebarContent />;
     case "settings":

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "slug": "pi-agent",
+  "definition_version": "1",
+  "executable": "pi-agent",
+  "adapter_id": "pi-acp",
+  "interaction_modes": ["pty", "acp"],
+  "model_requirement": {
+    "required": true,
+    "protocol_adapters": ["openai-compatible"]
+  },
+  "credential_bindings": [
+    {
+      "id": "openai-api-key",
+      "source": { "kind": "model_resource", "ref": "openai-compatible" },
+      "target": { "kind": "env", "name": "OPENAI_API_KEY" }
+    },
+    {
+      "id": "openai-base-url",
+      "source": { "kind": "model_resource", "ref": "openai-compatible" },
+      "target": { "kind": "env", "name": "OPENAI_BASE_URL" }
+    },
+    {
+      "id": "openai-model",
+      "source": { "kind": "model_resource", "ref": "openai-compatible" },
+      "target": { "kind": "env", "name": "OPENAI_MODEL" }
+    }
+  ],
+  "config_documents": [],
+  "image": {
+    "runtime": "pi-agent",
+    "version_probe": ["pi", "--version"]
+  }
+}

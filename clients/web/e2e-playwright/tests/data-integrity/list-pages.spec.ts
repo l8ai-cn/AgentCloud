@@ -15,6 +15,7 @@
 // fixtures/index.ts) catches the silent-error class on top.
 
 import { test, expect } from "../../fixtures/index";
+import { ACTIVE_POD_STATUSES } from "../../../../../packages/service-interface/src/view-models/pod-status.gen";
 import { TEST_ORG_SLUG } from "../../helpers/env";
 import { clearAuthRateLimit } from "../../helpers/redis";
 
@@ -26,10 +27,10 @@ test.describe("Data integrity: list pages match API counts", () => {
   test("workspace sidebar pod count matches ListPods API", async ({ page, api }) => {
     const cc = await api.connect();
     // Mirror the renderer's default sidebar request — "running" tab maps to
-    // status "running,initializing" for the whole org (SIDEBAR_STATUS_MAP).
+    // active statuses for the whole org (SIDEBAR_STATUS_MAP).
     const { items } = await cc.pod.listPods({
       orgSlug: TEST_ORG_SLUG,
-      status: "running,initializing",
+      status: ACTIVE_POD_STATUSES.join(","),
       limit: 50,
       offset: 0,
     }) as { items: Array<{ podKey: string }> };

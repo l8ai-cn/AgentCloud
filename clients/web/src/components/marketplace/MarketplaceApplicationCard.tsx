@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
   type LucideIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
 import type { PublicMarketApplication } from "@/lib/public-market-api";
@@ -32,6 +33,7 @@ export function MarketplaceApplicationCard({
 }: {
   application: PublicMarketApplication;
 }) {
+  const t = useTranslations("marketplace");
   const Icon = icons[application.icon];
 
   return (
@@ -43,8 +45,10 @@ export function MarketplaceApplicationCard({
           </span>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold text-white">{application.name}</h2>
-              {application.featured ? <Badge className="bg-[var(--expert-action)] text-[var(--expert-ink)]">精选</Badge> : null}
+              <h2 className="text-lg font-semibold text-white">{application.name}</h2>
+              {application.featured ? (
+                <Badge className="bg-[var(--expert-action)] text-[var(--expert-ink)]">{t("public.featured")}</Badge>
+              ) : null}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
               {application.category} · {application.agent_slug}
@@ -53,14 +57,10 @@ export function MarketplaceApplicationCard({
         </div>
         <Badge variant="outline">v{application.version}</Badge>
       </div>
-
-        <p className="mt-5 text-sm font-medium leading-6 text-white">
-        {application.summary}
-      </p>
+      <p className="mt-5 text-sm font-medium leading-6 text-white">{application.summary}</p>
       <p className="mt-2 line-clamp-3 text-sm leading-6 text-[var(--expert-muted)]">
         {application.description}
       </p>
-
       <div className="mt-5 space-y-2">
         {application.outcomes.map((outcome) => (
           <div key={outcome} className="flex items-start gap-2 text-sm text-[var(--expert-text)]">
@@ -69,10 +69,9 @@ export function MarketplaceApplicationCard({
           </div>
         ))}
       </div>
-
       <div className="mt-6 border-t border-border pt-4">
         <p className="text-xs font-medium text-[var(--expert-muted)]">
-          内置能力组件 · {application.skill_slugs.length} 项 Skills
+          {t("public.builtinSkills", { count: application.skill_slugs.length })}
         </p>
         <div className="mt-2 flex flex-wrap gap-2">
           {application.skill_slugs.map((skill) => (
@@ -82,11 +81,10 @@ export function MarketplaceApplicationCard({
           ))}
         </div>
       </div>
-
       <div className="mt-auto pt-6">
         <MarketplaceInstallButton applicationSlug={application.slug} agentSlug={application.agent_slug} />
         <span className="mt-3 inline-flex items-center gap-1 text-xs text-[var(--expert-muted)]">
-          查看职责与启用条件 <ArrowUpRight className="h-3.5 w-3.5" />
+          {t("public.viewDuties")} <ArrowUpRight className="h-3.5 w-3.5" />
         </span>
       </div>
     </article>

@@ -1,12 +1,3 @@
-// Package knowledgebaseconnect hosts Connect-RPC handlers for the org-scoped
-// KnowledgeBaseService — llm-wiki knowledge bases backed by internal Gitea.
-//
-// Split (200-line rule):
-//   - server.go  — scaffolding + Mount
-//   - crud.go    — List/Get/Create/Update/Delete
-//   - mounts.go  — agent mount RPCs
-//   - files.go   — repo content browsing (file/dir)
-//   - convert.go — domain → proto translation + error mapping
 package knowledgebaseconnect
 
 import (
@@ -15,6 +6,7 @@ import (
 	"connectrpc.com/connect"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
+	grantservice "github.com/l8ai-cn/agentcloud/backend/internal/service/grant"
 	kbservice "github.com/l8ai-cn/agentcloud/backend/internal/service/knowledgebase"
 )
 
@@ -25,7 +17,7 @@ const (
 	GetKnowledgeBaseProcedure     = "/" + ServiceName + "/GetKnowledgeBase"
 	CreateKnowledgeBaseProcedure  = "/" + ServiceName + "/CreateKnowledgeBase"
 	UpdateKnowledgeBaseProcedure  = "/" + ServiceName + "/UpdateKnowledgeBase"
-	SyncKnowledgeBaseProcedure   = "/" + ServiceName + "/SyncKnowledgeBase"
+	SyncKnowledgeBaseProcedure    = "/" + ServiceName + "/SyncKnowledgeBase"
 	DeleteKnowledgeBaseProcedure  = "/" + ServiceName + "/DeleteKnowledgeBase"
 	SetAgentMountsProcedure       = "/" + ServiceName + "/SetAgentMounts"
 	ListAgentMountsProcedure      = "/" + ServiceName + "/ListAgentMounts"
@@ -37,10 +29,16 @@ type Server struct {
 	svc        *kbservice.Service
 	orgSvc     middleware.OrganizationService
 	syncWorker *kbservice.SyncWorker
+	grantSvc   *grantservice.Service
 }
 
-func NewServer(svc *kbservice.Service, orgSvc middleware.OrganizationService, syncWorker *kbservice.SyncWorker) *Server {
-	return &Server{svc: svc, orgSvc: orgSvc, syncWorker: syncWorker}
+func NewServer(
+	svc *kbservice.Service,
+	orgSvc middleware.OrganizationService,
+	syncWorker *kbservice.SyncWorker,
+	grantSvc *grantservice.Service,
+) *Server {
+	return &Server{svc: svc, orgSvc: orgSvc, syncWorker: syncWorker, grantSvc: grantSvc}
 }
 
 func Mount(mux *http.ServeMux, srv *Server, opts ...connect.HandlerOption) {

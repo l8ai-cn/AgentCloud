@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
 )
@@ -19,6 +20,7 @@ func (r *Remounter) pinSkills(
 ) ([]specdomain.SkillPackageBinding, error) {
 	seen := make(map[int64]struct{}, len(ids))
 	bindings := make([]specdomain.SkillPackageBinding, 0, len(ids))
+	userID, role := r.remountActor(ctx, organizationID)
 	for _, id := range ids {
 		if id <= 0 {
 			return nil, fmt.Errorf("%w: skill id must be positive", ErrInvalidSkillSelection)
@@ -33,6 +35,11 @@ func (r *Remounter) pinSkills(
 			return nil, fmt.Errorf("%w: skill %d not found", ErrInvalidSkillSelection, id)
 		}
 		if row == nil || row.ID != id || !row.IsActive || !row.VisibleTo(organizationID) {
+			return nil, fmt.Errorf("%w: skill %d is not accessible", ErrInvalidSkillSelection, id)
+		}
+		if err := extensionservice.RequireSkillUse(
+			ctx, r.entitlements, r.grants, organizationID, userID, role, row,
+		); err != nil {
 			return nil, fmt.Errorf("%w: skill %d is not accessible", ErrInvalidSkillSelection, id)
 		}
 		if err := slugkit.Validate(row.Slug); err != nil {

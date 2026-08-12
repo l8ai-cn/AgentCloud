@@ -258,7 +258,9 @@ var _ storage.Storage = (*svcMockStorage)(nil)
 // ---------------------------------------------------------------------------
 
 func newTestService(repo *svcMockRepo, stor *svcMockStorage, enc *crypto.Encryptor) *Service {
-	return NewService(repo, stor, enc)
+	svc := NewService(repo, stor, enc)
+	svc.SetRepositoryAccess(allowRepositoryAccess{})
+	return svc
 }
 
 // int64Ptr returns a pointer to the given int64 value (test helper)

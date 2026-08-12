@@ -34,6 +34,10 @@ func (s *Service) InstallSkillFromMarket(ctx context.Context, orgID, repoID, use
 	if !catalogSkill.IsActive {
 		return nil, fmt.Errorf("%w: skill %d is inactive", ErrNotFound, skillID)
 	}
+	userID, role := SkillMountActor(ctx, userID)
+	if err := RequireSkillUse(ctx, s.entitlements, s.grants, orgID, userID, role, catalogSkill); err != nil {
+		return nil, fmt.Errorf("%w: skill not accessible to this organization", ErrForbidden)
+	}
 
 	skill := &extension.InstalledSkill{
 		OrganizationID: orgID,

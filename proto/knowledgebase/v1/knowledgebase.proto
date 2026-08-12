@@ -45,6 +45,7 @@ message KnowledgeBase {
   int64 created_by_user_id = 13;
   string created_at = 14;
   string updated_at = 15;
+  string visibility = 16;
 }
 
 message AgentMount {
@@ -75,6 +76,7 @@ message CreateKnowledgeBaseRequest {
   optional string description = 3;
   optional string source_type = 4;
   optional string source_config_json = 5;
+  optional string visibility = 6;
 }
 
 message UpdateKnowledgeBaseRequest {
@@ -83,6 +85,7 @@ message UpdateKnowledgeBaseRequest {
   optional string name = 3;
   optional string description = 4;
   optional string source_config_json = 5;
+  optional string visibility = 6;
 }
 
 message SyncKnowledgeBaseRequest {

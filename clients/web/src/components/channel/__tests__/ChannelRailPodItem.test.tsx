@@ -24,7 +24,7 @@ describe("ChannelRailPodItem status colors", () => {
     ["completed", "bg-success"],
     ["terminated", "bg-muted-foreground"],
     ["error", "bg-danger"],
-    ["failed", "bg-muted-foreground"],
+    ["queued", "bg-warning"],
   ];
 
   it.each(cases)("colors status '%s' as %s on both avatar and dot", (status, expected) => {

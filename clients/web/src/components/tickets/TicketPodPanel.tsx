@@ -1,20 +1,16 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useTicketPods } from "@/hooks/useTicketPods";
-import type { TicketPodSummary } from "@/hooks/useTicketPods";
-import { useWorkspaceStore } from "@/stores/workspace";
-import { useCurrentOrg, useAuthStore } from "@/stores/auth";
-import { Terminal, ExternalLink, Plus } from "lucide-react";
+import { useAuthStore } from "@/stores/auth";
+import { Terminal, Plus } from "lucide-react";
 import { CreatePodModal } from "@/components/ide/CreatePodModal";
-import { getPodDisplayName } from "@/lib/pod-display-name";
-import { isPodActive, isPodRelayConnectable } from "@/lib/pod-status";
-import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
+import { isPodActive } from "@/lib/pod-status";
 import { buildTicketContext } from "./buildTicketContext";
+import { TicketPodItem } from "./TicketPodItem";
 
 interface TicketPodPanelProps {
   ticketSlug: string;
@@ -115,7 +111,7 @@ export default function TicketPodPanel({
 
         <div className="space-y-1">
         {activePods.map((pod) => (
-          <PodItem key={pod.pod_key} pod={pod} />
+          <TicketPodItem key={pod.pod_key} pod={pod} />
         ))}
 
           {inactivePods.length > 0 && (
@@ -125,7 +121,7 @@ export default function TicketPodPanel({
               </summary>
               <div className="mt-1 space-y-1">
                 {inactivePods.map((pod) => (
-                  <PodItem key={pod.pod_key} pod={pod} />
+                  <TicketPodItem key={pod.pod_key} pod={pod} />
                 ))}
               </div>
             </details>
@@ -140,81 +136,5 @@ export default function TicketPodPanel({
         </div>
       </div>
     </>
-  );
-}
-
-interface PodItemProps {
-  pod: TicketPodSummary;
-}
-
-function PodItem({ pod }: PodItemProps) {
-  const t = useTranslations();
-  const router = useRouter();
-  const currentOrg = useCurrentOrg();
-  const addPane = useWorkspaceStore((s) => s.addPane);
-  const isActive = isPodActive(pod.status);
-  const canConnect = isPodRelayConnectable(pod.status);
-
-  const handleConnect = () => {
-    addPane(pod.pod_key);
-    router.push(`/${currentOrg?.slug}/workspace`);
-  };
-
-  const handleOpenInNewTab = () => {
-    window.open(`/${currentOrg?.slug}/workspace?pod=${pod.pod_key}`, "_blank");
-  };
-
-  return (
-    <div
-      className={`px-2.5 py-1.5 rounded-md flex items-center gap-2 group transition-colors ${
-        isActive ? "hover:bg-success-bg/50" : "motion-interactive hover:bg-surface-muted"
-      }`}
-    >
-      <div
-        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-          pod.status === "running"
-            ? "bg-success animate-pulse"
-            : pod.status === "initializing"
-            ? "bg-warning animate-pulse"
-            : pod.status === "failed"
-            ? "bg-danger"
-            : "bg-muted-foreground"
-        }`}
-      />
-
-      <code className="text-xs font-mono text-muted-foreground flex-1 truncate">
-        {getPodDisplayName(pod)}
-      </code>
-      <AgentStatusBadge
-        agentStatus={pod.agent_status}
-        podStatus={pod.status}
-        variant="dot"
-      />
-
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        {canConnect && (
-          <>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 px-2 text-xs"
-              onClick={handleConnect}
-            >
-              <Terminal className="w-3 h-3 mr-1" />
-              {t("tickets.podPanel.connect")}
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 p-0"
-              onClick={handleOpenInNewTab}
-              title={t("tickets.podPanel.openInNewTab")}
-            >
-              <ExternalLink className="w-3 h-3" />
-            </Button>
-          </>
-        )}
-      </div>
-    </div>
   );
 }

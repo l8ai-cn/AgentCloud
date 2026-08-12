@@ -55,12 +55,12 @@ func (s *Service) ListEffective(ctx context.Context, actor Actor, orgID int64, m
 	for _, resource := range enabled {
 		enabledByID[resource.ID] = resource
 	}
-	views, err := s.ownerEffectiveViews(ctx, domain.OwnerScopeUser, actor.UserID, true, modalities, enabledByID)
+	views, err := s.ownerEffectiveViews(ctx, actor, domain.OwnerScopeUser, actor.UserID, true, false, orgID, orgCanManage, modalities, enabledByID)
 	if err != nil {
 		return nil, err
 	}
 	if orgID > 0 {
-		orgViews, listErr := s.ownerEffectiveViews(ctx, domain.OwnerScopeOrg, orgID, orgCanManage, modalities, enabledByID)
+		orgViews, listErr := s.ownerEffectiveViews(ctx, actor, domain.OwnerScopeOrg, orgID, orgCanManage, true, orgID, orgCanManage, modalities, enabledByID)
 		if listErr != nil {
 			return nil, listErr
 		}
@@ -69,10 +69,24 @@ func (s *Service) ListEffective(ctx context.Context, actor Actor, orgID int64, m
 	return views, nil
 }
 
-func (s *Service) ownerEffectiveViews(ctx context.Context, scope domain.OwnerScope, ownerID int64, canManage bool, modalities []domain.Modality, enabled map[int64]*domain.ModelResource) ([]EffectiveResourceView, error) {
+func (s *Service) ownerEffectiveViews(
+	ctx context.Context, actor Actor, scope domain.OwnerScope, ownerID int64, canManage, isOrgScope bool,
+	orgID int64, orgCanManage bool, modalities []domain.Modality, enabled map[int64]*domain.ModelResource,
+) ([]EffectiveResourceView, error) {
 	connections, err := s.repository.ListConnectionsByOwner(ctx, scope, ownerID)
 	if err != nil {
 		return nil, err
+	}
+	var grantCtx *connectionGrantContext
+	if isOrgScope && len(connections) > 0 {
+		connectionIDs := make([]int64, len(connections))
+		for i, connection := range connections {
+			connectionIDs[i] = connection.ID
+		}
+		grantCtx, err = s.loadConnectionGrantContext(ctx, actor, orgID, orgCanManage, connectionIDs)
+		if err != nil {
+			return nil, err
+		}
 	}
 	resources, err := s.repository.ListResourcesByOwner(ctx, scope, ownerID)
 	if err != nil {
@@ -89,11 +103,18 @@ func (s *Service) ownerEffectiveViews(ctx context.Context, scope domain.OwnerSco
 				resource = effective
 			}
 			reason := resourceBlockingReason(connection, resource)
+			canUse := !isOrgScope || grantCtx.canUse(connection)
+			if reason == "" && !canUse {
+				reason = BlockingNotGranted
+			}
 			view := resourceView(resource)
 			if reason != "" {
 				view.DefaultModalities = nil
 			}
-			views = append(views, EffectiveResourceView{Connection: connectionView(connection, canManage, nil), Resource: view, Selectable: reason == "", BlockingReason: reason})
+			views = append(views, EffectiveResourceView{
+				Connection: connectionView(connection, canManage, nil), Resource: view,
+				CanUse: canUse, Selectable: reason == "", BlockingReason: reason,
+			})
 		}
 	}
 	return views, nil

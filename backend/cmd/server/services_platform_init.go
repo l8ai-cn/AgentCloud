@@ -31,6 +31,9 @@ func initializePlatformServices(services *serviceContainer, cfg *config.Config, 
 	services.goalLoop = goalloop.NewService(infra.NewGoalLoopRepository(db))
 	services.license = initializeLicenseService(cfg, db)
 	services.extension, services.extensionRepo, services.marketplaceWorker = initializeExtensionServices(cfg, db)
+	if services.extension != nil && services.repository != nil {
+		services.extension.SetRepositoryAccess(services.repository)
+	}
 	services.knowledgeBase = initializeKnowledgeBaseService(cfg, db)
 	if services.knowledgeBase != nil {
 		services.kbSyncWorker = knowledgebaseservice.NewSyncWorker(services.knowledgeBase, cfg.KnowledgeBase.SyncInterval)
@@ -49,4 +52,5 @@ func initializePlatformServices(services *serviceContainer, cfg *config.Config, 
 	// REST and Connect admin handlers must share one audit-log pipeline.
 	services.adminDB = database.NewGormWrapper(db)
 	services.admin = adminservice.NewService(services.adminDB)
+	wireEntitlements(services, db)
 }

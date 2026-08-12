@@ -35,6 +35,7 @@ type Definition struct {
 	CredentialRequirementGroups []CredentialRequirementGroup
 	ConfigDocuments             []ConfigDocument
 	Image                       Image
+	Entitlement                 EntitlementPolicy
 }
 
 type ModelRequirement struct {
@@ -111,6 +112,7 @@ type definitionFile struct {
 	CredentialRequirementGroups []json.RawMessage `json:"credential_requirement_groups"`
 	ConfigDocuments             []json.RawMessage `json:"config_documents"`
 	Image                       json.RawMessage   `json:"image"`
+	Entitlement                 json.RawMessage   `json:"entitlement"`
 }
 
 func Load(root string) (*Catalog, error) {

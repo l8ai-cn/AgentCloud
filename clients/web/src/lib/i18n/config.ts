@@ -21,9 +21,9 @@ export const LOCALE_COOKIE = "NEXT_LOCALE";
 // instead of translation" bugs.
 export const MESSAGE_NAMESPACES = [
   "common", "auth", "landing", "workforce", "expert-home", "app", "settings", "ide",
-  "repositories", "runners", "docs", "content", "extensions",
+  "repositories", "runners", "docs", "content", "extensions", "connections",
   "workflows", "channels", "blockstore", "infra", "automation",
-  "experts", "partner-profile", "partner-statistics",
+  "experts", "marketplace", "partner-profile", "partner-statistics",
   "resource-orchestration",
   "changelog-entries",
   "video-worker",

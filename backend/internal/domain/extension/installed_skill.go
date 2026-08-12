@@ -1,6 +1,7 @@
 package extension
 
 import (
+	"encoding/json"
 	"time"
 
 	skilldom "github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
@@ -37,6 +38,10 @@ type InstalledSkill struct {
 	UpdatedAt      time.Time `gorm:"not null;default:now()" json:"updated_at"`
 
 	Skill *skilldom.Skill `gorm:"foreignKey:SkillID" json:"skill,omitempty"`
+
+	// Packed from SKILL.md at install time; persisted as an object-storage
+	// sidecar because installed_skills has no agent_filter column.
+	AgentFilter json.RawMessage `gorm:"-" json:"-"`
 }
 
 func (InstalledSkill) TableName() string { return "installed_skills" }

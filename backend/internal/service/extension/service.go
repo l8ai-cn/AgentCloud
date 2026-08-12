@@ -44,7 +44,10 @@ type Service struct {
 	storage  storage.Storage
 	crypto   *crypto.Encryptor
 	packager *SkillPackager
-	catalog  SkillCatalog
+	catalog      SkillCatalog
+	entitlements SkillEntitlementGate
+	grants       SkillGrantReader
+	repos        RepositoryAccess
 }
 
 func NewService(repo extension.Repository, storage storage.Storage, cryptoEncryptor *crypto.Encryptor) *Service {

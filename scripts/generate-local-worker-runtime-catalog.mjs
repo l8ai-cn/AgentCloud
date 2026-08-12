@@ -27,6 +27,7 @@ const localRuntimeMetadata = {
   "cursor-cli": { slug: "cursor-cli-local", name: "Cursor CLI (local development)" },
   "grok-build": { slug: "grok-build-local", name: "Grok Build (local development)" },
   hermes: { slug: "hermes-local", name: "Hermes (local development)" },
+  "pi-agent": { slug: "pi-agent-local", name: "Pi Agent (local development)" },
   loopal: { slug: "loopal-local", name: "Loopal (local development)" },
   opencode: { slug: "opencode-local", name: "OpenCode (local development)" },
 };

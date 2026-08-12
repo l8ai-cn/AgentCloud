@@ -4,6 +4,8 @@ use agentcloud_api_client::ApiClient;
 use agentcloud_types::proto_extension_v1 as ext_proto;
 use prost::Message;
 
+mod my_installs;
+
 pub struct ExtensionService {
     client: Arc<ApiClient>,
 }

@@ -6,6 +6,7 @@ import { Drawer } from "vaul";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { cn } from "@/lib/utils";
 import { useIDEStore, ACTIVITIES, type ActivityType } from "@/stores/ide";
+import { activityRoute } from "@/lib/ide-route";
 import { getDefaultRoute } from "@/lib/default-route";
 import { useAuthOrganizations, useCurrentOrg, useCurrentUser, useAuthStore } from "@/stores/auth";
 import { useTranslations } from "next-intl";
@@ -20,6 +21,8 @@ import {
   Repeat,
   Target,
   Sparkles,
+  Plug,
+  Store,
   LogOut,
   ChevronRight,
   type LucideIcon,
@@ -36,6 +39,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   repeat: Repeat,
   target: Target,
   sparkles: Sparkles,
+  store: Store,
+  plug: Plug,
 };
 
 interface MobileDrawerProps {
@@ -55,34 +60,7 @@ export function MobileDrawer({ className }: MobileDrawerProps) {
   const t = useTranslations();
   const orgSlug = currentOrg?.slug || (params.org as string) || "";
 
-  const getActivityRoute = (activity: ActivityType): string => {
-    switch (activity) {
-      case "workspace":
-        return `/${orgSlug}/workspace`;
-      case "tickets":
-        return `/${orgSlug}/tickets`;
-      case "channels":
-        return `/${orgSlug}/channels`;
-      case "mesh":
-        return `/${orgSlug}/mesh`;
-      case "repositories":
-        return `/${orgSlug}/repositories`;
-      case "runners":
-        return `/${orgSlug}/runners`;
-      case "loops":
-        return `/${orgSlug}/loops`;
-      case "workflows":
-        return `/${orgSlug}/workflows`;
-      case "automation":
-        return `/${orgSlug}/automation`;
-      case "skills":
-        return `/${orgSlug}/skills`;
-      case "settings":
-        return `/${orgSlug}/settings`;
-      default:
-        return `/${orgSlug}/workspace`;
-    }
-  };
+  const getActivityRoute = (activity: ActivityType): string => activityRoute(orgSlug, activity);
 
   const handleActivityClick = (activity: ActivityType) => {
     setActiveActivity(activity);

@@ -112,8 +112,9 @@
     "failedToDeleteSource": "Failed to delete skill registry",
 
     "mcpMarket": {
-      "title": "Plantillas de servidor MCP",
-      "description": "Browse available MCP server templates. These templates can be installed to repositories by team members.",
+      "title": "Conectores",
+      "description": "La gobernanza de conectores MCP a nivel de organización está aquí. Explora e instala desde el Mercado de conexiones.",
+      "openMarket": "Abrir Mercado de conexiones",
       "noServers": "No MCP server templates available",
       "serversFound": "servidores encontrados",
       "sourceRegistry": "Registro MCP",
@@ -141,11 +142,11 @@
 
     "settings": {
       "title": "Extensions",
-      "description": "Manage skill registries and explore MCP server templates. Browse the skill marketplace from the Skill Market section.",
+      "description": "Manage skill registries and connector governance. Browse the skill marketplace from the Skill Market section.",
       "tabs": {
         "skillMarket": "Skill Marketplace",
         "skillRegistries": "Skill Registries",
-        "mcpMarket": "Plantillas MCP"
+        "mcpMarket": "Conectores"
       }
     }
   }

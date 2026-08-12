@@ -37,6 +37,8 @@ type Pod struct {
 	LaunchEnv     []string // Full environment slice for subprocess
 
 	workbenchForwarder *podWorkbenchForwarder
+	acpWatchdog        *acpTurnWatchdog
+	acpFailureOnce     sync.Once
 
 	// Perpetual mode: auto-restart on clean exit
 	Perpetual    bool

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useIDEStore, getMoreMenuActivities, type ActivityType } from "@/stores/ide";
 import { useCurrentOrg } from "@/stores/auth";
 import { useIsSystemAdmin } from "@/hooks/useIsSystemAdmin";
+import { activityRoute } from "@/lib/ide-route";
 import { useTranslations } from "next-intl";
 import {
   Network,
@@ -16,6 +17,8 @@ import {
   Target,
   ShieldCheck,
   Sparkles,
+  Plug,
+  Store,
   type LucideIcon,
 } from "lucide-react";
 import { MobileThemeMenu } from "./MobileThemeMenu";
@@ -27,6 +30,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   repeat: Repeat,
   target: Target,
   sparkles: Sparkles,
+  store: Store,
+  plug: Plug,
 };
 
 interface MobileMoreMenuProps {
@@ -44,24 +49,7 @@ export function MobileMoreMenu({ className }: MobileMoreMenuProps) {
 
   const moreActivities = getMoreMenuActivities();
 
-  const getActivityRoute = (activity: ActivityType): string => {
-    switch (activity) {
-      case "mesh":
-        return `/${orgSlug}/mesh`;
-      case "loops":
-        return `/${orgSlug}/loops`;
-      case "workflows":
-        return `/${orgSlug}/workflows`;
-      case "automation":
-        return `/${orgSlug}/automation`;
-      case "runners":
-        return `/${orgSlug}/runners`;
-      case "settings":
-        return `/${orgSlug}/settings`;
-      default:
-        return `/${orgSlug}/workspace`;
-    }
-  };
+  const getActivityRoute = (activity: ActivityType): string => activityRoute(orgSlug, activity);
 
   const navigate = (route: string) => {
     setMobileMoreMenuOpen(false);

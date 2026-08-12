@@ -2,6 +2,7 @@
 {{- $host := required "ingress.agents.host is required" .Values.ingress.agents.host }}
 {{- $tls := .Values.ingress.tlsSecret }}
 {{- $class := .Values.ingress.className }}
+{{- $classAnno := .Values.ingress.classAnnotation }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -10,12 +11,17 @@ metadata:
   labels:
     {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
+    {{- if $classAnno }}
+    kubernetes.io/ingress.class: {{ $classAnno | quote }}
+    {{- end }}
     nginx.ingress.kubernetes.io/proxy-body-size: "20m"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  {{- if $class }}
   ingressClassName: {{ $class }}
+  {{- end }}
   tls:
     - hosts: [{{ $host | quote }}]
       secretName: {{ $tls }}
@@ -74,13 +80,18 @@ metadata:
   labels:
     {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
+    {{- if $classAnno }}
+    kubernetes.io/ingress.class: {{ $classAnno | quote }}
+    {{- end }}
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  {{- if $class }}
   ingressClassName: {{ $class }}
+  {{- end }}
   tls:
     - hosts: [{{ $host | quote }}]
       secretName: {{ $tls }}
@@ -104,12 +115,17 @@ metadata:
   labels:
     {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
+    {{- if $classAnno }}
+    kubernetes.io/ingress.class: {{ $classAnno | quote }}
+    {{- end }}
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  {{- if $class }}
   ingressClassName: {{ $class }}
+  {{- end }}
   tls:
     - hosts: [{{ $host | quote }}]
       secretName: {{ $tls }}
@@ -134,9 +150,14 @@ metadata:
   labels:
     {{- include "agentcloud.labels" . | nindent 4 }}
   annotations:
+    {{- if $classAnno }}
+    kubernetes.io/ingress.class: {{ $classAnno | quote }}
+    {{- end }}
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  {{- if $class }}
   ingressClassName: {{ $class }}
+  {{- end }}
   tls:
     - hosts: [{{ $host | quote }}]
       secretName: {{ $tls }}

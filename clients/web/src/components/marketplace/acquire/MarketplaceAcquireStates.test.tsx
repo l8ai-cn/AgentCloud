@@ -2,20 +2,29 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@/test/test-utils";
 
-import { OrganizationStep, SuccessState } from "./MarketplaceAcquireStates";
+import { OrganizationStep } from "./MarketplaceAcquireOrganizationStep";
+import { SuccessState } from "./MarketplaceAcquireStates";
 
 describe("MarketplaceAcquireStates", () => {
-  it("sends a successful acquisition to its application instance", () => {
-    const props = {
-      organization: { id: 9, slug: "dev-org", name: "研发组织" },
-      installationID: "installation-1",
-    };
+  it("sends a successful acquisition to the partner detail", () => {
     render(
-      <SuccessState {...props} />,
+      <SuccessState
+        organization={{ id: 9, slug: "dev-org", name: "研发组织" }}
+        expertSlug="delivery-agent"
+      />,
     );
 
-    expect(screen.getByRole("link", { name: "去应用中心开始第一个任务" }))
-      .toHaveAttribute("href", "/dev-org/applications/installation-1");
+    expect(screen.getByRole("link", { name: "Open the partner and start the first task" }))
+      .toHaveAttribute("href", "/dev-org/experts/delivery-agent");
+  });
+
+  it("falls back to the partner list when the expert slug is unknown", () => {
+    render(
+      <SuccessState organization={{ id: 9, slug: "dev-org", name: "研发组织" }} />,
+    );
+
+    expect(screen.getByRole("link", { name: "Open the partner and start the first task" }))
+      .toHaveAttribute("href", "/dev-org/experts");
   });
 
   it("requires a compatible model before checking installation conditions", async () => {
@@ -39,8 +48,8 @@ describe("MarketplaceAcquireStates", () => {
       />,
     );
 
-    expect(screen.getByRole("button", { name: "检查启用条件" })).toBeDisabled();
-    await user.selectOptions(screen.getByLabelText("选择运行模型"), "301");
+    expect(screen.getByRole("button", { name: "Review enablement conditions" })).toBeDisabled();
+    await user.selectOptions(screen.getByLabelText("Select a runtime model"), "301");
     expect(onModelChange).toHaveBeenCalledWith("301");
 
     rerender(
@@ -60,7 +69,7 @@ describe("MarketplaceAcquireStates", () => {
         settingsHref="/dev-org/settings?tab=ai-resources"
       />,
     );
-    expect(screen.getByRole("button", { name: "检查启用条件" })).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Review enablement conditions" })).toBeEnabled();
   });
 
   it("keeps the organization loading state distinct from an empty account", () => {
@@ -82,8 +91,8 @@ describe("MarketplaceAcquireStates", () => {
       />,
     );
 
-    expect(screen.getByText("正在加载组织")).toBeInTheDocument();
-    expect(screen.queryByText("当前账户还没有可用组织，请先创建组织。"))
+    expect(screen.getByText("Loading organizations")).toBeInTheDocument();
+    expect(screen.queryByText("This account has no available organization yet. Create one first."))
       .not.toBeInTheDocument();
   });
 
@@ -107,9 +116,9 @@ describe("MarketplaceAcquireStates", () => {
     );
 
     expect(screen.getByText(
-      "当前伙伴版本缺少兼容 Agent，请联系发布者修正后重新上架。",
+      "This partner version is missing a compatible Agent. Ask the publisher to fix it and republish.",
     )).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "配置兼容模型" }))
+    expect(screen.queryByRole("link", { name: "Configure a compatible model" }))
       .not.toBeInTheDocument();
   });
 });

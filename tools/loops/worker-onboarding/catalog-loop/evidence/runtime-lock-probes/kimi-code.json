@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "worker_slug": "kimi-code",
+  "runtime_catalog_revision": "runtime-catalog-2026-08-13-kimi-code",
+  "image_reference": "repo.aiedulab.cn:8443/agentsmesh/runner-kimi-code@sha256:e369d5cad81e0170cb796015831f6aa958edf8ccfadd774a3eb41efbf9c2dbc2",
+  "image_digest": "sha256:e369d5cad81e0170cb796015831f6aa958edf8ccfadd774a3eb41efbf9c2dbc2",
+  "status": "available",
+  "exit_code": 0,
+  "output": "Pulled exact digest and ran kimi --version offline: 0.29.0. Image label org.opencontainers.image.revision=14413ecd1751840641b173f799262e3c6e520edf.",
+  "observed_at": "2026-08-12T17:02:27Z",
+  "platform": "linux/amd64"
+}

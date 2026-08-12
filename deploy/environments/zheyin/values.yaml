@@ -1,0 +1,67 @@
+# Zheyin (浙江音乐学院) runtime overlay for the shared AgentCloud base chart.
+# DoOps target: gw-zy (doops-zheyin/node-239). Images live in campus Harbor.
+namespace: doworker
+imageTag: &releaseTag release-20260811
+image:
+  repository: repo.zjcm.edu.cn/doworker/backend
+  tag: *releaseTag
+rolloutTokens:
+  backend: zheyin-agents-cutover
+  web: zheyin-agents-cutover
+  relay: zheyin-agents-cutover
+rolloutTokenDomain: agents.zjcm.edu.cn
+
+imagePullSecrets:
+  - name: agentcloud-regcred
+
+backend:
+  replicas: 1
+  image:
+    name: backend
+    repository: repo.zjcm.edu.cn/doworker/backend
+  serviceAccountName: agentcloud-backend
+  configMapName: agentcloud-config
+  secrets:
+    - agentcloud-secrets
+    - agentcloud-gitea
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+web:
+  replicas: 1
+  image:
+    name: web
+    repository: repo.zjcm.edu.cn/doworker/web
+  primaryDomain: agents.zjcm.edu.cn
+  useHttps: "true"
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+relay:
+  replicas: 1
+  image:
+    name: relay
+    repository: repo.zjcm.edu.cn/doworker/relay
+  configMapName: agentcloud-config
+  secretsName: agentcloud-secrets
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+
+ingress:
+  enabled: true
+  className: ""
+  classAnnotation: nginx-ingress-controller
+  tlsSecret: zjcm-edu-cn-tls
+  agents:
+    enabled: true
+    host: agents.zjcm.edu.cn
+    loginAmp: false

@@ -3,14 +3,12 @@ package grantconnect
 import (
 	"context"
 	"errors"
-	"strconv"
 
 	"connectrpc.com/connect"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/api/connect/interceptors"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/grant"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
-	"github.com/l8ai-cn/agentcloud/backend/pkg/policy"
 	grantv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/grant/v1"
 )
 
@@ -35,7 +33,7 @@ func (s *Server) ListGrants(
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository"))
+			errors.New("resource_type must be pod / runner / repository / model_connection"))
 	}
 	if resourceID == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -80,7 +78,7 @@ func (s *Server) CreateGrant(
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository"))
+			errors.New("resource_type must be pod / runner / repository / model_connection"))
 	}
 	if resourceID == "" {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -121,7 +119,7 @@ func (s *Server) DeleteGrant(
 	resourceID := req.Msg.GetResourceId()
 	if !isValidResourceType(resourceType) {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
-			errors.New("resource_type must be pod / runner / repository"))
+			errors.New("resource_type must be pod / runner / repository / model_connection"))
 	}
 	if resourceID == "" || req.Msg.GetGrantId() == 0 {
 		return nil, connect.NewError(connect.CodeInvalidArgument,
@@ -138,66 +136,6 @@ func (s *Server) DeleteGrant(
 	return connect.NewResponse(&grantv1.DeleteGrantResponse{Message: "Grant revoked"}), nil
 }
 
-// authorizeAccess loads the underlying resource and runs the per-resource
-// policy check. action == read|write.
-func (s *Server) authorizeAccess(
-	ctx context.Context, resourceType, resourceID string, action policyAction,
-) error {
-	tenant := middleware.GetTenant(ctx)
-	sub := policy.NewSubject(tenant.OrganizationID, tenant.UserID, tenant.UserRole)
-
-	switch resourceType {
-	case grant.TypePod:
-		pod, err := s.podSvc.GetPod(ctx, resourceID)
-		if err != nil {
-			return connect.NewError(connect.CodeNotFound, errors.New("pod not found"))
-		}
-		rc := policy.PodResource(pod.OrganizationID, pod.CreatedByID)
-		if !policy.PodPolicy.AllowWrite(sub, rc) {
-			return connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
-		}
-	case grant.TypeRunner:
-		runnerID, err := strconv.ParseInt(resourceID, 10, 64)
-		if err != nil {
-			return connect.NewError(connect.CodeInvalidArgument, errors.New("invalid runner id"))
-		}
-		r, err := s.runnerSvc.GetRunner(ctx, runnerID)
-		if err != nil {
-			return connect.NewError(connect.CodeNotFound, errors.New("runner not found"))
-		}
-		if !policy.AllowAdmin(sub, tenant.OrganizationID) {
-			return connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
-		}
-		check := policy.RunnerPolicy.AllowRead
-		if action == policyActionWrite {
-			check = policy.RunnerPolicy.AllowWrite
-		}
-		if !check(sub, policy.VisibleResource(r.OrganizationID, r.RegisteredByUserID, r.Visibility)) {
-			return connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
-		}
-	case grant.TypeRepository:
-		repoID, err := strconv.ParseInt(resourceID, 10, 64)
-		if err != nil {
-			return connect.NewError(connect.CodeInvalidArgument, errors.New("invalid repository id"))
-		}
-		repo, err := s.repoSvc.GetByID(ctx, repoID)
-		if err != nil {
-			return connect.NewError(connect.CodeNotFound, errors.New("repository not found"))
-		}
-		if !policy.AllowAdmin(sub, tenant.OrganizationID) {
-			return connect.NewError(connect.CodePermissionDenied, errors.New("organization admin role required"))
-		}
-		check := policy.RepositoryPolicy.AllowRead
-		if action == policyActionWrite {
-			check = policy.RepositoryPolicy.AllowWrite
-		}
-		if !check(sub, policy.VisibleResource(repo.OrganizationID, repo.ImportedByUserID, repo.Visibility)) {
-			return connect.NewError(connect.CodePermissionDenied, errors.New("forbidden"))
-		}
-	}
-	return nil
-}
-
 type policyAction int
 
 const (
@@ -206,5 +144,5 @@ const (
 )
 
 func isValidResourceType(t string) bool {
-	return t == grant.TypePod || t == grant.TypeRunner || t == grant.TypeRepository
+	return t == grant.TypePod || t == grant.TypeRunner || t == grant.TypeRepository || t == grant.TypeModelConnection
 }

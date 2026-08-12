@@ -53,4 +53,7 @@ const (
 	AuditSubscriptionCreated  AuditAction = "subscriptions.created"
 	AuditSubscriptionUpdated  AuditAction = "subscriptions.updated"
 	AuditSubscriptionCanceled AuditAction = "subscriptions.canceled"
+
+	AuditEntitlementGranted AuditAction = "entitlements.granted"
+	AuditEntitlementRevoked AuditAction = "entitlements.revoked"
 )

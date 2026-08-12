@@ -1,0 +1,73 @@
+// MyCapabilitiesService — org-scoped "my installs" across every repository
+// the caller can still access. RepoSkillService / RepoMcpService stay
+// per-repository; this service exists so the Skill / connection markets
+// can render a single "installed by me" view without a repository_id.
+//
+// Conventions match market.proto / repo_*.proto:
+//   * package proto.extension.v1
+//   * org_slug at field 1 of every request
+//   * snake_case fields, no json_name annotations
+//   * list response = {items, total, limit, offset} uniform envelope
+//
+// InstalledSkill / InstalledMcpServer are reused rather than extended:
+// those messages are returned by install/update/list-repo RPCs, and
+// hanging repository name/slug or display_name on them would leave
+// empty fields on every existing response.
+
+syntax = "proto3";
+
+package proto.extension.v1;
+
+option go_package = "github.com/l8ai-cn/agentcloud/proto/gen/go/extension/v1;extensionv1";
+
+import "extension/v1/repo_skill.proto";
+import "extension/v1/repo_mcp.proto";
+
+service MyCapabilitiesService {
+  rpc ListMyInstalledSkills(ListMyInstalledSkillsRequest) returns (ListMyInstalledSkillsResponse);
+  rpc ListMyInstalledMcpServers(ListMyInstalledMcpServersRequest) returns (ListMyInstalledMcpServersResponse);
+}
+
+message InstallRepositoryRef {
+  int64 id = 1;
+  string name = 2;
+  string slug = 3;
+}
+
+message MyInstalledSkill {
+  InstalledSkill skill = 1;
+  InstallRepositoryRef repository = 2;
+  // Catalog display_name when the install live-follows a skills row;
+  // otherwise the install slug (github / upload have no catalog name).
+  string display_name = 3;
+}
+
+message MyInstalledMcpServer {
+  InstalledMcpServer server = 1;
+  InstallRepositoryRef repository = 2;
+  // Absent for custom (non-market) installs.
+  optional string market_item_name = 3;
+  optional string market_item_slug = 4;
+}
+
+message ListMyInstalledSkillsRequest {
+  string org_slug = 1;
+}
+
+message ListMyInstalledSkillsResponse {
+  repeated MyInstalledSkill items = 1;
+  int64 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message ListMyInstalledMcpServersRequest {
+  string org_slug = 1;
+}
+
+message ListMyInstalledMcpServersResponse {
+  repeated MyInstalledMcpServer items = 1;
+  int64 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}

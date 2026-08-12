@@ -37,6 +37,9 @@ type workspaceResolverDeps struct {
 	EnvBundles   EnvBundleLookup
 	Definitions  WorkerDefinitionProvider
 	Commits      WorkspaceCommitResolver
+	Entitlements SkillEntitlementGate
+	Grants       SkillGrantReader
+	MemberRoles  MemberRoleReader
 }
 
 type workspaceResolver struct {

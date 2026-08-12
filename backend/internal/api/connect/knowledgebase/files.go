@@ -16,6 +16,13 @@ func (s *Server) GetKnowledgeBaseFile(
 	if err != nil {
 		return nil, err
 	}
+	kb, err := s.svc.GetBySlug(ctx, org.GetID(), req.Msg.GetSlug())
+	if err != nil {
+		return nil, mapKBError(err)
+	}
+	if err := s.denyUnlessRead(ctx, kb); err != nil {
+		return nil, err
+	}
 	file, err := s.svc.ReadFile(ctx, org.GetID(), req.Msg.GetSlug(), req.Msg.GetPath())
 	if err != nil {
 		return nil, mapKBError(err)
@@ -32,6 +39,13 @@ func (s *Server) ListKnowledgeBaseDir(
 ) (*connect.Response[kbv1.ListKnowledgeBaseDirResponse], error) {
 	ctx, org, err := interceptors.ResolveOrgScope(ctx, req.Msg, s.orgSvc)
 	if err != nil {
+		return nil, err
+	}
+	kb, err := s.svc.GetBySlug(ctx, org.GetID(), req.Msg.GetSlug())
+	if err != nil {
+		return nil, mapKBError(err)
+	}
+	if err := s.denyUnlessRead(ctx, kb); err != nil {
 		return nil, err
 	}
 	entries, err := s.svc.ListDir(ctx, org.GetID(), req.Msg.GetSlug(), req.Msg.GetPath())

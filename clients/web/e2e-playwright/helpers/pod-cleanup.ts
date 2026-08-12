@@ -1,4 +1,10 @@
 import { randomUUID } from "node:crypto";
+// Imported from the generated contract (not the package index) so the helper
+// stays dependency-free under Playwright's TS transform.
+import {
+  ACTIVE_POD_STATUSES,
+  FINISHED_POD_STATUSES,
+} from "../../../../packages/service-interface/src/view-models/pod-status.gen";
 import { E2E_ECHO_AGENT_SLUG } from "./e2e-echo-runner";
 import {
   createE2ECleanupSession,
@@ -11,7 +17,7 @@ import { TEST_ORG_SLUG } from "./env";
 
 const E2E_RUN_MARKER = `e2e:${randomUUID().slice(0, 12)}`;
 const E2E_POD_ALIAS_PATTERN = /^\[e2e:[0-9a-f]{12}\] /;
-const TERMINABLE_STATUSES = ["queued", "initializing", "running", "paused", "disconnected"];
+const TERMINABLE_STATUSES: readonly string[] = ACTIVE_POD_STATUSES;
 const STALE_POD_PAGE_SIZE = 100;
 const registeredPods = new Map<string, RegisteredE2EPod>();
 
@@ -154,7 +160,7 @@ function isTerminable(pod: E2EPodIdentity): boolean {
 }
 
 function isFinished(pod: E2EPodIdentity): boolean {
-  return ["completed", "terminated", "orphaned", "error"].includes(pod.status ?? "");
+  return (FINISHED_POD_STATUSES as readonly string[]).includes(pod.status ?? "");
 }
 
 export function resetRegisteredE2EPodsForTest(): void {

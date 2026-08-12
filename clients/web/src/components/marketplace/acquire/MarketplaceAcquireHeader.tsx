@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { MarketplaceListingDetail } from "@/lib/marketplace/acquire-api";
 
@@ -10,6 +11,7 @@ export function MarketplaceAcquireHeader({
   listing: MarketplaceListingDetail;
   organizationSlug?: string;
 }) {
+  const t = useTranslations("marketplace");
   return (
     <header className="border-b border-border pb-6">
       <Link
@@ -21,9 +23,9 @@ export function MarketplaceAcquireHeader({
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="h-4 w-4" />
-        返回应用市场
+        {t("backToMarket")}
       </Link>
-      <p className="mt-6 text-sm font-medium text-primary">伙伴应用启用向导</p>
+      <p className="mt-6 text-sm font-medium text-primary">{t("acquire.wizardEyebrow")}</p>
       <h1 className="mt-2 text-3xl font-semibold text-foreground">
         {listing.display_name}
       </h1>

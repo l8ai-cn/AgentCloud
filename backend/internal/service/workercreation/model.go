@@ -156,6 +156,7 @@ func isModelSelectionError(err error) bool {
 	expected := []error{
 		resourceservice.ErrNotFound,
 		resourceservice.ErrForbidden,
+		resourceservice.ErrNotGranted,
 		resourceservice.ErrInvalidOwner,
 		resourceservice.ErrInvalidProvider,
 		resourceservice.ErrInvalidCredentials,

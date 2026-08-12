@@ -2,9 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import { Button } from "@/components/ui/button";
 import { useLightSession } from "@/hooks/useLightSession";
 import {
   lightListOrganizations,
@@ -17,14 +16,14 @@ import {
   type InstallationPlan,
   type MarketplaceListingDetail,
 } from "@/lib/marketplace/acquire-api";
-import { MarketplaceAcquireSummary } from "./MarketplaceAcquireSummary";
+import { resolveExpertSlugFromRuntimeRef } from "@/lib/marketplace/expert-slug-from-installation";
+import { MarketplaceAcquireConfirm } from "./MarketplaceAcquireConfirm";
 import { MarketplaceAcquireHeader } from "./MarketplaceAcquireHeader";
+import { OrganizationStep } from "./MarketplaceAcquireOrganizationStep";
 import {
   AcquireShell,
   ErrorState,
-  InlineError,
   LoadingState,
-  OrganizationStep,
   SuccessState,
 } from "./MarketplaceAcquireStates";
 import { useMarketplaceRuntimeModels } from "./useMarketplaceRuntimeModels";
@@ -39,6 +38,7 @@ export function MarketplaceAcquireFlow({
 }: {
   organizationSlug?: string;
 }) {
+  const t = useTranslations("marketplace");
   const router = useRouter();
   const params = useSearchParams();
   const { session, hydrated } = useLightSession();
@@ -50,44 +50,43 @@ export function MarketplaceAcquireFlow({
   const [loadingOrganizations, setLoadingOrganizations] = useState(true);
   const [organizationID, setOrganizationID] = useState("");
   const [plan, setPlan] = useState<InstallationPlan | null>(null);
-  const [installationID, setInstallationID] = useState("");
+  const [expertSlug, setExpertSlug] = useState("");
   const [step, setStep] = useState<MarketplaceAcquireStep>("select");
   const [error, setError] = useState("");
-  const selectedOrganization = organizations.find(
-    (organization) => String(organization.id) === organizationID,
-  );
+  const selectedOrganization = organizations.find((item) => String(item.id) === organizationID);
   const runtimeModels = useMarketplaceRuntimeModels(
     selectedOrganization?.slug,
     listing?.agent_slug,
   );
+
   useEffect(() => {
     if (!marketSlug || !listingSlug) {
-      setError("启用链接不完整，请返回市场重新选择应用。");
+      setError(t("acquire.incompleteLink"));
       return;
     }
     fetchMarketplaceListing(marketSlug, listingSlug)
       .then(setListing)
-      .catch((cause) => setError(marketplaceAcquireErrorMessage(cause)));
-  }, [marketSlug, listingSlug]);
+      .catch((cause) => setError(marketplaceAcquireErrorMessage(cause, t("installFailed"))));
+  }, [listingSlug, marketSlug, t]);
 
   useEffect(() => {
     if (!hydrated || !session?.isAuthenticated) return;
     setLoadingOrganizations(true);
     lightListOrganizations()
       .then(setOrganizations)
-      .catch(() => setError("组织列表加载失败，请刷新后重试。"))
+      .catch(() => setError(t("acquire.orgsLoadFailed")))
       .finally(() => setLoadingOrganizations(false));
-  }, [hydrated, session?.isAuthenticated]);
+  }, [hydrated, session?.isAuthenticated, t]);
 
   useEffect(() => {
     if (!organizationSlug || organizations.length === 0) return;
     const organization = organizations.find((item) => item.slug === organizationSlug);
     if (!organization) {
-      setError("你没有在当前组织启用市场内容的权限。");
+      setError(t("acquire.noOrgPermission"));
       return;
     }
     setOrganizationID(String(organization.id));
-  }, [organizationSlug, organizations]);
+  }, [organizationSlug, organizations, t]);
 
   if (!hydrated || (!listing && !error)) {
     return <AcquireShell><LoadingState /></AcquireShell>;
@@ -100,7 +99,7 @@ export function MarketplaceAcquireFlow({
       ? `/${organizationSlug}/marketplace/acquire?${params.toString()}`
       : `/marketplace/acquire?${params.toString()}`;
     router.replace(`/login?redirect=${encodeURIComponent(redirect)}`);
-    return <AcquireShell><LoadingState label="正在前往登录" /></AcquireShell>;
+    return <AcquireShell><LoadingState label={t("acquire.goingToLogin")} /></AcquireShell>;
   }
   if (error && step === "select") {
     return <AcquireShell><ErrorState message={error} /></AcquireShell>;
@@ -126,33 +125,34 @@ export function MarketplaceAcquireFlow({
       setPlan(result);
       setStep("confirm");
     } catch (cause) {
-      setError(marketplaceAcquireErrorMessage(cause));
+      setError(marketplaceAcquireErrorMessage(cause, t("installFailed")));
     }
   }
 
   async function install() {
-    if (!plan) return;
+    if (!plan || !selectedOrganization) return;
     setStep("installing");
     setError("");
     try {
       const result = await applyInstallationPlan(plan);
       if (result.status !== "succeeded") {
-        throw new Error("启用操作尚未完成，请稍后查看操作状态。");
+        throw new Error(t("acquire.applyIncomplete"));
       }
-      setInstallationID(result.installation_id);
+      const slug = await resolveExpertSlugFromRuntimeRef(
+        selectedOrganization.slug,
+        result.runtime_ref,
+      );
+      setExpertSlug(slug ?? "");
       setStep("success");
     } catch (cause) {
       setStep("confirm");
-      setError(marketplaceAcquireErrorMessage(cause));
+      setError(marketplaceAcquireErrorMessage(cause, t("installFailed")));
     }
   }
 
   return (
     <AcquireShell>
-      <MarketplaceAcquireHeader
-        listing={listing}
-        organizationSlug={organizationSlug}
-      />
+      <MarketplaceAcquireHeader listing={listing} organizationSlug={organizationSlug} />
       {step === "select" ? (
         <OrganizationStep
           organizations={organizations}
@@ -181,18 +181,17 @@ export function MarketplaceAcquireFlow({
         />
       ) : null}
       {step === "confirm" && plan && selectedOrganization ? (
-        <div className="space-y-6">
-          <MarketplaceAcquireSummary listing={listing} organizationName={selectedOrganization.name} plan={plan} />
-          {error ? <InlineError message={error} /> : null}
-          <Button className="w-full gap-2" size="lg" onClick={install}>
-            确认并启用
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <MarketplaceAcquireConfirm
+          listing={listing}
+          organizationName={selectedOrganization.name}
+          plan={plan}
+          error={error}
+          onInstall={install}
+        />
       ) : null}
-      {step === "installing" ? <LoadingState label="正在创建伙伴应用实例" /> : null}
-      {step === "success" && selectedOrganization && installationID ? (
-        <SuccessState organization={selectedOrganization} installationID={installationID} />
+      {step === "installing" ? <LoadingState label={t("acquire.creatingInstance")} /> : null}
+      {step === "success" && selectedOrganization ? (
+        <SuccessState organization={selectedOrganization} expertSlug={expertSlug} />
       ) : null}
     </AcquireShell>
   );

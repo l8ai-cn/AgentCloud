@@ -36,6 +36,10 @@ func NewService(repo knowledgebase.Repository, git *gitea.Client, log *slog.Logg
 	return &Service{repo: repo, git: git, log: log}
 }
 
+func NewForRepository(repo knowledgebase.Repository) *Service {
+	return &Service{repo: repo, log: slog.Default()}
+}
+
 type CreateParams struct {
 	OrganizationID  int64
 	CreatedByUserID int64
@@ -43,11 +47,16 @@ type CreateParams struct {
 	Description     string
 	SourceType      string
 	SourceConfig    json.RawMessage
+	Visibility      string
 }
 
 func (s *Service) Create(ctx context.Context, p *CreateParams) (*knowledgebase.KnowledgeBase, error) {
 	if strings.TrimSpace(p.Name) == "" {
 		return nil, fmt.Errorf("%w: name is required", ErrInvalidInput)
+	}
+	visibility, err := normalizeVisibility(p.Visibility)
+	if err != nil {
+		return nil, err
 	}
 	sourceType := p.SourceType
 	if sourceType == "" {
@@ -103,6 +112,7 @@ func (s *Service) Create(ctx context.Context, p *CreateParams) (*knowledgebase.K
 		SourceConfig:    sourceConfig,
 		SyncStatus:      knowledgebase.SyncStatusIdle,
 		CreatedByUserID: p.CreatedByUserID,
+		Visibility:      visibility,
 	}
 	if kb.DefaultBranch == "" {
 		kb.DefaultBranch = branch
@@ -122,14 +132,19 @@ func (s *Service) GetBySlug(ctx context.Context, orgID int64, slug string) (*kno
 	return s.repo.GetBySlug(ctx, orgID, slug)
 }
 
-func (s *Service) List(ctx context.Context, orgID int64, sourceType string) ([]*knowledgebase.KnowledgeBase, error) {
-	return s.repo.List(ctx, &knowledgebase.ListFilter{OrganizationID: orgID, SourceType: sourceType})
+func (s *Service) List(ctx context.Context, orgID int64, sourceType string, visibilityUserID int64) ([]*knowledgebase.KnowledgeBase, error) {
+	return s.repo.List(ctx, &knowledgebase.ListFilter{
+		OrganizationID:   orgID,
+		SourceType:       sourceType,
+		VisibilityUserID: visibilityUserID,
+	})
 }
 
 type UpdateParams struct {
 	Name         *string
 	Description  *string
 	SourceConfig json.RawMessage
+	Visibility   *string
 }
 
 func (s *Service) Update(ctx context.Context, orgID, id int64, p *UpdateParams) (*knowledgebase.KnowledgeBase, error) {
@@ -146,6 +161,13 @@ func (s *Service) Update(ctx context.Context, orgID, id int64, p *UpdateParams) 
 	}
 	if p.Description != nil {
 		updates["description"] = *p.Description
+	}
+	if p.Visibility != nil {
+		visibility, err := normalizeVisibility(*p.Visibility)
+		if err != nil {
+			return nil, err
+		}
+		updates["visibility"] = visibility
 	}
 	if len(p.SourceConfig) > 0 {
 		if kb.SourceType == knowledgebase.SourceTypeGit {

@@ -15,6 +15,7 @@ var workerModelProtocolAdapters = map[string][]string{
 	"minimax-cli":      {"minimax"},
 	"openclaw":         {"openai-compatible"},
 	"hermes":           {"openai-compatible"},
+	"pi-agent":         {"openai-compatible"},
 	"seedance-expert":  {"openai-compatible", "anthropic"},
 	"video-studio":     {"openai-compatible"},
 }

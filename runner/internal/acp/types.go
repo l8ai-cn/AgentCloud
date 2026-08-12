@@ -124,6 +124,7 @@ type EventCallbacks struct {
 	OnLog               func(level, message string)
 	OnLoopalExt         func(sessionID, kind string, data json.RawMessage)
 	OnSessionID         func(sessionID string)
+	OnError             func(err error)
 	OnExit              func(exitCode int)
 }
 

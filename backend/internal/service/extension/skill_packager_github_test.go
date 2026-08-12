@@ -36,6 +36,30 @@ func TestPackageFromGitHub_Success(t *testing.T) {
 	}
 }
 
+func TestPackageFromGitHub_StoresAgentFilterSidecar(t *testing.T) {
+	store := newPackagerMockStorage()
+	repo := newPackagerMockRepo()
+	packager := NewSkillPackager(repo, store)
+	packager.gitCloneFn = fakePackagerGitClone(map[string]string{
+		"SKILL.md": "---\nname: filtered-skill\nagent-filter: claude-code, codex-cli\n---\n# Filtered\n",
+	})
+
+	pkg, err := packager.PackageFromGitHub(context.Background(), "https://github.com/org/skill", "", "")
+	if err != nil {
+		t.Fatalf("PackageFromGitHub failed: %v", err)
+	}
+	if len(pkg.AgentFilter) != 2 {
+		t.Fatalf("expected 2 agent filter entries, got %v", pkg.AgentFilter)
+	}
+	sidecar, ok := store.uploaded[packedAgentFilterKey(pkg.StorageKey)]
+	if !ok {
+		t.Fatal("expected agent-filter sidecar upload")
+	}
+	if string(sidecar) != `["claude-code","codex-cli"]` {
+		t.Errorf("unexpected sidecar payload %s", sidecar)
+	}
+}
+
 func TestPackageFromGitHub_WithPath(t *testing.T) {
 	store := newPackagerMockStorage()
 	repo := newPackagerMockRepo()

@@ -43,7 +43,7 @@ func TestHarnessEnvVars_GeminiUsesGeminiAPIKey(t *testing.T) {
 
 func TestHarnessEnvVars_OpenClawAndHermesUseFormalOpenAIContract(t *testing.T) {
 	openAI := &AIModel{ProviderType: ProviderTypeOpenAI, Model: "gpt-5.5"}
-	for _, slug := range []string{"openclaw", "hermes"} {
+	for _, slug := range []string{"openclaw", "hermes", "pi-agent"} {
 		assert.Equal(t, map[string]string{
 			"OPENAI_API_KEY": "sk-test",
 			"OPENAI_MODEL":   "gpt-5.5",
@@ -65,6 +65,7 @@ func TestPreferredProviders(t *testing.T) {
 	assert.Equal(t, []string{ProviderTypeAnthropic, ProviderTypeMiniMax}, PreferredProviders("do-agent"))
 	assert.Equal(t, []string{ProviderTypeOpenAI}, PreferredProviders("openclaw"))
 	assert.Equal(t, []string{ProviderTypeOpenAI}, PreferredProviders("hermes"))
+	assert.Equal(t, []string{ProviderTypeOpenAI}, PreferredProviders("pi-agent"))
 	assert.Nil(t, PreferredProviders("e2e-echo"))
 }
 

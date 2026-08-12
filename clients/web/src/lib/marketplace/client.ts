@@ -30,7 +30,7 @@ export async function marketplaceRequest<T>(
     const error = payload?.error;
     throw new MarketplaceRequestError(
       error?.code ?? "MARKETPLACE_REQUEST_FAILED",
-      error?.message ?? "市场服务暂时不可用",
+      error?.message ?? "Marketplace is temporarily unavailable",
     );
   }
   return payload as T;

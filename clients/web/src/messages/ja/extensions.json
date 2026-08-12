@@ -112,8 +112,9 @@
     "failedToDeleteSource": "Failed to delete skill registry",
 
     "mcpMarket": {
-      "title": "MCP サーバーテンプレート",
-      "description": "Browse available MCP server templates. These templates can be installed to repositories by team members.",
+      "title": "コネクタ",
+      "description": "MCP コネクタの組織ガバナンスはここにあります。閲覧とインストールは接続マーケットへ。",
+      "openMarket": "接続マーケットを開く",
       "noServers": "No MCP server templates available",
       "serversFound": "件のサーバー",
       "sourceRegistry": "MCP レジストリ",
@@ -141,11 +142,11 @@
 
     "settings": {
       "title": "Extensions",
-      "description": "Manage skill registries and explore MCP server templates. Browse the skill marketplace from the Skill Market section.",
+      "description": "Manage skill registries and connector governance. Browse the skill marketplace from the Skill Market section.",
       "tabs": {
         "skillMarket": "Skill Marketplace",
         "skillRegistries": "Skill Registries",
-        "mcpMarket": "MCP テンプレート"
+        "mcpMarket": "コネクタ"
       }
     }
   }

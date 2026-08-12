@@ -8,6 +8,7 @@ import (
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/gitprovider"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/skill"
+	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
 	repositoryservice "github.com/l8ai-cn/agentcloud/backend/internal/service/repository"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
@@ -68,6 +69,14 @@ func (resolver *workspaceResolver) resolveSkill(
 	}
 	if row == nil || row.ID != id || !row.VisibleTo(scope.OrgID) || !row.IsActive {
 		return nil, invalidWorkspaceReference("skill", id, "not accessible", nil)
+	}
+	userID, role := extensionservice.SkillMountActor(ctx, scope.UserID)
+	role = memberRoleForScope(ctx, resolver.deps.MemberRoles, scope.OrgID, userID, role)
+	if err := extensionservice.RequireSkillUse(
+		ctx, resolver.deps.Entitlements, resolver.deps.Grants,
+		scope.OrgID, userID, role, row,
+	); err != nil {
+		return nil, invalidWorkspaceReference("skill", id, "not accessible", err)
 	}
 	if err := slugkit.Validate(row.Slug); err != nil {
 		return nil, invalidWorkspaceReference("skill", id, "slug is invalid", err)

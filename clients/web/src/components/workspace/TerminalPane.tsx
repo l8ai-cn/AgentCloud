@@ -2,15 +2,15 @@
 
 import React, { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import "@xterm/xterm/css/xterm.css";
-import { RefreshCw } from "lucide-react";
-import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useWorkspaceStore, type SplitDirection } from "@/stores/workspace";
 import { usePodStore } from "@/stores/pod";
 import { useAutopilotControllerByPodKey } from "@/stores/autopilot";
 import { usePodStatus, useTerminal, useTouchScroll } from "@/hooks";
+import { useWakeWorker } from "@/hooks/useWakeWorker";
 import { TerminalPaneHeader } from "./TerminalPaneHeader";
-import { PaneLoadingState, PaneErrorState, PaneReconnectingState } from "./PaneStateViews";
+import { TerminalPanePlaceholder } from "./TerminalPanePlaceholder";
+import { RunnerRestartOverlay } from "./RunnerRestartOverlay";
 import { RelayStatusOverlay } from "./RelayStatusOverlay";
 import { AutopilotOverlay } from "./AutopilotOverlay";
 import { AutopilotStartButton } from "./AutopilotStartButton";
@@ -51,10 +51,8 @@ export function TerminalPane({
   const setActivePane = useWorkspaceStore((s) => s.setActivePane);
   const splitPane = useWorkspaceStore((s) => s.splitPane);
   const panes = useWorkspaceStore((s) => s.panes);
-  const addPane = useWorkspaceStore((s) => s.addPane);
-  const removePaneByPodKey = useWorkspaceStore((s) => s.removePaneByPodKey);
   const initProgress = usePodStore((state) => state.initProgress[podKey]);
-  const wakePod = usePodStore((state) => state.wakePod);
+  const wakeWorker = useWakeWorker();
   const hasAutopilot = !!useAutopilotControllerByPodKey(podKey);
   const openPodKeys = useMemo(() => panes.map((p) => p.podKey), [panes]);
   const { podStatus, isPodReady, podError } = usePodStatus(podKey);
@@ -88,15 +86,9 @@ export function TerminalPane({
     });
   }, [onMaximize, syncSize]);
 
-  const handleWake = useCallback(async () => {
-    try {
-      const resumedPod = await wakePod(podKey);
-      removePaneByPodKey(podKey);
-      addPane(resumedPod.pod_key);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to wake Worker");
-    }
-  }, [addPane, podKey, removePaneByPodKey, wakePod]);
+  const handleWake = useCallback(() => {
+    void wakeWorker(podKey);
+  }, [podKey, wakeWorker]);
 
   useEffect(() => {
     return () => {
@@ -135,39 +127,18 @@ export function TerminalPane({
       )}
 
       {!showTerminal ? (
-        podError ? (
-          <PaneErrorState
-            error={podError}
-            onClose={onClose}
-            onWake={podStatus === "terminated" ? handleWake : undefined}
-          />
-        ) : podStatus === "orphaned" ? (
-          <PaneReconnectingState onClose={onClose} />
-        ) : (
-          <PaneLoadingState
-            podStatus={podStatus}
-            initProgress={initProgress}
-            onClose={onClose}
-            onWake={podStatus === "completed" ? handleWake : undefined}
-          />
-        )
+        <TerminalPanePlaceholder
+          podStatus={podStatus}
+          podError={podError}
+          initProgress={initProgress}
+          onClose={onClose}
+          onWake={handleWake}
+        />
       ) : (
         <div className="flex flex-col flex-1 min-h-0">
           <AutopilotOverlay podKey={podKey} />
           <div className="relative flex-1 min-h-0">
-            {podStatus === "orphaned" && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-terminal-bg/80 backdrop-blur-sm">
-                <div className="text-center p-4">
-                  <RefreshCw className="w-8 h-8 text-warning mx-auto mb-2 animate-spin" />
-                  <p className="text-terminal-text font-medium text-sm">
-                    Runner is restarting...
-                  </p>
-                  <p className="text-xs text-terminal-text-muted">
-                    Session will resume automatically
-                  </p>
-                </div>
-              </div>
-            )}
+            {podStatus === "orphaned" && <RunnerRestartOverlay />}
             <RelayStatusOverlay
               connectionStatus={connectionStatus}
               isRunnerDisconnected={isRunnerDisconnected}

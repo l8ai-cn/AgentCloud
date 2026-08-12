@@ -77,6 +77,11 @@
       "definition_hash": "sha256:4f5cf080d9655c4de274f0fc45b44866e9a0edd9dc10338d4917b582d02bdf01"
     },
     {
+      "slug": "pi-agent",
+      "definition_path": "config/worker-types/pi-agent/definition.json",
+      "definition_hash": "sha256:82f26da2bccf384f7008b50bac8236de185b3bd8984fbace604121c9cf2e4430"
+    },
+    {
       "slug": "seedance-expert",
       "definition_path": "config/worker-types/seedance-expert/definition.json",
       "definition_hash": "sha256:9b6833ce7a61b29c0dc967cb524517bc2a4e35f03038cfe39c96d0000835ed9d"

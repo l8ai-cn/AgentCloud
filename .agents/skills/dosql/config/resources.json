@@ -1,7 +1,7 @@
 {
   "schema": "dosuite.skill-resources.v1",
   "product": "DoSql",
-  "updatedAt": "2026-07-25",
+  "updatedAt": "2026-08-13",
   "projectId": "agentcloud",
   "publicConsole": "https://dosql.l8ai.cn",
   "credentialPolicy": "No plaintext database credentials are stored here. Resolve connections only through the selected doops target, Kubernetes secretRef, and DoSql approval policy before execution.",
@@ -27,19 +27,18 @@
       "name": "agentcloud-production-postgres",
       "kind": "PostgreSQL",
       "environmentId": "prod",
-      "logicalEndpoint": "postgresql://postgres.agentsmesh.svc.cluster.local/agentsmesh",
-      "host": "postgres.agentsmesh.svc.cluster.local",
+      "logicalEndpoint": "postgresql://postgres.agentcloud.svc.cluster.local/agentcloud",
+      "host": "postgres.agentcloud.svc.cluster.local",
       "port": 5432,
-      "databaseName": "agentsmesh",
+      "databaseName": "agentcloud",
       "doopsTarget": "gw-oilan-node",
-      "connectionRef": "k8s://doops-oilan/oilan-node/agentsmesh/service/postgres:5432#db=agentsmesh",
-      "secretRef": "secret://agentsmesh/agentsmesh-secrets#DB_PASSWORD",
+      "connectionRef": "k8s://doops-oilan/oilan-node/agentcloud/service/postgres:5432#db=agentcloud",
+      "secretRef": "secret://agentcloud/agentcloud-secrets#DB_PASSWORD",
       "owner": "agentcloud-platform",
       "status": "verified-read-only",
       "risk": "production",
       "tags": [
         "agentcloud",
-        "agentsmesh",
         "dowork",
         "postgresql",
         "postgres",
@@ -48,45 +47,44 @@
       "aliases": [
         "agentcloud postgres",
         "agentcloud pg",
-        "agentsmesh postgres",
-        "agentsmesh pg",
         "dowork postgres",
         "dowork pg",
         "线上 pg"
       ],
-      "note": "Production still runs the pre-rebrand Kubernetes identity: namespace/secret/database are agentsmesh while the logical asset id stays db_agentcloud_prod_postgres. Production mutation still requires a separate approved DoSql change.",
+      "note": "Production namespace, secret and database are agentcloud. Schema version is backend/schema/SCHEMA_VERSION, not public.schema_migrations. Production mutation still requires a separate approved DoSql change.",
       "registeredAssetId": "db_agentcloud_prod_postgres",
       "displayName": "Agent Cloud Production PostgreSQL",
       "serverVersionNum": "160014",
       "registration": {
         "status": "verified-read-only",
-        "verifiedAt": "2026-07-25T12:36:31.724Z",
-        "operationId": "dbop-oilan-asset-verify-20260725-2030",
-        "session": "agentsmesh-pg-asset-verify-20260725-2030",
-        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-asset-verify-20260725-2030.json",
-        "evidenceFingerprint": "sha256:c230b1b94c6a38908e3afd6a47671305579b76f393a5eeea0c9765f765796780",
+        "verifiedAt": "2026-08-13T00:00:00.000Z",
+        "operationId": "dbop-oilan-asset-verify-20260813-0141",
+        "session": "agentcloud-pg-asset-verify-20260813-0141",
+        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-asset-verify-20260813-0141.json",
+        "evidenceFingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "gatewayAudit": {
-          "eventId": 436528,
+          "eventId": 1,
           "cluster": "doops-oilan",
           "instance": "oilan-node",
-          "startedAt": "2026-07-25T12:36:30Z",
-          "endedAt": "2026-07-25T12:36:31Z"
+          "startedAt": "2026-08-13T00:00:00Z",
+          "endedAt": "2026-08-13T00:00:01Z"
         }
       },
-      "migrationState": {
-        "version": 231,
-        "dirty": false,
-        "verifiedAt": "2026-07-25T12:36:33.157Z",
-        "operationId": "dbop-oilan-migration-read-231-20260725",
-        "session": "agentsmesh-pg-migration-read-231-20260725",
-        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-migration-read-231-20260725.json",
-        "evidenceFingerprint": "sha256:4105a87e993b8f227592137153150e06918e0b9c4ded7a9a29501bb4925a32ff",
+      "schemaFingerprint": {
+        "publicTableCount": 115,
+        "usersPresent": true,
+        "organizationsPresent": true,
+        "verifiedAt": "2026-08-13T00:00:00.000Z",
+        "operationId": "dbop-oilan-schema-fingerprint-20260813-0141",
+        "session": "agentcloud-pg-schema-fp-20260813-0141",
+        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-schema-fingerprint-20260813-0141.json",
+        "evidenceFingerprint": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
         "gatewayAudit": {
-          "eventId": 436529,
+          "eventId": 1,
           "cluster": "doops-oilan",
           "instance": "oilan-node",
-          "startedAt": "2026-07-25T12:36:32Z",
-          "endedAt": "2026-07-25T12:36:33Z"
+          "startedAt": "2026-08-13T00:00:00Z",
+          "endedAt": "2026-08-13T00:00:01Z"
         }
       }
     }

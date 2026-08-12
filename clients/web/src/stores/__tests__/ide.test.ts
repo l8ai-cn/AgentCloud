@@ -203,7 +203,25 @@ describe("Activity Configuration", () => {
       expect(ids).toContain("tickets");
       expect(ids).toContain("mesh");
       expect(ids).toContain("infra");
+      expect(ids).toContain("experts");
+      expect(ids).toContain("marketplace");
+      expect(ids).toContain("skills");
+      expect(ids).toContain("connections");
       expect(ids).toContain("settings");
+    });
+
+    it("registers market-domain activities in IA order", () => {
+      const ids = ACTIVITIES.map((a) => a.id);
+      expect(ids.indexOf("marketplace")).toBeLessThan(ids.indexOf("skills"));
+      expect(ids.indexOf("skills")).toBeLessThan(ids.indexOf("connections"));
+    });
+
+    it("registers connections as an ops activity with the plug icon", () => {
+      expect(ACTIVITIES.find((activity) => activity.id === "connections")).toMatchObject({
+        icon: "plug",
+        group: "ops",
+        mobileVisible: false,
+      });
     });
 
     it("should have labels for all activities", () => {
@@ -254,11 +272,12 @@ describe("Activity Configuration", () => {
       });
     });
 
-    it("should include settings and infra", () => {
+    it("should include settings, infra, and connections", () => {
       const moreActivities = getMoreMenuActivities();
       const ids = moreActivities.map((a) => a.id);
       expect(ids).toContain("settings");
       expect(ids).toContain("infra");
+      expect(ids).toContain("connections");
     });
   });
 });

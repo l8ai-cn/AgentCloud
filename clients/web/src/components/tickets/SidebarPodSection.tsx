@@ -12,6 +12,7 @@ import { useCurrentOrg, useAuthStore } from "@/stores/auth";
 import { CreatePodModal } from "@/components/ide/CreatePodModal";
 import { getPodDisplayName } from "@/lib/pod-display-name";
 import { isPodActive, isPodRelayConnectable } from "@/lib/pod-status";
+import { getPodStatusDisplay } from "@/lib/pod-status-display";
 import { AgentStatusBadge } from "@/components/shared/AgentStatusBadge";
 import { Play, Terminal, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -120,10 +121,9 @@ function SidebarPodItem({ pod, onConnect, onOpenInNewTab }: {
     <div className={cn("mx-1.5 px-2 py-1.5 flex items-center gap-2 group transition-colors rounded-md",
       isActive ? "hover:bg-success-bg/60" : "hover:bg-muted/40")}>
       <div className={cn("w-1.5 h-1.5 rounded-full shrink-0",
-        pod.status === "running" && "bg-success shadow-[0_0_6px_rgba(34,197,94,0.4)] animate-pulse",
-        pod.status === "initializing" && "bg-warning shadow-[0_0_6px_rgba(234,179,8,0.4)] animate-pulse",
-        pod.status === "failed" && "bg-danger",
-        !isPodActive(pod.status) && pod.status !== "failed" && "bg-muted-foreground/30")} />
+        getPodStatusDisplay(pod.status).dotColor,
+        pod.status === "running" && "shadow-[0_0_6px_rgba(34,197,94,0.4)] animate-pulse",
+        pod.status === "initializing" && "animate-pulse")} />
       <code className="text-[11px] font-mono text-muted-foreground/80 flex-1 truncate">
         {getPodDisplayName(pod)}
       </code>

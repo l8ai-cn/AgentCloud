@@ -20,11 +20,13 @@ const (
 )
 
 type WorkerApplyService struct {
-	registry   *resource.Registry
-	repository WorkerApplyRepository
-	resolver   DefinitionResolver
-	launcher   WorkerPodLauncher
-	notifier   WorkerDispatchNotifier
+	registry            *resource.Registry
+	repository          WorkerApplyRepository
+	resolver            DefinitionResolver
+	launcher            WorkerPodLauncher
+	notifier            WorkerDispatchNotifier
+	workerTypeValidator WorkerTypeSnapshotValidator
+	snapshotLoader      WorkerSpecSnapshotLoader
 }
 
 func NewWorkerApplyService(
@@ -79,6 +81,13 @@ func (service *WorkerApplyService) Apply(
 		},
 	)
 	if err != nil {
+		return AppliedWorker{}, err
+	}
+	if err := service.ensureWorkerTypeEntitled(
+		ctx,
+		scope,
+		applied.WorkerSpecSnapshotID,
+	); err != nil {
 		return AppliedWorker{}, err
 	}
 	if applied.PodKey != "" {

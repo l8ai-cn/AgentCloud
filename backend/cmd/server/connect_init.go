@@ -89,6 +89,7 @@ func mountConnectServices(mux *http.ServeMux, svc *serviceContainer, rest *v1.Se
 	extensionconnect.MountMarket(mux, extensionconnect.NewMarketServer(extensionSrv), opts...)
 	extensionconnect.MountRepoSkill(mux, extensionconnect.NewRepoSkillServer(extensionSrv), opts...)
 	extensionconnect.MountRepoMcp(mux, extensionconnect.NewRepoMcpServer(extensionSrv), opts...)
+	extensionconnect.MountMyCapabilities(mux, extensionconnect.NewMyCapabilitiesServer(extensionSrv), opts...)
 	repositoryconnect.Mount(mux, repositoryconnect.NewServer(
 		svc.repository, svc.org,
 		repositoryconnect.WithBillingService(svc.billing),

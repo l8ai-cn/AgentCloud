@@ -96,6 +96,9 @@ func (p *SkillPackager) StorePrepared(
 		}
 		packageSize = storedSize
 	}
+	if err := p.storePackedAgentFilter(ctx, prepared.StorageKey, prepared.AgentFilter); err != nil {
+		return nil, err
+	}
 	slog.InfoContext(
 		ctx,
 		"skill package ready",
@@ -108,11 +111,30 @@ func (p *SkillPackager) StorePrepared(
 		Slug:        prepared.Slug,
 		DisplayName: prepared.DisplayName,
 		Description: prepared.Description,
+		AgentFilter: append([]string{}, prepared.AgentFilter...),
 		ContentSha:  prepared.ContentSha,
 		StorageKey:  prepared.StorageKey,
 		PackageSize: packageSize,
 		Created:     created,
 	}, nil
+}
+
+func (p *SkillPackager) storePackedAgentFilter(ctx context.Context, storageKey string, filter []string) error {
+	raw := marshalPackedAgentFilter(filter)
+	if len(raw) == 0 {
+		return nil
+	}
+	_, err := p.storage.Upload(
+		ctx,
+		packedAgentFilterKey(storageKey),
+		bytes.NewReader(raw),
+		int64(len(raw)),
+		"application/json",
+	)
+	if err != nil {
+		return fmt.Errorf("failed to store skill agent filter: %w", err)
+	}
+	return nil
 }
 
 func (p *SkillPackager) DeletePackage(ctx context.Context, storageKey string) error {

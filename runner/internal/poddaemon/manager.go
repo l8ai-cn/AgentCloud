@@ -123,7 +123,14 @@ func (m *PodDaemonManager) CreateSession(opts CreateOpts) (*daemonPTY, *PodDaemo
 		log.Error("daemon failed to become ready",
 			"pod_key", opts.PodKey, "pid", pid, "process_status", status, "error", err)
 		captureDaemonLog(log, opts.SandboxPath, opts.PodKey)
+		detail := daemonLogTail(opts.SandboxPath)
 		_ = DeleteState(opts.SandboxPath)
+		if detail != "" {
+			return nil, nil, fmt.Errorf(
+				"connect to daemon (pid %d, %s): %w; daemon_log=%s",
+				pid, status, err, detail,
+			)
+		}
 		return nil, nil, fmt.Errorf("connect to daemon (pid %d, %s): %w", pid, status, err)
 	}
 

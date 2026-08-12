@@ -47,14 +47,14 @@ func initializeWorkspaceServices(services *serviceContainer, cfg *config.Config,
 			),
 		)
 	}
-	services.aiResource = initializeAIResourceService(db, services.org, encryptor)
+	grantRepo := infra.NewGrantRepository(db)
+	services.grant = grantservice.NewService(grantRepo)
+	services.aiResource = initializeAIResourceService(db, services.org, encryptor, services.grant)
 	services.runnerRepo = infra.NewRunnerRepository(db)
 	services.runner = runner.NewService(services.runnerRepo, services.billing)
 	clusterRepo := infra.NewExecutionClusterRepository(db)
 	services.runner.SetExecutionClusterRepository(clusterRepo)
 	services.executionCluster = executionclusterservice.NewService(clusterRepo, services.runnerRepo, services.runner, cfg.BaseURL())
-	grantRepo := infra.NewGrantRepository(db)
-	services.grant = grantservice.NewService(grantRepo)
 	services.runner.SetGrantQuerier(grantRepo)
 
 	services.podRepo = infra.NewPodRepository(db)

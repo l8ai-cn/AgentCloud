@@ -54,7 +54,7 @@ type MountRequest struct {
 // slug selections. Request selections win on mode conflicts; unknown slugs
 // are rejected so a typo doesn't silently drop a mount.
 func (s *Service) ResolveMountsForPod(
-	ctx context.Context, orgID int64, agentSlug string, requested []MountRequest,
+	ctx context.Context, orgID, userID int64, agentSlug string, requested []MountRequest,
 ) ([]*ResolvedMount, error) {
 	modeBySlug := map[string]string{}
 
@@ -65,7 +65,10 @@ func (s *Service) ResolveMountsForPod(
 		}
 		if len(defaults) > 0 {
 			kbByID := map[int64]*knowledgebase.KnowledgeBase{}
-			kbs, err := s.repo.List(ctx, &knowledgebase.ListFilter{OrganizationID: orgID})
+			kbs, err := s.repo.List(ctx, &knowledgebase.ListFilter{
+				OrganizationID:   orgID,
+				VisibilityUserID: userID,
+			})
 			if err != nil {
 				return nil, err
 			}
@@ -98,7 +101,7 @@ func (s *Service) ResolveMountsForPod(
 	for slug := range modeBySlug {
 		slugs = append(slugs, slug)
 	}
-	kbs, err := s.repo.ListBySlugs(ctx, orgID, slugs)
+	kbs, err := s.repo.ListBySlugs(ctx, orgID, slugs, userID)
 	if err != nil {
 		return nil, err
 	}

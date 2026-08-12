@@ -11,6 +11,7 @@ const (
 	TypePod        = "pod"
 	TypeRunner     = "runner"
 	TypeRepository = "repository"
+	TypeSkill      = "skill"
 )
 
 func IntResourceID(id int64) string {

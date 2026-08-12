@@ -1,12 +1,3 @@
-import type { MarketplaceResourceType } from "./catalog-api";
-
-export const marketplaceTypeLabels: Record<MarketplaceResourceType, string> = {
-  application: "应用",
-  skill: "Skill",
-  mcp_connector: "系统连接",
-  resource: "资源",
-};
-
 export function formatMarketplaceCredits(
   quota: { mode: string; estimated_credits_micro: string } | undefined,
 ): string | null {
@@ -21,8 +12,14 @@ export function formatMarketplaceCredits(
       .toString()
       .padStart(6, "0")
       .replace(/0+$/, "");
-    return decimal ? `${whole}.${decimal} 市场额度` : `${whole} 市场额度`;
+    return decimal ? `${whole}.${decimal}` : `${whole}`;
   } catch {
     return null;
   }
+}
+
+export function uniqueListingSpaces<T extends { slug: string }>(
+  spaces: T[],
+): T[] {
+  return [...new Map(spaces.map((space) => [space.slug, space])).values()];
 }

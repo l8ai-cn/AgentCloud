@@ -68,6 +68,7 @@ pub const DOMAINS: &[Domain] = &[
         "pod",
         [
             "agentpod_settings.proto",
+            "pod_status.proto",
             "worker_creation.proto",
             "worker_skill_publish.proto",
             "pod.proto"
@@ -82,7 +83,12 @@ pub const DOMAINS: &[Domain] = &[
     domain!("env_bundle", ["env_bundle.proto"], []),
     domain!(
         "extension",
-        ["market.proto", "repo_mcp.proto", "repo_skill.proto"],
+        [
+            "market.proto",
+            "my_capabilities.proto",
+            "repo_mcp.proto",
+            "repo_skill.proto"
+        ],
         []
     ),
     domain!("events", ["event_data.proto", "events.proto"], []),

@@ -33,6 +33,9 @@ type Deps struct {
 	Knowledge    KnowledgeLookup
 	EnvBundles   EnvBundleLookup
 	Commits      WorkspaceCommitResolver
+	Entitlements SkillEntitlementGate
+	Grants       SkillGrantReader
+	MemberRoles  MemberRoleReader
 }
 
 type Draft struct {

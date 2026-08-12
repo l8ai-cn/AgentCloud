@@ -20,12 +20,26 @@ func (service *Service) listWorkerTypeOptions(
 	if err != nil {
 		return nil, err
 	}
+	entitlementSnap, err := service.workerTypeEntitlementSnapshot(ctx, scope.OrgID)
+	if err != nil {
+		return nil, err
+	}
+	entitlementRole := service.memberRole(ctx, scope.OrgID, scope.UserID)
 	options := make([]WorkerTypeOption, 0, len(agents))
 	includeInternal := os.Getenv("AGENTCLOUD_INCLUDE_INTERNAL_AGENTS") == "true"
 	for _, agent := range agents {
 		if agent == nil || !agent.IsActive ||
 			(agent.IsInternal && !includeInternal) ||
 			(filter != "" && agent.Slug != filter) {
+			continue
+		}
+		include, entitlementBlocking := workerTypeListEntitlement(
+			entitlementSnap,
+			agent.Slug,
+			scope.UserID,
+			entitlementRole,
+		)
+		if !include {
 			continue
 		}
 		slug, err := slugkit.NewFromTrusted(agent.Slug)
@@ -35,6 +49,11 @@ func (service *Service) listWorkerTypeOptions(
 		option := WorkerTypeOption{Slug: agent.Slug, Name: agent.Name}
 		if agent.Description != nil {
 			option.Description = *agent.Description
+		}
+		if entitlementBlocking != "" {
+			option.BlockingReason = entitlementBlocking
+			options = append(options, option)
+			continue
 		}
 		resolved, err := service.workerTypes.ResolveWorkerType(ctx, scope, slug)
 		if err != nil {

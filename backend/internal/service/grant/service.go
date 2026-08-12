@@ -65,5 +65,5 @@ func (s *Service) CleanupByResource(ctx context.Context, resourceType, resourceI
 }
 
 func isValidType(t string) bool {
-	return t == grant.TypePod || t == grant.TypeRunner || t == grant.TypeRepository
+	return t == grant.TypePod || t == grant.TypeRunner || t == grant.TypeRepository || t == grant.TypeKnowledgeBase
 }

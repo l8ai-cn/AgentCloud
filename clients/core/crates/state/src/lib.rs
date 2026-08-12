@@ -27,6 +27,7 @@ pub mod notification_specs;
 mod persist_helpers;
 pub mod pod_query_snapshots;
 pub mod pod_state;
+pub mod pod_status;
 pub mod repo_state;
 pub mod runner_state;
 pub mod ticket_state;

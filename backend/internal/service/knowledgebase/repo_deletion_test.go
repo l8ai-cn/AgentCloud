@@ -124,6 +124,7 @@ func TestDeleteDisablesRecordWhenDatabaseDeleteFailsAndRetryCompletes(t *testing
 	_, mountErr := service.ResolveMountsForPod(
 		context.Background(),
 		1,
+		1,
 		"",
 		[]MountRequest{{KBSlug: "docs"}},
 	)
@@ -178,7 +179,7 @@ func (*deleteTestRepo) List(context.Context, *kbdomain.ListFilter) ([]*kbdomain.
 func (*deleteTestRepo) ListExternal(context.Context) ([]*kbdomain.KnowledgeBase, error) {
 	return nil, errors.New("unused")
 }
-func (repo *deleteTestRepo) ListBySlugs(context.Context, int64, []string) ([]*kbdomain.KnowledgeBase, error) {
+func (repo *deleteTestRepo) ListBySlugs(context.Context, int64, []string, int64) ([]*kbdomain.KnowledgeBase, error) {
 	return []*kbdomain.KnowledgeBase{repo.kb}, nil
 }
 func (repo *deleteTestRepo) Update(_ context.Context, _, _ int64, updates map[string]any) error {

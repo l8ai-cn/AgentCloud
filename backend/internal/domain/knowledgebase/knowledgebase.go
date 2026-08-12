@@ -42,6 +42,15 @@ func ValidMountMode(m string) bool {
 	return m == MountModeReadOnly || m == MountModeReadWrite
 }
 
+const (
+	VisibilityOrganization = "organization"
+	VisibilityPrivate      = "private"
+)
+
+func ValidVisibility(v string) bool {
+	return v == VisibilityOrganization || v == VisibilityPrivate
+}
+
 // KnowledgeBase is an org-scoped llm-wiki: one git repository laid out as
 // llms.txt (index) + AGENTS.md (schema) + raw/ (immutable sources) + wiki/
 // (LLM-maintained pages). Non-git source types sync one-way into raw/ so the
@@ -66,6 +75,8 @@ type KnowledgeBase struct {
 	LastSyncedAt *time.Time `json:"last_synced_at,omitempty"`
 
 	CreatedByUserID int64 `gorm:"not null" json:"created_by_user_id"`
+
+	Visibility string `gorm:"size:20;not null;default:'organization'" json:"visibility"`
 
 	CreatedAt time.Time `gorm:"not null;default:now()" json:"created_at"`
 	UpdatedAt time.Time `gorm:"not null;default:now()" json:"updated_at"`

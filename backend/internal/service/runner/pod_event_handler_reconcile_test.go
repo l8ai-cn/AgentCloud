@@ -58,6 +58,52 @@ func TestReconcilePods(t *testing.T) {
 	}
 }
 
+func TestReconcilePods_MissingACPPodMarkedError(t *testing.T) {
+	pc, _, _, db := setupPodEventHandlerDeps(t)
+
+	r := &runner.Runner{
+		OrganizationID: 1,
+		NodeID:         "reconcile-acp-node",
+		Status:         "online",
+	}
+	if err := db.Create(r).Error; err != nil {
+		t.Fatalf("failed to create runner: %v", err)
+	}
+
+	db.Exec(`INSERT INTO pods (pod_key, runner_id, status, interaction_mode, agent_status) VALUES (?, ?, ?, ?, ?)`,
+		"recon-acp-pod", r.ID, agentpod.StatusRunning, agentpod.InteractionModeACP, agentpod.AgentStatusExecuting)
+
+	var callbackPodKey, callbackStatus string
+	pc.SetStatusChangeCallback(func(podKey, status, agentStatus string) {
+		callbackPodKey = podKey
+		callbackStatus = status
+	})
+
+	ctx := context.Background()
+	for i := 0; i < orphanMissThreshold; i++ {
+		pc.reconcilePods(ctx, r.ID, map[string]bool{})
+	}
+
+	var status, agentStatus string
+	var errorCode *string
+	db.Raw(`SELECT status, agent_status, error_code FROM pods WHERE pod_key = ?`, "recon-acp-pod").
+		Row().Scan(&status, &agentStatus, &errorCode)
+
+	if status != agentpod.StatusError {
+		t.Errorf("status: got %q, want %q", status, agentpod.StatusError)
+	}
+	if agentStatus != agentpod.AgentStatusIdle {
+		t.Errorf("agent_status: got %q, want %q", agentStatus, agentpod.AgentStatusIdle)
+	}
+	if errorCode == nil || *errorCode != errCodeACPSessionLost {
+		t.Errorf("error_code: got %v, want %q", errorCode, errCodeACPSessionLost)
+	}
+	if callbackPodKey != "recon-acp-pod" || callbackStatus != agentpod.StatusError {
+		t.Errorf("callback: got (%q, %q), want (%q, %q)",
+			callbackPodKey, callbackStatus, "recon-acp-pod", agentpod.StatusError)
+	}
+}
+
 func TestReconcilePodsCompletedNotAffected(t *testing.T) {
 	pc, _, _, db := setupPodEventHandlerDeps(t)
 

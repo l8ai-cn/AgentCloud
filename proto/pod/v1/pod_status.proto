@@ -1,0 +1,73 @@
+// Pod lifecycle status vocabulary — SSOT for Go / Rust / TS.
+//
+// `proto.pod.v1.Pod.status` stays a wire `string` (DB column, events, and every
+// existing client read it as one). This enum is the naming + grouping authority:
+// each value's wire string is its name minus the `POD_STATUS_` prefix,
+// lowercased, and `tools/pod-status-codegen` generates the constants and
+// classification predicates for the backend domain, the Rust client cache, and
+// the TS contract layer from the annotations below.
+//
+// Adding a status: add the value here with its groups, then run
+// `pnpm proto:gen-all` — the three generated files update together, so no
+// runtime can silently disagree about what "active" or "wakeable" means.
+
+syntax = "proto3";
+
+package proto.pod.v1;
+
+import "codegen/v1/options.proto";
+
+option go_package = "github.com/l8ai-cn/agentcloud/proto/gen/go/pod/v1;podv1";
+
+enum PodStatus {
+  POD_STATUS_UNSPECIFIED = 0;
+
+  // Accepted but not yet dispatched to a runner (runner busy, or deferred
+  // dispatch during worker launch). Occupies quota, carries no PTY yet.
+  POD_STATUS_QUEUED = 1 [(amesh.codegen.v1.pod_status_groups) = {active: true}];
+
+  POD_STATUS_INITIALIZING = 2 [(amesh.codegen.v1.pod_status_groups) = {active: true}];
+
+  POD_STATUS_RUNNING = 3 [(amesh.codegen.v1.pod_status_groups) = {
+    active: true
+    relay_connectable: true
+  }];
+
+  POD_STATUS_PAUSED = 4 [(amesh.codegen.v1.pod_status_groups) = {
+    active: true
+    relay_connectable: true
+  }];
+
+  // User closed the browser; the pod and its PTY survive.
+  POD_STATUS_DISCONNECTED = 5 [(amesh.codegen.v1.pod_status_groups) = {
+    active: true
+    relay_connectable: true
+  }];
+
+  // Agent reported success. Not terminal (the sandbox is gone but the run was
+  // clean), yet finished — and resume can fork a new pod from it.
+  POD_STATUS_COMPLETED = 6 [(amesh.codegen.v1.pod_status_groups) = {
+    finished: true
+    resumable_source: true
+  }];
+
+  POD_STATUS_TERMINATED = 7 [(amesh.codegen.v1.pod_status_groups) = {
+    terminal: true
+    finished: true
+    resumable_source: true
+  }];
+
+  // Lost when the runner restarted; the session snapshot is still resumable.
+  POD_STATUS_ORPHANED = 8 [(amesh.codegen.v1.pod_status_groups) = {
+    terminal: true
+    finished: true
+    resumable_source: true
+  }];
+
+  // Pod-level failure (dispatch failed, queue full, runtime error). Not a
+  // resume source: the failure cause is unresolved, so wake would repeat it.
+  POD_STATUS_ERROR = 9 [(amesh.codegen.v1.pod_status_groups) = {
+    terminal: true
+    finished: true
+  }];
+}

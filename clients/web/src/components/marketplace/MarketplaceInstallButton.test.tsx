@@ -1,5 +1,6 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { render } from "@/test/test-utils";
 
 import { useLightSession } from "@/hooks/useLightSession";
 import { discoverFirstOrgSlug } from "@/lib/light-auth";
@@ -64,9 +65,9 @@ describe("MarketplaceInstallButton", () => {
       />,
     );
 
-    const install = await screen.findByRole("button", { name: "立即启用" });
+    const install = await screen.findByRole("button", { name: "Enable now" });
     expect(install).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: "选择运行模型" }));
+    fireEvent.click(screen.getByRole("button", { name: "Select a runtime model" }));
     fireEvent.click(screen.getByRole("option", { name: "OpenAI · GPT 5.5" }));
     expect(install).toBeEnabled();
     fireEvent.click(install);
@@ -78,7 +79,7 @@ describe("MarketplaceInstallButton", () => {
         42,
         {},
       );
-      expect(screen.getByRole("button", { name: "立即启用" })).toBeEnabled();
+      expect(screen.getByRole("button", { name: "Enable now" })).toBeEnabled();
     });
   });
 
@@ -96,11 +97,11 @@ describe("MarketplaceInstallButton", () => {
       />,
     );
 
-    const install = await screen.findByRole("button", { name: "立即启用" });
-    fireEvent.click(screen.getByRole("button", { name: "选择运行模型" }));
+    const install = await screen.findByRole("button", { name: "Enable now" });
+    fireEvent.click(screen.getByRole("button", { name: "Select a runtime model" }));
     fireEvent.click(screen.getByRole("option", { name: "OpenAI · GPT 5.5" }));
     expect(install).toBeDisabled();
-    fireEvent.change(screen.getByLabelText("选择视频生成模型"), {
+    fireEvent.change(screen.getByLabelText("Video generation model"), {
       target: { value: "77" },
     });
     expect(install).toBeEnabled();
@@ -141,10 +142,10 @@ describe("MarketplaceInstallButton", () => {
     );
 
     expect(
-      await screen.findByRole("button", { name: "重新加载模型" }),
+      await screen.findByRole("button", { name: "Reload models" }),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "创建组织后启用" }),
+      screen.queryByRole("button", { name: "Create an organization to enable" }),
     ).not.toBeInTheDocument();
   });
 
@@ -169,7 +170,7 @@ describe("MarketplaceInstallButton", () => {
     );
 
     expect(
-      await screen.findByRole("button", { name: "重新加载模型" }),
+      await screen.findByRole("button", { name: "Reload models" }),
     ).toBeInTheDocument();
   });
 
@@ -212,7 +213,7 @@ describe("MarketplaceInstallButton", () => {
     );
     resolveDiscovery?.({ status: "found", slug: "acme" });
 
-    await screen.findByRole("button", { name: "立即启用" });
+    await screen.findByRole("button", { name: "Enable now" });
     expect(updateLightSessionOrgSlug).not.toHaveBeenCalledWith("acme");
   });
 });

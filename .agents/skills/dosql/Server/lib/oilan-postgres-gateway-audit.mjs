@@ -21,19 +21,19 @@ export async function verifyOilanPostgresGatewayAudit(registration, dependencies
     registration,
     reference: registration.registration,
     queryName: "asset-probe",
-    expectedTail: `${registration.databaseName}|${registration.serverVersionNum}|t\n`,
+    expectedTail: `${registration.databaseName}|${registration.serverVersionNum}\n`,
     queryAudit,
   });
-  const migrationState = await verifyReference({
+  const schemaFingerprint = await verifyReference({
     registration,
-    reference: registration.migrationState,
-    queryName: "migration-version",
-    expectedTail: `${registration.migrationState.version}|${registration.migrationState.dirty ? "t" : "f"}\n`,
+    reference: registration.schemaFingerprint,
+    queryName: "schema-fingerprint",
+    expectedTail: `${registration.schemaFingerprint.publicTableCount}|t|t\n`,
     queryAudit,
   });
   const workspaceAudits = [
     expectedWorkspaceAudit(registration.registration, "asset-probe"),
-    expectedWorkspaceAudit(registration.migrationState, "migration-version"),
+    expectedWorkspaceAudit(registration.schemaFingerprint, "schema-fingerprint"),
   ];
   const actualWorkspaceAudits = await queryWorkspaceAudit(workspaceAudits);
   for (const expected of workspaceAudits) {
@@ -46,7 +46,7 @@ export async function verifyOilanPostgresGatewayAudit(registration, dependencies
     databaseAssetId: registration.databaseAssetId,
     registrationStatus: registration.registrationStatus,
     assetProbe,
-    migrationState,
+    schemaFingerprint,
   };
 }
 
@@ -88,17 +88,25 @@ async function verifyReference({ registration, reference, queryName, expectedTai
     session: event.session,
     startedAt: event.started_at,
     endedAt: event.ended_at,
-    result: queryName === "asset-probe"
-      ? {
-          databaseName: registration.databaseName,
-          serverVersionNum: registration.serverVersionNum,
-          schemaMigrationsPresent: true,
-        }
-      : {
-          version: registration.migrationState.version,
-          dirty: registration.migrationState.dirty,
-        },
+    result: expectedQueryResult(queryName, registration),
   };
+}
+
+function expectedQueryResult(queryName, registration) {
+  if (queryName === "asset-probe") {
+    return {
+      databaseName: registration.databaseName,
+      serverVersionNum: registration.serverVersionNum,
+    };
+  }
+  if (queryName === "schema-fingerprint") {
+    return {
+      publicTableCount: registration.schemaFingerprint.publicTableCount,
+      usersPresent: true,
+      organizationsPresent: true,
+    };
+  }
+  throw new Error(`unsupported Oilan PostgreSQL query result: ${queryName}`);
 }
 
 async function queryCanonicalGatewayAudit(filter) {

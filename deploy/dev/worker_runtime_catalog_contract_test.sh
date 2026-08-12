@@ -29,13 +29,14 @@ cat >"$catalog" <<'JSON'
     {"worker_type_slugs": ["cursor-cli"]},
     {"worker_type_slugs": ["grok-build"]},
     {"worker_type_slugs": ["hermes"]},
+    {"worker_type_slugs": ["pi-agent"]},
     {"worker_type_slugs": ["opencode"]}
   ]
 }
 JSON
 
 services="$(local_worker_runner_services "$catalog")"
-[[ "$services" == "runner-codex-cli runner-video-studio runner-gemini-cli runner-kimi-code runner-minimax-cli runner-openclaw runner-do-agent runner-e2e-echo runner-loopal runner-aider runner-claude-code runner-cursor-cli runner-grok-build runner-hermes runner-opencode" ]] || {
+[[ "$services" == "runner-codex-cli runner-video-studio runner-gemini-cli runner-kimi-code runner-minimax-cli runner-openclaw runner-do-agent runner-e2e-echo runner-loopal runner-aider runner-claude-code runner-cursor-cli runner-grok-build runner-hermes runner-pi-agent runner-opencode" ]] || {
     echo "unexpected local Worker runner services: $services" >&2
     exit 1
 }

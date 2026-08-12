@@ -25,6 +25,7 @@ import (
 
 	poddom "github.com/l8ai-cn/agentcloud/backend/internal/domain/agentpod"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/gitprovider"
+	kbdom "github.com/l8ai-cn/agentcloud/backend/internal/domain/knowledgebase"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/runner"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	grantsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/grant"
@@ -54,14 +55,20 @@ type RepositoryLookup interface {
 	GetByID(ctx context.Context, id int64) (*gitprovider.Repository, error)
 }
 
+// ModelConnectionGrantAuthorizer verifies org admin ownership before model-connection grants mutate.
+type ModelConnectionGrantAuthorizer interface {
+	AuthorizeConnectionGrantManagement(ctx context.Context, userID, orgID, connectionID int64) error
+}
+
 // Server implements GrantService. Dependencies mirror the REST handlers'
 // thread of pod/runner/repository services + the grant service itself.
 type Server struct {
-	grantSvc *grantsvc.Service
-	orgSvc   middleware.OrganizationService
-	podSvc   PodLookup
-	runnerSvc RunnerLookup
-	repoSvc  RepositoryLookup
+	grantSvc     *grantsvc.Service
+	orgSvc       middleware.OrganizationService
+	podSvc       PodLookup
+	runnerSvc    RunnerLookup
+	repoSvc      RepositoryLookup
+	modelConnSvc ModelConnectionGrantAuthorizer
 }
 
 func NewServer(
@@ -70,13 +77,11 @@ func NewServer(
 	podSvc PodLookup,
 	runnerSvc RunnerLookup,
 	repoSvc RepositoryLookup,
+	modelConnSvc ModelConnectionGrantAuthorizer,
 ) *Server {
 	return &Server{
-		grantSvc:  grantSvc,
-		orgSvc:    orgSvc,
-		podSvc:    podSvc,
-		runnerSvc: runnerSvc,
-		repoSvc:   repoSvc,
+		grantSvc: grantSvc, orgSvc: orgSvc, podSvc: podSvc, runnerSvc: runnerSvc,
+		repoSvc: repoSvc, modelConnSvc: modelConnSvc,
 	}
 }
 

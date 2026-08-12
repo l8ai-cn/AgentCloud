@@ -9,6 +9,7 @@ import {
 import { PodSchema } from "@proto/pod/v1/pod_pb";
 
 import { fromProtoPod } from "@/lib/api/podProtoMap";
+import { derivePodLiveness } from "@/lib/pod-liveness";
 import { getAgentWorkbenchState, getPodState } from "@/lib/wasm-core";
 import { usePodStore, type Pod } from "@/stores/pod";
 
@@ -157,19 +158,13 @@ function readPodLiveness(
   podKey: string,
   options: PodWorkerTransportOptions,
 ): WorkerLiveness {
-  const pod = readPod(podKey);
-  const status = pod?.status ?? "unknown";
-  const isPodReady = status === "running";
-  let podError: string | null = null;
-  if (status === "failed") podError = "Pod failed";
-  else if (status === "terminated") podError = "Pod terminated";
-  else if (status === "error") podError = pod?.error_message || "Pod error";
+  const { podStatus, isPodReady, podError } = derivePodLiveness(readPod(podKey));
 
   return projectPodLiveness({
     controlGranted: options.isControlGranted(),
     initProgress: options.getInitProgressMessage(podKey),
     isPodReady,
     podError,
-    podStatus: status,
+    podStatus,
   });
 }

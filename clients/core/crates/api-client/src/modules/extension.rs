@@ -3,6 +3,8 @@ use crate::error::ApiError;
 use crate::ApiClient;
 use agentcloud_types::proto_extension_v1 as ext_proto;
 
+mod my_installs;
+
 // Connect-RPC (binary wire). See proto-naming-conventions.md §2.5.
 // These methods call the Connect handlers in backend/internal/api/connect/extension/.
 // Procedure paths derive from `proto.extension.v1.<Service>.<Method>` (conventions §12).

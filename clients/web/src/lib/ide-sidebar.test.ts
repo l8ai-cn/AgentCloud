@@ -12,5 +12,8 @@ describe("activityHasSidebar", () => {
     expect(activityHasSidebar("workspace")).toBe(true);
     expect(activityHasSidebar("channels")).toBe(true);
     expect(activityHasSidebar("infra")).toBe(true);
+    expect(activityHasSidebar("marketplace")).toBe(true);
+    expect(activityHasSidebar("skills")).toBe(true);
+    expect(activityHasSidebar("connections")).toBe(true);
   });
 });

@@ -50,15 +50,31 @@ export interface MarketplaceSummary {
   summary: string;
 }
 
+export interface MarketplaceListingFilters {
+  type?: MarketplaceResourceType;
+  space?: string;
+}
+
 export function fetchMarketplaceSummary(): Promise<MarketplaceSummary> {
   return marketplaceRequest(`/markets/${DEFAULT_MARKET_SLUG}`);
 }
 
-export async function fetchMarketplaceListings(): Promise<MarketplaceListingSummary[]> {
+export async function fetchMarketplaceListings(
+  filters: MarketplaceListingFilters = {},
+): Promise<MarketplaceListingSummary[]> {
+  const params = new URLSearchParams();
+  params.set("type", filters.type ?? "application");
+  if (filters.space) params.set("space", filters.space);
   const response = await marketplaceRequest<{ items: MarketplaceListingSummary[] }>(
-    `/markets/${DEFAULT_MARKET_SLUG}/listings`,
+    `/markets/${DEFAULT_MARKET_SLUG}/listings?${params.toString()}`,
   );
   return response.items;
+}
+
+export function applicationListings(
+  items: MarketplaceListingSummary[],
+): MarketplaceListingSummary[] {
+  return items.filter((item) => item.resource_type === "application");
 }
 
 export function fetchMarketplaceListingDetail(

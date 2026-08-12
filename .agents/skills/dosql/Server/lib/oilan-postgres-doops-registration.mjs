@@ -1,21 +1,23 @@
 import { readFile } from "node:fs/promises";
+import { resolveOilanPostgresQuery } from "./oilan-postgres-readonly-queries.mjs";
+
+export { resolveOilanPostgresQuery };
 
 const RESOURCE_URL = new URL("../../config/resources.json", import.meta.url);
 const INVENTORY_URL = new URL("../../config/assets.json", import.meta.url);
 
-// databaseAssetId/projectId are the post-rebrand logical names; namespace, secret
-// and databaseName stay `agentsmesh` because production still runs the
-// pre-rebrand Kubernetes identity.
+// Namespace/secret/database were renamed with the production rebrand; freeze the
+// live identity here so a later rename cannot silently retarget this adapter.
 export const OILAN_POSTGRES = Object.freeze({
   databaseAssetId: "db_agentcloud_prod_postgres",
   projectId: "agentcloud",
   environmentId: "prod",
   engine: "postgresql",
-  namespace: "agentsmesh",
+  namespace: "agentcloud",
   serviceName: "postgres",
-  databaseName: "agentsmesh",
+  databaseName: "agentcloud",
   doopsTarget: "gw-oilan-node",
-  secretRef: "secret://agentsmesh/agentsmesh-secrets#DB_PASSWORD",
+  secretRef: "secret://agentcloud/agentcloud-secrets#DB_PASSWORD",
 });
 
 export const OILAN_POSTGRES_CONNECTION_REF = [
@@ -23,22 +25,6 @@ export const OILAN_POSTGRES_CONNECTION_REF = [
   `/service/${OILAN_POSTGRES.serviceName}:5432`,
   `#db=${OILAN_POSTGRES.databaseName}`,
 ].join("");
-
-const QUERIES = Object.freeze({
-  "asset-probe": [
-    "select current_database(),",
-    "current_setting('server_version_num'),",
-    "exists (",
-    "select 1 from information_schema.tables",
-    "where table_schema = 'public' and table_name = 'schema_migrations'",
-    ");",
-  ].join(" "),
-  "migration-version": [
-    "select version, dirty",
-    "from public.schema_migrations",
-    "limit 1;",
-  ].join(" "),
-});
 
 export async function loadOilanPostgresRegistration() {
   const [resourcesText, inventoryText] = await Promise.all([
@@ -74,14 +60,14 @@ export function validateOilanPostgresRegistration(resources, inventory) {
   requireEqual(asset?.registration?.status, "verified-read-only", "asset.registration.status");
   requireEqual(resource?.serverVersionNum, asset?.serverVersionNum, "resource.serverVersionNum");
   requireEqual(resource?.registration, asset?.registration, "resource.registration");
-  requireEqual(resource?.migrationState, asset?.migrationState, "resource.migrationState");
+  requireEqual(resource?.schemaFingerprint, asset?.schemaFingerprint, "resource.schemaFingerprint");
   return assertOilanPostgresRegistration({
     ...OILAN_POSTGRES,
     registrationStatus: resource.status,
     versionText: requiredText(asset.versionText, "asset.versionText"),
     serverVersionNum: requiredServerVersion(asset.serverVersionNum),
     registration: validateVerification(asset.registration, "registration"),
-    migrationState: validateMigrationState(asset.migrationState),
+    schemaFingerprint: validateSchemaFingerprint(asset.schemaFingerprint),
   });
 }
 
@@ -93,17 +79,8 @@ export function assertOilanPostgresRegistration(registration) {
   requiredText(registration?.versionText, "registration.versionText");
   requiredServerVersion(registration?.serverVersionNum);
   validateVerification(registration?.registration, "registration");
-  validateMigrationState(registration?.migrationState);
+  validateSchemaFingerprint(registration?.schemaFingerprint);
   return registration;
-}
-
-export function resolveOilanPostgresQuery(queryName) {
-  const name = requiredText(queryName, "queryName");
-  const sql = QUERIES[name];
-  if (!sql) {
-    throw new Error(`unsupported Oilan PostgreSQL read-only query: ${name}`);
-  }
-  return { name, sql };
 }
 
 export function buildOilanPostgresRemoteCommand(query) {
@@ -138,14 +115,17 @@ function requireEqual(actual, expected, fieldName) {
   }
 }
 
-function validateMigrationState(value) {
-  if (!Number.isSafeInteger(value?.version) || value.version < 0) {
-    throw new Error("migrationState.version must be a non-negative integer");
+function validateSchemaFingerprint(value) {
+  if (!Number.isSafeInteger(value?.publicTableCount) || value.publicTableCount < 1) {
+    throw new Error("schemaFingerprint.publicTableCount must be a positive integer");
   }
-  if (typeof value.dirty !== "boolean") {
-    throw new Error("migrationState.dirty must be boolean");
+  if (value.usersPresent !== true) {
+    throw new Error("schemaFingerprint.usersPresent must be true");
   }
-  validateVerification(value, "migrationState");
+  if (value.organizationsPresent !== true) {
+    throw new Error("schemaFingerprint.organizationsPresent must be true");
+  }
+  validateVerification(value, "schemaFingerprint");
   return value;
 }
 

@@ -10,6 +10,7 @@ import (
 	resourcedomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/airesource"
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	agentservice "github.com/l8ai-cn/agentcloud/backend/internal/service/agent"
+	entitlementsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/entitlement"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workerdefinition"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
@@ -23,24 +24,49 @@ type AgentProvider interface {
 }
 
 type workerTypeResolver struct {
-	agents      AgentProvider
-	definitions WorkerDefinitionProvider
+	agents       AgentProvider
+	definitions  WorkerDefinitionProvider
+	entitlements *entitlementsvc.Service
+	memberRoles  MemberRoleReader
 }
 
 func newWorkerTypeResolver(
 	agents AgentProvider,
 	definitions WorkerDefinitionProvider,
+	entitlements *entitlementsvc.Service,
+	memberRoles MemberRoleReader,
 ) *workerTypeResolver {
-	return &workerTypeResolver{agents: agents, definitions: definitions}
+	return &workerTypeResolver{
+		agents:       agents,
+		definitions:  definitions,
+		entitlements: entitlements,
+		memberRoles:  memberRoles,
+	}
+}
+
+func (resolver *workerTypeResolver) setEntitlements(gate *entitlementsvc.Service) {
+	if resolver == nil {
+		return
+	}
+	resolver.entitlements = gate
 }
 
 func (resolver *workerTypeResolver) ResolveWorkerType(
 	ctx context.Context,
-	_ specservice.Scope,
+	scope specservice.Scope,
 	slug slugkit.Slug,
 ) (specservice.WorkerTypeResolution, error) {
 	if resolver == nil || resolver.agents == nil || resolver.definitions == nil {
 		return specservice.WorkerTypeResolution{}, specservice.ErrResolverUnavailable
+	}
+	if err := requireWorkerTypeEntitlement(
+		ctx,
+		resolver.entitlements,
+		resolver.memberRoles,
+		scope,
+		slug.String(),
+	); err != nil {
+		return specservice.WorkerTypeResolution{}, err
 	}
 	definition, ok := resolver.definitions.Get(slug.String())
 	if !ok {

@@ -23,6 +23,9 @@ func (s *Service) ListMarketMcpServers(ctx context.Context, query, category stri
 }
 
 func (s *Service) ListRepoSkills(ctx context.Context, orgID, repoID, userID int64, scope string) ([]*extension.InstalledSkill, error) {
+	if err := s.requireRepositoryAccess(ctx, orgID, repoID, userID); err != nil {
+		return nil, err
+	}
 	if scope == "all" {
 		scope = ""
 	}
@@ -69,6 +72,7 @@ func (s *Service) GetEffectiveSkills(ctx context.Context, orgID, userID, repoID 
 		return nil, fmt.Errorf("failed to get effective skills: %w", err)
 	}
 
+	s.hydratePackedAgentFilters(ctx, skills)
 	skills = filterSkillsByAgent(skills, agentSlug)
 
 	resolved := make([]*ResolvedSkill, 0, len(skills))
@@ -133,49 +137,4 @@ func filterMcpServersByAgent(servers []*extension.InstalledMcpServer, agentSlug 
 		}
 	}
 	return result
-}
-
-func filterSkillsByAgent(skills []*extension.InstalledSkill, agentSlug string) []*extension.InstalledSkill {
-	if agentSlug == "" {
-		return skills
-	}
-	result := make([]*extension.InstalledSkill, 0, len(skills))
-	for _, skill := range skills {
-		if skill.Skill == nil {
-			result = append(result, skill)
-			continue
-		}
-		filter := skill.Skill.GetAgentFilter()
-		if len(filter) == 0 {
-			result = append(result, skill)
-			continue
-		}
-		for _, allowed := range filter {
-			if agentSlugMatches(allowed, agentSlug) {
-				result = append(result, skill)
-				break
-			}
-		}
-	}
-	return result
-}
-
-func agentSlugMatches(filterValue, actual string) bool {
-	if filterValue == actual {
-		return true
-	}
-	aliases := map[string][]string{
-		"codex-cli":   {"codex"},
-		"codex":       {"codex-cli"},
-		"claude-code": {"claude"},
-		"claude":      {"claude-code"},
-		"gemini-cli":  {"gemini"},
-		"gemini":      {"gemini-cli"},
-	}
-	for _, alias := range aliases[actual] {
-		if filterValue == alias {
-			return true
-		}
-	}
-	return false
 }

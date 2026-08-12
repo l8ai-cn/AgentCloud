@@ -51,10 +51,11 @@ func (t *transport) handlePermissionUpdated(params json.RawMessage) {
 		desc = raw.Permission.Tool
 	}
 	t.callbacks.OnPermissionRequest(acp.PermissionRequest{
-		SessionID:   raw.SessionID,
-		RequestID:   raw.Permission.ID,
-		ToolName:    raw.Permission.Tool,
-		Description: desc,
+		SessionID:     raw.SessionID,
+		RequestID:     raw.Permission.ID,
+		ToolName:      raw.Permission.Tool,
+		ArgumentsJSON: string(raw.Permission.Input),
+		Description:   desc,
 	})
 }
 

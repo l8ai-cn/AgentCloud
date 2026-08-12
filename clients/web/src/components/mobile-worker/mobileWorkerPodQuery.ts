@@ -8,11 +8,16 @@ import {
 import { ReplaceCachedPodsRequestSchema } from "@proto/pod_state/v1/pod_state_pb";
 import { listPodsRaw } from "@/lib/api/facade/podConnect";
 import { fromProtoPod } from "@/lib/api/podProtoMap";
+import { ACTIVE_POD_STATUSES, RESUMABLE_SOURCE_POD_STATUSES } from "@/lib/pod-status";
 import { getPodState, initWasmCore } from "@/lib/wasm-core";
 import { usePodStore, type Pod } from "@/stores/pod";
 
-export const MOBILE_WORKER_STATUSES =
-  "running,initializing,paused,disconnected,orphaned,completed";
+// Mobile shows everything still running plus what can be woken, so a phone can
+// pick up a Worker that stopped while the app was closed.
+export const MOBILE_WORKER_STATUSES = [
+  ...ACTIVE_POD_STATUSES,
+  ...RESUMABLE_SOURCE_POD_STATUSES,
+].join(",");
 
 const MOBILE_WORKER_PAGE_SIZE = 20;
 const requestSequences = new Map<string, number>();

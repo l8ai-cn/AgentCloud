@@ -106,7 +106,7 @@ func TestStaleValidationCannotApproveRotatedCredentials(t *testing.T) {
 	connection := createValidConnection(t, f, domain.OwnerScopeUser, 1, "openai-main", "old-secret")
 	resource := createResource(t, f, connection.ID, "chat-model")
 	prober := &blockingProber{ready: make(chan struct{}), release: make(chan struct{})}
-	service, err := NewService(Dependencies{Repository: f.repo, Cipher: f.cipher, Members: f.members, Prober: prober, Lister: f.lister, Mutations: f.mutations, Endpoints: allowingEndpoints{}})
+	service, err := NewService(Dependencies{Repository: f.repo, Cipher: f.cipher, Members: f.members, Prober: prober, Lister: f.lister, Mutations: f.mutations, Endpoints: allowingEndpoints{}, Grants: f.grants})
 	require.NoError(t, err)
 	validationDone := make(chan error, 1)
 	go func() { validationDone <- service.ValidateConnection(context.Background(), actor(1), connection.ID) }()

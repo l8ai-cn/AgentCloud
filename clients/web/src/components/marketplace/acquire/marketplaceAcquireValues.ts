@@ -6,10 +6,13 @@ export type MarketplaceAcquireStep =
   | "installing"
   | "success";
 
-export function marketplaceAcquireErrorMessage(cause: unknown): string {
+export function marketplaceAcquireErrorMessage(
+  cause: unknown,
+  fallback: string,
+): string {
   if (cause instanceof MarketplaceAcquireError) return cause.message;
   if (cause instanceof Error) return cause.message;
-  return "启用失败，请稍后重试。";
+  return fallback;
 }
 
 export function numericToolModelIDs(

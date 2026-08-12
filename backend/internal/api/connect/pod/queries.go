@@ -72,14 +72,13 @@ func (s *Server) ListPods(
 	}), nil
 }
 
-// applyResumedBy fills the query-derived resumed_by_pod_key on terminated /
-// completed / orphaned items — the only statuses resume accepts as a source.
-// Failure is non-fatal: the field is an affordance hint, not list data.
+// applyResumedBy fills the query-derived resumed_by_pod_key on the statuses
+// resume accepts as a source. Failure is non-fatal: the field is an affordance
+// hint, not list data.
 func (s *Server) applyResumedBy(ctx context.Context, items []*podv1.Pod) {
 	keys := make([]string, 0, len(items))
 	for _, p := range items {
-		switch p.GetStatus() {
-		case poddom.StatusTerminated, poddom.StatusCompleted, poddom.StatusOrphaned:
+		if poddom.IsPodStatusResumableSource(p.GetStatus()) {
 			keys = append(keys, p.GetPodKey())
 		}
 	}

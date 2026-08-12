@@ -82,5 +82,8 @@ chmod +x "${STAGING}/runner-ssh-bootstrap.sh"
 cp "${REPO_ROOT}/docker/agent-runtime/minimax-cli-wrapper.sh" \
   "${STAGING}/minimax-cli-wrapper.sh"
 chmod +x "${STAGING}/minimax-cli-wrapper.sh"
+cp "${REPO_ROOT}/docker/agent-runtime/pi-agent-wrapper.sh" \
+  "${STAGING}/pi-agent-wrapper.sh"
+chmod +x "${STAGING}/pi-agent-wrapper.sh"
 
 echo "✓ build context ready for ${AGENT_RUNTIME}: ${STAGING}"

@@ -10,29 +10,42 @@
 set -euo pipefail
 
 ENVIRONMENT="${1:?usage: doops_helm_deploy.sh <environment>}"
-TARGET="${DOOPS_TARGET:-gw-oilan-node}"
+case "${ENVIRONMENT}" in
+  oilan) DEFAULT_TARGET=gw-oilan-node ;;
+  zheyin) DEFAULT_TARGET=gw-zy ;;
+  *) DEFAULT_TARGET=gw-oilan-node ;;
+esac
+TARGET="${DOOPS_TARGET:-${DEFAULT_TARGET}}"
 RELEASE_NAME="${HELM_RELEASE_NAME:-agentcloud}"
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-RELEASE_VERSION="$(tr -d '[:space:]' <"${REPO_ROOT}/deploy/release-version.txt")"
 CHART_DIR="${REPO_ROOT}/deploy/helm/agentcloud"
 VALUES_FILE="${REPO_ROOT}/deploy/environments/${ENVIRONMENT}/values.yaml"
+DEFAULT_RELEASE_VERSION="$(tr -d '[:space:]' <"${REPO_ROOT}/deploy/release-version.txt")"
 
 export PATH="/Applications/Docker.app/Contents/Resources/bin:/usr/local/bin:/opt/homebrew/bin:${PATH}"
 
-if [[ ! "${RELEASE_VERSION}" =~ ^release-[0-9]{8}$ ]]; then
-  echo "invalid deploy/release-version.txt: ${RELEASE_VERSION}" >&2
-  exit 64
-fi
 if [[ ! -f "${VALUES_FILE}" ]]; then
   echo "missing values: ${VALUES_FILE}" >&2
   exit 2
 fi
 
-NAMESPACE="$(python3 - <<PY
+eval "$(python3 - <<PY
 import yaml
-print(yaml.safe_load(open("${VALUES_FILE}"))["namespace"])
+v = yaml.safe_load(open("${VALUES_FILE}"))
+ns = v["namespace"]
+tag = v.get("imageTag") or "${DEFAULT_RELEASE_VERSION}"
+print(f"NAMESPACE={ns!r}")
+print(f"RELEASE_VERSION={tag!r}")
 PY
 )"
+if [[ -n "${HELM_IMAGE_TAG:-}" ]]; then
+  RELEASE_VERSION="${HELM_IMAGE_TAG}"
+fi
+
+if [[ ! "${RELEASE_VERSION}" =~ ^release-[0-9]{8}$ ]]; then
+  echo "invalid image tag: ${RELEASE_VERSION}" >&2
+  exit 64
+fi
 
 sync_images() {
   python3 "${REPO_ROOT}/deploy/tools/render_image_sync_plan.py" "${ENVIRONMENT}" --format pairs \

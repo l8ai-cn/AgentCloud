@@ -42,6 +42,10 @@ func (b *ConfigBuilder) buildSkillResources(
 		)
 		return nil, nil
 	}
+	skills, err = b.filterAuthorizedResolvedSkills(ctx, req, skills)
+	if err != nil {
+		return nil, fmt.Errorf("filter authorized skills: %w", err)
+	}
 	return skillResources(agentSlug, filterResolvedSkillsBySlugs(skills, requestedSlugs), false)
 }
 
@@ -82,7 +86,19 @@ func (b *ConfigBuilder) buildWorkerSpecSkillResources(
 	if len(expected) != 0 {
 		return nil, fmt.Errorf("required worker skill resolution is incomplete")
 	}
+	skills, err = b.filterWorkerSpecSkills(ctx, req, skills, skillIDsFromRequired(req.RequiredSkillIDs))
+	if err != nil {
+		return nil, err
+	}
 	return skillResources(agentSlug, skills, true)
+}
+
+func skillIDsFromRequired(ids []int64) map[int64]struct{} {
+	expected := make(map[int64]struct{}, len(ids))
+	for _, id := range ids {
+		expected[id] = struct{}{}
+	}
+	return expected
 }
 
 func skillResources(
