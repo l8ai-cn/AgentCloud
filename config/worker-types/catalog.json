@@ -49,7 +49,7 @@
     {
       "slug": "kimi-code",
       "definition_path": "config/worker-types/kimi-code/definition.json",
-      "definition_hash": "sha256:2ba64e7227e74eb792d08decfba10f33200599619127cdbe4e8bc1fecbce0ec2"
+      "definition_hash": "sha256:1b0e6e4fab8515abbbe1e2e96ec63f2a11b212320cdb1abbc5b7f44621eec7d7"
     },
     {
       "slug": "loopal",

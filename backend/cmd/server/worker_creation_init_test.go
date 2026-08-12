@@ -34,7 +34,7 @@ func TestInitializeWorkerServicesValidatesDefinitionCatalog(t *testing.T) {
 			"aider", "claude-code", "codex-cli", "cursor-cli", "do-agent",
 			"e2e-echo", "gemini-cli", "grok-build", "hermes", "kimi-code",
 			"loopal", "minimax-cli", "openclaw", "opencode", "pattern-designer",
-			"seedance-expert", "video-studio",
+			"pi-agent", "seedance-expert", "video-studio",
 		}, services.workerDefinitions.Slugs())
 	})
 }

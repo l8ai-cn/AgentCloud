@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "runtimeCatalogRevision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "runtimeCatalogRevision": "runtime-catalog-2026-08-13-kimi-code",
   "workers": [
     {
       "slug": "aider",
@@ -400,23 +400,37 @@
         {
           "sourceKind": "model_resource",
           "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_MODEL_API_KEY"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_MODEL_BASE_URL"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "KIMI_MODEL_NAME"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
           "environmentVariable": "KIMI_API_KEY"
         },
         {
           "sourceKind": "model_resource",
           "sourceRef": "openai-compatible",
           "environmentVariable": "KIMI_BASE_URL"
-        },
-        {
-          "sourceKind": "model_resource",
-          "sourceRef": "openai-compatible",
-          "environmentVariable": "KIMI_MODEL_NAME"
         }
       ],
       "configFields": [],
       "configDocuments": [],
-      "runtimeImage": null,
-      "validationStatus": "runtime_image_unavailable"
+      "runtimeImage": {
+        "name": "Kimi Code",
+        "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-kimi-code@sha256:e369d5cad81e0170cb796015831f6aa958edf8ccfadd774a3eb41efbf9c2dbc2",
+        "availability": "locked_available"
+      },
+      "validationStatus": "runtime_ready_unverified"
     },
     {
       "slug": "loopal",
@@ -629,6 +643,43 @@
         "availability": "locked_available"
       },
       "validationStatus": "runtime_ready_unverified"
+    },
+    {
+      "slug": "pi-agent",
+      "name": "Pi Agent",
+      "executable": "pi-agent",
+      "adapterId": "pi-acp",
+      "interactionModes": [
+        "pty",
+        "acp"
+      ],
+      "modelRequirement": {
+        "required": true,
+        "protocol_adapters": [
+          "openai-compatible"
+        ]
+      },
+      "credentialBindings": [
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_API_KEY"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_BASE_URL"
+        },
+        {
+          "sourceKind": "model_resource",
+          "sourceRef": "openai-compatible",
+          "environmentVariable": "OPENAI_MODEL"
+        }
+      ],
+      "configFields": [],
+      "configDocuments": [],
+      "runtimeImage": null,
+      "validationStatus": "runtime_image_unavailable"
     },
     {
       "slug": "seedance-expert",
