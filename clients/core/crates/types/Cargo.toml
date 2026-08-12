@@ -23,6 +23,7 @@ blockstore_proto = { workspace = true }
 blockstore_state_proto = { workspace = true }
 channel_proto = { workspace = true }
 channel_state_proto = { workspace = true }
+entitlement_proto = { workspace = true }
 env_bundle_proto = { workspace = true }
 extension_proto = { workspace = true }
 events_proto = { workspace = true }

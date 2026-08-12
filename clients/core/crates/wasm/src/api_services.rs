@@ -65,6 +65,12 @@ impl WasmApiClient {
         crate::service_grant::WasmGrantService::new(self.client.clone())
     }
 
+    pub fn create_entitlement_service(
+        &self,
+    ) -> crate::service_entitlement::WasmEntitlementService {
+        crate::service_entitlement::WasmEntitlementService::new(self.client.clone())
+    }
+
     pub fn create_apikey_service(&self) -> crate::service_apikey::WasmApiKeyService {
         crate::service_apikey::WasmApiKeyService::new(self.client.clone())
     }

@@ -12,6 +12,7 @@ import (
 type GrantQuerier interface {
 	GetGrantedUserIDs(ctx context.Context, resourceType, resourceID string) ([]int64, error)
 	GetGrantedResourceIDs(ctx context.Context, resourceType string, userID, orgID int64) ([]string, error)
+	GetRestrictedResourceIDs(ctx context.Context, resourceType string, resourceIDs []string) ([]string, error)
 }
 
 type connectionGrantContext struct {
@@ -59,12 +60,20 @@ func (s *Service) loadConnectionGrantContext(
 		}
 		ctxData.userGranted[id] = true
 	}
+	resourceIDs := make([]string, 0, len(connectionIDs))
 	for _, connectionID := range connectionIDs {
-		userIDs, listErr := s.grants.GetGrantedUserIDs(ctx, grant.TypeModelConnection, grant.IntResourceID(connectionID))
-		if listErr != nil {
-			return nil, listErr
+		resourceIDs = append(resourceIDs, grant.IntResourceID(connectionID))
+	}
+	restricted, err := s.grants.GetRestrictedResourceIDs(ctx, grant.TypeModelConnection, resourceIDs)
+	if err != nil {
+		return nil, err
+	}
+	for _, idStr := range restricted {
+		id, parseErr := strconv.ParseInt(idStr, 10, 64)
+		if parseErr != nil {
+			continue
 		}
-		ctxData.restricted[connectionID] = len(userIDs) > 0
+		ctxData.restricted[id] = true
 	}
 	return ctxData, nil
 }

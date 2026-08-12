@@ -44,6 +44,16 @@ func (m *memoryGrantQuerier) GetGrantedResourceIDs(_ context.Context, resourceTy
 	return resourceIDs, nil
 }
 
+func (m *memoryGrantQuerier) GetRestrictedResourceIDs(_ context.Context, resourceType string, resourceIDs []string) ([]string, error) {
+	var restricted []string
+	for _, resourceID := range resourceIDs {
+		if len(m.byResource[grantResourceKey(resourceType, resourceID)]) > 0 {
+			restricted = append(restricted, resourceID)
+		}
+	}
+	return restricted, nil
+}
+
 func (f *fixture) grantConnectionUsers(connectionID int64, userIDs ...int64) {
 	f.grants.setGrantedUsers(grant.TypeModelConnection, grant.IntResourceID(connectionID), userIDs...)
 }

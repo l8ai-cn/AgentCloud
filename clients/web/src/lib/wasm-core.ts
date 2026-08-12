@@ -53,6 +53,7 @@ export {
   getBillingService, getRepositoryService, getExtensionService,
   getInvitationService, getApiKeyService, getBindingService,
   getGrantService,
+  getEntitlementService, getEntitlementState,
   getNotificationService, getPromoCodeService,
   getTokenUsageService, getSSOService, getUserApiService,
   getUserCredentialService, getEnvBundleService, getOrgApiService, getAgentService,

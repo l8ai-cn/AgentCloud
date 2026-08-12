@@ -37,21 +37,46 @@ func TestSnapshotCacheTTLAndRevokeInvalidation(t *testing.T) {
 
 	decision, err = svc.Decide(ctx, entitlementdom.KindWorkerType, "codex-cli", 1, 9, organization.RoleMember)
 	require.NoError(t, err)
-	assert.True(t, decision.Allowed, "allow grants may wait for TTL")
-	assert.Equal(t, 1, repo.listCalls)
+	assert.False(t, decision.Allowed, "the first allow narrows the resource to a whitelist immediately")
+	assert.Equal(t, entitlementdom.DenyNotGranted, decision.Reason)
+	assert.Equal(t, 2, repo.listCalls)
 
 	clock.now = now.Add(31 * time.Second)
 	decision, err = svc.Decide(ctx, entitlementdom.KindWorkerType, "codex-cli", 1, 9, organization.RoleMember)
 	require.NoError(t, err)
 	assert.False(t, decision.Allowed)
-	assert.Equal(t, entitlementdom.DenyNotGranted, decision.Reason)
-	assert.Equal(t, 2, repo.listCalls)
+	assert.Equal(t, 3, repo.listCalls, "the expired snapshot is refetched")
 
 	require.NoError(t, svc.Revoke(ctx, 1, 1, "", ""))
 	decision, err = svc.Decide(ctx, entitlementdom.KindWorkerType, "codex-cli", 1, 9, organization.RoleMember)
 	require.NoError(t, err)
 	assert.True(t, decision.Allowed, "revoke must drop the cache immediately")
-	assert.Equal(t, 3, repo.listCalls)
+	assert.Equal(t, 4, repo.listCalls)
+}
+
+func TestGrantAllowIsVisibleToTheGrantedUserImmediately(t *testing.T) {
+	repo := newMemoryRepo()
+	svc := NewService(Deps{Repo: repo, WorkerTypes: fakeWorkers{"closed-agent": "closed"}})
+	ctx := context.Background()
+
+	decision, err := svc.Decide(ctx, entitlementdom.KindWorkerType, "codex-cli", 1, 9, organization.RoleMember)
+	require.NoError(t, err)
+	require.True(t, decision.Allowed)
+
+	_, err = svc.Grant(ctx, GrantRequest{
+		Kind: entitlementdom.KindWorkerType, Key: "codex-cli", OrganizationID: 1,
+		SubjectKind: entitlementdom.SubjectUser, SubjectUserID: int64Ptr(2),
+		Effect: entitlementdom.EffectAllow, GrantedBy: 1,
+	})
+	require.NoError(t, err)
+
+	decision, err = svc.Decide(ctx, entitlementdom.KindWorkerType, "codex-cli", 1, 2, organization.RoleMember)
+	require.NoError(t, err)
+	assert.True(t, decision.Allowed, "the granted member must not wait out the snapshot TTL")
+
+	decision, err = svc.Decide(ctx, entitlementdom.KindWorkerType, "codex-cli", 1, 9, organization.RoleMember)
+	require.NoError(t, err)
+	assert.False(t, decision.Allowed, "everyone else loses access as soon as the whitelist is armed")
 }
 
 func TestGrantDenyInvalidatesSnapshot(t *testing.T) {
