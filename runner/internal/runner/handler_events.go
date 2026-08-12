@@ -61,6 +61,9 @@ func (h *RunnerMessageHandler) cleanupPodExit(podKey string, exitCode int, stopI
 		log.Info("Pod already removed, skipping cleanup", "pod_key", podKey)
 		return
 	}
+	if pod.acpWatchdog != nil {
+		pod.acpWatchdog.stopWatching()
+	}
 
 	// Perpetual pod: clean exit + not user-terminated → restart in place.
 	// Re-insert into store so the pod remains visible during restart.

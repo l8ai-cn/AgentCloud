@@ -23,11 +23,11 @@ const (
 // or every KB in the org when slugs is empty. Case-insensitive substring
 // match; no vector index by design (llm-wiki philosophy: structured wiki +
 // grep beats RAG at this scale).
-func (s *Service) Search(ctx context.Context, orgID int64, slugs []string, query string, limit int) ([]*SearchMatch, error) {
+func (s *Service) Search(ctx context.Context, orgID, visibilityUserID int64, slugs []string, query string, limit int) ([]*SearchMatch, error) {
 	if limit <= 0 {
 		limit = 20
 	}
-	kbs, err := s.searchTargets(ctx, orgID, slugs)
+	kbs, err := s.searchTargets(ctx, orgID, visibilityUserID, slugs)
 	if err != nil {
 		return nil, err
 	}
@@ -48,11 +48,14 @@ func (s *Service) Search(ctx context.Context, orgID int64, slugs []string, query
 	return matches, nil
 }
 
-func (s *Service) searchTargets(ctx context.Context, orgID int64, slugs []string) ([]*knowledgebase.KnowledgeBase, error) {
+func (s *Service) searchTargets(ctx context.Context, orgID, visibilityUserID int64, slugs []string) ([]*knowledgebase.KnowledgeBase, error) {
 	if len(slugs) == 0 {
-		return s.repo.List(ctx, &knowledgebase.ListFilter{OrganizationID: orgID})
+		return s.repo.List(ctx, &knowledgebase.ListFilter{
+			OrganizationID:   orgID,
+			VisibilityUserID: visibilityUserID,
+		})
 	}
-	return s.repo.ListBySlugs(ctx, orgID, slugs)
+	return s.repo.ListBySlugs(ctx, orgID, slugs, visibilityUserID)
 }
 
 func (s *Service) searchOneKB(ctx context.Context, kb *knowledgebase.KnowledgeBase, needle string, limit int) ([]*SearchMatch, error) {

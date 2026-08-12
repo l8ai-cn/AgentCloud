@@ -11,6 +11,18 @@ import (
 
 const daemonLogFile = "pod_daemon.log"
 
+func daemonLogTail(sandboxPath string) string {
+	data, err := os.ReadFile(filepath.Join(sandboxPath, daemonLogFile))
+	if err != nil || len(data) == 0 {
+		return ""
+	}
+	const maxLen = 512
+	if len(data) > maxLen {
+		data = data[len(data)-maxLen:]
+	}
+	return strings.TrimSpace(string(data))
+}
+
 func captureDaemonLog(log *slog.Logger, sandboxPath, podKey string) {
 	logPath := filepath.Join(sandboxPath, daemonLogFile)
 	data, err := os.ReadFile(logPath)

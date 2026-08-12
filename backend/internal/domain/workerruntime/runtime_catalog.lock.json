@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "revision": "runtime-catalog-2026-08-03-61b505bd1dcd",
+  "revision": "runtime-catalog-2026-08-13-kimi-code",
   "images": [
     {
       "id": 1,
@@ -120,6 +120,17 @@
       "digest": "sha256:07dad6492237ce7977aea985a6677b852b3b316b5d50adec2320c543a8e0c196",
       "worker_type_slugs": [
         "hermes"
+      ],
+      "enabled": true
+    },
+    {
+      "id": 17,
+      "slug": "kimi-code-stable",
+      "name": "Kimi Code",
+      "reference": "repo.aiedulab.cn:8443/agentsmesh/runner-kimi-code@sha256:e369d5cad81e0170cb796015831f6aa958edf8ccfadd774a3eb41efbf9c2dbc2",
+      "digest": "sha256:e369d5cad81e0170cb796015831f6aa958edf8ccfadd774a3eb41efbf9c2dbc2",
+      "worker_type_slugs": [
+        "kimi-code"
       ],
       "enabled": true
     }

@@ -7,8 +7,10 @@ import (
 	"connectrpc.com/connect"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/api/connect/interceptors"
+	"github.com/l8ai-cn/agentcloud/backend/internal/domain/grant"
 	"github.com/l8ai-cn/agentcloud/backend/internal/middleware"
 	kbservice "github.com/l8ai-cn/agentcloud/backend/internal/service/knowledgebase"
+	"github.com/l8ai-cn/agentcloud/backend/pkg/policy"
 	kbv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/knowledgebase/v1"
 )
 
@@ -19,7 +21,10 @@ func (s *Server) ListKnowledgeBases(
 	if err != nil {
 		return nil, err
 	}
-	kbs, err := s.svc.List(ctx, org.GetID(), req.Msg.GetSourceType())
+	tenant := middleware.GetTenant(ctx)
+	sub := policy.NewSubject(tenant.OrganizationID, tenant.UserID, tenant.UserRole)
+	filter := policy.KnowledgeBasePolicy.ListFilter(sub)
+	kbs, err := s.svc.List(ctx, org.GetID(), req.Msg.GetSourceType(), filter.VisibilityUserID)
 	if err != nil {
 		return nil, mapKBError(err)
 	}
@@ -44,6 +49,9 @@ func (s *Server) GetKnowledgeBase(
 	if err != nil {
 		return nil, mapKBError(err)
 	}
+	if err := s.denyUnlessRead(ctx, kb); err != nil {
+		return nil, err
+	}
 	return connect.NewResponse(toProtoKnowledgeBase(kb)), nil
 }
 
@@ -54,6 +62,10 @@ func (s *Server) CreateKnowledgeBase(
 	if err != nil {
 		return nil, err
 	}
+	visibility, err := parseVisibility(req.Msg.GetVisibility())
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
 	tenant := middleware.GetTenant(ctx)
 	params := &kbservice.CreateParams{
 		OrganizationID:  org.GetID(),
@@ -61,6 +73,7 @@ func (s *Server) CreateKnowledgeBase(
 		Name:            req.Msg.GetName(),
 		Description:     req.Msg.GetDescription(),
 		SourceType:      req.Msg.GetSourceType(),
+		Visibility:      visibility,
 	}
 	if raw := req.Msg.GetSourceConfigJson(); raw != "" {
 		if !json.Valid([]byte(raw)) {
@@ -86,15 +99,26 @@ func (s *Server) UpdateKnowledgeBase(
 	if err != nil {
 		return nil, mapKBError(err)
 	}
+	if err := s.denyUnlessWrite(ctx, kb); err != nil {
+		return nil, err
+	}
 	sourceConfig, err := parseOptionalSourceConfig(req.Msg.GetSourceConfigJson())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
-	updated, err := s.svc.Update(ctx, org.GetID(), kb.ID, &kbservice.UpdateParams{
+	params := &kbservice.UpdateParams{
 		Name:         req.Msg.Name,
 		Description:  req.Msg.Description,
 		SourceConfig: sourceConfig,
-	})
+	}
+	if req.Msg.Visibility != nil {
+		visibility, err := parseVisibility(req.Msg.GetVisibility())
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		}
+		params.Visibility = &visibility
+	}
+	updated, err := s.svc.Update(ctx, org.GetID(), kb.ID, params)
 	if err != nil {
 		return nil, mapKBError(err)
 	}
@@ -122,8 +146,14 @@ func (s *Server) DeleteKnowledgeBase(
 	if err != nil {
 		return nil, mapKBError(err)
 	}
+	if err := s.denyUnlessWrite(ctx, kb); err != nil {
+		return nil, err
+	}
 	if err := s.svc.Delete(ctx, org.GetID(), kb.ID); err != nil {
 		return nil, mapKBError(err)
+	}
+	if s.grantSvc != nil {
+		_ = s.grantSvc.CleanupByResource(ctx, grant.TypeKnowledgeBase, grant.IntResourceID(kb.ID))
 	}
 	return connect.NewResponse(&kbv1.DeleteKnowledgeBaseResponse{}), nil
 }

@@ -11,8 +11,8 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import { cn } from "@/lib/utils";
-import { useIDEStore, ACTIVITIES, type ActivityType } from "@/stores/ide";
-import { resolveActivityFromPathname } from "@/lib/ide-route";
+import { useIDEStore, ACTIVITIES } from "@/stores/ide";
+import { activityRoute, resolveActivityFromPathname } from "@/lib/ide-route";
 import { useCurrentOrg } from "@/stores/auth";
 import { useTotalUnreadCount } from "@/stores/channelMessageStore";
 import { useTranslations } from "next-intl";
@@ -37,47 +37,6 @@ export function ActivityBar({ className }: ActivityBarProps) {
   const totalChannelUnread = useTotalUnreadCount();
   const isSystemAdmin = useIsSystemAdmin();
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
-
-  const getActivityRoute = (activity: ActivityType): string => {
-    switch (activity) {
-      case "workspace":
-        return `/${orgSlug}/workspace`;
-      case "tickets":
-        return `/${orgSlug}/tickets`;
-      case "channels":
-        return `/${orgSlug}/channels`;
-      case "mesh":
-        return `/${orgSlug}/mesh`;
-      case "loops":
-        return `/${orgSlug}/loops`;
-      case "workflows":
-        return `/${orgSlug}/workflows`;
-      case "experts":
-        return `/${orgSlug}/experts`;
-      case "automation":
-        return `/${orgSlug}/automation`;
-      case "apiAccess":
-        return `/${orgSlug}/api-access`;
-      case "knowledge":
-        return `/${orgSlug}/knowledge-base`;
-      case "blocks":
-        return `/${orgSlug}/blocks`;
-      case "infra":
-        return `/${orgSlug}/infra?tab=runners`;
-      case "repositories":
-        return `/${orgSlug}/repositories`;
-      case "runners":
-        return `/${orgSlug}/runners`;
-      case "marketplace":
-        return `/${orgSlug}/marketplace`;
-      case "skills":
-        return `/${orgSlug}/skills`;
-      case "settings":
-        return `/${orgSlug}/settings`;
-      default:
-        return `/${orgSlug}/workspace`;
-    }
-  };
 
   React.useEffect(() => {
     const activity = resolveActivityFromPathname(pathname);
@@ -114,7 +73,7 @@ export function ActivityBar({ className }: ActivityBarProps) {
                 <ActivityBarLink
                   id={activity.id}
                   icon={activity.icon}
-                  href={getActivityRoute(activity.id)}
+                  href={activityRoute(orgSlug, activity.id)}
                   label={t(`ide.activities.${activity.id}`)}
                   isActive={isActive}
                   showBadge={showBadge}
@@ -166,7 +125,7 @@ export function ActivityBar({ className }: ActivityBarProps) {
                 key={activity.id}
                 id={activity.id}
                 icon={activity.icon}
-                href={getActivityRoute(activity.id)}
+                href={activityRoute(orgSlug, activity.id)}
                 label={t(`ide.activities.${activity.id}`)}
                 isActive={isActive}
                 onClick={setActiveActivity}

@@ -126,6 +126,9 @@ func (s *Service) Run(ctx context.Context, req *RunExpertRequest) (*RunExpertRes
 	if s.dispatch == nil {
 		return nil, ErrExpertDispatchUnavailable
 	}
+	if err := s.requireWorkerType(ctx, req.OrganizationID, req.UserID, expert.AgentSlug); err != nil {
+		return nil, err
+	}
 	prepareSession, err := s.prepareRunInitialMessage(
 		ctx,
 		req.OrganizationID,

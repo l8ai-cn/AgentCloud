@@ -49,7 +49,7 @@
     {
       "slug": "kimi-code",
       "definition_path": "config/worker-types/kimi-code/definition.json",
-      "definition_hash": "sha256:2ba64e7227e74eb792d08decfba10f33200599619127cdbe4e8bc1fecbce0ec2"
+      "definition_hash": "sha256:1b0e6e4fab8515abbbe1e2e96ec63f2a11b212320cdb1abbc5b7f44621eec7d7"
     },
     {
       "slug": "loopal",
@@ -75,6 +75,11 @@
       "slug": "pattern-designer",
       "definition_path": "config/worker-types/pattern-designer/definition.json",
       "definition_hash": "sha256:4f5cf080d9655c4de274f0fc45b44866e9a0edd9dc10338d4917b582d02bdf01"
+    },
+    {
+      "slug": "pi-agent",
+      "definition_path": "config/worker-types/pi-agent/definition.json",
+      "definition_hash": "sha256:82f26da2bccf384f7008b50bac8236de185b3bd8984fbace604121c9cf2e4430"
     },
     {
       "slug": "seedance-expert",

@@ -21,6 +21,9 @@ func (s *Server) SetAgentMounts(
 	if err != nil {
 		return nil, mapKBError(err)
 	}
+	if err := s.denyUnlessWrite(ctx, kb); err != nil {
+		return nil, err
+	}
 	inputs := make([]kbservice.AgentMountInput, 0, len(req.Msg.GetMounts()))
 	for _, m := range req.Msg.GetMounts() {
 		inputs = append(inputs, kbservice.AgentMountInput{
@@ -44,6 +47,9 @@ func (s *Server) ListAgentMounts(
 	kb, err := s.svc.GetBySlug(ctx, org.GetID(), req.Msg.GetSlug())
 	if err != nil {
 		return nil, mapKBError(err)
+	}
+	if err := s.denyUnlessRead(ctx, kb); err != nil {
+		return nil, err
 	}
 	mounts, err := s.svc.ListAgentMounts(ctx, org.GetID(), kb.ID)
 	if err != nil {

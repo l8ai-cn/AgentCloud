@@ -12,5 +12,5 @@ console.log(JSON.stringify({
   databaseAssetId: result.databaseAssetId,
   registrationStatus: result.registrationStatus,
   assetProbe: result.assetProbe,
-  migrationState: result.migrationState,
+  schemaFingerprint: result.schemaFingerprint,
 }, null, 2));

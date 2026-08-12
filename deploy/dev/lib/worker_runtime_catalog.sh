@@ -20,6 +20,7 @@ local_worker_runner_services() {
             cursor-cli) service="runner-cursor-cli" ;;
             grok-build) service="runner-grok-build" ;;
             hermes) service="runner-hermes" ;;
+            pi-agent) service="runner-pi-agent" ;;
             loopal) service="runner-loopal" ;;
             opencode) service="runner-opencode" ;;
             *) continue ;;
@@ -51,6 +52,7 @@ prepare_local_worker_runtime_catalog() {
         --runtime "cursor-cli=${COMPOSE_PROJECT_NAME}-runner-cursor-cli:latest" \
         --runtime "grok-build=${COMPOSE_PROJECT_NAME}-runner-grok-build:latest" \
         --runtime "hermes=${COMPOSE_PROJECT_NAME}-runner-hermes:latest" \
+        --runtime "pi-agent=${COMPOSE_PROJECT_NAME}-runner-pi-agent:latest" \
         --runtime "loopal=${COMPOSE_PROJECT_NAME}-runner-loopal:latest" \
         --runtime "opencode=${COMPOSE_PROJECT_NAME}-runner-opencode:latest" || status=$?
 

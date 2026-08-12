@@ -27,6 +27,8 @@ ENV SIGNING_KEY SECRET OPTIONAL
 	resolver := newWorkerTypeResolver(
 		provider,
 		staticWorkerDefinitions{"codex-cli": definition},
+		nil,
+		nil,
 	)
 
 	resolved, err := resolver.ResolveWorkerType(
@@ -103,7 +105,7 @@ func TestWorkerTypeResolverExcludesModelResourceManagedFields(t *testing.T) {
 	}
 	resolver := newWorkerTypeResolver(&workerTypeAgentProvider{
 		agent: activeWorkerTypeAgentFor("cursor-cli", "cursor", source),
-	}, staticWorkerDefinitions{"cursor-cli": definition})
+	}, staticWorkerDefinitions{"cursor-cli": definition}, nil, nil)
 
 	resolved, err := resolver.ResolveWorkerType(
 		context.Background(),
@@ -141,6 +143,8 @@ func TestWorkerTypeResolverProjectsCredentialRequirementGroups(t *testing.T) {
 	resolver := newWorkerTypeResolver(
 		provider,
 		staticWorkerDefinitions{"aider": definition},
+		nil,
+		nil,
 	)
 
 	resolved, err := resolver.ResolveWorkerType(
@@ -205,7 +209,7 @@ func TestWorkerTypeResolverRejectsUnavailableDefinitions(t *testing.T) {
 				err:   test.err,
 			}, staticWorkerDefinitions{
 				test.slug: workerDefinition(test.slug, "codex", source, "pty", "acp"),
-			})
+			}, nil, nil)
 
 			_, err := resolver.ResolveWorkerType(
 				context.Background(),
@@ -236,6 +240,8 @@ func TestWorkerTypeResolverAllowsInternalDefinitionsInE2EEnvironment(t *testing.
 				"pty",
 			),
 		},
+		nil,
+		nil,
 	)
 
 	_, err := resolver.ResolveWorkerType(

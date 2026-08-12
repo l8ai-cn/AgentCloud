@@ -19,6 +19,7 @@ import (
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/binding"
 	blockstoreservice "github.com/l8ai-cn/agentcloud/backend/internal/service/blockstore"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/channel"
+	entitlementsvc "github.com/l8ai-cn/agentcloud/backend/internal/service/entitlement"
 	envbundleservice "github.com/l8ai-cn/agentcloud/backend/internal/service/envbundle"
 	executionclusterservice "github.com/l8ai-cn/agentcloud/backend/internal/service/executioncluster"
 	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
@@ -79,6 +80,7 @@ type serviceContainer struct {
 	agentpodSettings    *agentpod.SettingsService
 	agentpodAIProvider  *agentpod.AIProviderService
 	aiResource          *airesourceservice.Service
+	entitlement         *entitlementsvc.Service
 	tokenQuota          *tokenquotasvc.Service
 	license             *license.Service
 	apikey              *apikeyservice.Service

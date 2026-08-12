@@ -13,6 +13,7 @@ const ACTIVITIES_WITH_SIDEBAR = new Set<ActivityType>([
   "runners",
   "marketplace",
   "skills",
+  "connections",
   "settings",
 ]);
 

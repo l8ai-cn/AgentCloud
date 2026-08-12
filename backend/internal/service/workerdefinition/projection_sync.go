@@ -95,6 +95,7 @@ func workerDisplayName(slug string) string {
 		"minimax-cli": "MiniMax CLI",
 		"openclaw":    "OpenClaw",
 		"opencode":    "OpenCode",
+		"pi-agent":    "Pi Agent",
 	}[slug]; found {
 		return name
 	}

@@ -350,6 +350,7 @@ BEGIN
         ('dev-runner-minimax', 'Development Docker Runner (MiniMax CLI)'),
         ('dev-runner-openclaw', 'Development Docker Runner (OpenClaw)'),
         ('dev-runner-hermes', 'Development Docker Runner (Hermes)'),
+        ('dev-runner-pi', 'Development Docker Runner (Pi Agent)'),
         ('dev-runner-aider', 'Development Docker Runner (Aider)'),
         ('dev-runner-opencode', 'Development Docker Runner (OpenCode)')
     ) AS r(node_id, description)

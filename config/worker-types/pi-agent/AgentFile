@@ -1,0 +1,29 @@
+# === Identity ===
+AGENT pi-agent
+EXECUTABLE pi-agent
+
+# === Mode ===
+MODE pty
+MODE acp "acp"
+
+# === Environment ===
+ENV PI_CODING_AGENT_DIR = sandbox.root + "/pi-home/agent"
+ENV OPENAI_API_KEY SECRET
+ENV OPENAI_BASE_URL TEXT OPTIONAL
+ENV OPENAI_MODEL TEXT OPTIONAL
+ENV PI_OFFLINE = "1"
+ENV PI_SKIP_VERSION_CHECK = "1"
+
+# === Prompt ===
+PROMPT_POSITION append
+
+# === Build Logic ===
+mkdir sandbox.root + "/pi-home"
+mkdir sandbox.root + "/pi-home/agent"
+
+# === Capabilities ===
+CAPABILITY resume acp
+CAPABILITY permission acp
+CAPABILITY interrupt true
+CAPABILITY streaming true
+CAPABILITY model_family multi

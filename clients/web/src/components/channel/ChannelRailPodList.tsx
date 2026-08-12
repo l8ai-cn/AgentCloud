@@ -5,13 +5,13 @@ import { useTranslations } from "next-intl";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ChannelPodSummary } from "@/hooks/useChannelPods";
-import { isDestroyedPodStatus } from "./podLifecycle";
+import { isPodFinished } from "@/lib/pod-status";
 import { ChannelRailPodItem } from "./ChannelRailPodItem";
 
 export function ChannelRailPodList({ pods }: { pods: ChannelPodSummary[] }) {
   const t = useTranslations();
-  const alive = pods.filter((p) => !isDestroyedPodStatus(p.status));
-  const destroyed = pods.filter((p) => isDestroyedPodStatus(p.status));
+  const alive = pods.filter((p) => !isPodFinished(p.status));
+  const destroyed = pods.filter((p) => isPodFinished(p.status));
   const [userToggled, setUserToggled] = useState<boolean | null>(null);
   const showDestroyed = userToggled ?? alive.length === 0;
 

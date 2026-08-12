@@ -102,7 +102,7 @@ type UserConfigQueryForOrchestrator interface {
 // KnowledgeBaseResolverForOrchestrator resolves KB mounts for pod creation.
 // Nil means the KB feature is disabled (internal Gitea not configured).
 type KnowledgeBaseResolverForOrchestrator interface {
-	ResolveMountsForPod(ctx context.Context, orgID int64, agentSlug string, requested []kbservice.MountRequest) ([]*kbservice.ResolvedMount, error)
+	ResolveMountsForPod(ctx context.Context, orgID, userID int64, agentSlug string, requested []kbservice.MountRequest) ([]*kbservice.ResolvedMount, error)
 }
 
 type PodOrchestratorDeps struct {

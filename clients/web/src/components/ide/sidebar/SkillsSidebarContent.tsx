@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCurrentOrg } from "@/stores/auth";
 import { useTranslations } from "next-intl";
-import { Sparkles, Settings2, Store } from "lucide-react";
+import { Package, Settings2, Sparkles, Store, type LucideIcon } from "lucide-react";
 
 interface SkillsSidebarContentProps {
   className?: string;
@@ -18,6 +18,10 @@ export function SkillsSidebarContent({ className }: SkillsSidebarContentProps) {
 
   const goBrowse = () => {
     if (orgSlug) router.push(`/${orgSlug}/skills`);
+  };
+
+  const goMine = () => {
+    if (orgSlug) router.push(`/${orgSlug}/skills?view=mine`);
   };
 
   const goRegistries = () => {
@@ -36,6 +40,7 @@ export function SkillsSidebarContent({ className }: SkillsSidebarContentProps) {
       </div>
       <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
         <SidebarLink icon={Store} label={t("ide.sidebar.skills.browse")} onClick={goBrowse} />
+        <SidebarLink icon={Package} label={t("ide.sidebar.skills.mine")} onClick={goMine} />
         <SidebarLink
           icon={Settings2}
           label={t("ide.sidebar.skills.manageRegistries")}
@@ -55,7 +60,7 @@ function SidebarLink({
   label,
   onClick,
 }: {
-  icon: typeof Store;
+  icon: LucideIcon;
   label: string;
   onClick: () => void;
 }) {

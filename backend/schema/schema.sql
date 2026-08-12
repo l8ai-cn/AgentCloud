@@ -7,6 +7,7 @@
 --
 -- 2026-07-30: dropped organization_agents, organization_agent_configs, ssh_keys,
 -- schema_migrations, marketplace_schema_migrations; dropped git_providers.ssh_key_id.
+-- 2026-08-13: resource_entitlements + skills.entitlement_default for catalog admission.
 --
 
 --
@@ -1735,7 +1736,9 @@ CREATE TABLE public.skills (
     upstream_subdir character varying(255) DEFAULT ''::character varying NOT NULL,
     upstream_commit_sha character varying(40) DEFAULT ''::character varying NOT NULL,
     tags text[] DEFAULT '{}'::text[] NOT NULL,
-    CONSTRAINT authored_skills_slug_check CHECK ((((slug)::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text) AND ((char_length((slug)::text) >= 2) AND (char_length((slug)::text) <= 100))))
+    entitlement_default character varying(16) DEFAULT 'open'::character varying NOT NULL,
+    CONSTRAINT authored_skills_slug_check CHECK ((((slug)::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text) AND ((char_length((slug)::text) >= 2) AND (char_length((slug)::text) <= 100)))),
+    CONSTRAINT skills_entitlement_default_check CHECK (((entitlement_default)::text = ANY (ARRAY['open'::text, 'closed'::text])))
 );
 
 
@@ -4459,6 +4462,57 @@ ALTER SEQUENCE public.repositories_id_seq OWNED BY public.repositories.id;
 
 
 --
+-- Name: resource_entitlements; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.resource_entitlements (
+    id bigint NOT NULL,
+    resource_kind character varying(32) NOT NULL,
+    resource_key character varying(100) NOT NULL,
+    organization_id bigint NOT NULL,
+    subject_kind character varying(16) DEFAULT 'org'::character varying NOT NULL,
+    subject_user_id bigint,
+    effect character varying(8) DEFAULT 'allow'::character varying NOT NULL,
+    reason text DEFAULT ''::text NOT NULL,
+    expires_at timestamp with time zone,
+    granted_by bigint NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT resource_entitlements_effect_check CHECK (((effect)::text = ANY (ARRAY['allow'::text, 'deny'::text]))),
+    CONSTRAINT resource_entitlements_resource_key_check CHECK ((((resource_key)::text ~ '^[a-z0-9]+(-[a-z0-9]+)*$'::text) AND ((char_length((resource_key)::text) >= 2) AND (char_length((resource_key)::text) <= 100)))),
+    CONSTRAINT resource_entitlements_resource_kind_check CHECK (((resource_kind)::text = ANY (ARRAY['worker_type'::text, 'skill'::text]))),
+    CONSTRAINT resource_entitlements_subject_check CHECK (((((subject_kind)::text = 'org'::text) AND (subject_user_id IS NULL)) OR (((subject_kind)::text = 'user'::text) AND (subject_user_id IS NOT NULL)))),
+    CONSTRAINT resource_entitlements_subject_kind_check CHECK (((subject_kind)::text = ANY (ARRAY['org'::text, 'user'::text])))
+);
+
+
+--
+-- Name: TABLE resource_entitlements; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.resource_entitlements IS 'Org/user allow-deny rows that override catalog admission defaults for worker types and skills.';
+
+
+--
+-- Name: resource_entitlements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.resource_entitlements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: resource_entitlements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.resource_entitlements_id_seq OWNED BY public.resource_entitlements.id;
+
+
+--
 -- Name: resource_grants; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6611,6 +6665,13 @@ ALTER TABLE ONLY public.repositories ALTER COLUMN id SET DEFAULT nextval('public
 
 
 --
+-- Name: resource_entitlements id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.resource_entitlements ALTER COLUMN id SET DEFAULT nextval('public.resource_entitlements_id_seq'::regclass);
+
+
+--
 -- Name: resource_grants id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -8333,6 +8394,14 @@ ALTER TABLE ONLY public.autopilot_controllers
 
 ALTER TABLE ONLY public.repositories
     ADD CONSTRAINT repositories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: resource_entitlements resource_entitlements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.resource_entitlements
+    ADD CONSTRAINT resource_entitlements_pkey PRIMARY KEY (id);
 
 
 --
@@ -10188,6 +10257,34 @@ CREATE INDEX idx_repositories_provider_type ON public.repositories USING btree (
 --
 
 CREATE INDEX idx_repositories_visibility ON public.repositories USING btree (visibility);
+
+
+--
+-- Name: idx_resource_entitlements_org; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_resource_entitlements_org ON public.resource_entitlements USING btree (organization_id);
+
+
+--
+-- Name: idx_resource_entitlements_resource; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_resource_entitlements_resource ON public.resource_entitlements USING btree (resource_kind, resource_key);
+
+
+--
+-- Name: resource_entitlements_org_subject_uidx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX resource_entitlements_org_subject_uidx ON public.resource_entitlements USING btree (resource_kind, resource_key, organization_id) WHERE (((subject_kind)::text = 'org'::text) AND (subject_user_id IS NULL));
+
+
+--
+-- Name: resource_entitlements_user_subject_uidx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX resource_entitlements_user_subject_uidx ON public.resource_entitlements USING btree (resource_kind, resource_key, organization_id, subject_user_id) WHERE (((subject_kind)::text = 'user'::text) AND (subject_user_id IS NOT NULL));
 
 
 --
@@ -12822,6 +12919,30 @@ ALTER TABLE ONLY public.repositories
 
 ALTER TABLE ONLY public.repositories
     ADD CONSTRAINT repositories_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: resource_entitlements resource_entitlements_granted_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.resource_entitlements
+    ADD CONSTRAINT resource_entitlements_granted_by_fkey FOREIGN KEY (granted_by) REFERENCES public.users(id);
+
+
+--
+-- Name: resource_entitlements resource_entitlements_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.resource_entitlements
+    ADD CONSTRAINT resource_entitlements_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: resource_entitlements resource_entitlements_subject_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.resource_entitlements
+    ADD CONSTRAINT resource_entitlements_subject_user_id_fkey FOREIGN KEY (subject_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
 --

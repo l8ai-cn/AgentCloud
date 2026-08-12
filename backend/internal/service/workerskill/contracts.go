@@ -21,6 +21,10 @@ type SkillCatalog interface {
 	GetAnyByID(ctx context.Context, id int64) (*skill.Skill, error)
 }
 
+type MemberRoleReader interface {
+	GetMemberRole(context.Context, int64, int64) (string, error)
+}
+
 // PackageSigner mints short-lived download URLs for already pinned packages, so
 // the remount ships the exact bytes recorded in the snapshot.
 type PackageSigner interface {

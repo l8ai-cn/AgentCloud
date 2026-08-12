@@ -161,6 +161,8 @@ func workerModelHarness(agentSlug string, agentDef *agentDomain.Agent) string {
 		return "grok-build"
 	case "mmx", "minimax-cli":
 		return "minimax-cli"
+	case "kimi", "kimi-code":
+		return "kimi-code"
 	case "do-agent":
 		return "do-agent"
 	case "openclaw":

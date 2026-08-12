@@ -30,6 +30,7 @@ case "$agent_slug" in
   minimax-cli) service=runner-minimax-cli ;;
   openclaw) service=runner-openclaw ;;
   hermes) service=runner-hermes ;;
+  pi-agent) service=runner-pi-agent ;;
   aider) service=runner-aider ;;
   opencode) service=runner-opencode ;;
   *)

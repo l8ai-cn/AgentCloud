@@ -100,11 +100,21 @@ func mountAgentPodSettingsService(mux *http.ServeMux, svc *serviceContainer, opt
 // mountGrantService wires GrantService — covers pod / runner / repository
 // grants under one Connect endpoint. Skips when the grant service is nil
 // (test wiring); the REST router does the same in routes_pods.go.
-func mountGrantService(mux *http.ServeMux, svc *serviceContainer, opts []connect.HandlerOption) {
+func mountGrantService(mux *http.ServeMux, svc *serviceContainer, rest *v1.Services, opts []connect.HandlerOption) {
 	if svc.grant == nil {
 		return
 	}
-	srv := grantconnect.NewServer(svc.grant, svc.org, svc.pod, svc.runner, svc.repository)
+	grantOpts := []grantconnect.Option{}
+	if svc.skillCatalog != nil {
+		grantOpts = append(grantOpts, grantconnect.WithSkillLookup(svc.skillCatalog))
+	}
+	if rest != nil && rest.Expert != nil {
+		grantOpts = append(grantOpts, grantconnect.WithExpertLookup(rest.Expert))
+	}
+	srv := grantconnect.NewServer(
+		svc.grant, svc.org, svc.pod, svc.runner, svc.repository,
+		svc.aiResource, svc.knowledgeBase, grantOpts...,
+	)
 	grantconnect.Mount(mux, srv, opts...)
 }
 
@@ -169,7 +179,7 @@ func mountKnowledgeBaseService(mux *http.ServeMux, svc *serviceContainer, opts [
 	if svc.knowledgeBase == nil {
 		return
 	}
-	srv := knowledgebaseconnect.NewServer(svc.knowledgeBase, svc.org, svc.kbSyncWorker)
+	srv := knowledgebaseconnect.NewServer(svc.knowledgeBase, svc.org, svc.kbSyncWorker, svc.grant)
 	knowledgebaseconnect.Mount(mux, srv, opts...)
 }
 

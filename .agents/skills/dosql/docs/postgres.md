@@ -12,10 +12,10 @@ Read-only commands include:
 ## Oilan Production Read-Only Adapter
 
 Agent Cloud production PostgreSQL is fixed to the registered asset
-`db_agentcloud_prod_postgres`. The asset id is the post-rebrand logical name; the
-live Kubernetes identity is still pre-rebrand, so namespace, secret and database
-are all `agentsmesh`. Use the dedicated entrypoint, not a local connection URI,
-local `psql`, or a locally invoked Kubernetes database command:
+`db_agentcloud_prod_postgres`. Namespace, secret and database are all
+`agentcloud` after the production rebrand. Use the dedicated entrypoint, not a
+local connection URI, local `psql`, or a locally invoked Kubernetes database
+command:
 
 ```bash
 node .agents/skills/dosql/scripts/oilan-postgres-doops-readonly.mjs probe \
@@ -30,13 +30,13 @@ The request only accepts a unique DoOps `session` and an `operationId`.
 {
   "operationId": "dbop-oilan-probe-001",
   "session": "oilan-read-20260720-001",
-  "queryName": "migration-version"
+  "queryName": "schema-fingerprint"
 }
 ```
 
 The adapter invokes only `doops -session <session> exec --target
-gw-oilan-node`, checks the fixed `agentsmesh/postgres` service and
-`agentsmesh-secrets#DB_PASSWORD` binding remotely, and emits a redacted,
+gw-oilan-node`, checks the fixed `agentcloud/postgres` service and
+`agentcloud-secrets#DB_PASSWORD` binding remotely, and emits a redacted,
 hash-verifiable evidence document. It fixes the canonical DoOps binary and
 config paths, validates the gateway/cluster/instance targeting line, and forces
 `default_transaction_read_only=on` plus a 15-second statement timeout. It never
@@ -52,8 +52,10 @@ session audit logs:
 node .agents/skills/dosql/scripts/oilan-postgres-registration-verify.mjs
 ```
 
-The July 25, 2026 re-registration observed PostgreSQL 16.14 on database
-`agentsmesh`, migration state `231`, `dirty=false`.
+The August 13, 2026 re-registration observed PostgreSQL 16.14 on database
+`agentcloud`, 115 public tables, with `users` and `organizations` present.
+Production no longer has `public.schema_migrations`; the version anchor is
+`backend/schema/SCHEMA_VERSION`.
 
 `oilan-postgres-registration-verify.mjs` currently fails closed on its second
 half: the `gw-oilan-node` doops-agent no longer writes `.doops-audit-log` into
@@ -75,8 +77,8 @@ audit-read permission; missing remote audit access fails closed. Release-grade
 verification requires a future immutable full-command digest or signed receipt
 recorded by Gateway at execution time.
 
-This adapter is read-only. It must not execute production migrations, including
-`000225 -> 000231`; that requires a separate user-confirmed DoSql change.
+This adapter is read-only. It must not execute production schema changes;
+that requires a separate user-confirmed DoSql change.
 
 ## Change Operations
 

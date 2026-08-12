@@ -7,6 +7,7 @@ import (
 
 	runnerv1 "github.com/l8ai-cn/agentcloud/proto/gen/go/runner/v1"
 	"github.com/l8ai-cn/agentcloud/runner/internal/acp"
+	"github.com/l8ai-cn/agentcloud/runner/internal/client"
 	"github.com/l8ai-cn/agentcloud/runner/internal/logger"
 	"github.com/l8ai-cn/agentcloud/runner/internal/policy"
 )
@@ -34,6 +35,14 @@ func (h *RunnerMessageHandler) wireAndStartACPPod(pod *Pod, cmd *runnerv1.Create
 
 	// Pre-declare so callbacks can capture it (NewClient returns the same pointer).
 	var acpClient *acp.ACPClient
+	pod.acpWatchdog = newACPTurnWatchdog(func() {
+		h.failACPPod(
+			podKey,
+			pod,
+			client.ErrCodeACPTurnStalled,
+			"ACP turn made no progress for 10 minutes without a running tool",
+		)
+	})
 
 	// Create ACPClient with event callbacks that forward via Relay.
 	acpClient = acp.NewClient(acp.ClientConfig{
@@ -46,34 +55,47 @@ func (h *RunnerMessageHandler) wireAndStartACPPod(pod *Pod, cmd *runnerv1.Create
 		ResumeExternalSessionID: resumeExternalSessionFromEnv(pod.LaunchEnv),
 		Callbacks: acp.EventCallbacks{
 			OnContentChunk: func(sessionID string, chunk acp.ContentChunk) {
+				pod.acpWatchdog.touched()
 				workbenchForwarder.content(sessionID, chunk)
 				sendAcpViaRelay(pod, "contentChunk", sessionID, chunk)
 				payload, _ := json.Marshal(chunk)
 				_ = conn.SendAcpSessionEvent(podKey, "contentChunk", string(payload))
 			},
 			OnToolCallUpdate: func(sessionID string, update acp.ToolCallUpdate) {
+				pod.acpWatchdog.toolUpdated(update)
 				workbenchForwarder.toolUpdate(sessionID, update)
 				sendAcpViaRelay(pod, "toolCallUpdate", sessionID, update)
 				payload, _ := json.Marshal(update)
 				_ = conn.SendAcpSessionEvent(podKey, "toolCallUpdate", string(payload))
 			},
 			OnToolCallResult: func(sessionID string, result acp.ToolCallResult) {
+				pod.acpWatchdog.touched()
 				workbenchForwarder.toolResult(sessionID, result)
 				sendAcpViaRelay(pod, "toolCallResult", sessionID, result)
 				payload, _ := json.Marshal(result)
 				_ = conn.SendAcpSessionEvent(podKey, "toolCallResult", string(payload))
 			},
 			OnPlanUpdate: func(sessionID string, update acp.PlanUpdate) {
+				pod.acpWatchdog.touched()
 				workbenchForwarder.plan(sessionID, update)
 				sendAcpViaRelay(pod, "planUpdate", sessionID, update)
 			},
 			OnThinkingUpdate: func(sessionID string, update acp.ThinkingUpdate) {
+				pod.acpWatchdog.touched()
 				workbenchForwarder.thinking(sessionID, update)
 				sendAcpViaRelay(pod, "thinkingUpdate", sessionID, update)
 				payload, _ := json.Marshal(update)
 				_ = conn.SendAcpSessionEvent(podKey, "thinkingUpdate", string(payload))
 			},
 			OnPermissionRequest: func(req acp.PermissionRequest) {
+				pod.acpWatchdog.touched()
+				if isDetachedDoAgentCommand(pod.Agent, req) {
+					message := "do-agent cannot launch detached background commands; run the task in the foreground so ACP can track completion"
+					workbenchForwarder.log("warn", message)
+					sendAcpViaRelay(pod, "log", "", map[string]string{"level": "warn", "message": message})
+					_ = acpClient.RespondToPermission(req.RequestID, false, nil)
+					return
+				}
 				path := permissionPathFromArgs(req.ArgumentsJSON)
 				switch policy.Evaluate(pod.PolicyRules, req.ToolName, path) {
 				case policy.VerdictAllow:
@@ -93,6 +115,7 @@ func (h *RunnerMessageHandler) wireAndStartACPPod(pod *Pod, cmd *runnerv1.Create
 				bridge.onUsage(podKey, usage)
 			},
 			OnStateChange: func(newState string) {
+				pod.acpWatchdog.stateChanged(newState)
 				workbenchForwarder.state(newState)
 				backendStatus := mapACPState(newState)
 				_ = conn.SendAgentStatus(podKey, backendStatus)
@@ -108,6 +131,7 @@ func (h *RunnerMessageHandler) wireAndStartACPPod(pod *Pod, cmd *runnerv1.Create
 				}
 			},
 			OnLog: func(level, message string) {
+				pod.acpWatchdog.touched()
 				workbenchForwarder.log(level, message)
 				entry := map[string]string{"level": level, "message": message}
 				sendAcpViaRelay(pod, "log", "", entry)
@@ -126,6 +150,9 @@ func (h *RunnerMessageHandler) wireAndStartACPPod(pod *Pod, cmd *runnerv1.Create
 					workbenchForwarder.sessionID(sessionID)
 					_ = conn.SendExternalSessionCaptured(podKey, sessionID)
 				}
+			},
+			OnError: func(err error) {
+				h.failACPPod(podKey, pod, client.ErrCodeACPPromptFailed, err.Error())
 			},
 			OnExit: func(exitCode int) {
 				h.handleACPExit(podKey, exitCode)
@@ -151,6 +178,7 @@ func (h *RunnerMessageHandler) wireAndStartACPPod(pod *Pod, cmd *runnerv1.Create
 		h.sendPodError(cmd.PodKey, fmt.Sprintf("failed to start ACP agent: %v", err))
 		return errors.Join(fmt.Errorf("failed to start ACP agent: %w", err), cleanupErr)
 	}
+	pod.acpWatchdog.start()
 	if len(cmd.DeclaredCapabilities) > 0 {
 		acpClient.CalibrateDeclaredCapabilities(podKey, cmd.DeclaredCapabilities)
 	}

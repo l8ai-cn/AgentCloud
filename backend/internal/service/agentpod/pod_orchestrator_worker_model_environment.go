@@ -45,10 +45,17 @@ func modelResourceEnvironment(agentSlug string, resource *resourcesvc.ResolvedRe
 		}
 		return map[string]string{"MINIMAX_API_KEY": apiKey}, nil
 	case "kimi-code":
+		// kimi-code ignores shell KIMI_API_KEY; KIMI_MODEL_* synthesizes an in-memory provider.
+		if modelID == "" {
+			return nil, ErrMissingModelResource
+		}
 		return compactEnv(map[string]string{
-			"KIMI_API_KEY":    apiKey,
-			"KIMI_BASE_URL":   baseURL,
-			"KIMI_MODEL_NAME": modelID,
+			"KIMI_MODEL_NAME":          modelID,
+			"KIMI_MODEL_API_KEY":       apiKey,
+			"KIMI_MODEL_BASE_URL":      baseURL,
+			"KIMI_MODEL_PROVIDER_TYPE": "openai",
+			"KIMI_API_KEY":             apiKey,
+			"KIMI_BASE_URL":            baseURL,
 		}), nil
 	default:
 		return nil, ErrMissingModelResource

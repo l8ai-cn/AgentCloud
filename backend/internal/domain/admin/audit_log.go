@@ -55,6 +55,9 @@ const (
 	AuditActionSupportTicketReply  AuditAction = "support_ticket.reply"
 	AuditActionSupportTicketStatus AuditAction = "support_ticket.status"
 	AuditActionSupportTicketAssign AuditAction = "support_ticket.assign"
+
+	AuditActionEntitlementGrant  AuditAction = "entitlement.grant"
+	AuditActionEntitlementRevoke AuditAction = "entitlement.revoke"
 )
 
 type TargetType string
@@ -68,6 +71,7 @@ const (
 	TargetTypeConfig       TargetType = "config"
 	TargetTypeSupportTicket TargetType = "support_ticket"
 	TargetTypeSSOConfig     TargetType = "sso_config"
+	TargetTypeEntitlement   TargetType = "entitlement"
 
 	AuditTargetUser          = TargetTypeUser
 	AuditTargetOrganization  = TargetTypeOrganization

@@ -16,9 +16,10 @@ test("verifies registration against authoritative DoOps Gateway audit events", a
     queryWorkspaceAudit: (expected) => expected,
   });
   assert.equal(result.assetProbe.eventId, registration.registration.gatewayAudit.eventId);
-  assert.deepEqual(result.migrationState.result, {
-    version: registration.migrationState.version,
-    dirty: registration.migrationState.dirty,
+  assert.deepEqual(result.schemaFingerprint.result, {
+    publicTableCount: registration.schemaFingerprint.publicTableCount,
+    usersPresent: registration.schemaFingerprint.usersPresent,
+    organizationsPresent: registration.schemaFingerprint.organizationsPresent,
   });
 });
 
@@ -54,12 +55,12 @@ function auditEvents(registration) {
     event({
       reference: registration.registration,
       queryName: "asset-probe",
-      tail: `${registration.databaseName}|${registration.serverVersionNum}|t\n`,
+      tail: `${registration.databaseName}|${registration.serverVersionNum}\n`,
     }),
     event({
-      reference: registration.migrationState,
-      queryName: "migration-version",
-      tail: `${registration.migrationState.version}|${registration.migrationState.dirty ? "t" : "f"}\n`,
+      reference: registration.schemaFingerprint,
+      queryName: "schema-fingerprint",
+      tail: `${registration.schemaFingerprint.publicTableCount}|t|t\n`,
     }),
   ];
 }

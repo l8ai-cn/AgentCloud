@@ -8,9 +8,13 @@ import (
 )
 
 const (
-	TypePod        = "pod"
-	TypeRunner     = "runner"
-	TypeRepository = "repository"
+	TypePod             = "pod"
+	TypeRunner          = "runner"
+	TypeRepository      = "repository"
+	TypeSkill           = "skill"
+	TypeModelConnection = "model_connection"
+	TypeKnowledgeBase   = "knowledge_base"
+	TypeExpert          = "expert"
 )
 
 func IntResourceID(id int64) string {

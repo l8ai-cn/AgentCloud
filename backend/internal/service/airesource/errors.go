@@ -9,6 +9,7 @@ import (
 var (
 	ErrNotFound                    = errors.New("AI resource not found")
 	ErrForbidden                   = errors.New("AI resource access forbidden")
+	ErrNotGranted                  = errors.New("AI resource connection not granted")
 	ErrInvalidOwner                = errors.New("invalid AI resource owner")
 	ErrInvalidProvider             = errors.New("invalid AI resource provider")
 	ErrInvalidCredentials          = errors.New("invalid AI resource credentials")

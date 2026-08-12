@@ -124,8 +124,9 @@
     "cancel": "Cancel",
 
     "mcpMarket": {
-      "title": "MCP Server Templates",
-      "description": "Browse available MCP server templates. These templates can be installed to repositories by team members.",
+      "title": "Connectors",
+      "description": "Organization-level governance for MCP connectors lives here. Browse and install from the Connection Market.",
+      "openMarket": "Open Connection Market",
       "noServers": "No MCP server templates available",
       "serversFound": "servers found",
       "sourceRegistry": "MCP Registry",
@@ -153,11 +154,11 @@
 
     "settings": {
       "title": "Extensions",
-      "description": "Manage your organization's skills and explore MCP server templates. Browse the skill marketplace from the Skill Market section.",
+      "description": "Manage your organization's skills and connector governance. Browse the skill marketplace from the Skill Market section.",
       "tabs": {
         "skillMarket": "Skill Marketplace",
         "skillCatalog": "Skills",
-        "mcpMarket": "MCP Templates"
+        "mcpMarket": "Connectors"
       }
     }
   }

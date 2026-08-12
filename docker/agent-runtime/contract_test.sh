@@ -51,6 +51,11 @@ grep -q "MMX_CONFIG_DIR" "$MINIMAX_WRAPPER"
 grep -q "mmx-cli/dist/mmx.mjs" "$MINIMAX_WRAPPER"
 grep -q 'npm install -g "openclaw@${OPENCLAW_VERSION}"' "$DOCKERFILE"
 grep -q "hermes-agent" "$DOCKERFILE"
+grep -q "@earendil-works/pi-coding-agent" "$DOCKERFILE"
+grep -q "pi-acp@" "$DOCKERFILE"
+grep -q "pi-agent-wrapper.sh" "$DOCKERFILE"
+grep -q "pi-agent-wrapper.sh" "${ROOT}/docker/agent-runtime/prepare_binaries.sh"
+grep -q "pi-agent-wrapper.sh" "${ROOT}/deploy/dev/lib/host_services_lite.sh"
 grep -q "HERMES_AGENT_VERSION" "$DOCKERFILE"
 grep -q "PIP_BREAK_SYSTEM_PACKAGES=1" "$DOCKERFILE"
 grep -q "COPY --chmod=0755 binaries/" "$DOCKERFILE"
@@ -100,6 +105,7 @@ grep -q "AGENT_RUNTIME: grok-build" "$COMPOSE"
 grep -q "AGENT_RUNTIME: minimax-cli" "$COMPOSE"
 grep -q "AGENT_RUNTIME: openclaw" "$COMPOSE"
 grep -q "AGENT_RUNTIME: hermes" "$COMPOSE"
+grep -q "AGENT_RUNTIME: pi-agent" "$COMPOSE"
 grep -q "AGENT_RUNTIME: aider" "$COMPOSE"
 grep -q "AGENT_RUNTIME: opencode" "$COMPOSE"
 grep -q "runner-claude-code" "$COMPOSE"
@@ -110,6 +116,7 @@ grep -q "runner-minimax-cli" "$COMPOSE"
 grep -q "runner-kimi-code" "$COMPOSE"
 grep -q "runner-openclaw" "$COMPOSE"
 grep -q "runner-hermes" "$COMPOSE"
+grep -q "runner-pi-agent" "$COMPOSE"
 grep -q "docker/agent-runtime/Dockerfile" "$COMPOSE"
 grep -q "target: runtime" "$COMPOSE"
 grep -q "NODE_BASE_IMAGE: \${NODE_BASE_IMAGE:-node:24-bookworm-slim}" "$COMPOSE"
@@ -121,7 +128,7 @@ if ! awk '/runner-aider:/{inside=1; next} /runner-opencode:/{inside=0} inside' "
   exit 1
 fi
 
-if ! awk '/runner-hermes:/{inside=1; next} /runner-aider:/{inside=0} inside' "$COMPOSE" \
+if ! awk '/runner-hermes:/{inside=1; next} /runner-pi-agent:/{inside=0} inside' "$COMPOSE" \
   | grep -q "RUNTIME_BASE: python-runtime-base"; then
   echo "runner-hermes must select python-runtime-base for hermes-agent postinstall" >&2
   exit 1

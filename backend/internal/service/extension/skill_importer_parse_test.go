@@ -156,6 +156,7 @@ Detailed docs here.
 	assert.Equal(t, "Does awesome things", info.Description)
 	assert.Equal(t, "MIT", info.License)
 	assert.Equal(t, "claude-code", info.Compatibility)
+	assert.Equal(t, []string{"claude-code"}, info.AgentFilter)
 	assert.Equal(t, "Read,Write,Bash", info.AllowedTools)
 	assert.Equal(t, dir, info.DirPath)
 }

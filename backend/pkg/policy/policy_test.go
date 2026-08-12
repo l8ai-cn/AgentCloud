@@ -8,10 +8,10 @@ import (
 
 // --- Subject helpers ---
 
-func member(orgID, userID int64) Subject  { return NewSubject(orgID, userID, "member") }
-func admin(orgID, userID int64) Subject   { return NewSubject(orgID, userID, "admin") }
-func owner(orgID, userID int64) Subject   { return NewSubject(orgID, userID, "owner") }
-func apikey(orgID, userID int64) Subject  { return NewSubject(orgID, userID, "apikey") }
+func member(orgID, userID int64) Subject { return NewSubject(orgID, userID, "member") }
+func admin(orgID, userID int64) Subject  { return NewSubject(orgID, userID, "admin") }
+func owner(orgID, userID int64) Subject  { return NewSubject(orgID, userID, "owner") }
+func apikey(orgID, userID int64) Subject { return NewSubject(orgID, userID, "apikey") }
 
 // --- NewSubject ---
 
@@ -249,4 +249,17 @@ func TestListFilter_OrgOpen(t *testing.T) {
 	f := p.ListFilter(member(1, 7))
 	assert.Equal(t, int64(0), f.OwnerOnly)
 	assert.Equal(t, int64(0), f.VisibilityUserID)
+}
+
+func TestKnowledgeBasePolicy(t *testing.T) {
+	assert.Equal(t, ReadVisibility, KnowledgeBasePolicy.Read)
+	assert.Equal(t, WriteCreatorAdmin, KnowledgeBasePolicy.Write)
+
+	uid := int64(10)
+	private := VisibleResource(1, &uid, VisibilityPrivate)
+	assert.True(t, KnowledgeBasePolicy.AllowRead(member(1, 10), private))
+	assert.False(t, KnowledgeBasePolicy.AllowRead(member(1, 42), private))
+	assert.False(t, KnowledgeBasePolicy.AllowRead(admin(1, 99), private))
+	assert.True(t, KnowledgeBasePolicy.AllowWrite(admin(1, 99), private))
+	assert.False(t, KnowledgeBasePolicy.AllowWrite(member(1, 42), private))
 }

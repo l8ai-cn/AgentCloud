@@ -233,6 +233,18 @@ services:
       - runner_hermes_agentcloud_config:/home/runner/.agentcloud
       - runner_hermes_config:/home/runner/.hermes
 
+  runner-pi-agent:
+    <<: *runner-common
+    build: { <<: *runner-build-base, args: { <<: *runner-build-args, AGENT_RUNTIME: pi-agent } }
+    environment: { <<: *runner-env, RUNNER_NODE_ID: dev-runner-pi, AGENT_RUNTIME: pi-agent, DEFAULT_AGENT: pi-agent }
+    volumes:
+      - ./ssl:/app/ssl:ro
+      - ./runner-entrypoint.sh:/usr/local/bin/runner-entrypoint.sh:ro
+      - ./runner-ssh:/run/runner-ssh-source:ro
+      - runner_pi_workspace:/workspace
+      - runner_pi_agentcloud_config:/home/runner/.agentcloud
+      - runner_pi_config:/home/runner/.pi
+
   runner-aider:
     <<: *runner-common
     build: { <<: *runner-build-base, args: { <<: *runner-build-args, AGENT_RUNTIME: aider, RUNTIME_BASE: python-runtime-base } }
@@ -332,6 +344,9 @@ volumes:
   runner_hermes_workspace:
   runner_hermes_agentcloud_config:
   runner_hermes_config:
+  runner_pi_workspace:
+  runner_pi_agentcloud_config:
+  runner_pi_config:
   runner_aider_workspace:
   runner_aider_agentcloud_config:
   runner_opencode_workspace:

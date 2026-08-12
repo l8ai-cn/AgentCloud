@@ -81,6 +81,7 @@ type ResourceView struct {
 type EffectiveResourceView struct {
 	Connection     ConnectionView `json:"connection"`
 	Resource       ResourceView   `json:"resource"`
+	CanUse         bool           `json:"can_use"`
 	Selectable     bool           `json:"selectable"`
 	BlockingReason BlockingReason `json:"blocking_reason,omitempty"`
 }
@@ -94,6 +95,7 @@ const (
 	BlockingConnectionInvalid   BlockingReason = "connection-invalid"
 	BlockingResourceUnchecked   BlockingReason = "resource-unchecked"
 	BlockingResourceInvalid     BlockingReason = "resource-invalid"
+	BlockingNotGranted          BlockingReason = "not-granted"
 )
 
 type ResolutionRequirements struct {

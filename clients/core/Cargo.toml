@@ -29,6 +29,7 @@ members = [
     "crates/proto/blockstore_state",
     "crates/proto/channel",
     "crates/proto/channel_state",
+    "crates/proto/entitlement",
     "crates/proto/env_bundle",
     "crates/proto/extension",
     "crates/proto/events",
@@ -96,6 +97,7 @@ blockstore_proto = { path = "crates/proto/blockstore" }
 blockstore_state_proto = { path = "crates/proto/blockstore_state" }
 channel_proto = { path = "crates/proto/channel" }
 channel_state_proto = { path = "crates/proto/channel_state" }
+entitlement_proto = { path = "crates/proto/entitlement" }
 env_bundle_proto = { path = "crates/proto/env_bundle" }
 extension_proto = { path = "crates/proto/extension" }
 events_proto = { path = "crates/proto/events" }

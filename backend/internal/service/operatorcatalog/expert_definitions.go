@@ -5,6 +5,52 @@ func Experts() []ExpertDefinition {
 	// later video/pattern experts still lack org-specific model/credential IDs.
 	return []ExpertDefinition{
 		{
+			Slug: "official-vehicle-booking-partner", Name: "公务用车助手",
+			Summary:     "按校园用车规则收集行程、完成确认与承诺，并在有凭证时提交门户任务。",
+			Description: "引导申请人完成规则同意、字段收集、摘要确认、规则校验和用车承诺，缺提交适配器时停在待凭证状态。",
+			Category:    "education", Icon: "car",
+			Tags:     []string{"education", "campus", "operations", "booking"},
+			Outcomes: []string{"申请摘要", "规则检查", "承诺记录", "提交任务", "质检报告"},
+			SkillSlugs: []string{
+				"official-vehicle-booking",
+			},
+			Prompt:         "Run one official vehicle booking as a durable workspace. Enforce HITL gates in order, keep portal credentials out of the log, and never claim a campus submit without task-id poll readback.",
+			WorkerTypeSlug: "do-agent", RuntimeImageID: 5,
+			InteractionMode:    "acp",
+			ModelResourceID:    0,
+			ConfigOverrides:    map[string]any{},
+			ConfigDocumentRefs: map[string]string{"settings": "do-agent-settings"},
+			LaunchEnv: []LaunchEnvDeclaration{
+				{Name: "VEHICLE_BOOKING_SUBMIT_URL"},
+				{Name: "VEHICLE_BOOKING_API_KEY", Secret: true},
+				{Name: "CAMPUS_PORTAL_USERNAME", Secret: true},
+				{Name: "CAMPUS_PORTAL_PASSWORD", Secret: true},
+			},
+		},
+		{
+			Slug: "campus-daily-brief-partner", Name: "校园日报伙伴",
+			Summary:     "把校园新闻与通知做成工作日双主持人短播，并在有凭证时合成音频。",
+			Description: "按收听日计算新闻窗口、包装开场白与稿件、写出可朗读脚本；缺 TTS 或新闻源时交付脚本并标记待凭证。",
+			Category:    "education", Icon: "newspaper",
+			Tags:     []string{"education", "campus", "news", "podcast"},
+			Outcomes: []string{"新闻窗口", "稿件原文", "播客脚本", "音频成片", "质检报告"},
+			SkillSlugs: []string{
+				"campus-daily-brief",
+			},
+			Prompt:         "Produce one weekday campus daily brief. Preserve the packaged opening, cover every article, keep adapter secrets out of the workspace, and do not claim audio or fetch success without the matching artifact.",
+			WorkerTypeSlug: "do-agent", RuntimeImageID: 5,
+			InteractionMode:    "acp",
+			ModelResourceID:    0,
+			ConfigOverrides:    map[string]any{},
+			ConfigDocumentRefs: map[string]string{"settings": "do-agent-settings"},
+			LaunchEnv: []LaunchEnvDeclaration{
+				{Name: "CAMPUS_NEWS_SOURCE_URL"},
+				{Name: "CAMPUS_NEWS_API_KEY", Secret: true},
+				{Name: "CAMPUS_TTS_API_KEY", Secret: true},
+				{Name: "CAMPUS_AUDIO_STORE_URL"},
+			},
+		},
+		{
 			Slug: "learning-companion-partner", Name: "AI 学伴",
 			Summary:     "为单个学生持续维护知识图谱、掌握度和练习复盘的学习伙伴。",
 			Description: "沉淀学习资料、构建分层知识图谱、推荐学习路径、生成与批改练习，并留存成长证据。",

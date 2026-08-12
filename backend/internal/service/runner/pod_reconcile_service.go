@@ -148,6 +148,10 @@ func (r *PodReconcileService) reconcileMissingPods(ctx context.Context, runnerID
 		}
 
 		pc.clearMissCount(p.PodKey)
+		if p.InteractionMode == agentpod.InteractionModeACP {
+			r.markMissingACPPodFailed(ctx, runnerID, p, now, missCount)
+			continue
+		}
 		if err := pc.podStore.MarkOrphaned(ctx, p, now); err != nil {
 			pc.logger.Error("failed to mark pod as orphaned",
 				"pod_key", p.PodKey, "error", err)
@@ -158,6 +162,36 @@ func (r *PodReconcileService) reconcileMissingPods(ctx context.Context, runnerID
 			pc.notifyStatusChange(p.PodKey, agentpod.StatusOrphaned, "")
 		}
 	}
+}
+
+func (r *PodReconcileService) markMissingACPPodFailed(
+	ctx context.Context,
+	runnerID int64,
+	p *agentpod.Pod,
+	now time.Time,
+	missCount int,
+) {
+	pc := r.pc
+	message := "ACP pod disappeared from runner heartbeat; active ACP sessions cannot be recovered by poddaemon"
+	rowsAffected, err := pc.podStore.UpdateTerminatedIfActive(ctx, p.PodKey, map[string]interface{}{
+		"agent_status":  agentpod.AgentStatusIdle,
+		"status":        agentpod.StatusError,
+		"error_code":    errCodeACPSessionLost,
+		"error_message": message,
+		"finished_at":   now,
+	}, errCodeACPSessionLost)
+	if err != nil {
+		pc.logger.Error("failed to mark missing ACP pod as error",
+			"pod_key", p.PodKey, "error", err)
+		return
+	}
+	if rowsAffected == 0 {
+		return
+	}
+	pc.podRouter.UnregisterPod(p.PodKey)
+	pc.notifyStatusChange(p.PodKey, agentpod.StatusError, "")
+	pc.logger.Warn("ACP pod marked as error (not reported by runner)",
+		"pod_key", p.PodKey, "runner_id", runnerID, "miss_count", missCount)
 }
 
 func (r *PodReconcileService) syncPodCount(ctx context.Context, runnerID int64, reportedPods map[string]bool) {

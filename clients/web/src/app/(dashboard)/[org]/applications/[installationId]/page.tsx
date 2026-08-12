@@ -1,4 +1,4 @@
-import { ApplicationsPage } from "@/components/applications/ApplicationsPage";
+import { ApplicationExpertRedirect } from "@/components/applications/ApplicationExpertRedirect";
 
 export default async function ApplicationFirstRunRoute({
   params,
@@ -6,5 +6,5 @@ export default async function ApplicationFirstRunRoute({
   params: Promise<{ org: string; installationId: string }>;
 }) {
   const { org, installationId } = await params;
-  return <ApplicationsPage orgSlug={org} installationID={installationId} />;
+  return <ApplicationExpertRedirect orgSlug={org} installationID={installationId} />;
 }

@@ -59,6 +59,7 @@ function fromProtoMcp(m: ProtoMcpMarketItem): McpMarketItem {
     default_args: defaultArgs,
     default_http_url: m.defaultHttpUrl,
     env_var_schema: envVarSchema,
+    agent_filter: m.agentFilter.length > 0 ? [...m.agentFilter] : undefined,
     category: m.category,
     source: m.source || undefined,
     registry_name: m.registryName || undefined,

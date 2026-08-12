@@ -13,8 +13,9 @@
       "knowledge": "知识库",
       "blocks": "区块",
       "infra": "基础设施",
-      "marketplace": "市场",
+      "marketplace": "应用市场",
       "skills": "Skill 市场",
+      "connections": "连接市场",
       "repositories": "仓库",
       "runners": "集群",
       "settings": "设置",
@@ -333,9 +334,21 @@
       },
       "skills": {
         "description": "浏览并安装 Agent 可用的 Skill",
-        "browse": "浏览应用市场",
+        "browse": "浏览 Skill 市场",
+        "mine": "我的 Skill",
         "manageRegistries": "管理注册表",
         "hint": "将 Skill 安装到仓库后，即可在环境中使用"
+      },
+      "marketplace": {
+        "description": "为当前组织发现并启用开箱即用的伙伴应用。",
+        "browse": "浏览应用专区",
+        "hint": "启用前会展示权限、运行要求与市场额度。"
+      },
+      "connections": {
+        "description": "浏览并安装 MCP 连接器，管理本组织已启用的连接。",
+        "browse": "浏览连接市场",
+        "mine": "我的连接",
+        "hint": "连接器启用后，可在 Worker 中作为 MCP 工具使用。"
       }
     }
   },

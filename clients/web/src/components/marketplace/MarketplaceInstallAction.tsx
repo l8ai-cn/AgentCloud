@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, Loader2, RefreshCw, Settings2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ interface MarketplaceInstallActionProps {
 }
 
 export function MarketplaceInstallAction(props: MarketplaceInstallActionProps) {
+  const t = useTranslations("marketplace");
   const [installing, setInstalling] = useState(false);
   const runtime = useMarketplaceInstallResources(
     props.orgSlug,
@@ -47,7 +49,7 @@ export function MarketplaceInstallAction(props: MarketplaceInstallActionProps) {
         result.already_installed,
       );
     } catch {
-      toast.error("启用失败，请稍后重试");
+      toast.error(t("installFailed"));
     } finally {
       setInstalling(false);
     }
@@ -55,20 +57,16 @@ export function MarketplaceInstallAction(props: MarketplaceInstallActionProps) {
 
   if (runtime.error) {
     return (
-      <Button
-        className="w-full gap-2"
-        variant="outline"
-        onClick={runtime.reload}
-      >
+      <Button className="w-full gap-2" variant="outline" onClick={runtime.reload}>
         <RefreshCw className="h-4 w-4" />
-        重新加载模型
+        {t("reloadModels")}
       </Button>
     );
   }
   if (!runtime.loading && !runtime.orgSlug) {
     return (
       <Button className="w-full gap-2" onClick={props.onNeedsOrganization}>
-        创建组织后启用
+        {t("createOrgToEnable")}
         <ArrowRight className="h-4 w-4" />
       </Button>
     );
@@ -78,12 +76,10 @@ export function MarketplaceInstallAction(props: MarketplaceInstallActionProps) {
       <Button
         className="w-full gap-2"
         variant="outline"
-        onClick={() =>
-          runtime.orgSlug && props.onConfigureResources(runtime.orgSlug)
-        }
+        onClick={() => runtime.orgSlug && props.onConfigureResources(runtime.orgSlug)}
       >
         <Settings2 className="h-4 w-4" />
-        配置兼容模型
+        {t("configureCompatibleModel")}
       </Button>
     );
   }
@@ -98,9 +94,9 @@ export function MarketplaceInstallAction(props: MarketplaceInstallActionProps) {
         onValueChange={runtime.setModelID}
         disabled={runtime.loading || installing}
       >
-        <SelectTrigger aria-label="选择运行模型" className="h-10">
+        <SelectTrigger aria-label={t("selectRuntimeModel")} className="h-10">
           <span className={selectedLabel ? "" : "text-muted-foreground"}>
-            {runtime.loading ? "正在加载模型" : selectedLabel || "选择运行模型"}
+            {runtime.loading ? t("loadingModels") : selectedLabel || t("selectRuntimeModel")}
           </span>
         </SelectTrigger>
         <SelectContent>
@@ -123,7 +119,7 @@ export function MarketplaceInstallAction(props: MarketplaceInstallActionProps) {
         disabled={installing || runtime.loading || !runtime.selectionComplete}
       >
         {installing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-        {installing ? "正在启用" : "立即启用"}
+        {installing ? t("enabling") : t("enableNow")}
         {!installing ? <ArrowRight className="h-4 w-4" /> : null}
       </Button>
     </div>

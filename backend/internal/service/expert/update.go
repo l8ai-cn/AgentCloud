@@ -51,6 +51,11 @@ func (s *Service) updateExpert(
 	if err := applyExpertUpdate(row, req); err != nil {
 		return nil, err
 	}
+	if before.AgentSlug != row.AgentSlug {
+		if err := s.requireWorkerType(ctx, req.OrganizationID, 0, row.AgentSlug); err != nil {
+			return nil, err
+		}
+	}
 	createdSnapshotID, err := s.refreshExpertWorkerSpec(ctx, &before, row)
 	if err != nil {
 		return nil, err

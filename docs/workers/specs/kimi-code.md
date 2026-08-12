@@ -11,7 +11,9 @@
 
 ## Runtime image
 
-not present in runtime catalog lock
+`kimi-code-stable` enabled=true availability=locked_available
+
+`repo.aiedulab.cn:8443/agentsmesh/runner-kimi-code@sha256:e369d5cad81e0170cb796015831f6aa958edf8ccfadd774a3eb41efbf9c2dbc2`
 
 ## CONFIG fields
 

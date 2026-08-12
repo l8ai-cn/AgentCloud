@@ -24,6 +24,7 @@ func toProtoKnowledgeBase(kb *knowledgebase.KnowledgeBase) *kbv1.KnowledgeBase {
 		SourceConfigJson: kbservice.RedactedSourceConfigJSON(kb.SourceConfig),
 		SyncStatus:       kb.SyncStatus,
 		CreatedByUserId:  kb.CreatedByUserID,
+		Visibility:       kb.Visibility,
 		CreatedAt:        kb.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt:        kb.UpdatedAt.UTC().Format(time.RFC3339),
 	}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/l8ai-cn/agentcloud/backend/internal/domain/grant"
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/knowledgebase"
 	"gorm.io/gorm"
 )
@@ -47,11 +48,21 @@ func (r *knowledgeBaseRepo) GetBySlug(ctx context.Context, orgID int64, slug str
 	return &kb, nil
 }
 
+const kbVisibilityWithGrantsFilter = "(visibility = 'organization' OR (visibility = 'private' AND created_by_user_id = ?) OR CAST(id AS TEXT) IN (SELECT resource_id FROM resource_grants WHERE resource_type = ? AND user_id = ? AND organization_id = ?))"
+
+func (r *knowledgeBaseRepo) applyVisibility(query *gorm.DB, orgID, userID int64) *gorm.DB {
+	if userID == 0 {
+		return query
+	}
+	return query.Where(kbVisibilityWithGrantsFilter, userID, grant.TypeKnowledgeBase, userID, orgID)
+}
+
 func (r *knowledgeBaseRepo) List(ctx context.Context, filter *knowledgebase.ListFilter) ([]*knowledgebase.KnowledgeBase, error) {
 	query := r.db.WithContext(ctx).Where("organization_id = ?", filter.OrganizationID)
 	if filter.SourceType != "" {
 		query = query.Where("source_type = ?", filter.SourceType)
 	}
+	query = r.applyVisibility(query, filter.OrganizationID, filter.VisibilityUserID)
 	var kbs []*knowledgebase.KnowledgeBase
 	err := query.Order("created_at DESC").Find(&kbs).Error
 	return kbs, err
@@ -66,14 +77,16 @@ func (r *knowledgeBaseRepo) ListExternal(ctx context.Context) ([]*knowledgebase.
 	return kbs, err
 }
 
-func (r *knowledgeBaseRepo) ListBySlugs(ctx context.Context, orgID int64, slugs []string) ([]*knowledgebase.KnowledgeBase, error) {
+func (r *knowledgeBaseRepo) ListBySlugs(ctx context.Context, orgID int64, slugs []string, visibilityUserID int64) ([]*knowledgebase.KnowledgeBase, error) {
 	if len(slugs) == 0 {
 		return nil, nil
 	}
+	query := r.applyVisibility(
+		r.db.WithContext(ctx).Where("organization_id = ? AND slug IN ?", orgID, slugs),
+		orgID, visibilityUserID,
+	)
 	var kbs []*knowledgebase.KnowledgeBase
-	err := r.db.WithContext(ctx).
-		Where("organization_id = ? AND slug IN ?", orgID, slugs).
-		Find(&kbs).Error
+	err := query.Find(&kbs).Error
 	return kbs, err
 }
 

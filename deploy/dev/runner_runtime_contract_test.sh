@@ -26,11 +26,13 @@ grep -q "AGENT_RUNTIME: grok-build" docker-compose.runners.yml
 grep -q "AGENT_RUNTIME: minimax-cli" docker-compose.runners.yml
 grep -q "AGENT_RUNTIME: openclaw" docker-compose.runners.yml
 grep -q "AGENT_RUNTIME: hermes" docker-compose.runners.yml
+grep -q "AGENT_RUNTIME: pi-agent" docker-compose.runners.yml
 grep -q "runner-do-agent" docker-compose.runners.yml
 grep -q "runner-grok-build" docker-compose.runners.yml
 grep -q "runner-minimax-cli" docker-compose.runners.yml
 grep -q "runner-openclaw" docker-compose.runners.yml
 grep -q "runner-hermes" docker-compose.runners.yml
+grep -q "runner-pi-agent" docker-compose.runners.yml
 grep -q "runner-openclaw" ../kubernetes/local/runners-workloads.yaml
 grep -q "runner-hermes" ../kubernetes/local/runners-workloads.yaml
 grep -q "runner-minimax-cli" ../kubernetes/local/runners-workloads.yaml
@@ -44,6 +46,10 @@ grep -q 'npm install -g "mmx-cli@${MINIMAX_CLI_VERSION}"' "$DOCKERFILE"
 grep -q 'npm install -g "openclaw@${OPENCLAW_VERSION}"' "$DOCKERFILE"
 grep -q "hermes-agent" "$DOCKERFILE"
 grep -q "HERMES_AGENT_VERSION" "$DOCKERFILE"
+grep -q "@earendil-works/pi-coding-agent" "$DOCKERFILE"
+grep -q "PI_CODING_AGENT_VERSION" "$DOCKERFILE"
+grep -q "pi-agent-wrapper.sh" "$DOCKERFILE"
+grep -q "pi-agent-wrapper.sh" lib/host_services_lite.sh
 grep -q "runner-claude-code" docker-compose.runners.yml
 grep -q "runner-codex-cli" docker-compose.runners.yml
 grep -q "runner-cursor-cli" docker-compose.runners.yml

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/l8ai-cn/agentcloud/runner/internal/acp"
 	"github.com/google/uuid"
+	"github.com/l8ai-cn/agentcloud/runner/internal/acp"
 )
 
 const rpcTimeout = 30 * time.Second
@@ -76,10 +76,13 @@ func (t *transport) SendPrompt(sessionID, prompt string) error {
 		resp, err := t.tracker.WaitPromptResponse(pr)
 		if err != nil {
 			t.logger.Error("prompt response error", "error", err)
+			t.emitPromptError(fmt.Errorf("prompt response error: %w", err))
 			return
 		}
 		if resp.Error != nil {
 			t.logger.Error("prompt error", "code", resp.Error.Code, "message", resp.Error.Message)
+			t.emitPromptError(fmt.Errorf("prompt error: code=%d msg=%s", resp.Error.Code, resp.Error.Message))
+			return
 		}
 		if t.callbacks.OnStateChange != nil {
 			t.callbacks.OnStateChange(acp.StateIdle)
@@ -87,6 +90,15 @@ func (t *transport) SendPrompt(sessionID, prompt string) error {
 	}()
 
 	return nil
+}
+
+func (t *transport) emitPromptError(err error) {
+	if t.callbacks.OnError != nil {
+		t.callbacks.OnError(err)
+	}
+	if t.callbacks.OnStateChange != nil {
+		t.callbacks.OnStateChange(acp.StateIdle)
+	}
 }
 
 func (t *transport) CancelSession(sessionID string) error {

@@ -1,35 +1,9 @@
 import Link from "next/link";
-import {
-  AppWindow,
-  BadgeCheck,
-  Blocks,
-  Database,
-  PlugZap,
-  type LucideIcon,
-} from "lucide-react";
+import { AppWindow, BadgeCheck } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-import type {
-  MarketplaceListingSummary,
-  MarketplaceResourceType,
-} from "@/lib/marketplace/catalog-api";
-import {
-  formatMarketplaceCredits,
-  marketplaceTypeLabels,
-} from "@/lib/marketplace/presentation";
-
-const icons: Record<MarketplaceResourceType, LucideIcon> = {
-  application: AppWindow,
-  skill: Blocks,
-  mcp_connector: PlugZap,
-  resource: Database,
-};
-
-const iconStyles: Record<MarketplaceResourceType, string> = {
-  application: "bg-primary/10 text-primary",
-  skill: "bg-info-bg text-info",
-  mcp_connector: "bg-warning-bg text-warning",
-  resource: "bg-secondary text-foreground",
-};
+import type { MarketplaceListingSummary } from "@/lib/marketplace/catalog-api";
+import { formatMarketplaceCredits } from "@/lib/marketplace/presentation";
 
 export function MarketplaceListingCard({
   listing,
@@ -38,18 +12,17 @@ export function MarketplaceListingCard({
   listing: MarketplaceListingSummary;
   orgSlug: string;
 }) {
-  const Icon = icons[listing.resource_type];
+  const t = useTranslations("marketplace");
   const credits = formatMarketplaceCredits(listing.quota);
+  const spaceName = listing.spaces[0]?.name ?? t("unassignedSpace");
 
   return (
     <article className="flex min-h-64 flex-col rounded-xl border border-border bg-surface-raised p-5 shadow-[var(--shadow-soft)]">
       <div className="flex items-center justify-between gap-3">
-        <span className={`rounded-lg p-2.5 ${iconStyles[listing.resource_type]}`}>
-          <Icon className="h-5 w-5" />
+        <span className="rounded-lg bg-primary/10 p-2.5 text-primary">
+          <AppWindow className="h-5 w-5" />
         </span>
-        <span className="text-xs font-medium text-muted-foreground">
-          {marketplaceTypeLabels[listing.resource_type]}
-        </span>
+        <span className="text-xs font-medium text-muted-foreground">{spaceName}</span>
       </div>
       <div className="flex-1 pt-6">
         <h2 className="text-lg font-semibold text-foreground">{listing.display_name}</h2>
@@ -61,19 +34,16 @@ export function MarketplaceListingCard({
           {listing.publisher.verified ? (
             <span className="inline-flex items-center gap-1 text-success">
               <BadgeCheck className="h-3.5 w-3.5" />
-              已认证
+              {t("verified")}
             </span>
           ) : null}
         </div>
-        <div className="flex items-center justify-between gap-3">
-          <span>{listing.spaces[0]?.name ?? "未分配专区"}</span>
-        </div>
-        {credits ? <p>{credits}</p> : null}
+        {credits ? <p>{t("credits", { amount: credits })}</p> : null}
         <Link
           href={`/${orgSlug}/marketplace/${listing.slug}`}
           className="inline-flex pt-1 text-sm font-medium text-primary hover:text-primary/80"
         >
-          查看详情
+          {t("viewDetails")}
         </Link>
       </div>
     </article>

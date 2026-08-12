@@ -10,12 +10,14 @@ import runners from "@/messages/en/runners.json";
 import docs from "@/messages/en/docs.json";
 import content from "@/messages/en/content.json";
 import extensions from "@/messages/en/extensions.json";
+import connections from "@/messages/en/connections.json";
 import workflows from "@/messages/en/workflows.json";
 import channels from "@/messages/en/channels.json";
 import blockstore from "@/messages/en/blockstore.json";
 import infra from "@/messages/en/infra.json";
 import automation from "@/messages/en/automation.json";
 import experts from "@/messages/en/experts.json";
+import marketplace from "@/messages/en/marketplace.json";
 import partnerProfile from "@/messages/en/partner-profile.json";
 import partnerStatistics from "@/messages/en/partner-statistics.json";
 import resourceOrchestration from "@/messages/en/resource-orchestration.json";
@@ -34,12 +36,14 @@ type Messages = typeof common &
   typeof docs &
   typeof content &
   typeof extensions &
+  typeof connections &
   typeof workflows &
   typeof channels &
   typeof blockstore &
   typeof infra &
   typeof automation &
   typeof experts &
+  typeof marketplace &
   typeof partnerProfile &
   typeof partnerStatistics &
   typeof resourceOrchestration &

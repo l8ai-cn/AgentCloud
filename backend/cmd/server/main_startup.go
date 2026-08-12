@@ -68,6 +68,7 @@ func initPKIAndGRPCWiring(
 		GoalLoopService:      services.goalLoop,
 		BlockstoreService:    services.blockstore,
 		KnowledgebaseService: services.knowledgeBase,
+		GrantService:         services.grant,
 		WorkerPlanAuthorizer: services.orchestration,
 		WorkerPlanApplier:    services.workerApply,
 	}

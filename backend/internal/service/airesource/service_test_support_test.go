@@ -384,6 +384,7 @@ type fixture struct {
 	mutations *memoryMutationRunner
 	members   *memberReader
 	cipher    *crypto.Encryptor
+	grants    *memoryGrantQuerier
 }
 
 func newFixture() fixture {
@@ -394,11 +395,12 @@ func newFixture() fixture {
 	mutations := &memoryMutationRunner{repo: repo, audit: recorder}
 	members := &memberReader{members: map[[2]int64]string{{10, 1}: organization.RoleOwner, {10, 2}: organization.RoleAdmin, {10, 3}: organization.RoleMember}}
 	cipher := crypto.NewEncryptor("ai-resource-service-test-key")
-	service, err := NewService(Dependencies{Repository: repo, Cipher: cipher, Members: members, Prober: prober, Lister: lister, Mutations: mutations, Endpoints: allowingEndpoints{}})
+	grants := newMemoryGrantQuerier()
+	service, err := NewService(Dependencies{Repository: repo, Cipher: cipher, Members: members, Prober: prober, Lister: lister, Mutations: mutations, Endpoints: allowingEndpoints{}, Grants: grants})
 	if err != nil {
 		panic(err)
 	}
-	return fixture{service: service, repo: repo, prober: prober, lister: lister, audit: recorder, mutations: mutations, members: members, cipher: cipher}
+	return fixture{service: service, repo: repo, prober: prober, lister: lister, audit: recorder, mutations: mutations, members: members, cipher: cipher, grants: grants}
 }
 
 func actor(userID int64) Actor { return Actor{UserID: userID, CorrelationID: "request-123"} }

@@ -11,6 +11,7 @@ import (
 	specdomain "github.com/l8ai-cn/agentcloud/backend/internal/domain/workerspec"
 	"github.com/l8ai-cn/agentcloud/backend/internal/service/workerdefinition"
 	specservice "github.com/l8ai-cn/agentcloud/backend/internal/service/workerspec"
+	extensionservice "github.com/l8ai-cn/agentcloud/backend/internal/service/extension"
 	"github.com/l8ai-cn/agentcloud/backend/pkg/slugkit"
 )
 
@@ -37,6 +38,9 @@ type workspaceResolverDeps struct {
 	EnvBundles   EnvBundleLookup
 	Definitions  WorkerDefinitionProvider
 	Commits      WorkspaceCommitResolver
+	Entitlements extensionservice.SkillEntitlementGate
+	Grants       SkillGrantReader
+	MemberRoles  MemberRoleReader
 }
 
 type workspaceResolver struct {

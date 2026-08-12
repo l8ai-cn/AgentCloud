@@ -17,6 +17,8 @@ const (
 	ErrCodePrepareScript   = "PREPARE_SCRIPT_FAILED"
 	ErrCodePTYError        = "PTY_READ_ERROR"
 	ErrCodeAgentfileEval   = "AGENTFILE_EVAL_FAILED"
+	ErrCodeACPPromptFailed = "ACP_PROMPT_FAILED"
+	ErrCodeACPTurnStalled  = "ACP_TURN_STALLED"
 )
 
 // PodError represents an error that occurred during pod operations.

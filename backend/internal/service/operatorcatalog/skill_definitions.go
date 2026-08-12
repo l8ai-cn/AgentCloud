@@ -111,5 +111,17 @@ func skillDefinitions() []SkillDefinition {
 			License:     "Proprietary",
 			Tags:        []string{"education", "lab", "coding", "experiment"},
 		},
+		{
+			Slug: "official-vehicle-booking", Name: "公务用车申请",
+			Description: "按规则确认、信息收集、摘要确认、用车承诺和可选门户提交完成公务用车申请。",
+			License:     "Proprietary",
+			Tags:        []string{"education", "campus", "operations", "booking"},
+		},
+		{
+			Slug: "campus-daily-brief", Name: "校园日报",
+			Description: "把校园新闻与通知做成工作日双主持人短播脚本，并在有凭证时合成与存储音频。",
+			License:     "Proprietary",
+			Tags:        []string{"education", "campus", "news", "podcast"},
+		},
 	}
 }

@@ -4,25 +4,6 @@ use std::sync::Arc;
 use agentcloud_persistence::{PodRepo, StorageBackend};
 use agentcloud_types::proto_pod_v1::Pod;
 
-// PodStatus values are wire-strings from proto (proto3 stores enum status
-// as `string` field). Replace previous `agentcloud_types::PodStatus` enum
-// comparisons with string comparisons against these constants.
-pub mod pod_status {
-    pub const PENDING: &str = "pending";
-    pub const CREATING: &str = "creating";
-    pub const INITIALIZING: &str = "initializing";
-    pub const RUNNING: &str = "running";
-    pub const PAUSED: &str = "paused";
-    pub const STOPPED: &str = "stopped";
-    pub const FAILED: &str = "failed";
-    pub const TERMINATED: &str = "terminated";
-    pub const DISCONNECTED: &str = "disconnected";
-    pub const ORPHANED: &str = "orphaned";
-    pub const COMPLETED: &str = "completed";
-    pub const ERROR: &str = "error";
-    pub const UNKNOWN: &str = "unknown";
-}
-
 #[derive(Debug, Clone)]
 pub struct PodInitProgress {
     pub phase: String,

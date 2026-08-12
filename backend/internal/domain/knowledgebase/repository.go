@@ -3,8 +3,9 @@ package knowledgebase
 import "context"
 
 type ListFilter struct {
-	OrganizationID int64
-	SourceType     string
+	OrganizationID   int64
+	SourceType       string
+	VisibilityUserID int64
 }
 
 type Repository interface {
@@ -15,7 +16,7 @@ type Repository interface {
 	// ListExternal returns every KB with a non-git source type across all
 	// orgs — the sync worker's work queue.
 	ListExternal(ctx context.Context) ([]*KnowledgeBase, error)
-	ListBySlugs(ctx context.Context, orgID int64, slugs []string) ([]*KnowledgeBase, error)
+	ListBySlugs(ctx context.Context, orgID int64, slugs []string, visibilityUserID int64) ([]*KnowledgeBase, error)
 	Update(ctx context.Context, orgID, id int64, updates map[string]any) error
 	Delete(ctx context.Context, orgID, id int64) error
 	SlugExists(ctx context.Context, orgID int64, slug string) (bool, error)

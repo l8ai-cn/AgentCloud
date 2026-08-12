@@ -17,6 +17,7 @@ export type ActivityType =
   | "infra"
   | "marketplace"
   | "skills"
+  | "connections"
   | "repositories"
   | "runners"
   | "settings";

@@ -1,10 +1,15 @@
+import type { StoreApi } from "zustand";
 import type { PodData } from "@/lib/api";
+import { ACTIVE_POD_STATUSES, FINISHED_POD_STATUSES } from "@/lib/pod-status";
 
 export type Pod = PodData;
 
+// The two sidebar tabs are the two halves of the lifecycle — still working vs
+// nothing more will happen. Derived from the generated groups so a new status
+// can't land in neither tab (a queued Worker used to vanish this way).
 export const SIDEBAR_STATUS_MAP: Record<string, string> = {
-  running: "running,initializing",
-  stopped: "terminated,failed,paused,completed,error,orphaned",
+  running: ACTIVE_POD_STATUSES.join(","),
+  stopped: FINISHED_POD_STATUSES.join(","),
 };
 export const SIDEBAR_PAGE_SIZE = 20;
 
@@ -45,3 +50,8 @@ export interface PodState {
   clearInitProgress: (podKey: string) => void;
   clearError: () => void;
 }
+
+// Action groups are built by factories in the pod*Actions modules so the store
+// file stays a composition root instead of a 400-line god object.
+export type PodSet = StoreApi<PodState>["setState"];
+export type PodGet = StoreApi<PodState>["getState"];

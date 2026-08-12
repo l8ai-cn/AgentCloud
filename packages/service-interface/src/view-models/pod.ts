@@ -1,6 +1,8 @@
 // Pod ViewModels — UI-side projection of `proto.pod.v1.Pod`. Owned in this
 // zero-dep contract layer so Web projections share one definition.
 
+import type { PodStatus } from "./pod-status.gen";
+
 // Interaction mode — mirrors agentfile.ModePTY / agentfile.ModeACP. The
 // POD_MODE_PTY / POD_MODE_ACP value constants stay in clients/web's
 // lib/pod-modes.ts (which now re-exports this type).
@@ -9,7 +11,7 @@ export type PodMode = "pty" | "acp";
 export interface PodData {
   id?: number;
   pod_key: string;
-  status: "initializing" | "running" | "paused" | "disconnected" | "orphaned" | "completed" | "terminated" | "error" | "failed";
+  status: PodStatus;
   agent_status?: string;
   prompt?: string;
   branch_name?: string;

@@ -64,6 +64,8 @@ ARG HERMES_AGENT_VERSION=0.18.2
 ARG KIMI_CODE_VERSION=0.29.0
 ARG MINIMAX_CLI_VERSION=1.0.16
 ARG OPENCLAW_VERSION=2026.6.11
+ARG PI_CODING_AGENT_VERSION=0.84.1
+ARG PI_ACP_VERSION=0.0.33
 ARG REMOTION_VERSION=4.0.377
 ENV AGENT_RUNTIME=${AGENT_RUNTIME} \
     CHROME_BIN=/usr/bin/chromium
@@ -132,6 +134,10 @@ RUN install_apt() { \
       hermes) \
         install_apt python3 python3-pip \
         && PIP_BREAK_SYSTEM_PACKAGES=1 npm install -g "hermes-agent@${HERMES_AGENT_VERSION}" ;; \
+      pi-agent) \
+        npm install -g \
+          "@earendil-works/pi-coding-agent@${PI_CODING_AGENT_VERSION}" \
+          "pi-acp@${PI_ACP_VERSION}" ;; \
       aider) \
         pip3 install --no-cache-dir aider-chat ;; \
       do-agent) \
@@ -170,6 +176,7 @@ RUN groupmod -n runner node \
          grok-build) mkdir -p /home/runner/.grok ;; \
          openclaw) mkdir -p /home/runner/.openclaw ;; \
          hermes) mkdir -p /home/runner/.hermes ;; \
+         pi-agent) mkdir -p /home/runner/.pi/agent ;; \
          e2e-echo) true ;; \
        esac \
     && chown -R runner:runner /workspace /app /home/runner \
@@ -180,6 +187,7 @@ COPY --chmod=0755 binaries/ /usr/local/lib/agent-cloud/
 COPY --chmod=0755 runner-entrypoint.sh /usr/local/bin/runner-entrypoint.sh
 COPY --chmod=0755 runner-ssh-bootstrap.sh /usr/local/lib/runner-ssh-bootstrap.sh
 COPY --chmod=0755 minimax-cli-wrapper.sh /usr/local/bin/minimax-cli-wrapper.sh
+COPY --chmod=0755 pi-agent-wrapper.sh /usr/local/bin/pi-agent-wrapper.sh
 
 ARG AGENT_RUNTIME=e2e-echo
 
@@ -188,9 +196,10 @@ RUN case "${AGENT_RUNTIME}" in \
       loopal) install -m 0755 /usr/local/lib/agent-cloud/loopal-binary /usr/local/bin/loopal ;; \
       do-agent) install -m 0755 /usr/local/lib/agent-cloud/do-agent-binary /usr/local/bin/do-agent ;; \
       minimax-cli) rm -f /usr/local/bin/mmx && install -m 0755 /usr/local/bin/minimax-cli-wrapper.sh /usr/local/bin/mmx ;; \
+      pi-agent) install -m 0755 /usr/local/bin/pi-agent-wrapper.sh /usr/local/bin/pi-agent ;; \
       *) true ;; \
     esac \
-    && rm -f /usr/local/bin/minimax-cli-wrapper.sh \
+    && rm -f /usr/local/bin/minimax-cli-wrapper.sh /usr/local/bin/pi-agent-wrapper.sh \
     && rm -rf /usr/local/lib/agent-cloud
 
 FROM runtime AS do-agent-runtime

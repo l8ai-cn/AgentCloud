@@ -46,6 +46,7 @@ type Dependencies struct {
 	Lister     ModelLister
 	Mutations  MutationRunner
 	Endpoints  EndpointValidator
+	Grants     GrantQuerier
 }
 
 type Service struct {
@@ -56,6 +57,7 @@ type Service struct {
 	lister     ModelLister
 	mutations  MutationRunner
 	endpoints  EndpointValidator
+	grants     GrantQuerier
 }
 
 func NewService(deps Dependencies) (*Service, error) {
@@ -80,9 +82,12 @@ func NewService(deps Dependencies) (*Service, error) {
 	if deps.Endpoints == nil {
 		return nil, fmt.Errorf("AI resource endpoint validator is required")
 	}
+	if deps.Grants == nil {
+		return nil, fmt.Errorf("AI resource grant querier is required")
+	}
 	return &Service{
 		repository: deps.Repository, cipher: deps.Cipher, members: deps.Members, prober: deps.Prober,
-		lister: deps.Lister, mutations: deps.Mutations, endpoints: deps.Endpoints,
+		lister: deps.Lister, mutations: deps.Mutations, endpoints: deps.Endpoints, grants: deps.Grants,
 	}, nil
 }
 

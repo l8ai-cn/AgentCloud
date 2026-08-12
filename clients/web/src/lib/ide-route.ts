@@ -2,12 +2,37 @@ import type { ActivityType } from "@/stores/ide";
 
 const STANDALONE_ROUTE_SEGMENTS = new Set(["api-access", "automation", "knowledge-base", "workers"]);
 
+const ACTIVITY_PATH: Record<ActivityType, string> = {
+  workspace: "workspace",
+  tickets: "tickets",
+  channels: "channels",
+  mesh: "mesh",
+  loops: "loops",
+  workflows: "workflows",
+  experts: "experts",
+  automation: "automation",
+  apiAccess: "api-access",
+  knowledge: "knowledge-base",
+  blocks: "blocks",
+  infra: "infra?tab=runners",
+  marketplace: "marketplace",
+  skills: "skills",
+  connections: "connections",
+  repositories: "repositories",
+  runners: "runners",
+  settings: "settings",
+};
+
 export function pathSegments(pathname: string): string[] {
   return pathname.split("/").filter(Boolean);
 }
 
 export function pathHasSegment(pathname: string, segment: string): boolean {
   return pathSegments(pathname).includes(segment);
+}
+
+export function activityRoute(orgSlug: string, activity: ActivityType): string {
+  return `/${orgSlug}/${ACTIVITY_PATH[activity]}`;
 }
 
 export function resolveActivityFromPathname(pathname: string): ActivityType | null {
@@ -19,6 +44,7 @@ export function resolveActivityFromPathname(pathname: string): ActivityType | nu
   if (pathHasSegment(pathname, "loops")) return "loops";
   if (pathHasSegment(pathname, "workflows")) return "workflows";
   if (pathHasSegment(pathname, "partner-statistics")) return "experts";
+  if (pathHasSegment(pathname, "applications")) return "experts";
   if (pathHasSegment(pathname, "experts")) return "experts";
   if (pathHasSegment(pathname, "automation")) return "automation";
   if (pathHasSegment(pathname, "api-access")) return "apiAccess";
@@ -29,6 +55,7 @@ export function resolveActivityFromPathname(pathname: string): ActivityType | nu
   if (pathHasSegment(pathname, "runners")) return "runners";
   if (pathHasSegment(pathname, "marketplace")) return "marketplace";
   if (pathHasSegment(pathname, "skills")) return "skills";
+  if (pathHasSegment(pathname, "connections")) return "connections";
   if (pathHasSegment(pathname, "settings")) return "settings";
   return null;
 }

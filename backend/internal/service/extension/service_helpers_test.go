@@ -42,6 +42,9 @@ type svcMockRepo struct {
 	updateInstalledSkillFn func(ctx context.Context, skill *extension.InstalledSkill) error
 	deleteInstalledSkillFn func(ctx context.Context, id int64) error
 	getEffectiveSkillsFn   func(ctx context.Context, orgID, userID, repoID int64) ([]*extension.InstalledSkill, error)
+
+	listUserInstalledMcpServersFn func(ctx context.Context, orgID, userID int64) ([]*extension.UserInstalledMcpServer, error)
+	listUserInstalledSkillsFn     func(ctx context.Context, orgID, userID int64) ([]*extension.UserInstalledSkill, error)
 }
 
 func (m *svcMockRepo) ListMcpMarketItems(ctx context.Context, query string, category string, limit, offset int) ([]*extension.McpMarketItem, int64, error) {
@@ -158,6 +161,24 @@ func (m *svcMockRepo) GetEffectiveSkills(ctx context.Context, orgID, userID, rep
 	return nil, nil
 }
 
+func (m *svcMockRepo) ListUserInstalledMcpServers(
+	ctx context.Context, orgID, userID int64,
+) ([]*extension.UserInstalledMcpServer, error) {
+	if m.listUserInstalledMcpServersFn != nil {
+		return m.listUserInstalledMcpServersFn(ctx, orgID, userID)
+	}
+	return nil, nil
+}
+
+func (m *svcMockRepo) ListUserInstalledSkills(
+	ctx context.Context, orgID, userID int64,
+) ([]*extension.UserInstalledSkill, error) {
+	if m.listUserInstalledSkillsFn != nil {
+		return m.listUserInstalledSkillsFn(ctx, orgID, userID)
+	}
+	return nil, nil
+}
+
 // Compile-time assertion
 var _ extension.Repository = (*svcMockRepo)(nil)
 
@@ -258,7 +279,9 @@ var _ storage.Storage = (*svcMockStorage)(nil)
 // ---------------------------------------------------------------------------
 
 func newTestService(repo *svcMockRepo, stor *svcMockStorage, enc *crypto.Encryptor) *Service {
-	return NewService(repo, stor, enc)
+	svc := NewService(repo, stor, enc)
+	svc.SetRepositoryAccess(allowRepositoryAccess{})
+	return svc
 }
 
 // int64Ptr returns a pointer to the given int64 value (test helper)

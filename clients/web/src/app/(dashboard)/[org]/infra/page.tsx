@@ -14,7 +14,9 @@ export default function InfraPage() {
 
   const tab = (searchParams.get("tab") as InfraTab) ?? "runners";
   const idParam = searchParams.get("id");
+  const clusterParam = searchParams.get("cluster");
   const selectedId = idParam ? Number(idParam) : NaN;
+  const selectedClusterId = clusterParam ? Number(clusterParam) : NaN;
 
   useEffect(() => {
     if (!searchParams.get("tab")) {
@@ -33,7 +35,9 @@ export default function InfraPage() {
           <RunnerSection
             orgSlug={params.org}
             selectedId={selectedId}
+            selectedClusterId={selectedClusterId}
             idMissing={!idParam}
+            clusterMissing={!clusterParam}
             onBack={handleBack}
           />
         ) : (

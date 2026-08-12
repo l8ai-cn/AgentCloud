@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fetchMarketplaceListingDetail, fetchMarketplaceListings } from "./catalog-api";
+import {
+  applicationListings,
+  fetchMarketplaceListingDetail,
+  fetchMarketplaceListings,
+} from "./catalog-api";
 
 describe("marketplace catalog API", () => {
   beforeEach(() => {
@@ -8,7 +12,7 @@ describe("marketplace catalog API", () => {
     window.localStorage.clear();
   });
 
-  it("reads the catalog through the same-origin marketplace API", async () => {
+  it("requests listings filtered to partner applications", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ items: [] }), {
         status: 200,
@@ -19,11 +23,21 @@ describe("marketplace catalog API", () => {
     await fetchMarketplaceListings();
 
     expect(fetchMock).toHaveBeenCalledWith(
-      expect.stringContaining("/api/marketplace/v1/markets/agent-cloud-market/listings"),
+      expect.stringContaining("/api/marketplace/v1/markets/agent-cloud-market/listings?type=application"),
       expect.objectContaining({
         headers: expect.not.objectContaining({ Authorization: expect.anything() }),
       }),
     );
+  });
+
+  it("keeps only application listings when the catalog returns mixed types", () => {
+    expect(applicationListings([
+      { resource_type: "application", slug: "delivery" },
+      { resource_type: "skill", slug: "review" },
+      { resource_type: "mcp_connector", slug: "github" },
+    ] as never)).toEqual([
+      { resource_type: "application", slug: "delivery" },
+    ]);
   });
 
   it("encodes a listing slug before requesting its detail", async () => {

@@ -15,6 +15,7 @@ type acpMockPodIO struct {
 	respondPermReqID    string
 	respondPermApproved bool
 	cancelSessionCalled bool
+	stopCalled          bool
 }
 
 func (m *acpMockPodIO) Mode() string                              { return "acp" }
@@ -27,9 +28,11 @@ func (m *acpMockPodIO) Resize(int, int) (bool, error)             { return false
 func (m *acpMockPodIO) GetPID() int                               { return 0 }
 func (m *acpMockPodIO) CursorPosition() (int, int)                { return 0, 0 }
 func (m *acpMockPodIO) GetScreenSnapshot() string                 { return "" }
-func (m *acpMockPodIO) Stop()                                     {}
+func (m *acpMockPodIO) Stop()                                     { m.stopCalled = true }
 func (m *acpMockPodIO) Teardown() string                          { return "" }
 func (m *acpMockPodIO) SetExitHandler(func(int))                  {}
+func (m *acpMockPodIO) Start() error                              { return nil }
+func (m *acpMockPodIO) SetIOErrorHandler(func(error))             {}
 func (m *acpMockPodIO) Redraw() error                             { return nil }
 func (m *acpMockPodIO) Detach()                                   {}
 func (m *acpMockPodIO) WriteOutput([]byte)                        {}
@@ -78,5 +81,34 @@ func TestAbortACPPodStartup_RemovesPodFromStore(t *testing.T) {
 
 	if _, ok := store.Get("acp-fail"); ok {
 		t.Error("pod should be removed after failed ACP startup")
+	}
+}
+
+func TestFailACPPodStopsIOAndReportsTerminalError(t *testing.T) {
+	store := NewInMemoryPodStore()
+	conn := client.NewMockConnection()
+	handler := NewRunnerMessageHandler(&Runner{cfg: &config.Config{}}, store, conn)
+	io := &acpMockPodIO{}
+	pod := &Pod{
+		PodKey:          "acp-stalled-1",
+		InteractionMode: InteractionModeACP,
+		IO:              io,
+	}
+	store.Put(pod.PodKey, pod)
+
+	handler.failACPPod(pod.PodKey, pod, client.ErrCodeACPTurnStalled, "no progress")
+
+	if !io.stopCalled {
+		t.Fatal("ACP I/O should be stopped")
+	}
+	if _, ok := store.Get(pod.PodKey); ok {
+		t.Fatal("failed ACP pod should be removed from the store")
+	}
+	if len(conn.Events) != 2 {
+		t.Fatalf("events = %d, want error and termination", len(conn.Events))
+	}
+	errorEvent, ok := conn.Events[0].Data.(map[string]interface{})
+	if !ok || errorEvent["code"] != client.ErrCodeACPTurnStalled {
+		t.Fatalf("first event = %#v, want terminal ACP error", conn.Events[0])
 	}
 }

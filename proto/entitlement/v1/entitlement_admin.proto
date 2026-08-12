@@ -1,0 +1,82 @@
+// EntitlementAdminService — Layer 1 (catalog admission) seen from the
+// platform side: which organizations may use which worker types and
+// platform-level skills.
+//
+// Split from entitlement.proto for the same reason promocode_admin.proto is
+// split from promocode.proto — different auth surface. Every RPC here runs
+// through the system-admin check (is_system_admin + is_active); the
+// org-scoped sibling runs through ResolveOrgScope + org admin role. Sharing
+// transport plumbing would turn any drift into a privilege-escalation bug.
+//
+// subject_kind is "org" on this surface; per-member subdivision is the
+// organization admin's job (EntitlementService.GrantMemberEntitlement).
+
+syntax = "proto3";
+
+package proto.entitlement.v1;
+
+import "entitlement/v1/entitlement.proto";
+
+option go_package = "github.com/l8ai-cn/agentcloud/proto/gen/go/entitlement/v1;entitlementv1";
+
+service EntitlementAdminService {
+  rpc ListOrganizationEntitlements(ListOrganizationEntitlementsRequest) returns (ListOrganizationEntitlementsResponse);
+  rpc ListResourceEntitlements(ListResourceEntitlementsRequest) returns (ListResourceEntitlementsResponse);
+  rpc GrantEntitlement(GrantEntitlementRequest) returns (Entitlement);
+  rpc DenyEntitlement(DenyEntitlementRequest) returns (Entitlement);
+  rpc DeleteEntitlement(DeleteEntitlementRequest) returns (DeleteEntitlementResponse);
+}
+
+message ListOrganizationEntitlementsRequest {
+  int64 organization_id = 1;
+  optional string resource_kind = 2;
+}
+
+message ListOrganizationEntitlementsResponse {
+  repeated Entitlement items = 1;
+  int64 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+// ListResourceEntitlements answers "which organizations hold this worker
+// type / platform skill", so it spans organizations and has no org_slug.
+message ListResourceEntitlementsRequest {
+  string resource_kind = 1;
+  string resource_key = 2;
+}
+
+message ListResourceEntitlementsResponse {
+  repeated Entitlement items = 1;
+  int64 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GrantEntitlementRequest {
+  string resource_kind = 1;
+  string resource_key = 2;
+  int64 organization_id = 3;
+  // Omitted = org-wide admission. Set to carve a single member out of an
+  // already-admitted organization without going through the org admin.
+  optional int64 subject_user_id = 4;
+  string reason = 5;
+  optional string expires_at = 6;
+}
+
+message DenyEntitlementRequest {
+  string resource_kind = 1;
+  string resource_key = 2;
+  int64 organization_id = 3;
+  optional int64 subject_user_id = 4;
+  string reason = 5;
+  optional string expires_at = 6;
+}
+
+message DeleteEntitlementRequest {
+  int64 id = 1;
+}
+
+message DeleteEntitlementResponse {
+  string message = 1;
+}

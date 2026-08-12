@@ -33,7 +33,7 @@ ENV SIGNING_KEY SECRET OPTIONAL
 	provider.agent.AdapterID = definition.AdapterID
 	resolver := newWorkerTypeResolver(provider, staticWorkerDefinitions{
 		"codex-cli": definition,
-	})
+	}, nil, nil)
 
 	resolved, err := resolver.ResolveWorkerType(
 		context.Background(),
@@ -69,7 +69,7 @@ func TestWorkerTypeResolverRejectsAdapterProjectionDrift(t *testing.T) {
 	provider.agent.AdapterID = "different-adapter"
 	resolver := newWorkerTypeResolver(provider, staticWorkerDefinitions{
 		"codex-cli": definition,
-	})
+	}, nil, nil)
 
 	_, err := resolver.ResolveWorkerType(
 		context.Background(),

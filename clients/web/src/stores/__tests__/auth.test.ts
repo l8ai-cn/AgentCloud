@@ -5,6 +5,7 @@ import {
   readCurrentOrg,
   readOrganizations,
 } from '../auth'
+import { useWorkspaceStore } from '../workspace'
 import { getAuthManager } from '@/lib/wasm-core'
 
 const mgr = () => getAuthManager() as unknown as { _reset: () => void }
@@ -99,6 +100,19 @@ describe('useAuthStore', () => {
       expect(readCurrentUser()).toBeNull()
       expect(readCurrentOrg()).toBeNull()
       expect(readOrganizations()).toEqual([])
+    })
+
+    // Pod reads are owner-scoped, so panes left over from the previous account
+    // answered 403 on every restore for the next user of this browser.
+    it('should drop workspace panes so the next account starts clean', async () => {
+      const user = { id: 1, email: 'test@example.com', username: 'testuser' }
+      await useAuthStore.getState().setAuth('token', user)
+      useWorkspaceStore.getState().addPane('3-standalone-90f0e7e6')
+      expect(useWorkspaceStore.getState().panes).toHaveLength(1)
+
+      await useAuthStore.getState().logout()
+
+      expect(useWorkspaceStore.getState().panes).toEqual([])
     })
   })
 

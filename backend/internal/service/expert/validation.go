@@ -13,6 +13,7 @@ var (
 	ErrExpertSnapshotUpdateUnsupported = errors.New(
 		"expert update changes fields that require republishing",
 	)
+	ErrExpertWorkerTypeUnavailable = errors.New("worker type does not exist or is unavailable")
 )
 
 func validateExpertBasics(agentSlug, name string) error {

@@ -3,6 +3,7 @@ import {
   parseServiceError,
   isResourceNotFound,
   isAuthExpired,
+  isPermissionDenied,
   isPodNotConnectable,
   getErrorStatus,
   getErrorCode,
@@ -84,6 +85,15 @@ describe("typed helpers", () => {
     );
     expect(isResourceNotFound(err, "pod")).toBe(true);
     expect(isResourceNotFound(err, "Runner")).toBe(false);
+  });
+
+  it("isPermissionDenied matches the owner-scoped pod read rejection", () => {
+    const err = new Error(
+      '{"kind":"http","status":403,"code":"permission_denied","message":"forbidden"}',
+    );
+    expect(isPermissionDenied(err)).toBe(true);
+    expect(isPermissionDenied(new Error('{"kind":"http","status":404,"message":"gone"}'))).toBe(false);
+    expect(isPermissionDenied(new Error("boom"))).toBe(false);
   });
 
   it("isAuthExpired", () => {

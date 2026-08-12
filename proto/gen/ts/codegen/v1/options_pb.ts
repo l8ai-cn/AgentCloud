@@ -18,7 +18,7 @@
 
 import type { GenExtension, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { extDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
-import type { FieldOptions, FileOptions, MessageOptions } from "@bufbuild/protobuf/wkt";
+import type { EnumValueOptions, FieldOptions, FileOptions, MessageOptions } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_descriptor } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -26,7 +26,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file codegen/v1/options.proto.
  */
 export const file_codegen_v1_options: GenFile = /*@__PURE__*/
-  fileDesc("Chhjb2RlZ2VuL3YxL29wdGlvbnMucHJvdG8SEGFtZXNoLmNvZGVnZW4udjEiUAoIR29Eb21haW4SDAoEdHlwZRgBIAEoCRIZChFnZW5lcmF0ZV90b19wcm90bxgCIAEoCBIbChNnZW5lcmF0ZV9mcm9tX3Byb3RvGAMgASgIIjsKDUNvbnZlcnRUYXJnZXQSEgoKb3V0cHV0X2RpchgBIAEoCRIWCg5vdXRwdXRfcGFja2FnZRgCIAEoCTpaCglnb19kb21haW4SHy5nb29nbGUucHJvdG9idWYuTWVzc2FnZU9wdGlvbnMY0YYDIAEoCzIaLmFtZXNoLmNvZGVnZW4udjEuR29Eb21haW5SCGdvRG9tYWluOkIKDGZpZWxkX3JlbmFtZRIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYtYcDIAEoCVILZmllbGRSZW5hbWU6RQoOZmllbGRfZW51bV9tYXASHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGLaHAyABKAlSDGZpZWxkRW51bU1hcDo+CgpmaWVsZF9za2lwEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxi3hwMgASgIUglmaWVsZFNraXA6QgoMZmllbGRfY3VzdG9tEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxi4hwMgASgJUgtmaWVsZEN1c3RvbTpECg1maWVsZF9jb252ZXJ0Eh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxi5hwMgASgJUgxmaWVsZENvbnZlcnQ6ZgoOY29udmVydF90YXJnZXQSHC5nb29nbGUucHJvdG9idWYuRmlsZU9wdGlvbnMY0YYDIAEoCzIfLmFtZXNoLmNvZGVnZW4udjEuQ29udmVydFRhcmdldFINY29udmVydFRhcmdldEJBWj9naXRodWIuY29tL2w4YWktY24vYWdlbnRjbG91ZC9wcm90by9nZW4vZ28vY29kZWdlbi92MTtjb2RlZ2VudjFiBnByb3RvMw", [file_google_protobuf_descriptor]);
+  fileDesc("Chhjb2RlZ2VuL3YxL29wdGlvbnMucHJvdG8SEGFtZXNoLmNvZGVnZW4udjEiUAoIR29Eb21haW4SDAoEdHlwZRgBIAEoCRIZChFnZW5lcmF0ZV90b19wcm90bxgCIAEoCBIbChNnZW5lcmF0ZV9mcm9tX3Byb3RvGAMgASgIInoKD1BvZFN0YXR1c0dyb3VwcxIOCgZhY3RpdmUYASABKAgSEAoIdGVybWluYWwYAiABKAgSEAoIZmluaXNoZWQYAyABKAgSGQoRcmVsYXlfY29ubmVjdGFibGUYBCABKAgSGAoQcmVzdW1hYmxlX3NvdXJjZRgFIAEoCCI7Cg1Db252ZXJ0VGFyZ2V0EhIKCm91dHB1dF9kaXIYASABKAkSFgoOb3V0cHV0X3BhY2thZ2UYAiABKAk6WgoJZ29fZG9tYWluEh8uZ29vZ2xlLnByb3RvYnVmLk1lc3NhZ2VPcHRpb25zGNGGAyABKAsyGi5hbWVzaC5jb2RlZ2VuLnYxLkdvRG9tYWluUghnb0RvbWFpbjpyChFwb2Rfc3RhdHVzX2dyb3VwcxIhLmdvb2dsZS5wcm90b2J1Zi5FbnVtVmFsdWVPcHRpb25zGJmIAyABKAsyIS5hbWVzaC5jb2RlZ2VuLnYxLlBvZFN0YXR1c0dyb3Vwc1IPcG9kU3RhdHVzR3JvdXBzOkIKDGZpZWxkX3JlbmFtZRIdLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE9wdGlvbnMYtYcDIAEoCVILZmllbGRSZW5hbWU6RQoOZmllbGRfZW51bV9tYXASHS5nb29nbGUucHJvdG9idWYuRmllbGRPcHRpb25zGLaHAyABKAlSDGZpZWxkRW51bU1hcDo+CgpmaWVsZF9za2lwEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxi3hwMgASgIUglmaWVsZFNraXA6QgoMZmllbGRfY3VzdG9tEh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxi4hwMgASgJUgtmaWVsZEN1c3RvbTpECg1maWVsZF9jb252ZXJ0Eh0uZ29vZ2xlLnByb3RvYnVmLkZpZWxkT3B0aW9ucxi5hwMgASgJUgxmaWVsZENvbnZlcnQ6ZgoOY29udmVydF90YXJnZXQSHC5nb29nbGUucHJvdG9idWYuRmlsZU9wdGlvbnMY0YYDIAEoCzIfLmFtZXNoLmNvZGVnZW4udjEuQ29udmVydFRhcmdldFINY29udmVydFRhcmdldEJBWj9naXRodWIuY29tL2w4YWktY24vYWdlbnRjbG91ZC9wcm90by9nZW4vZ28vY29kZWdlbi92MTtjb2RlZ2VudjFiBnByb3RvMw", [file_google_protobuf_descriptor]);
 
 /**
  * GoDomain — message-level binding. Declares the Go domain struct this proto
@@ -80,6 +80,57 @@ export const GoDomainSchema: GenMessage<GoDomain> = /*@__PURE__*/
   messageDesc(file_codegen_v1_options, 0);
 
 /**
+ * PodStatusGroups — lifecycle classification of one `PodStatus` enum value.
+ *
+ * The pod status vocabulary and its groupings are consumed by three runtimes
+ * (Go domain, Rust client state, TS contract layer). Declaring membership here
+ * makes this file the SSOT; `tools/pod-status-codegen` emits the per-language
+ * constants and predicates from these annotations.
+ *
+ * Group semantics (see proto/pod/v1/pod_status.proto):
+ *   - active            : pod occupies a runner slot and may still do work
+ *   - terminal          : lifecycle ended without the agent reporting success
+ *   - finished          : terminal + completed (nothing more will happen)
+ *   - relay_connectable : Relay accepts a terminal data-plane subscription
+ *   - resumable_source  : CreatePod accepts it as `source_pod_key` (wake)
+ *
+ * @generated from message amesh.codegen.v1.PodStatusGroups
+ */
+export type PodStatusGroups = Message<"amesh.codegen.v1.PodStatusGroups"> & {
+  /**
+   * @generated from field: bool active = 1;
+   */
+  active: boolean;
+
+  /**
+   * @generated from field: bool terminal = 2;
+   */
+  terminal: boolean;
+
+  /**
+   * @generated from field: bool finished = 3;
+   */
+  finished: boolean;
+
+  /**
+   * @generated from field: bool relay_connectable = 4;
+   */
+  relayConnectable: boolean;
+
+  /**
+   * @generated from field: bool resumable_source = 5;
+   */
+  resumableSource: boolean;
+};
+
+/**
+ * Describes the message amesh.codegen.v1.PodStatusGroups.
+ * Use `create(PodStatusGroupsSchema)` to create a new message.
+ */
+export const PodStatusGroupsSchema: GenMessage<PodStatusGroups> = /*@__PURE__*/
+  messageDesc(file_codegen_v1_options, 1);
+
+/**
  * ConvertTarget — file-level binding. Tells the codegen plugin where to
  * emit the `<file>_convert.amesh.go` file and what Go package to declare.
  *
@@ -120,7 +171,7 @@ export type ConvertTarget = Message<"amesh.codegen.v1.ConvertTarget"> & {
  * Use `create(ConvertTargetSchema)` to create a new message.
  */
 export const ConvertTargetSchema: GenMessage<ConvertTarget> = /*@__PURE__*/
-  messageDesc(file_codegen_v1_options, 1);
+  messageDesc(file_codegen_v1_options, 2);
 
 /**
  * @generated from extension: amesh.codegen.v1.GoDomain go_domain = 50001;
@@ -129,38 +180,44 @@ export const go_domain: GenExtension<MessageOptions, GoDomain> = /*@__PURE__*/
   extDesc(file_codegen_v1_options, 0);
 
 /**
+ * @generated from extension: amesh.codegen.v1.PodStatusGroups pod_status_groups = 50201;
+ */
+export const pod_status_groups: GenExtension<EnumValueOptions, PodStatusGroups> = /*@__PURE__*/
+  extDesc(file_codegen_v1_options, 1);
+
+/**
  * @generated from extension: string field_rename = 50101;
  */
 export const field_rename: GenExtension<FieldOptions, string> = /*@__PURE__*/
-  extDesc(file_codegen_v1_options, 1);
+  extDesc(file_codegen_v1_options, 2);
 
 /**
  * @generated from extension: string field_enum_map = 50102;
  */
 export const field_enum_map: GenExtension<FieldOptions, string> = /*@__PURE__*/
-  extDesc(file_codegen_v1_options, 2);
+  extDesc(file_codegen_v1_options, 3);
 
 /**
  * @generated from extension: bool field_skip = 50103;
  */
 export const field_skip: GenExtension<FieldOptions, boolean> = /*@__PURE__*/
-  extDesc(file_codegen_v1_options, 3);
+  extDesc(file_codegen_v1_options, 4);
 
 /**
  * @generated from extension: string field_custom = 50104;
  */
 export const field_custom: GenExtension<FieldOptions, string> = /*@__PURE__*/
-  extDesc(file_codegen_v1_options, 4);
+  extDesc(file_codegen_v1_options, 5);
 
 /**
  * @generated from extension: string field_convert = 50105;
  */
 export const field_convert: GenExtension<FieldOptions, string> = /*@__PURE__*/
-  extDesc(file_codegen_v1_options, 5);
+  extDesc(file_codegen_v1_options, 6);
 
 /**
  * @generated from extension: amesh.codegen.v1.ConvertTarget convert_target = 50001;
  */
 export const convert_target: GenExtension<FileOptions, ConvertTarget> = /*@__PURE__*/
-  extDesc(file_codegen_v1_options, 6);
+  extDesc(file_codegen_v1_options, 7);
 

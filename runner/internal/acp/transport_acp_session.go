@@ -75,11 +75,14 @@ func (t *ACPTransport) SendPrompt(sessionID, prompt string) error {
 		resp, err := t.tracker.WaitPromptResponse(pr)
 		if err != nil {
 			t.logger.Error("prompt response error", "error", err)
+			t.emitPromptError(fmt.Errorf("prompt response error: %w", err))
 			return
 		}
 		if resp.Error != nil {
 			t.logger.Error("prompt error",
 				"code", resp.Error.Code, "message", resp.Error.Message)
+			t.emitPromptError(fmt.Errorf("prompt error: code=%d msg=%s", resp.Error.Code, resp.Error.Message))
+			return
 		} else {
 			// Usage must land before StateIdle: the backend bridge reports
 			// accumulated usage on the processing→idle transition.
@@ -91,6 +94,15 @@ func (t *ACPTransport) SendPrompt(sessionID, prompt string) error {
 	}()
 
 	return nil
+}
+
+func (t *ACPTransport) emitPromptError(err error) {
+	if t.handler.callbacks.OnError != nil {
+		t.handler.callbacks.OnError(err)
+	}
+	if t.handler.callbacks.OnStateChange != nil {
+		t.handler.callbacks.OnStateChange(StateIdle)
+	}
 }
 
 // emitPromptUsage fires OnUsage when the session/prompt response result carries

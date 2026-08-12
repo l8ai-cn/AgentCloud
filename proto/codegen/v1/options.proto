@@ -116,8 +116,33 @@ message GoDomain {
 //
 // Codegen produces: `out.Spec = specToProto(p.Spec)`.
 
+// PodStatusGroups — lifecycle classification of one `PodStatus` enum value.
+//
+// The pod status vocabulary and its groupings are consumed by three runtimes
+// (Go domain, Rust client state, TS contract layer). Declaring membership here
+// makes this file the SSOT; `tools/pod-status-codegen` emits the per-language
+// constants and predicates from these annotations.
+//
+// Group semantics (see proto/pod/v1/pod_status.proto):
+//   - active            : pod occupies a runner slot and may still do work
+//   - terminal          : lifecycle ended without the agent reporting success
+//   - finished          : terminal + completed (nothing more will happen)
+//   - relay_connectable : Relay accepts a terminal data-plane subscription
+//   - resumable_source  : CreatePod accepts it as `source_pod_key` (wake)
+message PodStatusGroups {
+  bool active = 1;
+  bool terminal = 2;
+  bool finished = 3;
+  bool relay_connectable = 4;
+  bool resumable_source = 5;
+}
+
 extend google.protobuf.MessageOptions {
   GoDomain go_domain = 50001;
+}
+
+extend google.protobuf.EnumValueOptions {
+  PodStatusGroups pod_status_groups = 50201;
 }
 
 extend google.protobuf.FieldOptions {

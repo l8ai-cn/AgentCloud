@@ -22,10 +22,17 @@ func (s *Server) SyncKnowledgeBase(
 	if s.syncWorker == nil {
 		return nil, connect.NewError(connect.CodeInternal, errSyncWorkerUnavailable)
 	}
+	kb, err := s.svc.GetBySlug(ctx, org.GetID(), req.Msg.GetSlug())
+	if err != nil {
+		return nil, mapKBError(err)
+	}
+	if err := s.denyUnlessWrite(ctx, kb); err != nil {
+		return nil, err
+	}
 	if err := s.syncWorker.SyncSingle(ctx, org.GetID(), req.Msg.GetSlug()); err != nil {
 		return nil, mapKBError(err)
 	}
-	kb, err := s.svc.GetBySlug(ctx, org.GetID(), req.Msg.GetSlug())
+	kb, err = s.svc.GetBySlug(ctx, org.GetID(), req.Msg.GetSlug())
 	if err != nil {
 		return nil, mapKBError(err)
 	}

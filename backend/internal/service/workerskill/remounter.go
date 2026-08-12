@@ -13,11 +13,14 @@ import (
 const podSnapshotColumn = "worker_spec_snapshot_id"
 
 type Remounter struct {
-	snapshots SnapshotStore
-	pods      PodSnapshotBinder
-	catalog   SkillCatalog
-	signer    PackageSigner
-	commands  CommandSender
+	snapshots    SnapshotStore
+	pods         PodSnapshotBinder
+	catalog      SkillCatalog
+	signer       PackageSigner
+	commands     CommandSender
+	entitlements SkillEntitlementGate
+	grants       SkillGrantReader
+	memberRoles  MemberRoleReader
 }
 
 func NewRemounter(

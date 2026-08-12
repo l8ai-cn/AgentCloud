@@ -13,7 +13,7 @@ func (a *GRPCRunnerAdapter) mcpKbList(ctx context.Context, tc *middleware.Tenant
 	if a.knowledgebaseService == nil {
 		return nil, newMcpError(501, "knowledge base service not configured")
 	}
-	kbs, err := a.knowledgebaseService.List(ctx, tc.OrganizationID, "")
+	kbs, err := a.knowledgebaseService.List(ctx, tc.OrganizationID, "", tc.UserID)
 	if err != nil {
 		return nil, kbErrToMcp(err)
 	}
@@ -45,7 +45,7 @@ func (a *GRPCRunnerAdapter) mcpKbSearch(ctx context.Context, tc *middleware.Tena
 	if strings.TrimSpace(params.Query) == "" {
 		return nil, newMcpError(400, "query is required")
 	}
-	matches, err := a.knowledgebaseService.Search(ctx, tc.OrganizationID, params.KBSlugs, params.Query, params.Limit)
+	matches, err := a.knowledgebaseService.Search(ctx, tc.OrganizationID, tc.UserID, params.KBSlugs, params.Query, params.Limit)
 	if err != nil {
 		return nil, kbErrToMcp(err)
 	}
@@ -65,6 +65,13 @@ func (a *GRPCRunnerAdapter) mcpKbRead(ctx context.Context, tc *middleware.Tenant
 	}
 	if params.KBSlug == "" || params.Path == "" {
 		return nil, newMcpError(400, "kb_slug and path are required")
+	}
+	kb, err := a.knowledgebaseService.GetBySlug(ctx, tc.OrganizationID, params.KBSlug)
+	if err != nil {
+		return nil, kbErrToMcp(err)
+	}
+	if mcpErr := a.authorizeKBRead(ctx, tc, kb); mcpErr != nil {
+		return nil, mcpErr
 	}
 	file, err := a.knowledgebaseService.ReadFile(ctx, tc.OrganizationID, params.KBSlug, params.Path)
 	if err != nil {
@@ -93,6 +100,13 @@ func (a *GRPCRunnerAdapter) mcpKbWrite(ctx context.Context, tc *middleware.Tenan
 	}
 	if params.KBSlug == "" || params.Path == "" {
 		return nil, newMcpError(400, "kb_slug and path are required")
+	}
+	kb, err := a.knowledgebaseService.GetBySlug(ctx, tc.OrganizationID, params.KBSlug)
+	if err != nil {
+		return nil, kbErrToMcp(err)
+	}
+	if mcpErr := a.authorizeKBWrite(ctx, tc, kb); mcpErr != nil {
+		return nil, mcpErr
 	}
 	message := params.Message
 	if message == "" {

@@ -1,21 +1,18 @@
-const ACTIVE_POD_STATUSES = new Set([
-  "queued",
-  "initializing",
-  "running",
-  "paused",
-  "disconnected",
-]);
-
-const RELAY_CONNECTABLE_POD_STATUSES = new Set([
-  "running",
-  "paused",
-  "disconnected",
-]);
-
-export function isPodActive(status: string | null | undefined): boolean {
-  return Boolean(status && ACTIVE_POD_STATUSES.has(status));
-}
-
-export function isPodRelayConnectable(status: string | null | undefined): boolean {
-  return Boolean(status && RELAY_CONNECTABLE_POD_STATUSES.has(status));
-}
+// Pod lifecycle vocabulary and classification are generated from
+// proto/pod/v1/pod_status.proto (see tools/pod-status-codegen) and shipped in
+// the contract package. Re-exported here so web keeps one import path and
+// cannot grow a second, drifting definition.
+export {
+  ACTIVE_POD_STATUSES,
+  FINISHED_POD_STATUSES,
+  POD_STATUSES,
+  RELAY_CONNECTABLE_POD_STATUSES,
+  RESUMABLE_SOURCE_POD_STATUSES,
+  TERMINAL_POD_STATUSES,
+  isPodActive,
+  isPodFinished,
+  isPodRelayConnectable,
+  isPodResumableSource,
+  isPodTerminal,
+  type PodStatus,
+} from "@agent-cloud/service-interface";

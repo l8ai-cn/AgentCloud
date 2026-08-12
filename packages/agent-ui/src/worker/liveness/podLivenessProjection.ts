@@ -10,7 +10,6 @@ export type PodStatus =
   | "completed"
   | "terminated"
   | "error"
-  | "failed"
   | "unknown";
 
 export interface PodLivenessInput {
@@ -24,7 +23,7 @@ export interface PodLivenessInput {
 }
 
 export function projectPodLiveness(input: PodLivenessInput): WorkerLiveness {
-  if (input.podError || input.podStatus === "error" || input.podStatus === "failed") {
+  if (input.podError || input.podStatus === "error") {
     return {
       state: "unreachable",
       cause: { reason: "launch-failed", detail: input.podError },

@@ -1,21 +1,20 @@
-// Client-side wire-format types. Three categories:
-//   - `enums::PodStatus` — strongly-typed client mapping for the proto
-//     string-status field; used by realtime event dispatch and pod cache.
+// Client-side wire-format types. Two categories:
 //   - `runner::*` — REST-only request/response shapes for the runner
 //     registration flow (Tailscale-style device authorization), which has
 //     no proto coverage on the backend.
 //   - `service_error::ServiceError` — tagged-enum error type that bridges
 //     Rust errors across the wasm boundary.
 //
+// Pod lifecycle statuses live in `agentcloud_state::pod_status` (generated
+// from proto/pod/v1/pod_status.proto).
+//
 // All business-domain wire types come from the `proto_<svc>_v1` modules
 // below — auto-generated prost crates re-exported here for the rest of the
 // workspace to consume.
 
-mod enums;
 mod runner;
 mod service_error;
 
-pub use enums::*;
 pub use runner::*;
 pub use service_error::*;
 

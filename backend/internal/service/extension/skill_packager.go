@@ -127,6 +127,7 @@ func (p *SkillPackager) prepareDir(dirPath string) (*PreparedSkill, error) {
 		Slug:        info.Slug,
 		DisplayName: info.DisplayName,
 		Description: info.Description,
+		AgentFilter: info.AgentFilter,
 		ContentSha:  sha,
 		StorageKey:  fmt.Sprintf("skills/direct/%s/%s.tar.gz", info.Slug, sha),
 		PackageSize: int64(len(packageData)),
@@ -138,6 +139,7 @@ type PreparedSkill struct {
 	Slug        string
 	DisplayName string
 	Description string
+	AgentFilter []string
 	ContentSha  string
 	StorageKey  string
 	PackageSize int64
@@ -148,6 +150,7 @@ type PackagedSkill struct {
 	Slug        string
 	DisplayName string
 	Description string
+	AgentFilter []string
 	ContentSha  string
 	StorageKey  string
 	PackageSize int64

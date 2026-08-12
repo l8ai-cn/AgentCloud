@@ -200,6 +200,20 @@
       "evidence_ref": "evidence/runtime-lock-probes.json"
     },
     {
+      "slug": "pi-agent",
+      "support_status": "not_supported",
+      "definition": "projection_pending_current",
+      "database_registration": "projection_pending_current",
+      "runtime_catalog": "blocked_no_published_digest",
+      "live_create_option": "pending_published_runtime",
+      "image_target": "blocked_no_published_digest",
+      "runner": "not_attested_current",
+      "preflight": "must_block_without_published_runtime",
+      "product_path": "not_run",
+      "browser": "not_run",
+      "evidence_ref": "evidence/runtime-lock-probes.json"
+    },
+    {
       "slug": "seedance-expert",
       "support_status": "not_supported",
       "definition": "projection_verified_current",

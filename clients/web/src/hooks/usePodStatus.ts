@@ -2,13 +2,12 @@
 
 import { useEffect, useRef, useMemo, useState } from "react";
 import { usePod, usePodStore } from "@/stores/pod";
-import { ApiError } from "@/lib/api/api-types";
-
-interface UsePodStatusResult {
-  podStatus: string;
-  isPodReady: boolean;
-  podError: string | null;
-}
+import { derivePodLiveness, type PodLiveness } from "@/lib/pod-liveness";
+import {
+  dropUnreadablePodPane,
+  isPodUnreadableForever,
+  unreadablePodMessage,
+} from "@/lib/unreadable-pod-pane";
 
 interface FetchError {
   podKey: string;
@@ -18,7 +17,7 @@ interface FetchError {
 const MAX_FETCH_ATTEMPTS = 3;
 const FETCH_RETRY_DELAY_MS = 1000;
 
-export function usePodStatus(podKey: string): UsePodStatusResult {
+export function usePodStatus(podKey: string): PodLiveness {
   const initialFetchDone = useRef(false);
   const retryCount = useRef(0);
   const [retryVersion, setRetryVersion] = useState(0);
@@ -28,26 +27,11 @@ export function usePodStatus(podKey: string): UsePodStatusResult {
   const fetchPod = usePodStore((state) => state.fetchPod);
 
   const { podStatus, isPodReady, podError } = useMemo(() => {
-    const storeStatus = storePod?.status;
-    if (!storeStatus && fetchError?.podKey === podKey) {
+    if (!storePod?.status && fetchError?.podKey === podKey) {
       return { podStatus: "error", isPodReady: false, podError: fetchError.message };
     }
-
-    const status = storeStatus ?? "unknown";
-    const isReady = status === "running";
-
-    let error: string | null = null;
-    if (status === "failed") {
-      error = "Pod failed";
-    } else if (status === "terminated") {
-      error = "Pod terminated";
-    } else if (status === "error") {
-      error = storePod?.error_message || "Pod error";
-    }
-    // "orphaned" is loading/reconnecting (Runner restart auto-recovers), not error.
-
-    return { podStatus: status, isPodReady: isReady, podError: error };
-  }, [storePod?.status, storePod?.error_message, fetchError, podKey]);
+    return derivePodLiveness(storePod);
+  }, [storePod, fetchError, podKey]);
 
   useEffect(() => {
     initialFetchDone.current = false;
@@ -68,9 +52,10 @@ export function usePodStatus(podKey: string): UsePodStatusResult {
       })
       .catch((error) => {
         if (cancelled) return;
-        if (error instanceof ApiError && error.status === 404) {
+        if (isPodUnreadableForever(error)) {
           initialFetchDone.current = true;
-          setFetchError({ podKey, message: "Pod not found" });
+          setFetchError({ podKey, message: unreadablePodMessage(error) });
+          dropUnreadablePodPane(podKey);
         } else if (retryCount.current >= MAX_FETCH_ATTEMPTS) {
           setFetchError({ podKey, message: "Failed to load pod" });
         } else {

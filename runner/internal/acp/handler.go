@@ -248,6 +248,15 @@ func (h *Handler) handleMessageChunk(sessionID, role string, data json.RawMessag
 			Text: msg.Content.Text, Role: role,
 		})
 	}
+	if role == "assistant" && h.callbacks.OnError != nil && isAgentErrorMessage(msg.Content.Text) {
+		h.callbacks.OnError(fmt.Errorf("%s", strings.TrimSpace(msg.Content.Text)))
+	}
+}
+
+func isAgentErrorMessage(text string) bool {
+	trimmed := strings.TrimSpace(text)
+	return strings.HasPrefix(trimmed, "执行失败：Agent error:") ||
+		strings.HasPrefix(trimmed, "Agent error:")
 }
 
 // handleThoughtChunk extracts text from a ContentBlock and fires OnThinkingUpdate.

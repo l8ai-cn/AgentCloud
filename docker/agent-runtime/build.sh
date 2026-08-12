@@ -16,9 +16,9 @@ AGENT_RUNTIMES=(
   loopal
   do-agent
   grok-build
-  minimax-cli
   openclaw
   hermes
+  pi-agent
 )
 RUNTIME="${1:-all}"
 IMAGE_PREFIX="${IMAGE_PREFIX:-agent-cloud/runner}"
@@ -45,9 +45,9 @@ Agent runtimes:
   loopal        Loopal CLI
   do-agent      Do Agent binary
   grok-build    Grok Build CLI (@xai-official/grok)
-  minimax-cli   MiniMax CLI (mmx-cli)
   openclaw      OpenClaw CLI (openclaw)
   hermes        Hermes Agent CLI (hermes-agent)
+  pi-agent      Pi coding agent (@earendil-works/pi-coding-agent + pi-acp)
 
   (e2e-echo 仅 dev compose / CI 使用，不走 build_all)
 

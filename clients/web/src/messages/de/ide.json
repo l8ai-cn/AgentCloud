@@ -11,8 +11,9 @@
       "knowledge": "Knowledge Base",
       "blocks": "Blocks",
       "infra": "Infra",
-      "marketplace": "Marktplatz",
-      "skills": "Skills",
+      "marketplace": "App-Marktplatz",
+      "skills": "Skill-Marktplatz",
+      "connections": "Verbindungsmarkt",
       "repositories": "Repositories",
       "runners": "Runner",
       "settings": "Einstellungen",
@@ -195,9 +196,21 @@
       },
       "skills": {
         "description": "Browse and install skills for your agents",
-        "browse": "Browse marketplace",
+        "browse": "Browse Skill marketplace",
+        "mine": "My Skills",
         "manageRegistries": "Manage registries",
         "hint": "Install skills to a repository to use them in pods"
+      },
+      "marketplace": {
+        "description": "Discover and enable ready-to-run partner apps for this organization.",
+        "browse": "Browse app collections",
+        "hint": "Permissions, runtime requirements, and marketplace quota are shown before enablement."
+      },
+      "connections": {
+        "description": "Browse and install MCP connectors, and manage your connections.",
+        "browse": "Browse connection marketplace",
+        "mine": "My connections",
+        "hint": "Enabled connectors are available as MCP tools in Workers."
       }
     }
   }

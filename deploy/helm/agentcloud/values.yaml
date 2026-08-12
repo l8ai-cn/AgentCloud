@@ -92,6 +92,8 @@ relay:
 ingress:
   enabled: true
   className: nginx
+  # Legacy clusters without IngressClass use classAnnotation instead of className.
+  classAnnotation: ""
   tlsSecret: l8ai-wildcard-tls
   agents:
     enabled: true

@@ -1,0 +1,89 @@
+// EntitlementService — Layer 1 (catalog admission) seen from the
+// organization side.
+//
+// Layer 1 gates platform-owned resources (worker types, platform-level
+// skills) per organization; the platform-admin half of that surface lives
+// next door in entitlement_admin.proto. This service only lets an
+// organization admin subdivide what the platform already admitted:
+// subject_kind is always "user", organization_id always resolves from
+// org_slug, and the handler refuses resources the org itself is not
+// entitled to.
+//
+// Layer 2 (organization-owned instances — model connections, org skills,
+// experts) is GrantService in grant/v1; entitlements never model those.
+//
+// Backed by backend/internal/service/entitlement.Service, which owns the
+// presence-is-allow-list semantics and the audit trail.
+
+syntax = "proto3";
+
+package proto.entitlement.v1;
+
+option go_package = "github.com/l8ai-cn/agentcloud/proto/gen/go/entitlement/v1;entitlementv1";
+
+service EntitlementService {
+  rpc ListEntitlements(ListEntitlementsRequest) returns (ListEntitlementsResponse);
+  rpc GrantMemberEntitlement(GrantMemberEntitlementRequest) returns (Entitlement);
+  rpc DenyMemberEntitlement(DenyMemberEntitlementRequest) returns (Entitlement);
+  rpc DeleteMemberEntitlement(DeleteMemberEntitlementRequest) returns (DeleteMemberEntitlementResponse);
+}
+
+// Entitlement mirrors backend/internal/domain/entitlement.Entitlement.
+// resource_key is a slug (backend/pkg/slugkit), never a numeric id —
+// Layer 1 addresses platform resources by their stable catalog name.
+message Entitlement {
+  int64 id = 1;
+  // "worker_type" | "skill".
+  string resource_kind = 2;
+  string resource_key = 3;
+  int64 organization_id = 4;
+  // "org" (platform → org admission) | "user" (org → member subdivision).
+  string subject_kind = 5;
+  optional int64 subject_user_id = 6;
+  // "allow" | "deny". A deny row outranks the owner/admin bypass.
+  string effect = 7;
+  string reason = 8;
+  optional string expires_at = 9;
+  int64 granted_by = 10;
+  string created_at = 11;
+  string updated_at = 12;
+}
+
+message ListEntitlementsRequest {
+  string org_slug = 1;
+  optional string resource_kind = 2;
+}
+
+message ListEntitlementsResponse {
+  repeated Entitlement items = 1;
+  int64 total = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GrantMemberEntitlementRequest {
+  string org_slug = 1;
+  string resource_kind = 2;
+  string resource_key = 3;
+  int64 user_id = 4;
+  string reason = 5;
+  optional string expires_at = 6;
+}
+
+message DenyMemberEntitlementRequest {
+  string org_slug = 1;
+  string resource_kind = 2;
+  string resource_key = 3;
+  int64 user_id = 4;
+  string reason = 5;
+  optional string expires_at = 6;
+}
+
+message DeleteMemberEntitlementRequest {
+  string org_slug = 1;
+  int64 id = 2;
+}
+
+message DeleteMemberEntitlementResponse {
+  string message = 1;
+}

@@ -31,7 +31,7 @@ test("runs the fixed Oilan PostgreSQL probe through DoOps and writes redacted ev
       now: clock(),
       execute(value) {
         request = value;
-        return { status: 0, stdout: doopsOutput("agentsmesh|160014|t") };
+        return { status: 0, stdout: doopsOutput("agentcloud|160014") };
       },
     });
 
@@ -44,17 +44,16 @@ test("runs the fixed Oilan PostgreSQL probe through DoOps and writes redacted ev
       "gw-oilan-node",
       "--cmd",
     ]);
-    assert.match(request.args[6], /namespace=agentsmesh/);
+    assert.match(request.args[6], /namespace=agentcloud/);
     assert.match(request.args[6], /service=postgres/);
-    assert.match(request.args[6], /secret=agentsmesh-secrets/);
+    assert.match(request.args[6], /secret=agentcloud-secrets/);
     assert.match(request.args[6], /default_transaction_read_only=on/);
     assert.match(request.args[6], /statement_timeout=15000/);
     assert.equal(request.args[6].includes("postgresql://"), false);
     assert.equal(evidence.status, "verified");
     assert.deepEqual(evidence.result, {
-      databaseName: "agentsmesh",
+      databaseName: "agentcloud",
       serverVersionNum: "160014",
-      schemaMigrationsPresent: true,
     });
     assert.deepEqual(evidence.doopsRoute, {
       targetName: "gw-oilan-node",
@@ -144,7 +143,7 @@ test("evidence verifier rejects a fingerprint mismatch", async () => {
       auditRoot,
       registration: await loadOilanPostgresRegistration(),
       now: clock(),
-      execute: () => ({ status: 0, stdout: doopsOutput("agentsmesh|160014|t") }),
+      execute: () => ({ status: 0, stdout: doopsOutput("agentcloud|160014") }),
     });
     assert.throws(
       () => verifyOilanPostgresReadOnlyEvidence({ ...evidence, resultFingerprint: sha256("tampered") }),
@@ -162,7 +161,7 @@ test("rejects successful DoOps output that does not prove the fixed asset", asyn
       executeOilanPostgresReadOnly(INPUT, {
         auditRoot,
         registration: await loadOilanPostgresRegistration(),
-        execute: () => ({ status: 0, stdout: doopsOutput("otherdb|160014|t") }),
+        execute: () => ({ status: 0, stdout: doopsOutput("otherdb|160014") }),
       }),
       /Oilan PostgreSQL read-only query failed/,
     );
@@ -179,7 +178,7 @@ test("rejects reuse of an existing operation audit path", async () => {
     const options = {
       auditRoot,
       registration: await loadOilanPostgresRegistration(),
-      execute: () => ({ status: 0, stdout: doopsOutput("agentsmesh|160014|t") }),
+      execute: () => ({ status: 0, stdout: doopsOutput("agentcloud|160014") }),
     };
     await executeOilanPostgresReadOnly(INPUT, options);
     await assert.rejects(
@@ -202,7 +201,7 @@ test("CLI returns a failed response instead of accepting caller-supplied SQL", a
     const outputPath = join(dir, "output.json");
     await writeFile(inputPath, JSON.stringify({
       ...INPUT,
-      queryName: "migration-version",
+      queryName: "schema-fingerprint",
       statement: "select 1",
     }));
     const result = spawnSync(process.execPath, [CLI, "query", "--input", inputPath, "--output", outputPath], {
@@ -228,9 +227,9 @@ test("CLI keeps probe and query command scopes fixed", async () => {
     });
     const output = JSON.parse(await readFile(outputPath, "utf8"));
     assert.equal(result.status, 1);
-    assert.match(output.error.message, /queryName must be migration-version/);
+    assert.match(output.error.message, /queryName must be schema-fingerprint/);
 
-    await writeFile(inputPath, JSON.stringify({ ...INPUT, queryName: "migration-version" }));
+    await writeFile(inputPath, JSON.stringify({ ...INPUT, queryName: "schema-fingerprint" }));
     const probeResult = spawnSync(process.execPath, [CLI, "probe", "--input", inputPath, "--output", outputPath], {
       encoding: "utf8",
     });

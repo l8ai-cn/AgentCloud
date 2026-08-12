@@ -36,36 +36,33 @@ export function parseOilanPostgresQueryResult(queryName, line) {
   const fields = line.split("|");
 
   if (queryName === "asset-probe") {
-    requireFieldCount(fields, 3, queryName);
-    const [databaseName, serverVersionNum, schemaMigrationsPresent] = fields;
+    requireFieldCount(fields, 2, queryName);
+    const [databaseName, serverVersionNum] = fields;
     if (databaseName !== OILAN_POSTGRES.databaseName) {
       throw new Error("Oilan PostgreSQL probe returned the wrong database");
     }
     if (!/^[1-9][0-9]{4,5}$/.test(serverVersionNum)) {
       throw new Error("Oilan PostgreSQL probe returned an invalid server version");
     }
-    if (schemaMigrationsPresent !== "t") {
-      throw new Error("Oilan PostgreSQL schema_migrations table is missing");
-    }
-    return {
-      databaseName,
-      serverVersionNum,
-      schemaMigrationsPresent: true,
-    };
+    return { databaseName, serverVersionNum };
   }
 
-  if (queryName === "migration-version") {
-    requireFieldCount(fields, 2, queryName);
-    const [versionText, dirtyText] = fields;
-    if (!/^[0-9]+$/.test(versionText)) {
-      throw new Error("Oilan PostgreSQL migration version is invalid");
+  if (queryName === "schema-fingerprint") {
+    requireFieldCount(fields, 3, queryName);
+    const [countText, usersText, orgsText] = fields;
+    if (!/^[1-9][0-9]*$/.test(countText)) {
+      throw new Error("Oilan PostgreSQL public table count is invalid");
     }
-    if (dirtyText !== "t" && dirtyText !== "f") {
-      throw new Error("Oilan PostgreSQL migration dirty state is invalid");
+    if (usersText !== "t") {
+      throw new Error("Oilan PostgreSQL users table is missing");
+    }
+    if (orgsText !== "t") {
+      throw new Error("Oilan PostgreSQL organizations table is missing");
     }
     return {
-      version: Number(versionText),
-      dirty: dirtyText === "t",
+      publicTableCount: Number(countText),
+      usersPresent: true,
+      organizationsPresent: true,
     };
   }
 
@@ -79,18 +76,22 @@ export function assertOilanPostgresQueryResult(queryName, result) {
   if (queryName === "asset-probe") {
     const parsed = parseOilanPostgresQueryResult(
       queryName,
-      `${result.databaseName}|${result.serverVersionNum}|${result.schemaMigrationsPresent ? "t" : "f"}`,
+      `${result.databaseName}|${result.serverVersionNum}`,
     );
     if (Object.keys(result).sort().join(",") !== Object.keys(parsed).sort().join(",")) {
       throw new Error("Oilan PostgreSQL probe result has unexpected fields");
     }
     return true;
   }
-  if (queryName === "migration-version") {
-    const dirty = result.dirty === true ? "t" : result.dirty === false ? "f" : "";
-    const parsed = parseOilanPostgresQueryResult(queryName, `${result.version}|${dirty}`);
+  if (queryName === "schema-fingerprint") {
+    const users = result.usersPresent === true ? "t" : "";
+    const orgs = result.organizationsPresent === true ? "t" : "";
+    const parsed = parseOilanPostgresQueryResult(
+      queryName,
+      `${result.publicTableCount}|${users}|${orgs}`,
+    );
     if (Object.keys(result).sort().join(",") !== Object.keys(parsed).sort().join(",")) {
-      throw new Error("Oilan PostgreSQL migration result has unexpected fields");
+      throw new Error("Oilan PostgreSQL schema fingerprint has unexpected fields");
     }
     return true;
   }

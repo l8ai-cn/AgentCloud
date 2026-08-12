@@ -19,7 +19,7 @@ type mockKnowledgeResolver struct {
 	err           error
 }
 
-func (m *mockKnowledgeResolver) ResolveMountsForPod(_ context.Context, _ int64, _ string, requested []kbservice.MountRequest) ([]*kbservice.ResolvedMount, error) {
+func (m *mockKnowledgeResolver) ResolveMountsForPod(_ context.Context, _, _ int64, _ string, requested []kbservice.MountRequest) ([]*kbservice.ResolvedMount, error) {
 	m.lastRequested = requested
 	return m.mounts, m.err
 }

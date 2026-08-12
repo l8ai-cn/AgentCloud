@@ -1,10 +1,10 @@
 {
   "runners": {
-    "title": "Runners",
-    "searchPlaceholder": "Search runners...",
-    "addRunner": "Add Runner",
+    "title": "Clusters",
+    "searchPlaceholder": "Search clusters or images...",
+    "addRunner": "Register node",
     "registrationTokens": "Registration Tokens",
-    "runnerCount": "runners",
+    "runnerCount": "clusters",
     "disabled": "Disabled",
     "filters": {
       "all": "All",
@@ -17,11 +17,21 @@
       "online": "online"
     },
     "emptyState": {
-      "title": "No runners yet",
-      "description": "Deploy a runner to start creating pods",
-      "deployRunner": "Deploy Runner",
-      "noMatch": "No runners match filters"
+      "title": "No clusters yet",
+      "description": "One execution cluster can host many agent images; register a node to start creating workers",
+      "deployRunner": "Register node",
+      "noMatch": "No clusters match filters"
     },
+    "clusterStatus": {
+      "online": "Online",
+      "offline": "Offline",
+      "pending": "Pending"
+    },
+    "clusterNodesOnline": "nodes online",
+    "clusterAgentsHint": "Union of agent images from all online nodes in this cluster. Worker creation schedules to a compatible node automatically.",
+    "clusterNoAgents": "No available images",
+    "clusterNodesTitle": "Execution nodes",
+    "clusterNoNodes": "This cluster has no execution nodes yet",
     "runner": {
       "status": "Status",
       "version": "Version",

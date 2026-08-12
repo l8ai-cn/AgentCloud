@@ -86,4 +86,12 @@ func (m *mockExtensionRepo) GetEffectiveSkills(_ context.Context, _, _, _ int64)
 	return nil, nil
 }
 
+func (m *mockExtensionRepo) ListUserInstalledSkills(_ context.Context, _, _ int64) ([]*extension.UserInstalledSkill, error) {
+	return nil, nil
+}
+
+func (m *mockExtensionRepo) ListUserInstalledMcpServers(_ context.Context, _, _ int64) ([]*extension.UserInstalledMcpServer, error) {
+	return nil, nil
+}
+
 var _ extension.Repository = (*mockExtensionRepo)(nil)

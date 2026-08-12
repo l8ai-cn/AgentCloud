@@ -123,8 +123,7 @@ func TestGetEffectiveSkills_AgentFilter_AliasMatches(t *testing.T) {
 	}
 }
 
-func TestGetEffectiveSkills_AgentFilter_GitHubInstallAlwaysIncluded(t *testing.T) {
-	// Skill without MarketItem (github install) should always be included
+func TestGetEffectiveSkills_AgentFilter_GitHubInstallHonorsFilter(t *testing.T) {
 	repo := &svcMockRepo{
 		getEffectiveSkillsFn: func(_ context.Context, orgID, userID, repoID int64) ([]*extension.InstalledSkill, error) {
 			return []*extension.InstalledSkill{
@@ -135,7 +134,8 @@ func TestGetEffectiveSkills_AgentFilter_GitHubInstallAlwaysIncluded(t *testing.T
 					ContentSha:    "def456",
 					StorageKey:    "skills/github-skill/v1.tar.gz",
 					PackageSize:   2048,
-					Skill:         nil, // github install, no market item
+					Skill:         nil,
+					AgentFilter:   json.RawMessage(`["claude-code"]`),
 				},
 			}, nil
 		},
@@ -146,8 +146,36 @@ func TestGetEffectiveSkills_AgentFilter_GitHubInstallAlwaysIncluded(t *testing.T
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if len(resolved) != 1 {
-		t.Fatalf("expected 1 skill (github always included), got %d", len(resolved))
+	if len(resolved) != 0 {
+		t.Fatalf("expected 0 skills (github install filtered by agent_filter), got %d", len(resolved))
+	}
+}
+
+func TestGetEffectiveSkills_AgentFilter_UploadInstallHonorsFilter(t *testing.T) {
+	repo := &svcMockRepo{
+		getEffectiveSkillsFn: func(_ context.Context, orgID, userID, repoID int64) ([]*extension.InstalledSkill, error) {
+			return []*extension.InstalledSkill{
+				{
+					ID:            1,
+					Slug:          "upload-skill",
+					InstallSource: "upload",
+					ContentSha:    "upl789",
+					StorageKey:    "skills/direct/upload-skill/upl789.tar.gz",
+					PackageSize:   1024,
+					Skill:         nil,
+					AgentFilter:   json.RawMessage(`["codex-cli"]`),
+				},
+			}, nil
+		},
+	}
+	svc := newTestService(repo, &svcMockStorage{}, nil)
+
+	resolved, err := svc.GetEffectiveSkills(context.Background(), 1, 2, 3, "claude-code")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(resolved) != 0 {
+		t.Fatalf("expected 0 skills (upload install filtered by agent_filter), got %d", len(resolved))
 	}
 }
 
@@ -224,7 +252,7 @@ func TestGetEffectiveSkills_AgentFilter_EmptySlugDisablesFilter(t *testing.T) {
 }
 
 func TestGetEffectiveSkills_AgentFilter_MixedSkills(t *testing.T) {
-	// Mix of filtered, unfiltered, and non-market skills
+	// Mix of filtered catalog, unfiltered catalog, and github without filter metadata
 	repo := &svcMockRepo{
 		getEffectiveSkillsFn: func(_ context.Context, orgID, userID, repoID int64) ([]*extension.InstalledSkill, error) {
 			return []*extension.InstalledSkill{

@@ -1,7 +1,7 @@
 {
   "schema": "dosql.database-asset-inventory.v1",
   "projectId": "agentcloud",
-  "updatedAt": "2026-07-25",
+  "updatedAt": "2026-08-13",
   "assets": [
     {
       "databaseAssetId": "db_agentcloud_prod_postgres",
@@ -13,22 +13,20 @@
       "aliases": [
         "agentcloud postgres",
         "agentcloud pg",
-        "agentsmesh postgres",
-        "agentsmesh pg",
         "dowork postgres",
         "dowork pg",
         "线上 pg",
         "postgres",
         "prod postgres"
       ],
-      "namespace": "agentsmesh",
+      "namespace": "agentcloud",
       "serviceName": "postgres",
-      "host": "postgres.agentsmesh.svc.cluster.local",
+      "host": "postgres.agentcloud.svc.cluster.local",
       "port": 5432,
-      "databaseName": "agentsmesh",
+      "databaseName": "agentcloud",
       "versionText": "PostgreSQL 16.14",
       "serverVersionNum": "160014",
-      "connectionRef": "k8s://doops-oilan/oilan-node/agentsmesh/service/postgres:5432",
+      "connectionRef": "k8s://doops-oilan/oilan-node/agentcloud/service/postgres:5432",
       "version": {
         "current": 0,
         "label": "dosql_000000"
@@ -40,33 +38,34 @@
       },
       "registration": {
         "status": "verified-read-only",
-        "verifiedAt": "2026-07-25T12:36:31.724Z",
-        "operationId": "dbop-oilan-asset-verify-20260725-2030",
-        "session": "agentsmesh-pg-asset-verify-20260725-2030",
-        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-asset-verify-20260725-2030.json",
-        "evidenceFingerprint": "sha256:c230b1b94c6a38908e3afd6a47671305579b76f393a5eeea0c9765f765796780",
+        "verifiedAt": "2026-08-12T17:45:36.359Z",
+        "operationId": "dbop-oilan-asset-verify-20260813-0141",
+        "session": "agentcloud-pg-asset-verify-20260813-0141",
+        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-asset-verify-20260813-0141.json",
+        "evidenceFingerprint": "sha256:0d3b76a3f430bdfa8ef0a0fc253705a6265e94e1b1c0bf1d6e6e6e4bb2a695f7",
         "gatewayAudit": {
-          "eventId": 436528,
+          "eventId": 495262,
           "cluster": "doops-oilan",
           "instance": "oilan-node",
-          "startedAt": "2026-07-25T12:36:30Z",
-          "endedAt": "2026-07-25T12:36:31Z"
+          "startedAt": "2026-08-12T17:45:35Z",
+          "endedAt": "2026-08-12T17:45:36Z"
         }
       },
-      "migrationState": {
-        "version": 231,
-        "dirty": false,
-        "verifiedAt": "2026-07-25T12:36:33.157Z",
-        "operationId": "dbop-oilan-migration-read-231-20260725",
-        "session": "agentsmesh-pg-migration-read-231-20260725",
-        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-migration-read-231-20260725.json",
-        "evidenceFingerprint": "sha256:4105a87e993b8f227592137153150e06918e0b9c4ded7a9a29501bb4925a32ff",
+      "schemaFingerprint": {
+        "publicTableCount": 115,
+        "usersPresent": true,
+        "organizationsPresent": true,
+        "verifiedAt": "2026-08-12T17:45:37.795Z",
+        "operationId": "dbop-oilan-schema-fingerprint-20260813-0141",
+        "session": "agentcloud-pg-schema-fp-20260813-0141",
+        "evidenceRef": ".dosql/readonly-evidence/dbop-oilan-schema-fingerprint-20260813-0141.json",
+        "evidenceFingerprint": "sha256:bfedc4b8ad4941d47523a0d207788e1d567802f48ed4c0b7c550569abf34f225",
         "gatewayAudit": {
-          "eventId": 436529,
+          "eventId": 495263,
           "cluster": "doops-oilan",
           "instance": "oilan-node",
-          "startedAt": "2026-07-25T12:36:32Z",
-          "endedAt": "2026-07-25T12:36:33Z"
+          "startedAt": "2026-08-12T17:45:36Z",
+          "endedAt": "2026-08-12T17:45:37Z"
         }
       }
     }

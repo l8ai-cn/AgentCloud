@@ -124,8 +124,9 @@
     "cancel": "取消",
 
     "mcpMarket": {
-      "title": "MCP 服务器模板",
-      "description": "浏览可用的 MCP 服务器模板。团队成员可以将这些模板安装到仓库中。",
+      "title": "连接器",
+      "description": "MCP 连接器的组织级治理在此。浏览与安装请前往连接市场。",
+      "openMarket": "前往连接市场",
       "noServers": "暂无可用的 MCP 服务器模板",
       "serversFound": "个服务器",
       "sourceRegistry": "MCP 注册表",
@@ -153,11 +154,11 @@
 
     "settings": {
       "title": "扩展",
-      "description": "管理组织的 Skill，并探索 MCP 服务器模板。浏览 Skill 应用市场请前往「Skill 市场」。",
+      "description": "管理组织的 Skill，并治理连接器。浏览 Skill 应用市场请前往「Skill 市场」。",
       "tabs": {
         "skillMarket": "Skill 市场",
         "skillCatalog": "Skill",
-        "mcpMarket": "MCP 模板"
+        "mcpMarket": "连接器"
       }
     }
   }

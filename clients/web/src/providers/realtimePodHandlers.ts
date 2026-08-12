@@ -1,6 +1,7 @@
 import { usePodStore } from "@/stores/pod";
 import { useMeshStore } from "@/stores/mesh";
 import { getPodState } from "@/lib/wasm-core";
+import { isPodTerminal } from "@/lib/pod-status";
 import { useWorkspaceStore } from "@/stores/workspace";
 import {
   type RealtimeEvent,
@@ -17,6 +18,11 @@ const refreshSidebar = () => {
   s.fetchSidebarPods?.(s.currentSidebarFilter, { silent: true });
 };
 const bumpPods = () => usePodStore.setState((s) => ({ _tick: s._tick + 1 }));
+
+// Pod-level failures arrive as `error` on pod:status_changed rather than
+// pod:terminated (backend cmd/server/eventbus_pod.go). Orphaned is excluded on
+// purpose: its pane stays open showing the runner-restart state.
+const closesPane = (status: string) => isPodTerminal(status) && status !== "orphaned";
 const bumpMesh = () => useMeshStore.setState((s) => ({ _tick: s._tick + 1 }));
 const refreshMeshTopology = () => useMeshStore.getState().fetchTopology?.();
 
@@ -36,8 +42,7 @@ export function handlePodEvent(event: RealtimeEvent) {
       } else {
         bumpPods();
       }
-      // failed/error arrive here, not as pod:terminated (backend cmd/server/eventbus_pod.go).
-      if (data.status === "terminated" || data.status === "failed" || data.status === "error") {
+      if (closesPane(data.status)) {
         useWorkspaceStore.getState().removePaneByPodKey(data.podKey);
         refreshMeshTopology();
       } else {

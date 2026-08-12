@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { projectPodLiveness } from "./podLivenessProjection";
+import { recoveryOptionsFor } from "../recovery/workerRecoveryOptions";
+import { isWorkerSessionReadable, type WorkerLiveness } from "./workerLiveness";
 
 describe("projectPodLiveness", () => {
   it("maps launch failure to unreachable", () => {
@@ -17,6 +19,22 @@ describe("projectPodLiveness", () => {
       cause: { reason: "launch-failed", detail: "boom" },
       recovery: [],
     });
+  });
+
+  it("keeps unreachable causes distinguishable so the view can stop blaming the launch", () => {
+    const forbidden: WorkerLiveness = {
+      state: "unreachable",
+      cause: { reason: "forbidden" },
+      recovery: [],
+    };
+    expect(isWorkerSessionReadable(forbidden)).toBe(false);
+    expect(recoveryOptionsFor(forbidden.cause, {
+      sessionId: "s-1",
+      serverUrl: "https://example.test",
+      wrapper: null,
+      isUnboundFork: false,
+      sourceHostId: null,
+    })).toEqual([]);
   });
 
   it("keeps completed and orphaned sessions readable", () => {

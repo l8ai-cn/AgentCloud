@@ -10,6 +10,7 @@ import {
   Layers,
   MessageSquare,
   Network,
+  Plug,
   Repeat,
   Server,
   Settings,
@@ -48,6 +49,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   layers: Layers,
   sparkles: Sparkles,
   store: Store,
+  plug: Plug,
 };
 
 interface ActivityBarLinkProps {

@@ -14,6 +14,9 @@ func (s *Service) Create(ctx context.Context, req *CreateExpertRequest) (*expert
 	if err := validateExpertBasics(req.AgentSlug, req.Name); err != nil {
 		return nil, err
 	}
+	if err := s.requireWorkerType(ctx, req.OrganizationID, req.UserID, req.AgentSlug); err != nil {
+		return nil, err
+	}
 	slug, err := s.resolveSlug(ctx, req.OrganizationID, req.Slug, req.Name, 0)
 	if err != nil {
 		return nil, err

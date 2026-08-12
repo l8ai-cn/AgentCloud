@@ -92,6 +92,12 @@ export function isPodNotConnectable(err: unknown): boolean {
   return svc.kind === "http" && svc.code === "failed_precondition";
 }
 
+export function isPermissionDenied(err: unknown): boolean {
+  const svc = parseServiceError(err);
+  if (svc.kind !== "http") return false;
+  return svc.status === 403 || svc.code === "permission_denied";
+}
+
 export function getErrorStatus(err: unknown): number | undefined {
   const svc = parseServiceError(err);
   if (svc.kind === "http") return svc.status;

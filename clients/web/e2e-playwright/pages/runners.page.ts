@@ -17,7 +17,7 @@ export class RunnersPage {
     private orgSlug: string
   ) {
     this.addRunnerButton = page.getByRole("button", {
-      name: /add runner|添加 runner|添加.*Runner/i,
+      name: /register node|add runner|注册节点|添加 runner|添加.*Runner/i,
     }).first();
     this.runnerTable = page.locator("table");
   }
@@ -28,9 +28,8 @@ export class RunnersPage {
   }
 
   async waitForList(): Promise<void> {
-    // After navigation, either a detail pane renders (selectedId auto-set) or
-    // the empty state CTA shows. Wait for any indicator that the list query
-    // resolved.
+    // After navigation, either a cluster/runner detail pane renders
+    // (auto-select adds ?cluster= or ?id=) or the empty-state CTA shows.
     await Promise.race([
       this.page.waitForURL(/tab=runners/, { timeout: 15_000 }).catch(() => null),
       this.page.waitForTimeout(3000),

@@ -13,4 +13,5 @@ const (
 	BlockingSelectedTargetMissing   BlockingReason = "selected-target-unavailable"
 	BlockingTargetModeUnsupported   BlockingReason = "selected-target-mode-unsupported"
 	BlockingResourceProfileDisabled BlockingReason = "resource-profile-disabled"
+	BlockingNotEntitled             BlockingReason = "not-entitled"
 )

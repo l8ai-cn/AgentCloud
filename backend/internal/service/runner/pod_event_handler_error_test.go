@@ -151,6 +151,67 @@ func TestHandlePodError_RunningPod(t *testing.T) {
 	}
 }
 
+func TestHandlePodError_ACPPromptFailedTerminatesRunningPod(t *testing.T) {
+	pc, _, _, db := setupPodEventHandlerDeps(t)
+
+	r := &runner.Runner{
+		OrganizationID: 1,
+		NodeID:         "acp-error-node",
+		Status:         "online",
+		CurrentPods:    1,
+	}
+	if err := db.Create(r).Error; err != nil {
+		t.Fatalf("failed to create runner: %v", err)
+	}
+
+	db.Exec(`INSERT INTO pods (pod_key, runner_id, status, agent_status) VALUES (?, ?, ?, ?)`,
+		"acp-error-pod", r.ID, agentpod.StatusRunning, agentpod.AgentStatusExecuting)
+
+	var callbackPodKey, callbackStatus string
+	pc.SetStatusChangeCallback(func(podKey string, status string, agentStatus string) {
+		callbackPodKey = podKey
+		callbackStatus = status
+	})
+
+	pc.handlePodError(r.ID, &runnerv1.ErrorEvent{
+		PodKey:  "acp-error-pod",
+		Code:    errCodeACPPromptFailed,
+		Message: "prompt error: upstream model unavailable",
+	})
+
+	var status, agentStatus string
+	var errorCode, errorMessage *string
+	var finishedAt *string
+	db.Raw(`SELECT status, agent_status, error_code, error_message, finished_at FROM pods WHERE pod_key = ?`, "acp-error-pod").
+		Row().Scan(&status, &agentStatus, &errorCode, &errorMessage, &finishedAt)
+
+	if status != agentpod.StatusError {
+		t.Errorf("status: got %q, want %q", status, agentpod.StatusError)
+	}
+	if agentStatus != agentpod.AgentStatusIdle {
+		t.Errorf("agent_status: got %q, want %q", agentStatus, agentpod.AgentStatusIdle)
+	}
+	if errorCode == nil || *errorCode != errCodeACPPromptFailed {
+		t.Errorf("error_code: got %v, want %q", errorCode, errCodeACPPromptFailed)
+	}
+	if errorMessage == nil || *errorMessage != "prompt error: upstream model unavailable" {
+		t.Errorf("error_message: got %v, want expected message", errorMessage)
+	}
+	if finishedAt == nil {
+		t.Error("finished_at should be set")
+	}
+
+	var currentPods int
+	db.Raw(`SELECT current_pods FROM runners WHERE id = ?`, r.ID).Scan(&currentPods)
+	if currentPods != 0 {
+		t.Logf("current_pods=%d (SQLite GREATEST may prevent decrement)", currentPods)
+	}
+	if callbackPodKey != "acp-error-pod" || callbackStatus != agentpod.StatusError {
+		t.Errorf("callback: got (%q, %q), want (%q, %q)",
+			callbackPodKey, callbackStatus, "acp-error-pod", agentpod.StatusError)
+	}
+}
+
 func TestHandlePodError_ThenTerminated_PreservesErrorCode(t *testing.T) {
 	pc, _, _, db := setupPodEventHandlerDeps(t)
 

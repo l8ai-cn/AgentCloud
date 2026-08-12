@@ -161,6 +161,37 @@ func (pc *PodCoordinator) handlePodError(runnerID int64, data *runnerv1.ErrorEve
 		return
 	}
 
+	if isTerminalRuntimeError(data.Code) {
+		rowsAffected, err = pc.podStore.UpdateTerminatedIfActive(ctx, data.PodKey, map[string]interface{}{
+			"agent_status":  agentpod.AgentStatusIdle,
+			"status":        agentpod.StatusError,
+			"error_code":    data.Code,
+			"error_message": data.Message,
+			"finished_at":   now,
+		}, data.Code)
+		if err != nil {
+			pc.logger.Error("failed to terminate pod on runtime error",
+				"pod_key", data.PodKey,
+				"error", err)
+			return
+		}
+		if rowsAffected > 0 {
+			_ = pc.runnerRepo.DecrementPods(ctx, runnerID)
+			otelinit.PodActiveCount.Add(ctx, -1)
+			pc.podRouter.UnregisterPod(data.PodKey)
+			pc.clearMissCount(data.PodKey)
+
+			pc.logger.Error("pod terminal runtime error",
+				"pod_key", data.PodKey,
+				"runner_id", runnerID,
+				"error_code", data.Code,
+				"error_message", data.Message)
+			pc.notifyStatusChange(data.PodKey, agentpod.StatusError, "")
+			pc.triggerPendingDrain(runnerID)
+			return
+		}
+	}
+
 	// Runtime errors (e.g. PTY read after disk full) — keep status/finished_at unchanged
 	// because pod_terminated will arrive shortly to finalize the lifecycle.
 	rowsAffected, err = pc.podStore.UpdateByKeyAndStatusCounted(ctx, data.PodKey, agentpod.StatusRunning, map[string]interface{}{

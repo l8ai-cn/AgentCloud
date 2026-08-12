@@ -1,4 +1,5 @@
 import { BadgeCheck, Building2, Gauge, ShieldCheck } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
 import type {
   InstallationPlan,
@@ -17,34 +18,41 @@ export function MarketplaceAcquireSummary({
   organizationName,
   plan,
 }: Props) {
-  const credits = formatMarketplaceCredits({
+  const t = useTranslations("marketplace");
+  const locale = useLocale();
+  const amount = formatMarketplaceCredits({
     mode: "per_install",
     estimated_credits_micro: plan.plan.estimated_credits_micro,
-  }) ?? "以实际结算为准";
+  });
+  const credits = amount ? t("credits", { amount }) : t("acquire.creditsActual");
 
   return (
     <section className="space-y-5" aria-labelledby="confirm-title">
       <div>
-        <p className="text-sm font-medium text-primary">启用确认</p>
+        <p className="text-sm font-medium text-primary">{t("acquire.confirmEyebrow")}</p>
         <h2 id="confirm-title" className="mt-1 text-2xl font-semibold text-foreground">
-          确认权限与额度
+          {t("acquire.confirmTitle")}
         </h2>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          计划将在 {new Date(plan.plan.expires_at).toLocaleTimeString("zh-CN")} 前有效。
+          {t("acquire.planValidUntil", {
+            time: new Date(plan.plan.expires_at).toLocaleTimeString(locale),
+          })}
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <SummaryItem icon={Building2} label="目标组织" value={organizationName} />
-        <SummaryItem icon={Gauge} label="预计启用额度" value={credits} />
-        <SummaryItem icon={BadgeCheck} label="应用版本" value={`v${listing.version}`} />
-        <SummaryItem icon={ShieldCheck} label="权限数量" value={`${plan.plan.required_permissions.length} 项`} />
+        <SummaryItem icon={Building2} label={t("acquire.targetOrg")} value={organizationName} />
+        <SummaryItem icon={Gauge} label={t("acquire.estimatedEnableCredits")} value={credits} />
+        <SummaryItem icon={BadgeCheck} label={t("acquire.applicationVersion")} value={`v${listing.version}`} />
+        <SummaryItem
+          icon={ShieldCheck}
+          label={t("acquire.permissionCount")}
+          value={t("acquire.permissionCountValue", { count: plan.plan.required_permissions.length })}
+        />
       </div>
       <div className="rounded-lg border border-warning/30 bg-warning-bg p-4">
-        <p className="text-sm font-medium text-foreground">
-          此应用可以执行工作任务并修改授权范围内的仓库内容。
-        </p>
+        <p className="text-sm font-medium text-foreground">{t("acquire.warningTitle")}</p>
         <p className="mt-1 text-sm leading-6 text-muted-foreground">
-          权限只在「{organizationName}」内生效，启用前不会创建运行实例。
+          {t("acquire.warningBody", { name: organizationName })}
         </p>
       </div>
     </section>

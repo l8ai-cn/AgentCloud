@@ -89,6 +89,7 @@ func mountConnectServices(mux *http.ServeMux, svc *serviceContainer, rest *v1.Se
 	extensionconnect.MountMarket(mux, extensionconnect.NewMarketServer(extensionSrv), opts...)
 	extensionconnect.MountRepoSkill(mux, extensionconnect.NewRepoSkillServer(extensionSrv), opts...)
 	extensionconnect.MountRepoMcp(mux, extensionconnect.NewRepoMcpServer(extensionSrv), opts...)
+	extensionconnect.MountMyCapabilities(mux, extensionconnect.NewMyCapabilitiesServer(extensionSrv), opts...)
 	repositoryconnect.Mount(mux, repositoryconnect.NewServer(
 		svc.repository, svc.org,
 		repositoryconnect.WithBillingService(svc.billing),
@@ -131,7 +132,8 @@ func mountConnectServices(mux *http.ServeMux, svc *serviceContainer, rest *v1.Se
 	supportticketconnect.Mount(mux, supportticketconnect.NewServer(svc.supportTicket), opts...)
 	mountSSOService(mux, svc)
 	mountAuthService(mux, svc, rest, cfg, opts)
-	mountGrantService(mux, svc, opts)
+	mountGrantService(mux, svc, rest, opts)
+	mountEntitlementService(mux, svc, opts)
 	mountFileService(mux, svc, opts)
 	mountTokenUsageService(mux, svc, opts)
 	mountAutopilotService(mux, svc, rest, opts)
@@ -168,6 +170,7 @@ func mountAdminServices(mux *http.ServeMux, svc *serviceContainer, rest *v1.Serv
 	}
 	adminconnect.Mount(mux, adminconnect.NewServer(svc.admin, svc.adminDB, adminOpts...), opts...)
 	promocodeadminconnect.Mount(mux, promocodeadminconnect.NewServer(svc.admin, svc.adminDB), opts...)
+	mountEntitlementAdminService(mux, svc, opts)
 	if svc.billing != nil {
 		subscriptionadminconnect.Mount(mux, subscriptionadminconnect.NewServer(svc.admin, svc.billing, svc.adminDB), opts...)
 	}
