@@ -88,10 +88,6 @@ func memberRoleFromScope(
 	return role
 }
 
-func entitlementScopeReady(scope specservice.Scope) bool {
-	return scope.OrgID > 0 && scope.UserID > 0
-}
-
 func entitlementDeniedMessage(denied *entitlementsvc.DeniedError) string {
 	switch denied.Reason {
 	case entitlementdom.DenyNotGranted:
