@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { ShareDialog } from "@/components/shared/ShareDialog";
 import { ModelResourceRow } from "./ModelResourceRow";
 import { aiResourceValidationMessage } from "./aiResourceValidationMessage";
 import type { ModelResource, ProviderConnection } from "./types";
@@ -44,8 +46,10 @@ export function ProviderConnectionCard({
   onResourceDelete,
 }: ProviderConnectionCardProps) {
   const t = useTranslations();
+  const [shareOpen, setShareOpen] = useState(false);
   // Prefer per-connection backend flag; org-role canManage is only a fallback.
   const manageable = connection.canManage || canManage;
+  const shareable = manageable && connection.ownerScope === "org";
   const resources = filterResources(connection.resources, modality);
   const validationMessage = connection.validationError
     ? aiResourceValidationMessage(connection.validationError, t)
@@ -86,6 +90,16 @@ export function ProviderConnectionCard({
             <Button variant="ghost" size="sm" aria-label={`${t("settings.aiResources.connection.rotate")}: ${connection.name}`} onClick={() => onRotateCredentials(connection)}>
               {t("settings.aiResources.connection.rotate")}
             </Button>
+            {shareable && (
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label={`${t("share.title")}: ${connection.name}`}
+                onClick={() => setShareOpen(true)}
+              >
+                {t("share.title")}
+              </Button>
+            )}
             <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" aria-label={`${t("settings.aiResources.connection.delete")}: ${connection.name}`} onClick={() => onDelete(connection)}>
               {t("settings.aiResources.connection.delete")}
             </Button>
@@ -117,6 +131,15 @@ export function ProviderConnectionCard({
           </Button>
         )}
       </div>
+      {shareable && shareOpen && (
+        <ShareDialog
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+          resourceType="model_connection"
+          resourceId={String(connection.id)}
+          title={`${t("share.title")} · ${connection.name}`}
+        />
+      )}
     </section>
   );
 }

@@ -9,6 +9,7 @@ import {
   Pencil,
   Play,
   Trash2,
+  Users,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ interface PartnerProfileHeaderProps {
   onRun: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onShare: () => void;
 }
 
 export function PartnerProfileHeader({
@@ -39,6 +41,7 @@ export function PartnerProfileHeader({
   onRun,
   onEdit,
   onDelete,
+  onShare,
 }: PartnerProfileHeaderProps) {
   const t = useTranslations("experts");
   const tp = useTranslations("partnerProfile");
@@ -119,6 +122,15 @@ export function PartnerProfileHeader({
           >
             <Pencil className="h-3.5 w-3.5" />
             {t("edit.editExpert")}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onShare}
+            className="flex-1 gap-1.5 sm:flex-none"
+          >
+            <Users className="h-3.5 w-3.5" />
+            {tRoot("share.title")}
           </Button>
           {canDelete && (
             <Button size="sm" variant="outline" onClick={onDelete} className="gap-1.5">

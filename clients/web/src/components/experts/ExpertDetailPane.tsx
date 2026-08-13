@@ -7,6 +7,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { CenteredSpinner } from "@/components/ui/spinner";
+import { ShareDialog } from "@/components/shared/ShareDialog";
 import { useExpertStore, useCurrentExpert } from "@/stores/expert";
 import { ExpertEditDrawer } from "./ExpertEditDrawer";
 import { ExpertConfigList } from "./ExpertConfigList";
@@ -24,6 +25,7 @@ interface ExpertDetailPaneProps {
 
 export function ExpertDetailPane({ slug, orgSlug }: ExpertDetailPaneProps) {
   const t = useTranslations("experts");
+  const tRoot = useTranslations();
   const router = useRouter();
   const expert = useCurrentExpert();
   const expertLoading = useExpertStore((s) => s.expertLoading);
@@ -36,6 +38,7 @@ export function ExpertDetailPane({ slug, orgSlug }: ExpertDetailPaneProps) {
   const [running, setRunning] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   if (expertLoading && !expert) return <CenteredSpinner className="h-full" />;
 
@@ -90,7 +93,18 @@ export function ExpertDetailPane({ slug, orgSlug }: ExpertDetailPaneProps) {
         onRun={() => void handleRun()}
         onEdit={() => setEditOpen(true)}
         onDelete={() => setDeleteOpen(true)}
+        onShare={() => setShareOpen(true)}
       />
+
+      {shareOpen && (
+        <ShareDialog
+          open
+          onOpenChange={setShareOpen}
+          resourceType="expert"
+          resourceId={String(expert.id)}
+          title={`${tRoot("share.title")} · ${expert.name}`}
+        />
+      )}
 
       <ExpertMarketOperations
         key={slug}

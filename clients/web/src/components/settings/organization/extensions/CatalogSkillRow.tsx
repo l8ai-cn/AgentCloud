@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { ShareDialog } from "@/components/shared/ShareDialog";
 import type { CatalogSkill } from "@/lib/api";
-import { GitBranch, PenLine, RefreshCw, Trash2 } from "lucide-react";
+import { GitBranch, PenLine, RefreshCw, Trash2, Users } from "lucide-react";
 import type { TranslationFn } from "../GeneralSettings";
 import { SkillTagEditor } from "./SkillTagEditor";
 
@@ -30,8 +32,12 @@ export function CatalogSkillRow({
   onEditTags,
   onUpdateTags,
 }: CatalogSkillRowProps) {
+  const [shareOpen, setShareOpen] = useState(false);
   const imported = skill.install_source === "import";
   const name = skill.display_name || skill.slug;
+  // Platform skills are Layer 1 (platform → org admission); only org-owned
+  // skills are instance-authorized through resource_grants.
+  const shareable = skill.organization_id !== null;
 
   return (
     <div className="flex items-start justify-between gap-3 border-b border-border/50 px-4 py-3 last:border-b-0">
@@ -85,6 +91,18 @@ export function CatalogSkillRow({
             <RefreshCw className={`h-4 w-4 ${syncing ? "animate-spin" : ""}`} />
           </Button>
         )}
+        {shareable && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShareOpen(true)}
+            aria-label={`${t("share.title")}: ${name}`}
+            title={t("share.title")}
+          >
+            <Users className="h-4 w-4" />
+          </Button>
+        )}
         <Button
           type="button"
           variant="ghost"
@@ -97,6 +115,15 @@ export function CatalogSkillRow({
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
+      {shareable && shareOpen && (
+        <ShareDialog
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+          resourceType="skill"
+          resourceId={String(skill.id)}
+          title={`${t("share.title")} · ${name}`}
+        />
+      )}
     </div>
   );
 }

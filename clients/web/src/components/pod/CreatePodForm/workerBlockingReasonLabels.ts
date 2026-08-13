@@ -11,7 +11,19 @@ const reasonKeys: Record<string, string> = {
   "selected-target-mode-unsupported": "runtime.options.targetDoesNotSupportMode",
   "resource-profile-disabled": "runtime.options.resourceDisabled",
   "dedicated-provisioning-not-configured": "runtime.options.dedicatedUnavailable",
+  "not-entitled": "runtime.options.notEntitled",
 };
+
+/** Authorization blocks are actionable by a human ("ask an admin"); capacity
+ *  and configuration blocks are not. Callers style them differently so a
+ *  greyed-out option never leaves the user guessing which kind it is. */
+const authorizationReasons = new Set(["not-entitled", "not-granted"]);
+
+export type BlockingReasonKind = "authorization" | "other";
+
+export function blockingReasonKind(reason: string): BlockingReasonKind {
+  return authorizationReasons.has(reason) ? "authorization" : "other";
+}
 
 export function localizeWorkerBlockingReason(
   reason: string,
@@ -24,9 +36,10 @@ export function localizeWorkerBlockingReason(
 export function localizeWorkerBlockingReasons<T extends { blockingReason: string }>(
   options: T[],
   translate: (key: string) => string,
-): T[] {
+): (T & { blockingKind: BlockingReasonKind })[] {
   return options.map((option) => ({
     ...option,
+    blockingKind: blockingReasonKind(option.blockingReason),
     blockingReason: localizeWorkerBlockingReason(option.blockingReason, translate),
   }));
 }

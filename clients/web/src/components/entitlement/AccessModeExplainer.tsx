@@ -12,7 +12,7 @@ interface AccessModeExplainerProps {
 /** Spells out who can actually use the resource right now. The badge alone
  *  reads as a status; admins act on the sentence. */
 export function AccessModeExplainer({ summary }: AccessModeExplainerProps) {
-  const t = useTranslations("admin.entitlements");
+  const t = useTranslations("entitlement");
 
   const message =
     summary.org_admission === "revoked"

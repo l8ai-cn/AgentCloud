@@ -412,7 +412,15 @@
         "noTargetForMode": "没有运行位置支持这种资源使用方式",
         "selectedTargetUnavailable": "所选运行位置当前不可用",
         "targetDoesNotSupportMode": "所选运行位置不支持这种资源使用方式",
-        "resourceDisabled": "这个资源规格当前不可用"
+        "resourceDisabled": "这个资源规格当前不可用",
+        "notEntitled": "你所在组织未获得该 Worker 类型的授权——请联系平台管理员",
+        "modelNotGranted": "你不在该模型连接的白名单内——请联系组织管理员",
+        "modelConnectionDisabled": "该服务商连接已停用",
+        "modelConnectionUnchecked": "该服务商连接尚未通过校验",
+        "modelConnectionInvalid": "该服务商连接校验失败",
+        "modelResourceDisabled": "该模型资源已停用",
+        "modelResourceUnchecked": "该模型资源尚未通过校验",
+        "modelResourceInvalid": "该模型资源校验失败"
       },
       "resources": {
         "custom": "自定义资源",

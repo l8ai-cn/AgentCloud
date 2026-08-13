@@ -87,6 +87,37 @@
     "settings": "设置",
     "billing": "账单"
   },
+  "entitlement": {
+    "kind": {
+      "skill": "平台 Skill",
+      "worker_type": "Worker 类型"
+    },
+    "kindLabel": "资源类型",
+    "resourceLabel": "资源",
+    "resourcePlaceholder": "选择资源",
+    "skillSlugPlaceholder": "平台 skill slug",
+    "admission": {
+      "admitted": "平台已准入",
+      "revoked": "平台已回收",
+      "unset": "平台默认策略"
+    },
+    "effect": {
+      "allow": "允许",
+      "deny": "拒绝"
+    },
+    "explain": {
+      "allowList": "白名单已开启：仅名单内的 {count} 位成员（以及组织所有者 / 管理员）可用。",
+      "denyOutranks": "另有 {count} 位成员被显式拒绝——拒绝优先级高于任何允许，包括管理员豁免。",
+      "everyone": "没有任何成员级允许记录，因此组织全员均可使用该资源。",
+      "revoked": "平台已对该组织回收此资源，无论成员记录如何，任何人都不可用。"
+    },
+    "memberAccess": {
+      "allowList": "白名单 · {count} 人可用",
+      "denied": "{count} 人被拒绝",
+      "everyone": "组织全员可用"
+    },
+    "removeRow": "移除授权记录"
+  },
   "share": {
     "title": "共享",
     "selectUser": "用户",
@@ -96,7 +127,13 @@
     "revokeConfirmTitle": "撤销访问权限？",
     "revokeConfirmDescription": "该用户将无法再访问此资源。",
     "sharedWith": "已共享给",
-    "noShares": "尚未共享给任何人。",
+    "allowListHeading": "白名单",
+    "noAllowList": "白名单为空，当前不限制任何人。",
+    "modeEveryone": "组织全员均可使用",
+    "modeEveryoneHint": "当前没有任何白名单条目。添加第一位成员后即切换为白名单，其他人会随即失去访问权。",
+    "modeAllowList": "白名单：{count} 人可用",
+    "modeAllowListHint": "仅名单内成员（以及组织所有者 / 管理员）可用。移除最后一条会重新对全员开放。",
+    "revokeLastConfirmDescription": "这是最后一条白名单条目。移除后，该资源将重新对组织全员开放。",
     "loadFailed": "加载共享信息失败",
     "grantFailed": "共享失败",
     "revokeFailed": "撤销访问权限失败"

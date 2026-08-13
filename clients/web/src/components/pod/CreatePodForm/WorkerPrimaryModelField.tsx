@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import type { EffectiveResource } from "@/lib/api/facade/aiResource";
 import type { WorkerSpecDraft } from "@/lib/api/facade/podConnect";
 import type { AsyncState } from "../hooks/workerCreateDraft";
+import { localizeModelBlockingReason } from "./modelBlockingReasonLabels";
 import { modelResourceLabel } from "./workerModelResources";
 import { WorkerRuntimeSelectField } from "./WorkerRuntimeSelectField";
 
@@ -52,7 +53,7 @@ export function WorkerPrimaryModelField(props: WorkerPrimaryModelFieldProps) {
           value: String(item.resource?.id ?? 0),
           label: modelResourceLabel(item),
           selectable: item.selectable,
-          blockingReason: item.blockingReason,
+          ...localizeModelBlockingReason(item.blockingReason, props.t),
         }))}
         onChange={(value) => props.onPatch({ model_resource_id: Number(value) })}
       />

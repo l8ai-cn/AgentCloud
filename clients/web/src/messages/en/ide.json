@@ -412,7 +412,15 @@
         "noTargetForMode": "No run location supports this resource mode",
         "selectedTargetUnavailable": "The selected run location is unavailable",
         "targetDoesNotSupportMode": "The selected run location does not support this resource mode",
-        "resourceDisabled": "This resource size is unavailable"
+        "resourceDisabled": "This resource size is unavailable",
+        "notEntitled": "Your organization is not entitled to this Worker type — ask a platform administrator",
+        "modelNotGranted": "You are not on this model connection's allow-list — ask an organization administrator",
+        "modelConnectionDisabled": "The provider connection is disabled",
+        "modelConnectionUnchecked": "The provider connection has not been validated yet",
+        "modelConnectionInvalid": "The provider connection failed validation",
+        "modelResourceDisabled": "This model resource is disabled",
+        "modelResourceUnchecked": "This model resource has not been validated yet",
+        "modelResourceInvalid": "This model resource failed validation"
       },
       "resources": {
         "custom": "Custom resources",

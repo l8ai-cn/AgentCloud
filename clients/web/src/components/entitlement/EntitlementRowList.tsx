@@ -22,7 +22,7 @@ export function EntitlementRowList({
   onRemove,
   dimmed,
 }: EntitlementRowListProps) {
-  const t = useTranslations("admin.entitlements");
+  const t = useTranslations("entitlement");
 
   if (rows.length === 0) return null;
 
@@ -65,7 +65,7 @@ export function EntitlementRowList({
                 size="sm"
                 variant="ghost"
                 className="text-destructive"
-                aria-label={`${t("actions.remove")}: ${resolveSubject(row)}`}
+                aria-label={`${t("removeRow")}: ${resolveSubject(row)}`}
                 loading={busyId === row.id}
                 onClick={() => onRemove(row)}
               >

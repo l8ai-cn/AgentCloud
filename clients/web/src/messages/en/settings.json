@@ -1126,6 +1126,45 @@
         "repositoriesHint": "Import from GitHub, GitLab, Gitea, or a manual remote URL."
       }
     },
+    "memberAccess": {
+      "navigation": "Member access",
+      "title": "Member access",
+      "description": "Subdivide, per member, the platform resources your organization is already admitted to. You cannot widen what the platform admitted — only narrow it.",
+      "actions": {
+        "allow": "Allow a member",
+        "cancel": "Cancel",
+        "deny": "Deny a member",
+        "refresh": "Refresh",
+        "restrictResource": "Restrict a resource"
+      },
+      "dialog": {
+        "allowDescription": "Adding the first member allow row switches this resource from \"everyone in the org\" to an allow-list: from then on only listed members (plus owners and admins) keep access.",
+        "allowTitle": "Allow a member",
+        "denyDescription": "A deny row blocks exactly this member and outranks every allow — including the owner/admin exemption.",
+        "denyTitle": "Deny a member",
+        "member": "Member",
+        "memberPlaceholder": "Select a member",
+        "reason": "Reason",
+        "reasonPlaceholder": "Why this decision is being recorded",
+        "resource": "Resource"
+      },
+      "empty": {
+        "description": "No entitlement rows exist for this organization, so every admitted resource is open to all members. Restrict one to start an allow-list.",
+        "title": "Nothing restricted yet"
+      },
+      "error": {
+        "load": "Failed to load member access.",
+        "removeFailed": "Failed to remove the record.",
+        "saveFailed": "Failed to save the record."
+      },
+      "noMemberRows": "No member rows — everyone in the organization can use this resource.",
+      "platformRows": "Platform admission (read-only)",
+      "platformSubject": "Whole organization",
+      "toast": {
+        "removed": "Record removed.",
+        "saved": "Record saved."
+      }
+    },
     "aiResources": {
       "navigation": "AI Resources",
       "title": "AI Resources",

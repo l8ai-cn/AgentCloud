@@ -15,7 +15,7 @@ interface AccessModeBadgesProps {
  *  "revoked by the platform" look identical, which is the misread this
  *  surface exists to prevent. */
 export function AccessModeBadges({ summary }: AccessModeBadgesProps) {
-  const t = useTranslations("admin.entitlements");
+  const t = useTranslations("entitlement");
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">

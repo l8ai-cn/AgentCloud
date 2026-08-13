@@ -1,5 +1,8 @@
 import type { WorkerRuntimeSelectOption } from "./WorkerRuntimeSelectField";
-import { localizeWorkerBlockingReason } from "./workerBlockingReasonLabels";
+import {
+  blockingReasonKind,
+  localizeWorkerBlockingReason,
+} from "./workerBlockingReasonLabels";
 
 type RuntimeOptionKind =
   | "workerType"
@@ -39,6 +42,7 @@ export function localizeWorkerRuntimeOption(
     label: localizeLabel(kind, lookupValue, name, t),
     selectable,
     blockingReason: localizeReason(blockingReason, t),
+    blockingKind: blockingReasonKind(blockingReason),
   };
 }
 

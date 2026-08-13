@@ -5,21 +5,34 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog, useConfirmDialog } from "@/components/ui/confirm-dialog";
-import { Loader2, X } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCurrentUser, useCurrentOrg, useAuthStore } from "@/stores/auth";
 import { organizationApi } from "@/lib/api";
 import { listGrants, createGrant, deleteGrant } from "@/lib/api/facade/grantConnect";
 import type { ResourceGrant, OrganizationMember } from "@/lib/api";
+import { ShareAccessModeNotice } from "./ShareAccessModeNotice";
+import { ShareGrantList } from "./ShareGrantList";
+
+/** Mirrors backend/internal/domain/grant type constants — Layer 2 addresses
+ *  organization-owned instances by their integer primary key. */
+export type ShareableResourceType =
+  | "pod"
+  | "runner"
+  | "repository"
+  | "model_connection"
+  | "skill"
+  | "expert";
 
 interface ShareDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  resourceType: "pod" | "runner" | "repository";
+  resourceType: ShareableResourceType;
   resourceId: string;
+  title?: string;
 }
 
-export function ShareDialog({ open, onOpenChange, resourceType, resourceId }: ShareDialogProps) {
+export function ShareDialog({ open, onOpenChange, resourceType, resourceId, title }: ShareDialogProps) {
   const t = useTranslations();
   const currentOrg = useCurrentOrg();
   const currentUser = useCurrentUser();
@@ -79,7 +92,10 @@ export function ShareDialog({ open, onOpenChange, resourceType, resourceId }: Sh
     if (!currentOrg) return;
     const confirmed = await confirm({
       title: t("share.revokeConfirmTitle"),
-      description: t("share.revokeConfirmDescription"),
+      description:
+        grants.length === 1
+          ? t("share.revokeLastConfirmDescription")
+          : t("share.revokeConfirmDescription"),
       variant: "destructive",
       confirmText: t("share.revoke"),
       cancelText: t("common.cancel"),
@@ -98,9 +114,10 @@ export function ShareDialog({ open, onOpenChange, resourceType, resourceId }: Sh
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("share.title")}</DialogTitle>
+            <DialogTitle>{title ?? t("share.title")}</DialogTitle>
           </DialogHeader>
           <DialogBody className="space-y-4">
+            <ShareAccessModeNotice grantCount={grants.length} />
             <div className="space-y-3 pb-3 border-b border-border">
               <FormField label={t("share.selectUser")} htmlFor="share-user">
                 <select
@@ -127,31 +144,8 @@ export function ShareDialog({ open, onOpenChange, resourceType, resourceId }: Sh
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">{t("share.sharedWith")}</p>
-              {loading ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
-                </div>
-              ) : grants.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-2">{t("share.noShares")}</p>
-              ) : (
-                grants.map((g) => (
-                  <div key={g.id} className="flex items-center justify-between py-2 px-2 rounded hover:bg-muted/50">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-medium shrink-0">
-                        {(g.user?.name || g.user?.username || "?")[0].toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{g.user?.name || g.user?.username}</p>
-                        <p className="text-xs text-muted-foreground truncate">{g.user?.email}</p>
-                      </div>
-                    </div>
-                    <Button size="sm" variant="ghost" className="text-destructive shrink-0" onClick={() => handleRevoke(g.id)}>
-                      <X className="w-3 h-3" />
-                    </Button>
-                  </div>
-                ))
-              )}
+              <p className="text-sm font-medium text-muted-foreground">{t("share.allowListHeading")}</p>
+              <ShareGrantList grants={grants} loading={loading} onRevoke={handleRevoke} />
             </div>
 
             {error && (

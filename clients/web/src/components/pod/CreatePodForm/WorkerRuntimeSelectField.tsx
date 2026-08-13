@@ -1,17 +1,20 @@
 "use client";
 
+import { Lock } from "lucide-react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import type { BlockingReasonKind } from "./workerBlockingReasonLabels";
 
 export interface WorkerRuntimeSelectOption {
   value: string;
   label: string;
   selectable: boolean;
   blockingReason: string;
+  blockingKind?: BlockingReasonKind;
 }
 
 interface WorkerRuntimeSelectFieldProps {
@@ -52,9 +55,20 @@ export function WorkerRuntimeSelectField({
               disabled={!option.selectable}
             >
               <span className="flex min-w-0 flex-col">
-                <span>{option.label}</span>
+                <span className="flex items-center gap-1.5">
+                  {option.blockingKind === "authorization" && !option.selectable && (
+                    <Lock className="h-3 w-3 shrink-0 text-warning" />
+                  )}
+                  {option.label}
+                </span>
                 {!option.selectable && option.blockingReason && (
-                  <span className="text-xs text-muted-foreground">
+                  <span
+                    className={
+                      option.blockingKind === "authorization"
+                        ? "text-xs text-warning"
+                        : "text-xs text-muted-foreground"
+                    }
+                  >
                     {option.blockingReason}
                   </span>
                 )}
