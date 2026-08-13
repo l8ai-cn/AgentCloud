@@ -38,13 +38,7 @@
         "admitOrganization": "准入组织",
         "cancel": "取消",
         "deny": "拒绝",
-        "grant": "授权",
-        "remove": "移除授权记录"
-      },
-      "admission": {
-        "admitted": "平台已准入",
-        "revoked": "平台已回收",
-        "unset": "平台默认策略"
+        "grant": "授权"
       },
       "dialog": {
         "denyDescription": "拒绝记录只精确阻断该对象，且优先级高于任何 allow —— 包括组织管理员豁免。",
@@ -60,10 +54,6 @@
         "subjectUserHint": "留空写入组织级记录；填写成员会开启白名单。",
         "subjectUserPlaceholder": "组织级（全员）"
       },
-      "effect": {
-        "allow": "允许",
-        "deny": "拒绝"
-      },
       "empty": {
         "description": "该范围下还没有任何授权记录，资源沿用平台默认策略。",
         "title": "暂无授权记录"
@@ -75,30 +65,11 @@
         "saveFailed": "保存授权记录失败。"
       },
       "expiredHeading": "已过期（保留审计，不再生效）",
-      "explain": {
-        "allowList": "白名单已开启：仅名单内的 {count} 位成员（以及组织所有者 / 管理员）可用。",
-        "denyOutranks": "另有 {count} 位成员被显式拒绝——拒绝优先级高于任何允许，包括管理员豁免。",
-        "everyone": "没有任何成员级允许记录，因此组织全员均可使用该资源。",
-        "revoked": "平台已对该组织回收此资源，无论成员记录如何，任何人都不可用。"
-      },
       "filters": {
-        "kindLabel": "资源类型",
         "orgLabel": "组织",
         "orgPlaceholder": "选择组织",
         "orgSearchLabel": "搜索组织",
-        "orgSearchPlaceholder": "按名称或 slug 搜索",
-        "resourceLabel": "资源",
-        "resourcePlaceholder": "选择资源",
-        "skillSlugPlaceholder": "平台 skill slug"
-      },
-      "kind": {
-        "skill": "平台 Skill",
-        "worker_type": "Worker 类型"
-      },
-      "memberAccess": {
-        "allowList": "白名单 · {count} 人可用",
-        "denied": "{count} 人被拒绝",
-        "everyone": "组织全员可用"
+        "orgSearchPlaceholder": "按名称或 slug 搜索"
       },
       "pickScope": {
         "description": "先选择一个资源或组织，再查看和编辑其授权记录。",

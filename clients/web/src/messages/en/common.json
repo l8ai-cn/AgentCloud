@@ -80,6 +80,37 @@
     "UNAVAILABLE": "Service temporarily unavailable. Please try again later.",
     "DEADLINE_EXCEEDED": "The operation timed out. Please try again."
   },
+  "entitlement": {
+    "kind": {
+      "skill": "Platform skill",
+      "worker_type": "Worker type"
+    },
+    "kindLabel": "Resource kind",
+    "resourceLabel": "Resource",
+    "resourcePlaceholder": "Select a resource",
+    "skillSlugPlaceholder": "Platform skill slug",
+    "admission": {
+      "admitted": "Admitted by platform",
+      "revoked": "Revoked by platform",
+      "unset": "Platform default"
+    },
+    "effect": {
+      "allow": "Allow",
+      "deny": "Deny"
+    },
+    "explain": {
+      "allowList": "Allow-list armed: only the {count, plural, =1 {1 listed member} other {# listed members}} (plus organization owners and admins) can use this resource.",
+      "denyOutranks": "{count, plural, =1 {1 member is} other {# members are}} explicitly denied — deny outranks every allow, including the admin exemption.",
+      "everyone": "No member allow row exists, so every member of this organization can use the resource.",
+      "revoked": "The platform revoked this resource for the organization. Nobody can use it, whatever member rows exist."
+    },
+    "memberAccess": {
+      "allowList": "Allow-list · {count} allowed",
+      "denied": "{count} denied",
+      "everyone": "Everyone in the org"
+    },
+    "removeRow": "Remove entitlement"
+  },
   "share": {
     "title": "Share",
     "selectUser": "User",
@@ -89,7 +120,13 @@
     "revokeConfirmTitle": "Revoke access?",
     "revokeConfirmDescription": "This user will no longer have access to this resource.",
     "sharedWith": "Shared with",
-    "noShares": "Not shared with anyone yet.",
+    "allowListHeading": "Allow-list",
+    "noAllowList": "The allow-list is empty, so it does not restrict anyone.",
+    "modeEveryone": "Everyone in the organization can use this",
+    "modeEveryoneHint": "No allow-list entries exist. Adding the first member restricts access to the allow-list — everyone else loses it.",
+    "modeAllowList": "Allow-list: {count} allowed",
+    "modeAllowListHint": "Only listed members (plus organization owners and admins) can use this. Removing the last entry reopens it to everyone.",
+    "revokeLastConfirmDescription": "This is the last allow-list entry. Removing it reopens this resource to everyone in the organization.",
     "loadFailed": "Failed to load sharing info",
     "grantFailed": "Failed to share",
     "revokeFailed": "Failed to revoke access"

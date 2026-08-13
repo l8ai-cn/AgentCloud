@@ -23,6 +23,7 @@ import {
   BarChart3,
   Layers,
   LifeBuoy,
+  ShieldCheck,
 } from "lucide-react";
 
 interface SettingsSidebarContentProps {
@@ -101,7 +102,10 @@ export function SettingsSidebarContent({ className }: SettingsSidebarContentProp
     { id: "im-channels", labelKey: "ide.sidebar.settings.tabs.imChannels", icon: MessageSquareShare },
     { id: "ai-resources", labelKey: "settings.aiResources.navigation", icon: KeyRound },
     ...(isOrgAdminOrOwner
-      ? [{ id: "usage", labelKey: "ide.sidebar.settings.tabs.usage", icon: BarChart3 }]
+      ? [
+          { id: "member-access", labelKey: "settings.memberAccess.navigation", icon: ShieldCheck },
+          { id: "usage", labelKey: "ide.sidebar.settings.tabs.usage", icon: BarChart3 },
+        ]
       : []),
     { id: "billing", labelKey: "ide.sidebar.settings.tabs.billing", icon: CreditCard },
   ];

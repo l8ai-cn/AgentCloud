@@ -9,11 +9,9 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { PageHeader } from "@/components/ui/page-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ENTITLEMENT_KINDS,
-  type EntitlementKind,
-} from "@/lib/api/entitlement/entitlementTypes";
-import { EntitlementScopePicker } from "./EntitlementScopePicker";
+import { EntitlementResourcePicker } from "@/components/entitlement/EntitlementResourcePicker";
+import { entitlementKindLabel } from "@/components/entitlement/entitlementKindLabel";
+import type { EntitlementKind } from "@/lib/api/entitlement/entitlementTypes";
 import { EntitlementSummaryCard } from "./EntitlementSummaryCard";
 import {
   EntitlementWriteDialog,
@@ -23,14 +21,9 @@ import { OrganizationScopePicker } from "./OrganizationScopePicker";
 import { useAdminEntitlements, type EntitlementScope } from "./useAdminEntitlements";
 import { useAdminOrganizationDirectory } from "./useAdminOrganizationDirectory";
 
-function kindLabel(t: (key: string) => string, kind: string): string {
-  return (ENTITLEMENT_KINDS as readonly string[]).includes(kind)
-    ? t(`entitlements.kind.${kind}`)
-    : kind;
-}
-
 export default function AdminEntitlementsPage() {
   const t = useTranslations("admin");
+  const tKind = useTranslations("entitlement");
   const [tab, setTab] = useState("resource");
   const [kind, setKind] = useState<EntitlementKind>("worker_type");
   const [resourceKey, setResourceKey] = useState("");
@@ -59,7 +52,7 @@ export default function AdminEntitlementsPage() {
       title={
         tab === "resource"
           ? directory.label(summary.organization_id)
-          : `${kindLabel(t, summary.resource_kind)} · ${summary.resource_key}`
+          : `${entitlementKindLabel(tKind, summary.resource_kind)} · ${summary.resource_key}`
       }
       subtitle={
         tab === "resource"
@@ -109,7 +102,7 @@ export default function AdminEntitlementsPage() {
         </TabsList>
 
         <TabsContent value="resource" className="flex flex-wrap items-end gap-3 pt-2">
-          <EntitlementScopePicker
+          <EntitlementResourcePicker
             kind={kind}
             resourceKey={resourceKey}
             onKindChange={setKind}

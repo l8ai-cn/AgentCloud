@@ -20,6 +20,7 @@ import {
   UsageSettings,
   InfrastructureOverview,
 } from "@/components/settings/organization";
+import { MemberAccessSettings } from "@/components/settings/MemberAccessSettings";
 import { SupportTicketsContent } from "@/components/support/SupportTicketsContent";
 
 type TranslationFn = (key: string, params?: Record<string, string | number>) => string;
@@ -76,6 +77,8 @@ export default function SettingsPage() {
             canManage={currentOrg?.role === "owner" || currentOrg?.role === "admin"}
           />
         );
+      case "member-access":
+        return <MemberAccessSettings />;
       case "infrastructure":
         return <InfrastructureOverview />;
       default:

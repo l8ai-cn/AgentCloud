@@ -1126,6 +1126,45 @@
         "repositoriesHint": "从 GitHub、GitLab、Gitea 或手动 URL 导入。"
       }
     },
+    "memberAccess": {
+      "navigation": "成员权限",
+      "title": "成员权限",
+      "description": "在平台已准入的范围内，按成员细分资源可用性。只能收窄，不能扩大平台准入范围。",
+      "actions": {
+        "allow": "允许成员",
+        "cancel": "取消",
+        "deny": "拒绝成员",
+        "refresh": "刷新",
+        "restrictResource": "收窄某个资源"
+      },
+      "dialog": {
+        "allowDescription": "添加第一条成员允许记录后，该资源会从「组织全员可用」切换为白名单：此后只有名单内成员（以及所有者 / 管理员）可用。",
+        "allowTitle": "允许成员使用",
+        "denyDescription": "拒绝记录只精确阻断该成员，且优先级高于任何允许——包括所有者 / 管理员豁免。",
+        "denyTitle": "拒绝成员使用",
+        "member": "成员",
+        "memberPlaceholder": "选择成员",
+        "reason": "原因",
+        "reasonPlaceholder": "记录本次决策的原因",
+        "resource": "资源"
+      },
+      "empty": {
+        "description": "该组织当前没有任何授权记录，因此所有已准入资源对全员开放。收窄某个资源即可开启白名单。",
+        "title": "尚未收窄任何资源"
+      },
+      "error": {
+        "load": "加载成员权限失败。",
+        "removeFailed": "移除记录失败。",
+        "saveFailed": "保存记录失败。"
+      },
+      "noMemberRows": "暂无成员级记录——组织全员均可使用该资源。",
+      "platformRows": "平台准入（只读）",
+      "platformSubject": "整个组织",
+      "toast": {
+        "removed": "已移除记录。",
+        "saved": "已保存记录。"
+      }
+    },
     "aiResources": {
       "navigation": "AI 资源",
       "title": "AI 资源",
