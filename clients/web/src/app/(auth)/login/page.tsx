@@ -12,20 +12,17 @@ export default function LoginPage() {
   const localLogin = isLocalLoginRequested(searchParams);
   const usePreferredAmp = !!(preferredSsoDomain && !localLogin);
 
-  // Wait for session hydration before mounting AmpPreferredLogin — its 50ms
-  // AMP assign otherwise races (and wins) against useRedirectIfAuthenticated,
-  // bouncing already-logged-in users back to the IdP instead of app home.
-  // Only skip auto-redirect on the local password form (popout ?redirect= race);
-  // preferred AMP path must still bounce authenticated sessions to home.
+  // Preferred AMP path must wait for hydration and skip mounting while an
+  // authenticated redirect is in flight — otherwise AmpPreferredLogin's 50ms
+  // IdP assign races (and wins) against useRedirectIfAuthenticated.
+  // Local password form keeps rendering during redirect so e2e (suite-wide
+  // storageState) and popout ?redirect= races are unchanged.
   const { hydrated, redirecting } = useRedirectIfAuthenticated({
     skipIfRedirectParam: usePreferredAmp ? null : searchParams.get("redirect"),
   });
 
-  if (!hydrated || redirecting) {
-    return null;
-  }
-
   if (usePreferredAmp) {
+    if (!hydrated || redirecting) return null;
     return <AmpPreferredLogin domain={preferredSsoDomain!} providerName="AMP" />;
   }
 
