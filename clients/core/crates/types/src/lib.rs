@@ -88,6 +88,10 @@ pub mod proto_extension_v1 {
     pub use ::extension_proto::proto::extension::v1::*;
 }
 
+pub mod proto_entitlement_v1 {
+    pub use ::entitlement_proto::proto::entitlement::v1::*;
+}
+
 pub mod proto_env_bundle_v1 {
     pub use ::env_bundle_proto::proto::env_bundle::v1::*;
 }

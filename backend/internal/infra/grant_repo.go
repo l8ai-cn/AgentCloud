@@ -55,6 +55,19 @@ func (r *grantRepo) GetGrantedUserIDs(ctx context.Context, resourceType, resourc
 	return userIDs, err
 }
 
+func (r *grantRepo) GetRestrictedResourceIDs(ctx context.Context, resourceType string, resourceIDs []string) ([]string, error) {
+	if len(resourceIDs) == 0 {
+		return nil, nil
+	}
+	var restricted []string
+	err := r.db.WithContext(ctx).
+		Model(&grant.ResourceGrant{}).
+		Distinct().
+		Where("resource_type = ? AND resource_id IN ?", resourceType, resourceIDs).
+		Pluck("resource_id", &restricted).Error
+	return restricted, err
+}
+
 func (r *grantRepo) GetGrantedResourceIDs(ctx context.Context, resourceType string, userID int64, orgID int64) ([]string, error) {
 	var resourceIDs []string
 	err := r.db.WithContext(ctx).

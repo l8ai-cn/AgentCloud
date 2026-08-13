@@ -33,6 +33,91 @@
       "unknownError": "Something went wrong.",
       "yes": "Yes"
     },
+    "entitlements": {
+      "actions": {
+        "admitOrganization": "Admit an organization",
+        "cancel": "Cancel",
+        "deny": "Deny",
+        "grant": "Grant",
+        "remove": "Remove entitlement"
+      },
+      "admission": {
+        "admitted": "Admitted by platform",
+        "revoked": "Revoked by platform",
+        "unset": "Platform default"
+      },
+      "dialog": {
+        "denyDescription": "A deny row blocks exactly this subject and outranks every allow, including the organization-admin exemption.",
+        "denyTitle": "Deny access",
+        "expiresAt": "Expires at",
+        "expiresAtHint": "Leave empty to keep the entitlement until it is removed.",
+        "grantDescription": "Granting to the whole organization admits it to the resource. Granting to a single member also arms the allow-list: from then on only listed members keep access.",
+        "grantTitle": "Grant access",
+        "organization": "Organization",
+        "reason": "Reason",
+        "reasonPlaceholder": "Why this decision is being recorded",
+        "subjectUser": "Member user ID",
+        "subjectUserHint": "Leave empty to write an organization-wide row. Naming a member arms the allow-list.",
+        "subjectUserPlaceholder": "Organization-wide"
+      },
+      "effect": {
+        "allow": "Allow",
+        "deny": "Deny"
+      },
+      "empty": {
+        "description": "No entitlement rows exist for this scope yet, so the resource follows its platform default.",
+        "title": "No entitlement rows"
+      },
+      "emptyRows": "No rows — this scope follows the platform default.",
+      "error": {
+        "load": "Failed to load entitlements.",
+        "removeFailed": "Failed to remove the entitlement.",
+        "saveFailed": "Failed to save the entitlement."
+      },
+      "expiredHeading": "Expired (kept for audit, no effect)",
+      "explain": {
+        "allowList": "Allow-list armed: only the {count, plural, =1 {1 listed member} other {# listed members}} (plus organization owners and admins) can use this resource.",
+        "denyOutranks": "{count, plural, =1 {1 member is} other {# members are}} explicitly denied — deny outranks every allow, including the admin exemption.",
+        "everyone": "No member allow row exists, so every member of this organization can use the resource.",
+        "revoked": "The platform revoked this resource for the organization. Nobody can use it, whatever member rows exist."
+      },
+      "filters": {
+        "kindLabel": "Resource kind",
+        "orgLabel": "Organization",
+        "orgPlaceholder": "Select an organization",
+        "orgSearchLabel": "Search organizations",
+        "orgSearchPlaceholder": "Search by name or slug",
+        "resourceLabel": "Resource",
+        "resourcePlaceholder": "Select a resource",
+        "skillSlugPlaceholder": "Platform skill slug"
+      },
+      "kind": {
+        "skill": "Platform skill",
+        "worker_type": "Worker type"
+      },
+      "memberAccess": {
+        "allowList": "Allow-list · {count} allowed",
+        "denied": "{count} denied",
+        "everyone": "Everyone in the org"
+      },
+      "pickScope": {
+        "description": "Choose a resource or an organization to review and edit its entitlement rows.",
+        "title": "Pick a scope"
+      },
+      "subject": {
+        "user": "Member #{id}",
+        "wholeOrg": "Whole organization"
+      },
+      "subtitle": "Decide which organizations may use platform worker types and platform skills.",
+      "tabs": {
+        "byOrganization": "By organization",
+        "byResource": "By resource"
+      },
+      "toast": {
+        "removed": "Entitlement removed.",
+        "saved": "Entitlement saved."
+      }
+    },
     "expertMarket": {
       "actionFailed": "Review action failed.",
       "approve": "Approve",
@@ -71,6 +156,7 @@
     },
     "nav": {
       "auditLogs": "Audit logs",
+      "entitlements": "Entitlements",
       "expertReview": "Expert review",
       "label": "System administration",
       "organizations": "Organizations",

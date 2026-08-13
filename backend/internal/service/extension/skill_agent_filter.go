@@ -144,6 +144,18 @@ func (s *Service) hydratePackedAgentFilters(ctx context.Context, skills []*exten
 }
 
 func (s *Service) loadPackedAgentFilter(ctx context.Context, storageKey string) (json.RawMessage, error) {
+	if cached, ok := s.agentFilters.get(storageKey); ok {
+		return cached, nil
+	}
+	raw, err := s.fetchPackedAgentFilter(ctx, storageKey)
+	if err != nil {
+		return nil, err
+	}
+	s.agentFilters.put(storageKey, raw)
+	return raw, nil
+}
+
+func (s *Service) fetchPackedAgentFilter(ctx context.Context, storageKey string) (json.RawMessage, error) {
 	key := packedAgentFilterKey(storageKey)
 	exists, err := s.storage.Exists(ctx, key)
 	if err != nil {

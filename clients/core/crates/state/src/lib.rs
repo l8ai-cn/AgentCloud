@@ -15,6 +15,8 @@ pub mod blockstore_types;
 pub mod channel_state;
 pub mod channel_types;
 pub mod credential_types;
+pub mod entitlement_state;
+pub mod entitlement_types;
 pub mod event_dispatch;
 pub mod expert_state;
 pub mod expert_types;
@@ -167,6 +169,8 @@ mod autopilot_state_tests;
 mod blockstore_state_tests;
 #[cfg(test)]
 mod channel_state_tests;
+#[cfg(test)]
+mod entitlement_state_tests;
 #[cfg(test)]
 mod expert_state_tests;
 #[cfg(test)]

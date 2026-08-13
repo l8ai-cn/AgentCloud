@@ -16,6 +16,7 @@ import type {
   WasmRunnerState, WasmMeshState, WasmTicketState, WasmChannelState,
   WasmWorkflowState, WasmLoopalManager, WasmRepoState,
   WasmExpertState, WasmAutopilotState, WasmLoopBuilderState, WasmRelayManager,
+  WasmEntitlementService, WasmEntitlementState,
 } from "agent-cloud-wasm";
 import type { AgentWorkbenchServiceRegistry } from "./agent-workbench-service-registry";
 
@@ -52,6 +53,7 @@ export interface ServiceRegistry extends AgentWorkbenchServiceRegistry {
   extensionService: WasmExtensionService;
   invitationService: WasmInvitationService;
   grantService: WasmGrantService;
+  entitlementService: WasmEntitlementService;
   apiKeyService: WasmApiKeyService;
   bindingService: WasmBindingService;
   notificationService: WasmNotificationService;
@@ -83,6 +85,7 @@ export interface ServiceRegistry extends AgentWorkbenchServiceRegistry {
   loopBuilderState: WasmLoopBuilderState;
   repoState: WasmRepoState;
   expertState: WasmExpertState;
+  entitlementState: WasmEntitlementState;
   autopilotState: WasmAutopilotState;
   relayManager: WasmRelayManager;
 }
@@ -159,6 +162,8 @@ export const getRepositoryService = () => g("repositoryService");
 export const getExtensionService = () => g("extensionService");
 export const getInvitationService = () => g("invitationService");
 export const getGrantService = () => g("grantService");
+export const getEntitlementService = () => g("entitlementService");
+export const getEntitlementState = () => g("entitlementState");
 export const getApiKeyService = () => g("apiKeyService");
 export const getBindingService = () => g("bindingService");
 export const getNotificationService = () => g("notificationService");

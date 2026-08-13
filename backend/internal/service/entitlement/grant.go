@@ -52,9 +52,10 @@ func (s *Service) Grant(ctx context.Context, req GrantRequest) (*entitlementdom.
 			return nil, err
 		}
 	}
-	if row.Effect == entitlementdom.EffectDeny {
-		s.cache.invalidate(row.OrganizationID)
-	}
+	// An allow row is not necessarily permissive: under presence-is-allow-list
+	// the first user-level allow flips the resource into whitelist mode and
+	// strips everyone else, so every write has to drop the snapshot.
+	s.cache.invalidate(row.OrganizationID)
 	s.auditGrant(ctx, row, req)
 	return row, nil
 }

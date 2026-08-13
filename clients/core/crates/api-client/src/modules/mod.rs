@@ -9,6 +9,7 @@ pub mod billing;
 pub mod binding;
 pub mod blockstore;
 pub mod channel;
+pub mod entitlement_connect;
 pub mod execution_cluster;
 pub mod extension;
 pub mod file_connect;

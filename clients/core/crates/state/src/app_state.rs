@@ -7,6 +7,7 @@ use crate::agent_workbench_state::AgentWorkbenchState;
 pub use crate::app_runtime::{AppRuntime, AppStateDispatchHook};
 use crate::autopilot_state::AutopilotState;
 use crate::channel_state::ChannelState;
+use crate::entitlement_state::EntitlementState;
 use crate::event_dispatch;
 use crate::expert_state::ExpertState;
 use crate::loop_builder_state::LoopBuilderState;
@@ -34,6 +35,7 @@ pub struct AppState {
     pub loop_builder: LoopBuilderState,
     pub repo: RepoState,
     pub experts: ExpertState,
+    pub entitlements: EntitlementState,
 
     /// Toast notifications queued by dispatch (workflow_run:warning,
     /// system:maintenance, etc). Drained per-tick by platform consumers.
@@ -73,6 +75,7 @@ impl AppState {
             loop_builder: LoopBuilderState::new(),
             repo: RepoState::new(),
             experts: ExpertState::new(),
+            entitlements: EntitlementState::new(),
             pending_toasts: Vec::new(),
             pending_browser_notifications: Vec::new(),
             pending_refetch_ticket_slugs: Vec::new(),
@@ -97,6 +100,7 @@ impl AppState {
             loop_builder: LoopBuilderState::new(),
             repo: RepoState::with_storage(backend),
             experts: ExpertState::new(),
+            entitlements: EntitlementState::new(),
             pending_toasts: Vec::new(),
             pending_browser_notifications: Vec::new(),
             pending_refetch_ticket_slugs: Vec::new(),
@@ -152,6 +156,7 @@ impl AppState {
         self.autopilot = AutopilotState::default();
         self.workbench = AgentWorkbenchState::new();
         self.experts = ExpertState::new();
+        self.entitlements = EntitlementState::new();
         self.loop_builder.reset();
         self.pending_toasts.clear();
         self.pending_browser_notifications.clear();

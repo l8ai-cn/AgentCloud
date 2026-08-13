@@ -48,13 +48,16 @@ type Service struct {
 	entitlements SkillEntitlementGate
 	grants       SkillGrantReader
 	repos        RepositoryAccess
+
+	agentFilters *packedAgentFilterCache
 }
 
 func NewService(repo extension.Repository, storage storage.Storage, cryptoEncryptor *crypto.Encryptor) *Service {
 	return &Service{
-		repo:    repo,
-		storage: storage,
-		crypto:  cryptoEncryptor,
+		repo:         repo,
+		storage:      storage,
+		crypto:       cryptoEncryptor,
+		agentFilters: newPackedAgentFilterCache(),
 	}
 }
 

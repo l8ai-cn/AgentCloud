@@ -13,6 +13,7 @@ const entries = [
   ["Overview", "/admin"],
   ["Users", "/admin/users"],
   ["Organizations", "/admin/organizations"],
+  ["Entitlements", "/admin/entitlements"],
   ["Runners", "/admin/runners"],
   ["Relays", "/admin/relays"],
   ["SSO", "/admin/sso"],
