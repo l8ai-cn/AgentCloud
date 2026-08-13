@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { useLightSession } from "@/hooks/useLightSession";
 import { buildSsoAuthUrl } from "@/lib/preferred-sso";
 
 interface AmpPreferredLoginProps {
@@ -19,6 +20,7 @@ export function AmpPreferredLogin({
 }: AmpPreferredLoginProps) {
   const t = useTranslations();
   const searchParams = useSearchParams();
+  const { session, hydrated } = useLightSession();
   const [redirecting, setRedirecting] = useState(true);
 
   const redirectParam = searchParams.get("redirect");
@@ -28,11 +30,14 @@ export function AmpPreferredLogin({
     : "/login?local=1";
 
   useEffect(() => {
+    // Parent page should already gate on auth, but never hard-navigate to the
+    // IdP while a local session is present — that traps logged-in users.
+    if (!hydrated || session?.isAuthenticated) return;
     const timer = window.setTimeout(() => {
       window.location.assign(authUrl);
     }, 50);
     return () => window.clearTimeout(timer);
-  }, [authUrl]);
+  }, [authUrl, hydrated, session?.isAuthenticated]);
 
   return (
     <AuthShell
