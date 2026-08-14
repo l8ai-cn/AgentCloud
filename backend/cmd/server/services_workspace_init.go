@@ -49,6 +49,7 @@ func initializeWorkspaceServices(services *serviceContainer, cfg *config.Config,
 	}
 	grantRepo := infra.NewGrantRepository(db)
 	services.grant = grantservice.NewService(grantRepo)
+	services.repository.SetGrantQuerier(services.grant)
 	services.aiResource = initializeAIResourceService(db, services.org, encryptor, services.grant)
 	services.runnerRepo = infra.NewRunnerRepository(db)
 	services.runner = runner.NewService(services.runnerRepo, services.billing)

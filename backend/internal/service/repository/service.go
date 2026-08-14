@@ -19,6 +19,7 @@ var (
 type Service struct {
 	repo           gitprovider.RepositoryRepo
 	webhookService *WebhookService
+	grants         GrantQuerier
 }
 
 func NewService(repo gitprovider.RepositoryRepo) *Service {
@@ -29,6 +30,10 @@ func NewService(repo gitprovider.RepositoryRepo) *Service {
 
 func (s *Service) SetWebhookService(ws *WebhookService) {
 	s.webhookService = ws
+}
+
+func (s *Service) SetGrantQuerier(grants GrantQuerier) {
+	s.grants = grants
 }
 
 func (s *Service) GetWebhookService() WebhookServiceInterface {

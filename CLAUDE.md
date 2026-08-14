@@ -102,10 +102,10 @@ CI is defined in `.github/workflows/ci.yml`.
 go test ./backend/... ./runner/... ./relay/...
 go test ./backend/internal/service/... -run TestAuth   # specific test
 
-# Lint — run golangci-lint in each module directory
-(cd backend && golangci-lint run)
-(cd runner && golangci-lint run)
-(cd relay && golangci-lint run)
+# Lint — one Go module at repo root; per-directory configs live in backend/ runner/ relay/
+"$(go env GOPATH)/bin/golangci-lint" run ./backend/...
+"$(go env GOPATH)/bin/golangci-lint" run ./runner/...
+"$(go env GOPATH)/bin/golangci-lint" run ./relay/...
 ```
 
 ### Images (Docker)
