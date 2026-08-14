@@ -1,0 +1,64 @@
+# ClusterIP only. Do not add an Ingress or NodePort.
+# Keep out of kustomization.yaml until Harbor has a published digest.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: browser-gateway
+  namespace: agentcloud
+  labels:
+    app: browser-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: browser-gateway
+  template:
+    metadata:
+      labels:
+        app: browser-gateway
+    spec:
+      imagePullSecrets:
+        - name: agentcloud-regcred
+      containers:
+        - name: browser-gateway
+          image: repo.aiedulab.cn:8443/agentcloud/browser-gateway:main
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BROWSER_GATEWAY_LISTEN
+              value: ":8080"
+            - name: BROWSER_GATEWAY_CONCURRENCY
+              value: "3"
+            - name: BROWSER_GATEWAY_DRIVER
+              value: unconfigured
+            - name: BROWSER_GATEWAY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: agentcloud-secrets
+                  key: BROWSER_GATEWAY_API_KEY
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: browser-gateway
+  namespace: agentcloud
+spec:
+  selector:
+    app: browser-gateway
+  ports:
+    - port: 8080
+      targetPort: 8080

@@ -1,0 +1,15 @@
+version: "2"
+
+linters:
+  settings:
+    errcheck:
+      check-type-assertions: false
+      check-blank: false
+
+  exclusions:
+    rules:
+      - path: "_test\\.go"
+        linters:
+          - errcheck
+          - unused
+          - gosimple

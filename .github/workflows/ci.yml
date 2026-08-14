@@ -111,7 +111,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
       - name: Unit tests
         run: |
-          go test -count=1 ./backend/... ./runner/... ./relay/... ./marketplace/... ./agentfile/... ./proto/...
+          go test -count=1 ./backend/... ./runner/... ./relay/... ./marketplace/... ./agentfile/... ./proto/... ./browser-gateway/...
       - name: Poddaemon integration
         run: |
           go test -count=1 -tags=integration ./runner/internal/poddaemon/...
@@ -124,7 +124,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [backend, runner, relay, marketplace]
+        module: [backend, runner, relay, marketplace, browser-gateway]
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v5
@@ -325,6 +325,8 @@ jobs:
             file: runner/Dockerfile
           - service: relay
             file: relay/Dockerfile
+          - service: browser-gateway
+            file: browser-gateway/Dockerfile
           - service: web
             file: clients/web/Dockerfile
           - service: mobile
