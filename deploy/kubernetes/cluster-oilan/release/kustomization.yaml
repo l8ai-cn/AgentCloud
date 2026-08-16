@@ -8,9 +8,9 @@ images:
   - name: repo.aiedulab.cn:8443/agentcloud/relay
     digest: sha256:c96b9d8a52dd20c379416f457c15e68e852af5dba399184b855bf94a43874139
   - name: repo.aiedulab.cn:8443/agentcloud/web
-    digest: sha256:a0d87f23781e5bdc8e2c333d14d5a3ca44d925dcf659baee60b5a736c2dc312f
+    digest: sha256:755e62d608fa6ca146a5535a80444a17209c8c897c61689d289066c3f7ac820b
   - name: repo.aiedulab.cn:8443/agentcloud/mobile
-    digest: sha256:f6e5597cbc89f5a3df232404a141ba3e99d9c23505cc211561ed515123f5f7ad
+    digest: sha256:5166230022dcdc51282850f9ac7130157708fd82fc15e94f75a7d3fe2fb2558f
   - name: repo.aiedulab.cn:8443/agentcloud/pgvector
     digest: sha256:1d533553fefe4f12e5d80c7b80622ba0c382abb5758856f52983d8789179f0fb
   - name: repo.aiedulab.cn:8443/agentcloud/redis
