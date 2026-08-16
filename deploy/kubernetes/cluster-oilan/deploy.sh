@@ -181,7 +181,7 @@ apply_all() {
   dexec "kubectl apply -f 00-namespace.yaml"
   dexec "chmod 600 generated-secrets/*.yaml; status=0; cleanup_status=0; kubectl apply -f generated-secrets || status=\$?; rm -f generated-secrets/*.yaml || cleanup_status=\$?; rmdir generated-secrets || cleanup_status=\$?; test \${status} -ne 0 || status=\${cleanup_status}; exit \${status}"
   echo "==> ensure wildcard TLS in ${NS}"
-  ensure_tls_secret "l8ai-wildcard-tls" "dowork.l8ai.cn" "health-preview.l8ai.cn"
+  ensure_tls_secret "l8ai-wildcard-tls" "agents.l8ai.cn" "dowork.l8ai.cn" "health-preview.l8ai.cn"
   render_release
   require_dosql_database_evidence
   stop_application_writes
@@ -222,7 +222,7 @@ main() {
   push_manifests
   apply_all
   status
-  echo "==> deployed. https://dowork.l8ai.cn · https://market.l8ai.cn · https://mobile.l8ai.cn · https://<pod-key>.l8ai.cn (admin@agentcloud.local / Ab123456)"
+  echo "==> deployed. https://agents.l8ai.cn · https://market.l8ai.cn · https://mobile.l8ai.cn · https://<pod-key>.l8ai.cn (admin@agentcloud.local / Ab123456)"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

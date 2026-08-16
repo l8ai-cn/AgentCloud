@@ -5,7 +5,7 @@
 - **Version SSOT:** `deploy/release-version.txt` (`release-YYYYMMDD`)
 - **Helm chart:** `deploy/helm/agentcloud/` (backend / web / relay / `agents.l8ai.cn` ingress)
 - **Environment values:** `deploy/environments/<env>/values.yaml`
-- **Live namespace:** `agentcloud` (Harbor image project still `agentsmesh` until retagged)
+- **Live namespace:** `agentcloud` (Harbor project `agentcloud`)
 - **CD (DoOps):** `scripts/release/doops_helm_deploy.sh`
 - **Canonical entry:** https://agents.l8ai.cn (`dowork.l8ai.cn` kept as alias)
 

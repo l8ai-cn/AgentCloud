@@ -20,7 +20,7 @@ export default function Home() {
       url: "https://agentcloud.ai",
       logo: "https://agentcloud.ai/icons/icon-512.png",
       sameAs: [
-        "https://github.com/l8ai-cn/AgentCloud",
+        "https://cnb.cool/l8ai/agentcloud",
         "https://x.com/agentcloudai",
         "https://discord.gg/3RcX7VBbH9",
       ],

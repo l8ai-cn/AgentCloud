@@ -215,7 +215,8 @@ grep -F 'readOnly: true' "$ROOT/15-gitea-backup-pod.yaml" >/dev/null
 grep -F 'tail -f /dev/null' "$ROOT/15-gitea-backup-pod.yaml" >/dev/null
 grep -F 'host: "*.l8ai.cn"' "$ROOT/44-preview-ingress.yaml" >/dev/null
 grep -F 'secretName: l8ai-wildcard-tls' "$ROOT/44-preview-ingress.yaml" >/dev/null
-grep -F 'ensure_tls_secret "l8ai-wildcard-tls" "dowork.l8ai.cn" "health-preview.l8ai.cn"' "$ROOT/deploy.sh" >/dev/null
+grep -F 'ensure_tls_secret "l8ai-wildcard-tls" "agents.l8ai.cn" "dowork.l8ai.cn" "health-preview.l8ai.cn"' "$ROOT/deploy.sh" >/dev/null
+grep -F 'https://agents.l8ai.cn' "$ROOT/deploy.sh" >/dev/null
 ! grep -F 'dowork-preview-wildcard-tls' \
   "$ROOT/02-configmap.yaml" "$ROOT/44-preview-ingress.yaml" "$ROOT/deploy.sh" "$ROOT/README.md" >/dev/null
 probe_command="$(grep -F 'https://release-preview-probe.l8ai.cn/preview/release-preview-probe/' "$LOG")"

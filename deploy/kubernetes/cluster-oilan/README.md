@@ -11,9 +11,10 @@ with all images served from the in-cluster Harbor
 The backend runs on K8s. AI Workers are PTY processes hosted inside **Runner
 pods**:
 
-- **Standing runners** (`34-runner-e2e-echo.yaml`, `35-runner-claude.yaml`) are
-  pre-registered in the DB seed and connect on boot — the reliable default. Creating
-  a Worker from the UI spawns a PTY inside a standing runner.
+- **Standing runners** (`34-runner-e2e-echo.yaml` in kustomize;
+  `35-runner-do-agent-l8ai.yaml` out of band) are pre-registered in the DB seed
+  and connect on boot — the reliable default. Creating a Worker from the UI
+  spawns a PTY inside a standing runner.
 - **On-demand runners**: the backend `K8sLauncher` (`COORDINATOR_RUNNER_LAUNCHER=k8s`)
   `kubectl apply`s a runner pod per org/agent when the coordinator needs an agent
   with no online runner. The pod's node_id is
@@ -44,8 +45,8 @@ before pushing — otherwise backend boot fails with
 ### Checklist (required before any push/deploy script)
 
 1. Clean tree on `main`, commit is pushed to `origin/main`
-   (`https://cnb.cool/l8ai/agentcloud.git`). GitHub remotes are not a release
-   source.
+   (`https://cnb.cool/l8ai/agentcloud.git`). `origin` must be that CNB URL;
+   GitHub remotes are rejected.
 2. CNB push build green for that commit on `l8ai/agentcloud`. Confirm with:
    `cnb build get-build-logs --repo l8ai/agentcloud --sha <sha> --event push`.
    Override repo with `RELEASE_REPOSITORY` only if mirroring elsewhere.
@@ -210,10 +211,11 @@ validate the existing `agentcloud` Secret.
 | `21-seed-configmap` | seed SQL source material for the audited DoSql change plan |
 | `30-backend*` | backend Deployment/Service + SA/RBAC (kubectl via init container) |
 | `31/32/42-*` | relay / web / mobile |
-| `34/35-runner-*` | standing runner pods |
+| `34-runner-e2e-echo.yaml` | standing e2e-echo runner (kustomize) |
+| `35-runner-do-agent-l8ai.yaml` | standing do-agent runner (out of band) |
 | _(removed)_ | Marketplace API is mounted on backend (`/api/marketplace/v1`) |
 | `release/kustomization` | immutable platform image digests |
-| `40-ingress` | dowork / admin / relay / tunnel ingress |
+| `40-ingress` | `dowork.l8ai.cn` alias (canonical `agents.l8ai.cn` is Helm) |
 | `41-marketplace-ingress` | market API → backend; UI host redirects to `agents.l8ai.cn/marketplace` |
 | `44-preview-ingress` | isolated HTTPS pod preview gateway |
 | `60-prepull-daemonset` | warm agent-runtime image cache |
