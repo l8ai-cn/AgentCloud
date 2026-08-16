@@ -1,7 +1,7 @@
 # AgentCloud release-image CI.
 # Git authority: https://cnb.cool/l8ai/agentcloud
 # Registry (current): docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD
-# Deployment stays on DoOps + Helm / cluster-oilan; GitHub does not publish business images.
+# Deployment stays on DoOps + Helm / cluster-oilan.
 ".agentcloud-release-artifacts": &agentcloud-release-artifacts
   - name: agentcloud release artifacts
     runner:

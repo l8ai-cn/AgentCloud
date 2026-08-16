@@ -17,7 +17,7 @@ Agent Cloud can be deployed using Docker Compose for development/staging or Kube
 
 ```bash
 # Clone the repository
-git clone https://github.com/l8ai-cn/AgentCloud.git
+git clone https://cnb.cool/l8ai/agentcloud.git
 cd agentcloud
 
 # Copy environment file

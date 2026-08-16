@@ -13,20 +13,37 @@ git -C "${TMP}/repo" config user.name "Release Contract"
 git -C "${TMP}/repo" config user.email "release-contract@example.test"
 git -C "${TMP}/repo" remote add origin "${TMP}/origin.git"
 mkdir -p "${TMP}/bin"
-export GH_RESPONSE_FILE="${TMP}/gh-response.json"
-gh() {
-  # shellcheck disable=SC1090
-  source "${GH_RESPONSE_FILE:?}"
+export CNB_RESPONSE_FILE="${TMP}/cnb-response.json"
+
+write_cnb_builds() {
+  local status="${1:?status is required}"
+  local sha
+  sha="$(git -C "${TMP}/repo" rev-parse HEAD)"
+  "${REAL_JQ}" -n \
+    --arg status "${status}" \
+    --arg sha "${sha}" \
+    '{
+      status: 200,
+      total: 1,
+      data: {
+        total: "1",
+        data: [{
+          sha: $sha,
+          status: $status,
+          event: "push",
+          targetRef: "main",
+          pipelineFailCount: 0,
+          pipelineSuccessCount: 1
+        }]
+      }
+    }' > "${CNB_RESPONSE_FILE}"
 }
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 2,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"}
-  ]
-}]'
-JSON
+
+cat > "${TMP}/bin/cnb" <<'EOF'
+#!/usr/bin/env bash
+cat "${CNB_RESPONSE_FILE:?}"
+EOF
+chmod +x "${TMP}/bin/cnb"
 cat > "${TMP}/bin/docker" <<'EOF'
 #!/usr/bin/env bash
 if [[ "${1:-}" == "pull" ]]; then
@@ -60,6 +77,7 @@ printf 'release\n' > "${TMP}/repo/release.txt"
 git -C "${TMP}/repo" add release.txt
 git -C "${TMP}/repo" commit -m "release" >/dev/null
 git -C "${TMP}/repo" push -u origin main >/dev/null
+write_cnb_builds success
 
 # shellcheck source=release_source_guard.sh
 source "${ROOT}/release_source_guard.sh"
@@ -120,6 +138,7 @@ git -C "${TMP}/repo" add \
   backend/internal/domain/workerruntime/runtime_catalog.lock.json
 git -C "${TMP}/repo" commit -m "release metadata" >/dev/null
 git -C "${TMP}/repo" push >/dev/null
+write_cnb_builds success
 release_require_pushed_clean_tree "${TMP}/repo"
 release_verify_source_metadata "${TMP}/repo"
 
@@ -139,6 +158,7 @@ if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
 fi
 
 git -C "${TMP}/repo" push >/dev/null
+write_cnb_builds success
 release_require_pushed_clean_tree "${TMP}/repo"
 
 git -C "${TMP}/repo" switch -c codex/not-main >/dev/null
@@ -149,93 +169,33 @@ if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
 fi
 
 git -C "${TMP}/repo" switch main >/dev/null
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 9,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Deploy US West","status":"queued","conclusion":null},
-    {"name":"Deploy US West Relay 01","status":"completed","conclusion":"failure"},
-    {"name":"Deploy US West Relay Beijing 02","status":"completed","conclusion":"cancelled"},
-    {"name":"Migrate US West","status":"completed","conclusion":"timed_out"},
-    {"name":"Deploy CN","status":"queued","conclusion":null},
-    {"name":"Deploy CN Relay 01","status":"completed","conclusion":"action_required"},
-    {"name":"Migrate CN","status":"completed","conclusion":"stale"}
-  ]
-}]'
-JSON
+write_cnb_builds pending
+if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
+  echo "pending CNB build was accepted" >&2
+  exit 1
+fi
+
+write_cnb_builds error
+if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
+  echo "failed CNB build was accepted" >&2
+  exit 1
+fi
+
+"${REAL_JQ}" -n '{status:200,total:0,data:{total:"0",data:[]}}' > "${CNB_RESPONSE_FILE}"
+if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
+  echo "missing CNB build was accepted" >&2
+  exit 1
+fi
+
+git -C "${TMP}/repo" remote set-url origin "https://github.com/l8ai-cn/AgentCloud.git"
+write_cnb_builds success
+if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
+  echo "GitHub origin was accepted" >&2
+  exit 1
+fi
+git -C "${TMP}/repo" remote set-url origin "${TMP}/origin.git"
+write_cnb_builds success
 release_require_pushed_clean_tree "${TMP}/repo"
-
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 3,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"},
-    {"name":"Deploy CN staging","status":"queued","conclusion":null}
-  ]
-}]'
-JSON
-if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
-  echo "release with an unknown pending check was accepted" >&2
-  exit 1
-fi
-
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 2,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"failure"}
-  ]
-}]'
-JSON
-if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
-  echo "failed CI release was accepted" >&2
-  exit 1
-fi
-
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 1,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"}
-  ]
-}]'
-JSON
-if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
-  echo "release with a missing required check was accepted" >&2
-  exit 1
-fi
-
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 2,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"skipped"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"}
-  ]
-}]'
-JSON
-if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
-  echo "release with a skipped required check was accepted" >&2
-  exit 1
-fi
-
-cat > "${GH_RESPONSE_FILE}" <<'JSON'
-printf '%s\n' '[{
-  "total_count": 3,
-  "check_runs": [
-    {"name":"Runtime release contracts","status":"completed","conclusion":"success"},
-    {"name":"Loop and sandbox security regressions","status":"completed","conclusion":"success"}
-  ]
-}]'
-JSON
-if release_require_pushed_clean_tree "${TMP}/repo" 2>/dev/null; then
-  echo "incomplete check pagination was accepted" >&2
-  exit 1
-fi
 
 old_revision="$(git -C "${TMP}/repo" rev-parse HEAD^)"
 current_revision="$(git -C "${TMP}/repo" rev-parse HEAD)"

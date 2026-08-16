@@ -24,6 +24,12 @@ release_require_pushed_clean_tree() {
     return 1
   }
 
+  origin_url="$(git -C "${repo_root}" remote get-url origin)"
+  if [[ "${origin_url}" == *github.com* ]]; then
+    echo "release origin must be CNB, not GitHub: ${origin_url}" >&2
+    return 1
+  fi
+
   git -C "${repo_root}" fetch --quiet origin "${branch}"
   head="$(git -C "${repo_root}" rev-parse HEAD)"
   remote_head="$(git -C "${repo_root}" rev-parse "refs/remotes/origin/${branch}")"
@@ -38,58 +44,37 @@ release_require_pushed_clean_tree() {
 
 release_require_ci_success() {
   local head="${1:?commit is required}"
-  local repository="${RELEASE_REPOSITORY:-l8ai-cn/AgentCloud}"
-  local checks
+  local repository="${RELEASE_REPOSITORY:-l8ai/agentcloud}"
+  local builds
 
-  command -v gh >/dev/null || {
-    echo "release requires gh for CI verification" >&2
+  command -v cnb >/dev/null || {
+    echo "release requires cnb for CI verification" >&2
     return 1
   }
   command -v jq >/dev/null || {
     echo "release requires jq for CI verification" >&2
     return 1
   }
-  checks="$(
-    gh api --paginate --slurp \
-      "repos/${repository}/commits/${head}/check-runs?per_page=100"
+  builds="$(
+    cnb build get-build-logs \
+      --repo "${repository}" \
+      --sha "${head}" \
+      --event push \
+      --page-size 20 \
+      -v
   )" || return 1
-  jq -e '
-    [
-      "Runtime release contracts",
-      "Loop and sandbox security regressions"
-    ] as $required
-    | [
-        "Deploy US West",
-        "Deploy US West Relay 01",
-        "Deploy US West Relay Beijing 02",
-        "Migrate US West",
-        "Deploy CN",
-        "Deploy CN Relay 01",
-        "Migrate CN"
-      ] as $deployments
-    | [.[] | .check_runs[]] as $checks
-    | [
-        $checks[]
-        | select(.status == "completed" and .conclusion == "success")
-        | .name
-      ] as $successful
-    | (.[0].total_count == ($checks | length))
-    and (($required - $successful | length) == 0)
+  jq -e --arg head "${head}" '
+    ((.total | tonumber) >= 1)
+    and ((.data.data | length) >= 1)
     and all(
-      $checks[];
-      . as $check
-      | ($deployments | index($check.name)) != null
-        or (
-          $check.status == "completed"
-          and (
-            $check.conclusion == "success"
-            or $check.conclusion == "neutral"
-            or $check.conclusion == "skipped"
-          )
-        )
+      .data.data[];
+      .sha == $head
+      and .status == "success"
+      and ((.pipelineFailCount | tonumber) == 0)
+      and ((.pipelineSuccessCount | tonumber) >= 1)
     )
-  ' <<< "${checks}" >/dev/null || {
-    echo "release requires completed successful GitHub checks for ${head}" >&2
+  ' <<< "${builds}" >/dev/null || {
+    echo "release requires a successful CNB push build for ${head}" >&2
     return 1
   }
 }

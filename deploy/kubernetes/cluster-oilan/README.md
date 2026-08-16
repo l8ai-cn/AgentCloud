@@ -43,14 +43,14 @@ before pushing — otherwise backend boot fails with
 
 ### Checklist (required before any push/deploy script)
 
-1. Clean tree on `main`, commit is pushed to `origin/main` (and `cnb-agentcloud`
-   if CNB must rebuild).
-2. Full GitHub CI green for that commit on `l8ai-cn/AgentCloud` (not only the
-   two named release gates). Confirm with:
-   `gh run list --commit <sha> --branch main` — the `CI` workflow must be
-   `success`. Override repo with `RELEASE_REPOSITORY` only if mirroring elsewhere.
-   Do not run `push-images.sh` while `CI` is still `pending`/`in_progress` even
-   if the two named checks already passed.
+1. Clean tree on `main`, commit is pushed to `origin/main`
+   (`https://cnb.cool/l8ai/agentcloud.git`). GitHub remotes are not a release
+   source.
+2. CNB push build green for that commit on `l8ai/agentcloud`. Confirm with:
+   `cnb build get-build-logs --repo l8ai/agentcloud --sha <sha> --event push`.
+   Override repo with `RELEASE_REPOSITORY` only if mirroring elsewhere.
+   Do not run `push-images.sh` / `deploy.sh` while the CNB push build is still
+   `pending`.
 3. `docker login repo.aiedulab.cn:8443` on the operator machine.
 4. Harbor upload token lifetime ≥ 120 minutes:
    `DOOPS_SESSION=$(doops session) ./configure-harbor-upload-token.sh`
@@ -73,7 +73,6 @@ git add release 30-backend.yaml 60-prepull-daemonset.yaml \
 git add -u release 30-backend.yaml 60-prepull-daemonset.yaml
 git commit -m "Roll oilan to release-YYYYMMDD (backend+web)"
 git push origin HEAD:main
-git push cnb-agentcloud HEAD:main
 DOOPS_SESSION=<release-session> DOOPS_TARGET=gw-oilan-node ./deploy.sh
 # deploy.sh rolls backend and runs worker-definition-sync against the new image
 ```
@@ -93,16 +92,14 @@ git add deploy/kubernetes/cluster-oilan/release \
   config/worker-types tools/loops/worker-onboarding/catalog-loop
 git commit
 git push origin HEAD:main
-git push cnb-agentcloud HEAD:main
-# wait for CNB release-image build on https://cnb.cool/l8ai/agentcloud when used
+# wait for CNB release-image build on https://cnb.cool/l8ai/agentcloud
 DOOPS_SESSION=<release-session> \
   DOOPS_TARGET=gw-oilan-node ./deploy.sh
 ```
 
 Business images (`backend` / `relay` / `web`) are built only by CNB
 (`.cnb.yml` on `cnb.cool/l8ai/agentcloud`) into
-`docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD`. The GitHub
-`Oilan Image Publish` workflow is retired and fails closed.
+`docker.cnb.cool/l8ai/doworker/<service>:release-YYYYMMDD`.
 
 When the cluster must pull from node-local Harbor instead of CNB, sync the
 CNB release tag into Harbor on an operator machine that can reach both
@@ -121,11 +118,8 @@ token makes Harbor reject the final blob commit after receiving the entire
 layer.
 
 Build and deploy scripts refuse a dirty tree, detached HEAD, a commit that is
-not the current remote branch HEAD, or missing release-specific CI checks.
-The status of explicitly named deployment and migration jobs for the
-independent US West/CN environments does not block an Oilan release; every
-other check must still finish successfully, and the three Loop/Seedance release
-checks are always required.
+not the current remote branch HEAD, a GitHub `origin` URL, or a missing
+successful CNB push build for that commit.
 `release/source.json` is mandatory release provenance. It records the release
 commit and every platform and managed Runner image's exact source revision, so
 incremental image releases can retain older immutable digests without weakening provenance.

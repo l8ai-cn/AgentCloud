@@ -15,15 +15,15 @@
   <a href="https://agentcloud.ai">Website</a> ·
   <a href="https://agentcloud.ai/docs">Docs</a> ·
   <a href="#quick-start">Quick Start</a> ·
-  <a href="https://github.com/l8ai-cn/AgentCloud">GitHub</a> ·
+  <a href="https://cnb.cool/l8ai/agentcloud">CNB</a> ·
   <a href="https://discord.gg/3RcX7VBbH9">Discord</a> ·
   <a href="https://x.com/agentcloudai">X</a> · <a href="https://x.com/stone0dong">X (founder)</a> ·
   <a href="https://www.linkedin.com/company/agentcloud">LinkedIn</a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/l8ai-cn/AgentCloud/actions/workflows/ci.yml"><img src="https://github.com/l8ai-cn/AgentCloud/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-  <a href="https://github.com/l8ai-cn/AgentCloud/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-BSL--1.1-blue" alt="License" /></a>
+  <a href="https://cnb.cool/l8ai/agentcloud/-/build"><img src="https://img.shields.io/badge/CI-CNB-2ea44f" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-BSL--1.1-blue" alt="License" /></a>
   <a href="https://hub.docker.com/u/agentcloud"><img src="https://img.shields.io/badge/docker-hub-blue?logo=docker" alt="Docker Hub" /></a>
 </p>
 
@@ -149,8 +149,8 @@ Once the runner is online, create a **Worker** from the web console. The wizard 
 Run the whole stack locally with one command.
 
 ```bash
-git clone https://github.com/l8ai-cn/AgentCloud.git
-cd AgentCloud
+git clone https://cnb.cool/l8ai/agentcloud.git
+cd agentcloud
 ./deploy/dev/dev.sh
 ```
 

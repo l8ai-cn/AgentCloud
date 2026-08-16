@@ -160,9 +160,7 @@ PUSH_FAILURE=true
 expect_failure "Harbor push failure" "${MANIFEST}"
 PUSH_FAILURE=false
 
-grep -Fq 'Retired in favor of CNB' \
-  "${ROOT}/../../../.github/workflows/oilan-image-publish.yml"
 grep -Fq 'cnb.cool/l8ai/agentcloud' \
-  "${ROOT}/../../../.github/workflows/oilan-image-publish.yml"
+  "${ROOT}/../../../.cnb.yml"
 grep -Fq 'docker.cnb.cool/l8ai/doworker' \
-  "${ROOT}/../../../.github/workflows/oilan-image-publish.yml"
+  "${ROOT}/../../../.cnb.yml"

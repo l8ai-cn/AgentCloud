@@ -14,8 +14,8 @@ Deploy Agent Cloud on your own infrastructure using Docker.
 ## Quick Start
 
 ```bash
-git clone https://github.com/l8ai-cn/AgentCloud.git
-cd Agent Cloud/deploy/selfhost
+git clone https://cnb.cool/l8ai/agentcloud.git
+cd agentcloud/deploy/selfhost
 
 # Install with same-site application and preview DNS
 ./selfhost.sh --host app.agentcloud.internal --preview-origin http://preview.agentcloud.internal
