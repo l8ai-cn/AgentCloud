@@ -137,8 +137,8 @@ require_command 'kubectl -n agentcloud rollout status deploy/postgres --timeout=
 require_command 'bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -'
 require_command 'kubectl -n agentcloud rollout status deploy/backend --timeout=300s'
 require_command 'kubectl -n agentcloud rollout status deploy/web --timeout=300s'
-require_command 'kubectl -n agentcloud delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents'
-require_command 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents'
+require_command 'kubectl -n agentcloud delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api'
+require_command 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api'
 require_command "https://health-preview.l8ai.cn/"
 require_command "--write-out '%{remote_ip}'"
 require_command 'test -n "${reference_ip}"'
@@ -165,8 +165,8 @@ postgres_line="$(line_number 'bound_pvc_filter.awk 10-postgres.yaml')"
 workload_line="$(line_number 'bound_pvc_filter.awk /tmp/agentcloud-release.yaml | kubectl apply -f -')"
 backend_line="$(line_number 'rollout status deploy/backend')"
 web_line="$(line_number 'rollout status deploy/web --timeout=300s')"
-retire_line="$(line_number 'delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents')"
-retire_verify_line="$(line_number 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents')"
+retire_line="$(line_number 'delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api')"
+retire_verify_line="$(line_number 'for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api')"
 minio_line="$(line_number 'bound_pvc_filter.awk 13-minio-setup-job.yaml')"
 sync_line="$(line_number '23-worker-definition-sync-job.yaml | kubectl apply -f -')"
 
@@ -224,6 +224,7 @@ grep -F 'release_require_pushed_clean_tree' "$ROOT/deploy.sh" >/dev/null
 grep -F 'clean -session ses-contract' "$LOG" >/dev/null
 ! test -e "$ROOT/33-web-admin.yaml"
 ! grep -F '33-web-admin.yaml' "$ROOT/kustomization.yaml" >/dev/null
+! grep -F 'ingress/agentcloud-agents' "$ROOT/deploy.sh" >/dev/null
 ! grep -F 'name: agentcloud-admin' "$ROOT/40-ingress.yaml" >/dev/null
 ! grep -F 'name: web-admin' "$ROOT/40-ingress.yaml" >/dev/null
 ! grep -F 'agentcloud/web-admin' "$ROOT/release/kustomization.yaml" >/dev/null

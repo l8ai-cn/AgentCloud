@@ -148,8 +148,9 @@ sync_worker_definitions() {
 retire_web_admin() {
   echo "==> retire standalone web-admin and stale Helm marketplace ingresses"
   # Helm left /api/marketplace/v1 backends on the deleted marketplace Service.
-  dexec "kubectl -n ${NS} delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents ingress/agentcloud-agents-relay ingress/agentcloud-agents-tunnel ingress/agentcloud-login-amp-agents --ignore-not-found=true"
-  dexec "set -eu; for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api ingress/agentcloud-agents; do if kubectl -n ${NS} get \"\${resource}\" >/dev/null 2>&1; then echo \"retired resource still exists: \${resource}\" >&2; exit 1; fi; done"
+  # agents.l8ai.cn ingresses stay with Helm (deploy/helm/agentcloud).
+  dexec "kubectl -n ${NS} delete deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api --ignore-not-found=true"
+  dexec "set -eu; for resource in deployment/web-admin service/web-admin ingress/agentcloud-admin ingress/agentcloud-dowork-api; do if kubectl -n ${NS} get \"\${resource}\" >/dev/null 2>&1; then echo \"retired resource still exists: \${resource}\" >&2; exit 1; fi; done"
 }
 
 # Refuse to create a ghost stack in an empty namespace. Live oilan data lives
