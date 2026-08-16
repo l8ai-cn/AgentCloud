@@ -7,7 +7,7 @@ image:
   repository: repo.aiedulab.cn:8443/agentcloud/backend
   tag: *releaseTag
 rolloutTokens:
-  backend: oilan-20260814-web-cluster-ui
+  backend: oilan-20260816-entitlements
   web: oilan-20260814-web-cluster-ui
   relay: oilan-20260814-web-cluster-ui
 rolloutTokenDomain: agentcloud.l8ai.cn
