@@ -34,13 +34,25 @@ func TestClusterValidateRejectsInvalidKind(t *testing.T) {
 func TestClusterValidateRejectsInvalidStatus(t *testing.T) {
 	cluster := Cluster{
 		OrganizationID: 1,
-		Slug:           slugkit.Slug("online"),
-		Name:           "Online cluster",
+		Slug:           slugkit.Slug(SlugDefault),
+		Name:           NameDefault,
 		Kind:           KindOnline,
 		Status:         "online",
 	}
 
 	require.Error(t, cluster.Validate())
+}
+
+func TestClusterValidateAcceptsDefaultOnlineCluster(t *testing.T) {
+	cluster := Cluster{
+		OrganizationID: 1,
+		Slug:           slugkit.Slug(SlugDefault),
+		Name:           NameDefault,
+		Kind:           KindOnline,
+		Status:         StatusPending,
+	}
+
+	require.NoError(t, cluster.Validate())
 }
 
 func TestClusterValidateAcceptsLocalPendingCluster(t *testing.T) {

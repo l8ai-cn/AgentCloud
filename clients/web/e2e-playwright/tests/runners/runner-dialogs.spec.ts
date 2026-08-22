@@ -65,7 +65,7 @@ test.describe("Runner UI Dialogs", () => {
       SELECT organization.id, cluster.id, 'ui-delete-test', 'UI Delete Test', 'offline', 5, true
       FROM organizations AS organization
       JOIN execution_clusters AS cluster
-        ON cluster.organization_id = organization.id AND cluster.slug = 'online'
+        ON cluster.organization_id = organization.id AND cluster.slug = 'default'
       WHERE organization.slug = '${TEST_ORG_SLUG}'
       ON CONFLICT (organization_id, node_id) DO NOTHING
     `);

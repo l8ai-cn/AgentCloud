@@ -5,8 +5,8 @@ import type { RunnerData } from "@/lib/viewModels/runner";
 
 const online: ExecutionCluster = {
   id: 31,
-  slug: "online",
-  name: "Online cluster",
+  slug: "default",
+  name: "default",
   kind: "online",
   status: "ready",
   runnerCount: 2,

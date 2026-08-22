@@ -33,9 +33,8 @@ func CreateOrg(t *testing.T, db *gorm.DB, slug string, ownerID int64) (id int64)
 	}
 	result = db.Exec(`
 		INSERT INTO execution_clusters (organization_id, slug, name, kind, status)
-		VALUES (?, 'local', 'Local cluster', 'local', 'ready'),
-		       (?, 'online', 'Online cluster', 'online', 'ready')
-	`, id, id)
+		VALUES (?, 'default', 'default', 'online', 'ready')
+	`, id)
 	if result.Error != nil {
 		t.Fatalf("testkit.CreateOrg clusters: %v", result.Error)
 	}
@@ -45,7 +44,7 @@ func CreateOrg(t *testing.T, db *gorm.DB, slug string, ownerID int64) (id int64)
 func CreateRunner(t *testing.T, db *gorm.DB, orgID int64, nodeID string) (id int64) {
 	t.Helper()
 	var clusterID int64
-	db.Raw(`SELECT id FROM execution_clusters WHERE organization_id = ? AND slug = 'online'`, orgID).Scan(&clusterID)
+	db.Raw(`SELECT id FROM execution_clusters WHERE organization_id = ? AND slug = 'default'`, orgID).Scan(&clusterID)
 	result := db.Exec(
 		`INSERT INTO runners (organization_id, cluster_id, node_id, status, max_concurrent_pods) VALUES (?, ?, ?, 'online', 5)`,
 		orgID, clusterID, nodeID,

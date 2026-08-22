@@ -21,8 +21,7 @@ DECLARE
     v_admin_id BIGINT;
     v_org_id BIGINT;
     v_admin_workspace_id BIGINT;
-    v_local_cluster_id BIGINT;
-    v_online_cluster_id BIGINT;
+    v_default_cluster_id BIGINT;
     v_token_id BIGINT;
     v_runner_id BIGINT;
 BEGIN
@@ -104,20 +103,12 @@ BEGIN
     );
 
     INSERT INTO execution_clusters (organization_id, slug, name, kind, status)
-    VALUES (v_org_id, 'online', 'Online cluster', 'online', 'pending')
+    VALUES (v_org_id, 'default', 'default', 'online', 'pending')
     ON CONFLICT (organization_id, slug) DO NOTHING;
 
-    INSERT INTO execution_clusters (organization_id, slug, name, kind, status)
-    VALUES (v_org_id, 'local', 'Local cluster', 'local', 'pending')
-    ON CONFLICT (organization_id, slug) DO NOTHING;
-
-    SELECT id INTO v_online_cluster_id
+    SELECT id INTO v_default_cluster_id
     FROM execution_clusters
-    WHERE organization_id = v_org_id AND slug = 'online';
-
-    SELECT id INTO v_local_cluster_id
-    FROM execution_clusters
-    WHERE organization_id = v_org_id AND slug = 'local';
+    WHERE organization_id = v_org_id AND slug = 'default';
 
     -- =========================================================================
     -- 2.1 创建第二个测试用户（同组织成员，用于多用户测试）
@@ -257,7 +248,7 @@ BEGIN
     )
     VALUES (
         v_org_id,
-        v_local_cluster_id,
+        v_default_cluster_id,
         'cee9d12fb9fefdfafe98d97f5c8a247e071a0e6778089dee7cf2be571ee606d2',
         'Development Runner Token',
         '{}'::jsonb,
@@ -290,7 +281,7 @@ BEGIN
         status, max_concurrent_pods
     )
     SELECT v_org_id,
-           v_online_cluster_id,
+           v_default_cluster_id,
            'dev-runner',
            'Development Docker Runner',
            'offline',
@@ -317,7 +308,7 @@ BEGIN
         status, max_concurrent_pods
     )
     SELECT v_org_id,
-           v_online_cluster_id,
+           v_default_cluster_id,
            'dev-runner-2',
            'Development Docker Runner (cross-runner e2e)',
            'offline',
@@ -332,7 +323,7 @@ BEGIN
         status, max_concurrent_pods
     )
     SELECT v_org_id,
-           v_online_cluster_id,
+           v_default_cluster_id,
            r.node_id,
            r.description,
            'offline',
@@ -364,8 +355,7 @@ BEGIN
     SELECT o.id, cluster.slug, cluster.name, cluster.kind, cluster.status
     FROM organizations o
     CROSS JOIN (VALUES
-        ('online', 'Online cluster', 'online', 'pending'),
-        ('local', 'Local cluster', 'local', 'pending')
+        ('default', 'default', 'online', 'pending')
     ) AS cluster(slug, name, kind, status)
     WHERE o.slug = 'admin-workspace'
     ON CONFLICT (organization_id, slug) DO NOTHING;
@@ -382,7 +372,7 @@ BEGIN
            10
     FROM organizations o
     JOIN execution_clusters cluster
-      ON cluster.organization_id = o.id AND cluster.slug = 'online'
+      ON cluster.organization_id = o.id AND cluster.slug = 'default'
     WHERE o.slug = 'admin-workspace'
       AND NOT EXISTS (
         SELECT 1 FROM runners
@@ -401,7 +391,7 @@ BEGIN
            10
     FROM organizations o
     JOIN execution_clusters cluster
-      ON cluster.organization_id = o.id AND cluster.slug = 'online'
+      ON cluster.organization_id = o.id AND cluster.slug = 'default'
     WHERE o.slug = 'admin-workspace'
       AND NOT EXISTS (
         SELECT 1 FROM runners

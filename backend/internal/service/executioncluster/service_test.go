@@ -22,8 +22,8 @@ func TestListEnsuresDefaultsAndAggregatesRunnerStatus(t *testing.T) {
 	service := NewService(clusters, runners, nil, "")
 	views, err := service.List(context.Background(), organizationID)
 	require.NoError(t, err)
-	require.Len(t, views, 2)
-	online := findCluster(t, views, "online")
+	require.Len(t, views, 1)
+	online := findCluster(t, views, "default")
 	seenAt := time.Now().UTC().Truncate(time.Second)
 	require.NoError(t, runners.Create(context.Background(), &runnerdomain.Runner{
 		OrganizationID:    organizationID,
@@ -38,12 +38,32 @@ func TestListEnsuresDefaultsAndAggregatesRunnerStatus(t *testing.T) {
 
 	views, err = service.List(context.Background(), organizationID)
 	require.NoError(t, err)
-	online = findCluster(t, views, "online")
+	online = findCluster(t, views, "default")
 	require.Equal(t, 1, online.RunnerCount)
 	require.Equal(t, 1, online.OnlineRunnerCount)
 	require.Equal(t, 1, online.AvailableRunnerCount)
 	require.Equal(t, "connected", online.TunnelStatus)
 	require.Equal(t, seenAt, *online.TunnelLastSeenAt)
+}
+
+func TestListMigratesLegacyOnlineAndDropsEmptyLocal(t *testing.T) {
+	db := testkit.SetupTestDB(t)
+	require.NoError(t, db.Exec(`INSERT INTO organizations (name, slug) VALUES ('Legacy Org', 'legacy-org')`).Error)
+	var organizationID int64
+	require.NoError(t, db.Raw(`SELECT id FROM organizations WHERE slug = 'legacy-org'`).Scan(&organizationID).Error)
+	require.NoError(t, db.Exec(`
+		INSERT INTO execution_clusters (organization_id, slug, name, kind, status)
+		VALUES (?, 'online', 'Online cluster', 'online', 'ready'),
+		       (?, 'local', 'Local cluster', 'local', 'pending')
+	`, organizationID, organizationID).Error)
+
+	service := NewService(infra.NewExecutionClusterRepository(db), infra.NewRunnerRepository(db), nil, "")
+	views, err := service.List(context.Background(), organizationID)
+	require.NoError(t, err)
+	require.Len(t, views, 1)
+	require.Equal(t, "default", views[0].Cluster.Slug.String())
+	require.Equal(t, "default", views[0].Cluster.Name)
+	require.Equal(t, "online", views[0].Cluster.Kind)
 }
 
 func findCluster(t *testing.T, views []View, slug string) View {

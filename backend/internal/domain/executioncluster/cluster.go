@@ -13,6 +13,11 @@ const (
 )
 
 const (
+	SlugDefault = "default"
+	NameDefault = "default"
+)
+
+const (
 	StatusReady   = "ready"
 	StatusPending = "pending"
 	StatusOffline = "offline"

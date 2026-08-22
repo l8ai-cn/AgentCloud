@@ -32,7 +32,7 @@ test.describe("Runner Admin API", () => {
       SELECT organization.id, cluster.id, 'admin-single-test', 'Admin Single Test', 'offline', 5, true
       FROM organizations AS organization
       JOIN execution_clusters AS cluster
-        ON cluster.organization_id = organization.id AND cluster.slug = 'online'
+        ON cluster.organization_id = organization.id AND cluster.slug = 'default'
       WHERE organization.slug = '${TEST_ORG_SLUG}'
       ON CONFLICT (organization_id, node_id) DO NOTHING
     `);
@@ -54,7 +54,7 @@ test.describe("Runner Admin API", () => {
       SELECT organization.id, cluster.id, 'admin-disable-test', 'Admin Disable Test', 'offline', 5, true
       FROM organizations AS organization
       JOIN execution_clusters AS cluster
-        ON cluster.organization_id = organization.id AND cluster.slug = 'online'
+        ON cluster.organization_id = organization.id AND cluster.slug = 'default'
       WHERE organization.slug = '${TEST_ORG_SLUG}'
       ON CONFLICT (organization_id, node_id) DO UPDATE SET is_enabled = true
     `);
@@ -84,7 +84,7 @@ test.describe("Runner Admin API", () => {
       SELECT organization.id, cluster.id, 'admin-delete-test', 'Admin Delete Test', 'offline', 5, true
       FROM organizations AS organization
       JOIN execution_clusters AS cluster
-        ON cluster.organization_id = organization.id AND cluster.slug = 'online'
+        ON cluster.organization_id = organization.id AND cluster.slug = 'default'
       WHERE organization.slug = '${TEST_ORG_SLUG}'
       ON CONFLICT (organization_id, node_id) DO NOTHING
     `);

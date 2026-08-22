@@ -15,7 +15,7 @@ DO $$
 DECLARE
     v_admin_id BIGINT;
     v_org_id BIGINT;
-    v_local_cluster_id BIGINT;
+    v_default_cluster_id BIGINT;
     v_token_id BIGINT;
 BEGIN
     -- =========================================================================
@@ -57,13 +57,12 @@ BEGIN
 
     INSERT INTO execution_clusters (organization_id, slug, name, kind, status)
     VALUES
-        (v_org_id, 'local', 'Local cluster', 'local', 'pending'),
-        (v_org_id, 'online', 'Online cluster', 'online', 'pending')
+        (v_org_id, 'default', 'default', 'online', 'pending')
     ON CONFLICT (organization_id, slug) DO NOTHING;
 
-    SELECT id INTO v_local_cluster_id
+    SELECT id INTO v_default_cluster_id
     FROM execution_clusters
-    WHERE organization_id = v_org_id AND slug = 'local';
+    WHERE organization_id = v_org_id AND slug = 'default';
 
     -- =========================================================================
     -- 3. Add Admin as Organization Owner
@@ -103,7 +102,7 @@ BEGIN
         organization_id, cluster_id, token_hash, description, created_by_id, is_active, max_uses
     )
     SELECT v_org_id,
-           v_local_cluster_id,
+           v_default_cluster_id,
            '$2a$10$HiR1BABnFXkjyNysU/B3m.spR.Xw7DVlhltNeWJonNm6qBb7dvE/y',
            'OnPremise Runner Registration Token',
            v_admin_id,

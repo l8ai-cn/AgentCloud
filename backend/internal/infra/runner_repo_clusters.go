@@ -12,16 +12,9 @@ func (r *runnerRepository) EnsureLocalClusterID(ctx context.Context, orgID int64
 	defaults := []executioncluster.Cluster{
 		{
 			OrganizationID: orgID,
-			Slug:           slugkit.Slug(executioncluster.KindOnline),
-			Name:           "Online cluster",
+			Slug:           slugkit.Slug(executioncluster.SlugDefault),
+			Name:           executioncluster.NameDefault,
 			Kind:           executioncluster.KindOnline,
-			Status:         executioncluster.StatusPending,
-		},
-		{
-			OrganizationID: orgID,
-			Slug:           slugkit.Slug(executioncluster.KindLocal),
-			Name:           "Local cluster",
-			Kind:           executioncluster.KindLocal,
 			Status:         executioncluster.StatusPending,
 		},
 	}
@@ -34,7 +27,7 @@ func (r *runnerRepository) EnsureLocalClusterID(ctx context.Context, orgID int64
 
 	var cluster executioncluster.Cluster
 	if err := r.db.WithContext(ctx).
-		Where("organization_id = ? AND slug = ?", orgID, executioncluster.KindLocal).
+		Where("organization_id = ? AND slug = ?", orgID, executioncluster.SlugDefault).
 		First(&cluster).Error; err != nil {
 		return 0, err
 	}
