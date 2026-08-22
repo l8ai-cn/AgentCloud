@@ -179,7 +179,7 @@ func Experts() []ExpertDefinition {
 				"pattern-seam-review", "lovart-api",
 			},
 			Prompt:         "Turn visual references into production-aware textile patterns. Keep every source traceable, separate motifs from repeats, prove seam quality, and call out manufacturing risks before delivery.",
-			WorkerTypeSlug: "pattern-designer", RuntimeImageID: 6,
+			WorkerTypeSlug: "codex-cli", RuntimeImageID: 1,
 			SecretRefs: map[string]string{
 				"LOVART_ACCESS_KEY": "lovart",
 				"LOVART_SECRET_KEY": "lovart",

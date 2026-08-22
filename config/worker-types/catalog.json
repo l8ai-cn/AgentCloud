@@ -74,7 +74,7 @@
     {
       "slug": "pattern-designer",
       "definition_path": "config/worker-types/pattern-designer/definition.json",
-      "definition_hash": "sha256:4f5cf080d9655c4de274f0fc45b44866e9a0edd9dc10338d4917b582d02bdf01"
+      "definition_hash": "sha256:2ecf87b25edb2f04c07d8dc46719d9dac5d55adc509b58dea173c970c8540087"
     },
     {
       "slug": "pi-agent",
@@ -84,7 +84,7 @@
     {
       "slug": "seedance-expert",
       "definition_path": "config/worker-types/seedance-expert/definition.json",
-      "definition_hash": "sha256:9b6833ce7a61b29c0dc967cb524517bc2a4e35f03038cfe39c96d0000835ed9d"
+      "definition_hash": "sha256:66676cf409ef5670fa0fd9d7bb17d553c00df5715aa96cc265565b2cee652e6b"
     },
     {
       "slug": "video-studio",

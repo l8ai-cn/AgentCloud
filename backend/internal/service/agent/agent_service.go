@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/l8ai-cn/agentcloud/backend/internal/domain/agent"
 )
@@ -64,13 +65,32 @@ func (s *AgentService) GetAgentsForRunner() []AgentInfo {
 	}
 
 	result := make([]AgentInfo, 0, len(types))
-	for _, t := range types {
+	seenExecutable := make(map[string]struct{}, len(types))
+	appendAgent := func(t *agent.Agent) {
+		key := strings.TrimSpace(t.Executable)
+		if key == "" {
+			key = "slug:" + t.Slug
+		}
+		if _, exists := seenExecutable[key]; exists {
+			return
+		}
+		seenExecutable[key] = struct{}{}
 		result = append(result, AgentInfo{
 			Slug:          t.Slug,
 			Name:          t.Name,
 			Executable:    t.Executable,
 			LaunchCommand: t.LaunchCommand,
 		})
+	}
+	for _, t := range types {
+		if !t.IsInternal {
+			appendAgent(t)
+		}
+	}
+	for _, t := range types {
+		if t.IsInternal {
+			appendAgent(t)
+		}
 	}
 	return result
 }

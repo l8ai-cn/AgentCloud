@@ -134,6 +134,34 @@ func TestGetAgentsForRunner(t *testing.T) {
 		}
 	})
 
+	t.Run("prefers non-internal when executable overlaps", func(t *testing.T) {
+		db := setupTestDB(t)
+		svc := newTestAgentService(db)
+		if err := db.Exec(`
+			INSERT INTO agents (slug, name, launch_command, executable, is_builtin, is_active, is_internal, supported_modes)
+			VALUES
+				('pattern-designer', 'Pattern Designer', 'codex', 'codex', 1, 1, 1, 'pty'),
+				('e2e-echo', 'E2E Echo', 'e2e-mock-agent', 'e2e-mock-agent', 1, 1, 1, 'pty')
+		`).Error; err != nil {
+			t.Fatalf("seed overlay agents: %v", err)
+		}
+
+		types := svc.GetAgentsForRunner()
+		slugs := make(map[string]bool, len(types))
+		for _, at := range types {
+			slugs[at.Slug] = true
+		}
+		if !slugs["codex-cli"] {
+			t.Fatal("expected base harness codex-cli")
+		}
+		if slugs["pattern-designer"] {
+			t.Fatal("overlay pattern-designer must not advertise when codex-cli exists")
+		}
+		if !slugs["e2e-echo"] {
+			t.Fatal("unique internal fixture e2e-echo must still advertise")
+		}
+	})
+
 	t.Run("returns nil on database error", func(t *testing.T) {
 		badDB, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
 			Logger: logger.Default.LogMode(logger.Silent),
