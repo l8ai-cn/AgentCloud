@@ -137,7 +137,7 @@ jobs:
           bash scripts/ci-install-codegen-tools.sh
       - name: Generate Go protos + amesh
         run: bash scripts/ensure-go-codegen.sh
-      - uses: golangci/golangci-lint-action@v8
+      - uses: golangci/golangci-lint-action@v9
         with:
           version: ${{ env.GOLANGCI_LINT_VERSION }}
           working-directory: ${{ matrix.module }}
